@@ -1,0 +1,82 @@
+\documentclass[11pt,a4paper]{book}
+%\documentclass[manuscript,screen,nonacm]{acmart}
+
+% Space around pages should be fucking uniform
+\usepackage[inner=3cm,outer=3cm,top=3cm,bottom=3cm]{geometry}
+%\usepackage[inner=2cm,outer=3cm,twoside,top=3cm,bottom=3cm]{geometry}
+
+% Because I wanna write emojis in my LaTeX source
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage[unicode]{hyperref}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{stmaryrd}
+
+%\usepackage{indentfirst}
+%\usepackage{aliascnt}
+%\usepackage{chngcntr}
+\usepackage{subcaption}
+%\usepackage{enumitem}
+\usepackage{hyphenat}
+\usepackage{proof}
+
+% ======================== Package for syntax highlight ===========================
+\usepackage{minted}
+\usepackage{csquotes}
+\usepackage{xcolor}
+\usepackage{algorithm2e}
+
+%%%%%%%%%%%%%%%%%%%%%%% bibliography
+\usepackage[style=alphabetic,sorting=ynt]{biblatex}
+\addbibresource{bibfile.bib}
+%\usepackage[square]{natbib}
+%\bibliographystyle{plainnat}
+
+\usepackage{todonotes}
+
+\graphicspath{{images/}}
+
+\input{macros}
+
+% Random stuff for acmart
+%\setcopyright{none}
+%\acmJournal{PACMPL}
+%\bibliographystyle{ACM-Reference-Format}
+
+
+\begin{document}
+\title{TODO}
+
+\input{front/front}
+
+\tableofcontents
+
+\pagenumbering{arabic}
+\input{chapters/10-introduction}
+%\input{chapters/20-background}
+%\input{chapters/30-stateofart}
+
+%\input{chapters/90-conclusions}
+
+\todototoc
+
+%\bibliography{bibfile}
+\printbibliography
+\addcontentsline{toc}{chapter}{Bibliography}
+
+%\begin{acks}
+%	This work is supported by the \grantsponsor{1}{Italian Ministero dell'Università e della Ricerca}{https://prin.mur.gov.it/} under Grant No. \grantnum{1}{P2022HXNSC}, PRIN 2022 PNRR -- \emph{Resource Awareness in Programming: Algebra, Rewriting, and Analysis}.
+%\end{acks}
+
+
+%	\begin{appendices}
+%		\input{chapters/appendixA}
+%	\end{appendices}
+%\appendix
+%\input{10-appendix}
+
+\end{document}

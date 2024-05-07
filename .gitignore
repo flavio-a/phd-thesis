@@ -1,0 +1,39 @@
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+*.synctex.gz
+
+## Intermediate documents:
+*.dvi
+*.xdv
+*-converted-to.*
+*.pdf
+
+## Bibliography auxiliary files (bibtex/biblatex/biber):
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+# Minted
+_minted*
+
+## Random things
+unused
+todo.md
+
+## Images
+!images/*.pdf
+images/logo_unipi-eps-converted-to.pdf

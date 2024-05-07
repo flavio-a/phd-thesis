@@ -1,0 +1,94 @@
+%%%%%%%%%%%%%%%%%%%% COMMANDS
+\DeclarePairedDelimiter{\denot}{\llbracket}{\rrbracket}
+\DeclarePairedDelimiter{\edenot}{\llparenthesis}{\rrparenthesis}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\labelitem}[1]{\item[] \textit{#1}:}
+\newcommand{\Var}{\text{Var}}
+
+%%%%%%%%%%%%%%%%%%%% THEOREMS
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\counterwithin{theorem}{chapter}
+
+\newtheorem{corollary}[theorem]{Corollary}
+\providecommand*{\corollaryautorefname}{Corollary}
+
+\newtheorem{lemma}[theorem]{Lemma}
+\providecommand*{\lemmaautorefname}{Lemma}
+
+\newtheorem{prop}[theorem]{Proposition}
+\providecommand*{\propautorefname}{Proposition}
+
+\newcounter{direction}
+
+%\declaretheorem[style=remark,qed=$\blacksquare$,sibling=theorem]{example}
+%\declaretheorem[style=definition,sibling=theorem]{definition}
+%\declaretheorem[style=plain,numbered=no]{assumption}
+%\declaretheorem[style=definition,sibling=direction]{direction}
+
+%\declaretheorem[style=definition,sibling=theorem]{definition}
+%\declaretheorem[style=plain,numbered=no]{assumption}
+
+%\newtheorem{remark}[theorem]{Remark}
+%\providecommand*{\remarkautorefname}{Remark}
+
+%%%%%%%%%%%%%%%%%%%% MATH SYMBOLS
+%\newcommand{\setN}{\mathbb{N}}
+\newcommand{\setZ}{\mathbb{Z}}
+%\newcommand{\katR}{\mathcal{R}}
+\newcommand{\svert}{\,\vert\,}
+\newcommand{\sdot}{\,.\,}
+\newcommand{\pow}{\mathcal{P}}
+\newcommand{\expe}{\mathsf{e}}
+\newcommand{\regr}{\mathsf{r}}
+\newcommand{\regc}{\mathsf{c}}
+%\newcommand{\regw}{\mathsf{w}}
+\newcommand{\Reg}{\mathsf{Reg}}
+\newcommand{\Imp}{\mathsf{Imp}}
+\newcommand{\Exp}{\mathsf{Exp}}
+\newcommand{\regtimes}{\otimes}
+\newcommand{\regplus}{\oplus}
+\newcommand{\kstar}{\star}
+\newcommand{\eqdef}{\triangleq}
+
+%%%%%%%%%%%%%%%%%%%% ORDER-THEORETIC SYMBOLS
+\newcommand{\fix}{\text{fix}}
+\newcommand{\id}{\text{id}}
+\newcommand{\lfp}{\text{lfp}}
+\newcommand{\op}{\text{op}}
+\newcommand{\image}{\text{Im}}
+
+%%%%%%%%%%%%%%%%%%%% ABSINT
+\newcommand{\Abs}{\text{\normalfont Abs}}
+\newcommand{\gc}[4]{\langle #1, (#2, #3), #4 \rangle}
+%\newcommand{\gi}[3]{\langle #1, (#2, \id_{#3}), #3 \rangle}
+\newcommand{\complete}[3]{\mathbb{C}^{#1}_{#2}(#3)}
+\newcommand{\Int}{\text{Int}}
+\newcommand{\Oct}{\text{Oct}}
+\newcommand{\Moore}{\mathcal{M}}
+%\newcommand{\poly}{\text{poly}}
+%\newcommand{\drop}{\text{drop}}
+%\newcommand{\concat}{\text{concat}}
+%\newcommand{\macheps}{\textbf{u}}
+%\newcommand{\fp}{\text{fp}}
+
+%%%%%%%%%%%%%%%%%%%% Logics (HL, IL, LCL)
+\newcommand{\underexact}[1]{\ensuremath [#1]}
+\newcommand{\overexact}[1]{\ensuremath \{#1\}}
+\newcommand{\undertriple}[3]{\underexact{#1}~#2~\underexact{#3}}
+\newcommand{\overtriple}[3]{\overexact{#1}~#2~\overexact{#3}}
+\newcommand{\bdiamond}[1]{\langle #1 \vert}
+\newcommand{\spost}{\textbf{sp}}
+\newcommand{\test}{\text{test}}
+\newcommand{\lcl}[4]{\vdash_{#1}\nobreak\undertriple{#2}{#3}{#4}}
+\newcommand{\lrule}[1]{$(\mathsf{#1})$}
+\newcommand{\LCLA}{\text{LCL}_A}
+
+%%%%%%%%%%%%%%%%%%%% PDR
+\newcommand{\xbar}{\overline{x}}
+\newcommand{\clause}{\text{clause}}
+\newcommand{\states}{\mathcal{S}}
+\newcommand{\true}{\textbf{true}}
+\newcommand{\timplies}{\Rightarrow}
