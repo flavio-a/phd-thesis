@@ -1,0 +1,11 @@
+% !TEX root = ../phd-thesis.tex
+
+\chapter{Conclusions}\label{ch:conclusions}
+The main subject of this proposal is combining over- and under-approximation for abstract interpretation based static analysis. The idea of using under-approximation in static analysis is not new, but the focus on exploiting it to \emph{identify true errors} is very recent. For this reason, the subject of under-approximation is largely unexplored yet, and in particular its combination with over-approximation. One of the first task we undertook was to identify past works that used this idea.
+
+Chapter~\ref{ch:intro} introduces the topic and its motivations. Chapter~\ref{ch:background} lays the background needed by subsequent chapters.
+Chapter~\ref{ch:sota} discusses some state-of-the-art techniques combining over- and under-approximation, not limited to abstract interpretation based ones. In fact, it examines a common algebraic formalism (Section~\ref{sec:sota:kat}), $\LCLA$ (Section~\ref{sec:sota:lcl}) and \code{ic3}/PDR (Section~\ref{sec:sota:pdr}), but only the second employs abstract interpretation.
+%Chapter~\ref{ch:resplan} outlines our preliminary results and future research direction. In the last year, other than studying those related works, we extended $\LCLA$ with new rules to exploit different abstract domains within a single derivation.
+
+As a short term goal, we would like to advance these results further, integrating forward repair and domain simplification in $\LCLA$ as well. Moreover, we would like to introduce abstract interpretation in LT-PDR (a generalization of \code{ic3}), and use it to better understand the trade-offs in the algorithm.
+In the longer term, we would like to deepen our understanding of over/under-approximation interaction, in order to be able to apply it to more and more techniques. The example of \code{ic3}, which quickly emerged among the best model checkers, shows that the idea is very powerful. However, it's far from trivial to exploit effectively, hence our research goal.

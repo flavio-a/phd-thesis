@@ -5,7 +5,6 @@
 \usepackage[inner=3cm,outer=3cm,top=3cm,bottom=3cm]{geometry}
 %\usepackage[inner=2cm,outer=3cm,twoside,top=3cm,bottom=3cm]{geometry}
 
-% Because I wanna write emojis in my LaTeX source
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
@@ -14,11 +13,12 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage{thmtools}
 \usepackage{stmaryrd}
+%\usepackage{fancyhdr}
+%\usepackage[Rejne]{fncychap}
 
 %\usepackage{indentfirst}
-%\usepackage{aliascnt}
-%\usepackage{chngcntr}
 \usepackage{subcaption}
 %\usepackage{enumitem}
 \usepackage{hyphenat}
@@ -38,31 +38,44 @@
 
 \usepackage{todonotes}
 
+\raggedbottom
 \graphicspath{{images/}}
 
 \input{macros}
 
-% Random stuff for acmart
-%\setcopyright{none}
-%\acmJournal{PACMPL}
-%\bibliographystyle{ACM-Reference-Format}
+% Stuff for formatting
+\renewcommand{\contentsname}{Table of Contents}
+
+%   Reduce the margin of the summary:
+\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endchangemargin=\endlist
+
+%   Generate the environment for the abstract:
+\newcommand\summaryname{Abstract}
+\newenvironment{Abstract}%
+{\Large\begin{center}%
+		\bfseries{\summaryname} \end{center}}
+
+\title{PhD Thesis}
+\author{Flavio Ascari}
+\date{October 2024}
 
 
 \begin{document}
-\title{TODO}
-
 \input{front/front}
 
 \tableofcontents
 
 \pagenumbering{arabic}
 \input{chapters/10-introduction}
-%\input{chapters/20-background}
-%\input{chapters/30-stateofart}
+\input{chapters/20-background}
+\input{chapters/30-stateofart}
+\input{chapters/40-limits-underapprox-domain}
+\input{chapters/50-lcla}
+\input{chapters/60-pdr}
+\input{chapters/70-sil}
 
-%\input{chapters/90-conclusions}
-
-\todototoc
+\input{chapters/90-conclusions}
 
 %\bibliography{bibfile}
 \printbibliography
@@ -78,5 +91,8 @@
 %	\end{appendices}
 %\appendix
 %\input{10-appendix}
+
+\listoftodos
+\todototoc
 
 \end{document}

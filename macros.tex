@@ -1,3 +1,5 @@
+% !TEX root = phd-thesis.tex
+
 %%%%%%%%%%%%%%%%%%%% COMMANDS
 \DeclarePairedDelimiter{\denot}{\llbracket}{\rrbracket}
 \DeclarePairedDelimiter{\edenot}{\llparenthesis}{\rrparenthesis}
@@ -8,36 +10,17 @@
 \newcommand{\Var}{\text{Var}}
 
 %%%%%%%%%%%%%%%%%%%% THEOREMS
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}
-\counterwithin{theorem}{chapter}
-
-\newtheorem{corollary}[theorem]{Corollary}
-\providecommand*{\corollaryautorefname}{Corollary}
-
-\newtheorem{lemma}[theorem]{Lemma}
-\providecommand*{\lemmaautorefname}{Lemma}
-
-\newtheorem{prop}[theorem]{Proposition}
-\providecommand*{\propautorefname}{Proposition}
-
-\newcounter{direction}
-
-%\declaretheorem[style=remark,qed=$\blacksquare$,sibling=theorem]{example}
-%\declaretheorem[style=definition,sibling=theorem]{definition}
-%\declaretheorem[style=plain,numbered=no]{assumption}
-%\declaretheorem[style=definition,sibling=direction]{direction}
-
-%\declaretheorem[style=definition,sibling=theorem]{definition}
-%\declaretheorem[style=plain,numbered=no]{assumption}
-
-%\newtheorem{remark}[theorem]{Remark}
-%\providecommand*{\remarkautorefname}{Remark}
+\declaretheorem[numberwithin=chapter]{theorem}
+\declaretheorem[sibling=theorem]{corollary}
+\declaretheorem[sibling=theorem]{lemma}
+\declaretheorem[title=Proposition,sibling=theorem]{prop}
+\declaretheorem[style=definition,sibling=theorem]{definition}
+\declaretheorem[style=remark,sibling=theorem,qed=$\blacksquare$]{example}
 
 %%%%%%%%%%%%%%%%%%%% MATH SYMBOLS
 %\newcommand{\setN}{\mathbb{N}}
 \newcommand{\setZ}{\mathbb{Z}}
-%\newcommand{\katR}{\mathcal{R}}
+\newcommand{\katR}{\mathcal{R}}
 \newcommand{\svert}{\,\vert\,}
 \newcommand{\sdot}{\,.\,}
 \newcommand{\pow}{\mathcal{P}}
@@ -74,17 +57,61 @@
 %\newcommand{\macheps}{\textbf{u}}
 %\newcommand{\fp}{\text{fp}}
 
-%%%%%%%%%%%%%%%%%%%% Logics (HL, IL, LCL)
-\newcommand{\underexact}[1]{\ensuremath [#1]}
-\newcommand{\overexact}[1]{\ensuremath \{#1\}}
+%%%%%%%%%%%%%%%%%%%% Logics (HL, IL, LCL, NC, SIL)
+\makeatletter
+\newsavebox{\@brx}
+\newcommand{\llangle}[1][]{\savebox{\@brx}{\(\m@th{#1\langle}\)}%
+	\mathopen{\copy\@brx\mkern2mu\kern-1\wd\@brx\usebox{\@brx}}}
+\newcommand{\rrangle}[1][]{\savebox{\@brx}{\(\m@th{#1\rangle}\)}%
+	\mathclose{\copy\@brx\mkern2mu\kern-1\wd\@brx\usebox{\@brx}}}
+\makeatother
+
+\newcommand{\underexact}[1]{\ensuremath{[#1]}}
+\newcommand{\overexact}[1]{\ensuremath{\{#1\}}}
+\newcommand{\necessaryexact}[1]{\ensuremath{(#1)}}
+\newcommand{\angleexact}[1]{\ensuremath{\llangle #1 \rrangle}}
+%\newcommand{\angleexact}[1]{\ensuremath{\langle\!| #1 |\!\rangle}}
 \newcommand{\undertriple}[3]{\underexact{#1}~#2~\underexact{#3}}
 \newcommand{\overtriple}[3]{\overexact{#1}~#2~\overexact{#3}}
+\newcommand{\necctriple}[3]{\necessaryexact{#1}~#2~\necessaryexact{#3}}
+\newcommand{\angletriple}[3]{\angleexact{#1}~#2~\angleexact{#3}}
+\newcommand{\oltriple}[3]{\langle {#1}\rangle~#2~\langle{#3}\rangle}
+\newcommand{\silrule}[1]{\ensuremath{\llangle\mathsf{#1}\rrangle}}
+\newcommand{\ilrule}[1]{[{\ensuremath{\mathsf{#1}}}]}
+\newcommand{\hlrule}[1]{\{{\ensuremath{\mathsf{#1}}}\}}
+\newcommand{\olrule}[1]{\ensuremath{\langle\mathsf{#1}\rangle}}
 \newcommand{\bdiamond}[1]{\langle #1 \vert}
 \newcommand{\spost}{\textbf{sp}}
 \newcommand{\test}{\text{test}}
 \newcommand{\lcl}[4]{\vdash_{#1}\nobreak\undertriple{#2}{#3}{#4}}
 \newcommand{\lrule}[1]{$(\mathsf{#1})$}
 \newcommand{\LCLA}{\text{LCL}_A}
+
+%%%%%%%%%%%%%%%%%%%% SL
+\newcommand{\Regh}{\mathsf{HRCmd}}
+\newcommand{\Cmdh}{\mathsf{HACmd}}
+\newcommand{\Loc}{\text{Loc}}
+\newcommand{\Val}{\text{Val}}
+\newcommand{\Stores}{\text{Store}}
+\newcommand{\Heaps}{\text{Heap}}
+\newcommand{\dom}{\text{dom}}
+\newcommand{\errstate}{\textbf{err}}
+\newcommand{\modified}{\text{mod}}
+\newcommand{\dotsim}{\dot\sim}
+\newcommand{\Asl}{\text{Asl}}
+\newcommand{\emp}{\textbf{emp}}
+\newcommand{\andsep}{*}
+%\newcommand{\asldenot}[1]{\edenot{#1}}
+\newcommand{\asldenot}[1]{\{\hspace{-2pt}|#1|\hspace{-2pt}\}}
+\newcommand{\fv}{\text{fv}}
+\newcommand{\dealloc}{\not\mapsto{}}
+
+
+%%%%%%%%%%%%%%%%%%%% Semantics
+\newcommand{\fwsem}[1]{\denot{#1}}
+%\newcommand{\bwsem}[1]{\denot{^{\leftarrow}#1}}
+\newcommand{\bwsem}[1]{\denot{\overleftarrow{#1}}}
+\newcommand{\barsigma}{\bar{\sigma}}
 
 %%%%%%%%%%%%%%%%%%%% PDR
 \newcommand{\xbar}{\overline{x}}

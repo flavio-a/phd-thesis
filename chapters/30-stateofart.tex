@@ -1,0 +1,303 @@
+% !TEX root = ../phd-thesis.tex
+
+\chapter{Related work}\label{ch:sota}
+This chapter surveys related work that combines over and under-approximations.
+Section~\ref{sec:sota:kat} analyses KATs as a possible formalism to describe together over and under-approximation, represented respectively by HL and IL.
+Section~\ref{sec:sota:lcl} present $\LCLA$, a logic that exploits under-approximations to ensure precision of an (over-approximating) abstraction and is able to prove both correctness and incorrectness at once.
+Section~\ref{sec:sota:pdr} discusses \code{ic3}, an algorithm that combines over and under-approximations in a non-trivial way, and its generalizations.
+Section~\ref{sec:sota:ol} summarizes Outcome Logic, a triple based program logic that can express both over and under-approximation properties.
+
+\section{Unifying formalism}\label{sec:sota:kat}
+Hoare and Incorrectness Logic operate on dual principles. Because of this, some properties are shared among the two, others are dualized and others still are just different. In order to highlight these similarities and differences, it is interesting to embed HL and IL in a common formalism. As recalled in Section~\ref{sec:bg:algebra}, KATs are able to encode regular commands \cite{Kozen97} as well as HL \cite{Kozen00} making it a purely equational theory.
+It would be interesting to do the same for IL, and in principle it seems reasonable to do so given the duality with HL. However, the symmetry is at the level of images of functions (precisely, strongest postconditions), something that is not explicit in the syntax of KAT. Therefore, it is interesting to study which additional algebraic properties are needed to encode IL in KATs.
+
+In \cite{MOH21}, the authors propose modal KATs as the diamond modality can be used to represent strongest postcondition \cite{DMS06}. This way they are able to encode all IL rules but the infinitary \lrule{iter}, that is needed for completeness of the proof system\footnote{We remark that Kleene star can be handled using some weaker but finitary rules. While this approach isn't complete, it is sufficient to prove many triples. However, this topic lies outside the goal of this presentation, so we refer the reader to \cite{OHearn20} and \cite{MOH21} for finitary rules dealing with Kleene star.} but requires the existence of countable joins of tests. The authors add this requirement explicitly to the algebraic structure, defining countably-test complete (CTC for short) modal KATs.
+\begin{definition}[Backward diamond]
+	A backward diamond modality on a KAT $A$ is an operator $\bdiamond{\cdot} : A \rightarrow \test(A) \rightarrow \test(A)$ satisfying, for all $a, b \in A$, $p, q \in \test(A)$
+	\begin{align*}
+		\bdiamond{a} p \le q \iff p \cdot a \le a \cdot q \\
+		\bdiamond{a \cdot b} p = \bdiamond{b} (\bdiamond{a} p)
+	\end{align*}
+\end{definition}
+Intuitively, $\bdiamond{a} p$ is the strongest postcondition of $a$ on input $p$. This correspondence is exact in relational KATs, and so it is natural to use it in all modal KATs. Moreover, the standard soundness of HL in KATs is defined by the equation $p \cdot a = p \cdot a \cdot q$, that can be proved equivalent to $\bdiamond{a} p \le q$ in a modal KAT. This further justifies the usage of backward diamond as strongest postcondition, given that $\spost(a, P) \le Q$ is the classical soundness condition of HL.
+
+\begin{figure}[t]
+	\centering
+	\begin{framed}
+		%		\resizebox{\textwidth}{!}{
+		\(
+		\begin{array}{cc}
+			\infer[\ilrule{divergence}]
+			{\undertriple{p}{0}{0}}
+			{}
+			\quad &
+			\infer[\ilrule{skip}]
+			{\undertriple{p}{1}{p}}
+			{}
+			\\[7.5pt]
+			\infer[\ilrule{atom}]
+			{\undertriple{p}{a}{\bdiamond{a}p}}
+			{}
+			\quad &
+			\infer[\ilrule{cons}]
+			{\undertriple{p}{a}{q}}
+			{p \geq p' & \undertriple{p'}{a}{q'}& q' \geq q}
+			\\[7.5pt]
+			\infer[\ilrule{seq}]
+			{\undertriple{p}{a \cdot b}{q}}
+			{\undertriple{p}{a}{r} &
+				\undertriple{r}{b}{q}}
+			\qquad &
+			\infer[\ilrule{choice}]
+			{\undertriple{p}{a_1 + a_2}{q}}
+			{\exists i \in \{ 1, 2 \} & \undertriple{p}{a_i}{q}}
+			\\[7.5pt]
+			\infer[\ilrule{disj}]
+			{\undertriple{p_1 \lor p_2}{a}{q_1 \lor q_2}}
+			{\undertriple{p_1}{a}{q_1} & \undertriple{p_2}{a}{q_2} }
+			\qquad &
+			\infer[\ilrule{iter}]
+			{\undertriple{p_0}{a^\kstar}{\bigvee\limits_{n \ge 0} p_n}}
+			{\forall n \ge 0 \sdot \undertriple{p_n}{a}{p_{n+1}}}
+		\end{array}
+		\)
+		%		}
+	\end{framed}
+	\vspace{-1ex}
+	\caption{CTC modal KAT encoding of IL, from \cite{MOH21}}\label{fig:sota:il-kat}
+\end{figure}
+
+Since a CTC modal KAT satisfies all the KAT axioms, it has for free the standard encoding of HL.
+IL embedding in CTC modal KAT is detailed in Figure~\ref{fig:sota:il-kat}, taken from \cite{MOH21}. The rules are close to standard IL (Figure~\ref{fig:bg:il}), replacing the semantics $\denot{\expe}$ with the backward modality $\bdiamond{a}$, sequential composition with $\cdot$ and choice with $+$. This is thanks to closeness of regular command to the syntax of KATs. The two additional rules for $0$ and $1$ are, just as for HL, subsumed by \ilrule{atom}, but we add them explicitly since $0$ and $1$ are part of the syntax of KATs.
+
+In this algebraic setting, the author derive soundness and completeness theorems for both IL and HL, that we summarise below. We remark that soundness and completeness are obtained with respect to a validity notion based on backward diamond, precisely $\bdiamond{a} p \le q$ for HL and $\bdiamond{a} p \ge q$ for IL.
+What is really interesting about those are the hypotheses required by each:
+\begin{theorem}[cf. \cite{MOH21}]
+	\leavevmode
+	\begin{enumerate}
+		\item HL is sound and complete in any modal KAT.
+		\item IL is sound in any CTC modal KAT without the \textit{(Star induction)} axiom.
+		\item IL is complete in any CTC modal KAT.
+	\end{enumerate}
+\end{theorem}
+This theorem is interesting because it shows the symmetry between over- and under-approximation is less sharp than it appears at first glance.
+On the one hand, over-approximation requires the KAT axioms for both soundness and completeness (modality is used to define the validity of a triple, but we can do without changing the notion of validity). The fact that the latter has the same requirements as the former is essentially because loop invariants are both sound \emph{and} complete for over-approximation.
+On the other hand, for under-approximation no such tool is known, so completeness has stronger hypotheses than soundness. We remark that soundness of IL does not require \textit{(Star induction)}, the KAT rephrasing of loop invariants, basically because to obtain an under-approximation there is no need for the loop fixpoint but it is enough to consider any (finite) number of iterations. This is no longer the case for completeness, since we do need the loop semantics to prove that it is a sound under-approximation of itself. This motivate the need for all the KAT axioms (including \textit{(Star induction)}) in point $(3)$ above.
+
+In CTC modal KAT the authors are also able to formally prove an intuitive connection between HL and IL. 
+\begin{theorem}[cf. \cite{MOH21}]
+	In any CTC modal KAT
+	\[
+	\nvDash \overtriple{p}{a}{q} \iff \exists p', q' \sdot p' \le p, q' \nleq q, \vDash \undertriple{p'}{a}{q'}
+	\]
+\end{theorem}
+On the one hand, this theorem means that whenever a specification (ie. an Hoare triple) is not met there is a valid incorrectness triple showing a violation of that specification. In the theorem, $q'$ is the violation since $q' \nleq q$, and is in the post of $p$ because we can prove $\undertriple{p'}{a}{q'}$ with $p' \le p$.
+On the other hand, when the specification is true, we don't need incorrectness reasoning since we already know all valid triples (hence all those we can prove) starting from $p' \le p$ are bound to have a postcondition $q'$ satisfying the specification $q$ (ie. $q' \le q$).
+%We remark that the statement involves valid triples, but since both HL and IL are complete in CTC modal KATs this is the same as considering provable triples.
+This theorem states a connection between over- and under-approximation that is obvious in the concrete interpretation with programs and states, but that it is not in a general algebraic model. Being able to prove it means the encoding meets the desired intuition, rising confidence in its correctness. Moreover, this theorem is a first (trivial) example of how over- and under-approximation can positively interact.
+
+To conclude this section, we mention the concurrent work \cite{ZAG22}, that addresses the same problem. In this work, the authors show that KAT alone are not enough to express IL (cf. Theorem~1 of their paper). To enrich the algebraic structure, they follow the idea of expressing (to some extent) the codomain, too, and propose to add a top element $\top$ to the KAT, defining the so-called TopKAT.
+With this addition, given any element $a$ of the TopKAT we have that $\top a$ represents the ``codomain" of $a$. This is formal in relational TopKATs:
+\begin{prop}[cf. \cite{ZAG22}]
+	In any relational TopKAT $\katR$, for any two elements $p, q \in \katR$ and letting $\text{cod}$ be the codomain operator of a relation,
+	\begin{align*}
+		\top p = \top q &\iff \text{cod}(p) = \text{cod}(q) \\
+		\top p \le \top q &\iff \text{cod}(p) \subseteq \text{cod}(q)
+	\end{align*}
+\end{prop}
+The authors then use this definition to embed IL in a generic TopKAT.
+We remark that in this article the focus is not on completeness of the logic, so there isn't the CTC assumption on the algebraic structure, but only the those join needed to apply \ilrule{iter} are required to exist. Even with this focus shift, the work already shows that a top element is a viable alternative to modality for encoding IL in Kleene algebras.
+
+\section{Local completeness}\label{sec:sota:lcl}
+\todo[inline]{Section TODO list}
+\begin{itemize}
+	\item ...
+\end{itemize}
+
+Local Completeness Logic on an abstract domain $A$ ($\LCLA$ for short) \cite{BGGR21} is a first example of non-trivial over and under-approximation interaction, with the former embodied by abstract interpretation and the latter by IL.
+
+As described in Section~\ref{sec:bg:absint}, abstract interpretation is always sound, but in general it is not complete: composition of best correct abstractions (bcas) is not the bca of the composition. While in theory completeness ensures no precision is lost, it is a very uncommon situation in general. One of the causes is its requirement to hold \emph{for all inputs}. To weaken this condition, in \cite{BGGR21} the authors propose a notion of \emph{local} completeness, that depends on a specific input.
+\begin{definition}[Local completeness, cf.\cite{BGGR21}]
+	Let $f: C \rightarrow C$ be a concrete function, $c \in C$ a concrete point and $A \in \Abs(C)$ and abstract domain for $C$. Then $A$ is \emph{locally complete} for $f$ on $c$, written $\complete{A}{c}{f}$ iff
+	\[
+	Af(c) = AfA(c) .
+	\]
+\end{definition}
+While local completeness is a weaker property, so it holds more often, it has a crucial drawback with respect to global completeness. In fact, the latter can be proved compositionally on the command only \cite{GLR15}, while the former needs also the input to each fragment of the program. To help cope with this issue, the authors observe that local completeness enjoys an ``abstract convexity" property: whenever it holds on a concrete point $c$ it does so also on all points $d$ between $c$ and its abstraction $A(c)$. This property became crucial in the design of the $\LCLA$ proof system, whose goal is to prove a program is locally complete on a given input.
+
+$\LCLA$ depends on an abstract domain $A$, and a triple $\lcl{A}{P}{\regr}{Q}$ provable in the logic ensures three conditions:
+\begin{enumerate}
+	\item $Q$ is an under-approximation of the concrete semantics $\denot{\regr}P$,
+	\item $Q$ and $\denot{\regr}P$ have the same over-approximation in $A$,
+	\item $A$ is locally complete for $\denot{\regr}$ on input $P$.
+\end{enumerate}
+Point (2) means that, given a specification \textit{Spec} expressible in $A$, any provable triple $\lcl{A}{P}{\regr}{Q}$ either proves correctness of $\regr$ with respect to \textit{Spec} or expose an alert in $Q \setminus \textit{Spec}$. This in turns correspond to a true one because $Q$ is an under-approximation of the concrete semantics $\denot{\regr}P$, as pointed out by Corollary~\ref{th:sota:corollary-verification} below.
+
+\begin{figure*}[t]
+	\centering
+	\begin{framed}
+		\resizebox{\textwidth}{!}{
+			\(
+			\begin{array}{l}
+				\infer[(\mathsf{transfer})]
+				{\lcl{A}{P}{\expe}{\denot{\expe}P}}
+				{\complete{A}{P}{\denot{\expe}}}
+				\quad %&
+				\infer[(\mathsf{relax})]
+				{\lcl{A}{P}{\regr}{Q}}
+				{P'\leq P \leq A(P')& \lcl{A}{P'}{\regr}{Q'}& Q \leq Q' \leq A(Q)}
+				\\[7.5pt]
+				\infer[(\mathsf{seq})]
+				{\lcl{A}{P}{\regr_1;\regr_2}{Q}}
+				{\lcl{A}{P}{\regr_1}{R} &
+					\lcl{A}{R}{\regr_2}{Q}}
+				\qquad %&
+				\infer[(\mathsf{join})]
+				{\lcl{A}{P}{\regr_1 \regplus \regr_2}{Q_1\vee Q_2}}
+				{ \lcl{A}{P}{\regr_1}{Q_1} &
+					\lcl{A}{P}{\regr_2}{Q_2}}
+				\\[7.5pt] 
+				\infer[(\mathsf{rec})]
+				{\lcl{A}{P}{\regr^\kstar}{Q}}
+				{\lcl{A}{P}{\regr}{R} & \lcl{A}{P\vee R}{\regr^\kstar}{Q} }
+				\qquad %&
+				\infer[(\mathsf{iterate})]
+				{\lcl{A}{P}{\regr^\kstar}{P\vee Q}}
+				{\lcl{A}{P}{\regr}{Q} & Q\leq A(P)}
+			\end{array}
+			\)
+		}
+	\end{framed}
+	\vspace{-1ex}
+	\caption{The proof system $\LCLA$, from \cite{BGGR21}.}\label{fig:sota:lcla-rules}
+	%	\vspace{-4ex}
+\end{figure*}
+The proof system is defined in Figure~\ref{fig:sota:lcla-rules}. It is a logic of under-approximations, much like IL (actually IL is a special case of $\LCLA$), but with one additional constraint: the under approximation $Q$ must have the same abstraction of the concrete semantics $\denot{\regr} P$, as for instance explicitly required in rule \lrule{relax}. This, by the abstract convexity property mentioned above, means that local completeness of $\denot{\regr}$ on the \emph{under-approximation} $P$ of the concrete store is enough to prove local completeness.
+This way, $\LCLA$ exploits the interaction of over- and under-approximation. The latter is used to ensure the abstraction is locally complete, ie. guarantees precision of the over-approximation. Conversely, the presence of the abstraction in rule \lrule{iterate} speeds up the computation as it allows to stop as soon as $A(P)$ is an abstract loop invariant, not having to deal with (possible infinitary) concrete invariants.
+
+Formally, the three key properties (1--3) listed above are formalized by the following soundness result:
+\begin{theorem}[Soundness, cf.\cite{BGGR21}]\label{th:sota:lcl-soundness}
+	Let $A_{\alpha, \gamma} \in \Abs(C)$.
+	If $\lcl{A}{P}{\regr}{Q}$ then:
+	\begin{enumerate}
+		\item $Q \le \denot{\regr} P$,
+		\item $\alpha(\denot{\regr} P) = \alpha(Q)$,
+		\item $\denot{\regr}^{\sharp}_{A} \alpha(P) = \alpha(Q)$.
+	\end{enumerate}
+\end{theorem}
+As a consequence of this theorem, given a specification expressible in the abstract domain $A$, a provable triple $\lcl{A}{P}{\regr}{Q}$ can determine both correctness and incorrectness of the program $\regr$:
+\begin{corollary}[Proofs of Verification, cf. \cite{BGGR21}]\label{th:sota:corollary-verification}
+	Let $A_{\alpha, \gamma} \in \Abs(C)$ and $a \in A$. If $\lcl{A}{P}{\regr}{Q}$ then
+	\[
+	\denot{\regr} P \le \gamma(a) \iff Q \le \gamma(a) .
+	\]
+\end{corollary}
+The corollary is useful in program analysis and verification because, given a specification expressible in $A$ and a provable triple $\lcl{A}{P}{\regr}{Q}$, it allows to distinguish two cases.
+\begin{itemize}
+	\item If $Q \subseteq \gamma(a)$, then we have also $\denot{\regr} P \subseteq \gamma(a)$, so that the program is correct with respect to the specification.
+	\item If $Q \nsubseteq \gamma(a)$, then also $\denot{\regr} P \nsubseteq \gamma(a)$, that means $\denot{\regr} P \setminus \gamma(a)$ is not empty and thus contains a true alert of the program. Moreover, since $Q \subseteq \denot{\regr} P$ we have that $Q \setminus \gamma(a) \subseteq \denot{\regr} P \setminus \gamma(a)$, so that already $Q$ is able to pinpoint some issues.
+\end{itemize}
+To better show how this work, we briefly introduce the following example (discussed also in \cite{BGGR21} where it is possible to find all details of the derivation).
+\begin{example}
+	Consider the concrete domain $C = \pow(\setZ)$, the abstract domain $\Int$ of intervals, the precondition $P = \{ 1; 999 \}$ and the command $\regr \eqdef (\regr_1 \oplus \regr_2)^{\kstar}$, where
+	\begin{align*}
+		\regr_1 &\eqdef \code{(x > 0)?; x := x - 1} \\
+		\regr_2 &\eqdef \code{(x < 1000)?; x := x + 1}
+	\end{align*}
+	In $\LCLA$ it is possible to prove the triple $\lcl{\Int}{P}{\regr}{Q}$, whose postcondition is $Q = \{ 0; 2; 1000 \}$. Consider the two specification $\text{Spec}= (x \le 1000)$ and $\text{Spec}' = (x \ge 100)$.
+	The triple is then able to prove correctness of $\text{Spec}$ and incorrectness of $\text{Spec}'$.
+	For the former, observe that $Q \subseteq \text{Spec}$. By Corollary~\ref{th:sota:corollary-verification} we then know $\denot{\regr} P \subseteq \text{Spec}$, that is correctness.
+	For the latter, $Q$ exhibits two witnesses to the violation of $\text{Spec}'$, that are $0, 2 \in Q \setminus \text{Spec}'$. By point (1) of soundness we then know that $0, 2 \in Q \subseteq \denot{\regr} P$ are true alerts.
+\end{example}
+
+In $\LCLA$, being able to prove any triple $\lcl{A}{P}{\regr}{Q}$ allows to show both correctness and incorrectness of $\regr$. However, if $\regr$ is not locally complete on $P$, or more in general any of the local completeness proof obligations introduced by rule \lrule{transfer} (the only axiom of the logic) fails, the proof cannot be completed.
+To handle this issue, \cite{BGGR22} proposes the idea of changing the abstract domain in which the derivation is performed. Following what had been done for completeness \cite{GRS00}, they propose to minimally (in the lattice of abstract interpretations) refine the abstract domain. Unluckily, such a minimal refinement in general does not exists, so that the authors propose a different notion of ``best" refinement. They consider pointed refinements, that are defined by the addition of a single point to the abstract domain (followed by a Moore closure operation). Then they compare these pointed refinements not in the lattice of abstract interpretations but by the precision of the additional point. When there exists a most abstract point whose pointed refinement is locally complete, they call this domain \emph{pointed (locally complete) shell}:
+\begin{definition}[Pointed shell, cfr. \cite{BGGR22}]
+	Let $f : C \rightarrow C$ be a monotone concrete function, $A \in \Abs(C)$ be an abstract domain and $c \in C$ a concrete point. The pointed shell of $A$ on $c$ w.r.t. $f$ exists when the maximum of the set
+	\[
+	\{ x \in C \svert \complete{A_x}{c}{f} \}
+	\]
+	exists and, letting $u$ be such maximum, the pointed shell is $A_u \in \Abs(C)$.
+\end{definition}
+
+Other than characterizing the existence of pointed shell, they propose two strategies to repair the abstract domain using pointed shells. One of the two, the so-called backward repair, mostly operates on the abstract and so doesn't fit our goal of combining over- and under-approximation.
+The other, forward repair, instead operates on under-approximation of concrete points. It processes local completeness proof obligations in order, starting from the input and following the control flow. Thanks to abstract convexity of local completeness, this strategy works even on under-approximations of concrete stores, so that it integrates well with $\LCLA$. The strategy computes local completeness proof obligations in order, either reaching the end of the program (thus completing the analysis) or finding a failed one. In this case, it repairs the abstract domain to the pointed shell (using the under-approximation) and then restart the analysis in the refined domain.
+
+To conclude this section, we point out there exists an algebraic formulation of $\LCLA$. In \cite{MR22}, the authors take inspiration from the works discussed in the previous Section~\ref{sec:sota:kat} and embed $\LCLA$ in (a suitable extension of) KAT. Their first contribution is the definition of an abstract interpretation of KAT, a problem not studied before. Exploiting this, they embed $\LCLA$ in both modal KATs and TopKATs. The technical development of these embeddings is similar to that of \cite{MOH21} and \cite{ZAG22}, but it shows that such an embedding is effective as it preserves al property of $\LCLA$. Lastly, we remark that just as $\LCLA$ generalizes IL, in \cite{MR22} they recover the embedding of IL in modal KATs/TopKATs as a special case of $\LCLA$'s.
+
+\section{IC3/PDR}\label{sec:sota:pdr}
+\code{ic3} (``Incremental Construction of Inductive Clauses for Indubitable Correctness"), also called PDR (``Property directed reachability"), was first proposed by Bradley as a model checking algorithm \cite{Bradley11}. Given a safety property $P$ and a finite transition system, it either proves the property or outputs a counterexample. In this sense, \code{ic3} operates both as prover and a bug finder \cite{Bradley12}. Its ingenuity consists in using an over-approximation to guide the search for counterexamples, that in turn are used to help refining little by little the over-approximation. This means that the core of \code{ic3} is a combination of over- and under-approximations.
+Thanks to this, it quickly became one of the best hardware model checker. Moreover, the algorithm was later applied to other settings, such as probabilistic transition systems, software model checking or generic complete lattices.
+
+In its original formulation, \code{ic3} operates on a finite transition system. Let $\states$ be the (finite) set of states, $I \subseteq \states$ the set of initial states and $T : \pow(\states) \rightarrow \pow(\states)$ the transition function: given a set of states $S$, it returns the sets of states reachable from $S$ in one step. If $\rightarrow \subseteq \pow(\states \times \states)$ is the transition relation, $T(S) \eqdef \{ t \svert \exists s \in S \sdot s \rightarrow t \}$.
+Actually, $I$ and $T$ are represented by propositional formulas and a SAT solver is employed to prove implications and satisfiability queries.
+
+\code{ic3} fundamental data structures is a sequence $(X_i)_{0 \le i \le k + 1}$ of over-approximations of states reachable in at most $i$ steps. $k$ is the number of so-called \emph{major iterations} the algorithm has performed.
+In \code{ic3}, $X_i$ are logical formulas in CNF. Moreover, the following invariants are kept: (1)~$\clause(X_{i+1}) \subseteq \clause(X_i)$, (2)~$T(X_i) \timplies X_{i+1}$, (3)~$X_{k} \timplies P$.
+As a consequence, (1) implies $X_i \timplies X_{i+1}$, and together with (3) this means all elements of the sequence (but possibly $X_{k+1}$) are strengthening of $P$. $X_k$ is the ``frontier" of the analysis. $k$ is increased by major iterations. Being at major iteration $k$ means the algorithm has proved no violation of $P$ is reachable within $k$ steps, and is working on $k + 1$. Once the algorithm can prove $T(X_k) \timplies P$, it refines $X_{k+1}$ by conjoining it with $P$, increases $k$ and sets $X_{k+2} = \true$ (the empty set of clauses).
+
+At this point, the algorithm also performs what is called clauses propagation. Basically, it considers any clause $c$ in any of the $X_i$ and checks whether $T(X_i) \timplies c$. If this is the case, $c$ is conjoined to $X_{i+1}$, as this preserves all the invariants. In this sense, the clause $c$ is ``propagated" from $X_i$ to $X_{i+1}$, and the algorithm goes on with other clauses in $X_i$, then with $X_{i+1}$ and so on. If during this step, at any point $X_i = X_{i+1}$, the algorithm proved the specification $P$ because $T(X_i) \timplies X_{i+1} = X_i$, so $X_i$ is an invariant, and $X_i \timplies P$.
+
+However, in general the implication $T(X_k) \timplies P$ won't be satisfied. In this case, the SAT solver produces a counterexample $s$, that is a state in $X_k$ such that one of its successors doesn't satisfy $P$. This means that not only $X_k$ is not an invariant, but that it contains some states which violate (after one step) the specification. The idea of \code{ic3} is then to see whether this state is introduced by the over-approximation, so that it can be ruled out, or is really reachable, so that a true counterexample is found.
+So the algorithm looks for a clause $c$ to rule out $s$ from $X_k$. It takes $c$ whose literals are a subset of those in $\lnot s$ (so that $c \timplies \lnot s$) and checks whether $I \timplies c$ and $T(X_k \land c) \timplies c$. If it can find any such $c$, it conjoins it to all $X_i$ up to $X_{k+1}$ (it's easy to check this preserves all three invariants). Doing so, the algorithm removes $s$ from $X_k$, so it tries again the implication $T(X_k) \timplies P$, that will either be satisfied or find a different counterexample.
+If instead no $c$ satisfies this implication, the algorithm does the same for $X_{k-1}$, and then for $X_{k-2}$. Suppose it finds it at this last check (it can't go further because $s$ is not in $T(X_{k-2})$, as it has a successor violating $P$ while $T(X_{k-2}) \timplies X_{k-1}$ and $T(X_{k-1}) \timplies P$, hence $T(X_{k-2}) \timplies \lnot s$). So the algorithm found a clause $c$ such that $c \timplies \lnot s$, $I \timplies c$ and $T(X_{k-2} \land c) \timplies c$: it can conjoin it to all $X_i$ up to $X_{k-1}$. This rules $s$ out of $X_{k-1}$ but doesn't solve the issue of $s$ being in $X_{k}$. However, here's the ingenuity of the algorithm: now the query $T(X_{k-1}) \timplies \lnot s$ is either satisfied, so we can conjoin $\lnot s$ to $X_k$, or its failure pinpoints a predecessor $t$ of $s$ in $X_{k-1}$.
+That is, it either shows $s$ is a spurious counterexample introduced by the over-approximation of $X_k$ or it traces it back to a possible counterexample in $X_{k-1}$.
+
+The procedure restarts from $t$ and $X_{k-1}$. This recursive call will either prove $t$ spurious, so that we can turn back to $T(X_{k-1}) \timplies \lnot s$, or find a predecessor $u$ of $t$ in $X_{k-2}$. This going up and down the sequence of over-approximation, refining it along the way, in the end will either prove $T(X_k) \timplies P$ or find a chain of true counterexample starting from $I$, disproving $P$.
+In this exploration, going up the chain means the over-approximation allows to discard a counterexample, while going down means the counterexample (that is an under-approximation) guides the refinement of the over-approximation.
+
+Our description is high level and leaves out many details. We're not interested in discussing them here, and refer the reader to \cite{Bradley11}, as we will detail the more general algorithm LT-PDR later in this Section. The one thing we want to point out is that the choice of the clause $c$ used to rule out states violating the specification is minimal, ie. no strict subclause (made of a subset of the literals in $c$) satisfies the properties required. This in turn means that $c$ includes less states (removing a literal from a disjunction makes it smaller), that is it removes from $F_i$ as much states as possible. This choice is done in order to remove spurious counterexamples as quickly as possible. We will discuss this issue later.
+
+\code{ic3} was developed for hardware model checking, that means variables are boolean and the transition system is finite. However, its core ideas are deep and not tied to the specific domain, which lead to a host of derived work in other fields. One of the main challenges to generalize it is moving to infinite states space, since termination of the algorithm relies on finiteness of the domain. To cope with this issue, the crucial step is ``generalization", that in \code{ic3} is the choice of $c \timplies \lnot s$ to remove $s$. Taking $c$ as general as possible removes many (unreachable) states at once. Clearly this doesn't impact termination if the state space is finite, but is crucial whenever it is infinite. Hence, while generalization is not needed for soundness, it becomes fundamental for termination of infinite generalizations.
+This notwithstanding, \code{ic3} has been successfully generalized. One example is \code{PrIC3} (``Probabilistic \code{ic3}") \cite{BJKKMS20}, for model checking Markov decision processes (MDPs). These are basically transition systems where, fixed the action, the state to which the system transitions is not determined but is chosen with a given probability distribution. Without entering in too much details, the key difference is that a system configuration is not a single state but a probability distribution, meaning the state space is infinite. The authors propose a first algorithm which depends on an heuristic for generalization and always terminates, but gives up correctness when the system detects a counterexample: it may very well return a false alarm. Then, to recover correctness, they propose an effective way to find a ``good" heuristics, that basically amount to run their algorithm repeatedly, using the false counterexample to refine the heuristic every step until either safety is proved or a true counterexample is found.
+Another generalization is software \code{ic3}, that uses the same core algorithm to model check software systems \cite{CG12,LNNK20}. Given their state spaces are infinite and variables are not just boolean, software \code{ic3} relies on SMT instead of SAT solvers. Moreover, they exploit explicitly the control-flow structure of programs, as doing so implicitly has been shown far less effective \cite{CG12}. This makes the algorithms more involved, but shows that \code{ic3} has indeed the potential to scale to infinite state spaces.
+
+\subsection{LT-PDR}\label{sec:sota:lt-pdr}
+\begin{figure}[t]
+	\SetKwRepeat{Repeat}{repeat (do one of the following)}{until}
+	\textbf{Initially:} $(X; C) \coloneqq (\bot \leq F \bot;\; ()\,)$ \\
+	\Repeat{any return value is obtained}{
+		\textbf{Valid}
+		If $X_{j+1} \leq X_j$ for some $j < n-1$, return \code{True} with the conclusive KT sequence $X$. \\
+		\textbf{Unfold} If $X_{n-1} \leq \alpha$, let $(X; C)\coloneqq(X_0 \leq \cdots \leq X_{n-1} \leq \top; ())$. \\
+		\textbf{Induction} If some $k \geq 2$ and $x\in L$ satisfy $X_{k} \not \leq x$ and $F(X_{k-1} \land x) \leq x$,
+		let $(X; C) \coloneqq (X[X_j := X_j \land x]_{2 \leq j \leq k}; C)$. \\
+		\textbf{Candidate} If $C=()$ and $X_{n-1} \not \leq \alpha$, choose $x\in L$ such that $x \leq X_{n-1}$ and $x \not \leq \alpha$,
+		and let $(X;C)\coloneqq(X; (x))$. \\
+		\textbf{Model}
+		If $C_1$ is defined, return \code{False} with the conclusive Kleene sequence $(\bot, C_1, \dots, C_{n-1})$. \\
+		\textbf{Decide} If $C_i \leq FX_{i-1}$, choose $x \in L$ satisfying $x \leq X_{i-1}$ and $C_i \leq Fx$,
+		and let $(X; C) \coloneqq (X; (x, C_i, \dots, C_{n-1}))$. \\
+		\textbf{Conflict} If $C_i \not \leq FX_{i-1}$, choose $x \in L$ satisfying $C_i \not \leq x$ and $F(X_{i-1} \land x) \leq x$, and let
+		$(X; C) \coloneqq (X[X_j := X_j \land x]_{2 \leq j \leq i}; (C_{i+1}, \dots, C_{n-1}))$. }
+	\vspace{-1ex}
+	\caption{LT-PDR, from \cite{KUKSH22}}\label{fig:sota:lt-pdr}
+\end{figure}
+An interesting point of view is taken by \cite{KUKSH22}. In this article, the authors propose a generalization of \code{ic3} whose only constraint is that the space state is a complete lattice, that they call LT-PDR (``Lattice theoretic property directed reachability"). While LT-PDR is extremely generic and need heuristics to be instantiated for particular domains, it has the benefit of capturing the essence of the algorithm, showing in particular which properties are needed for soundness and termination. The paper highlight how \code{ic3} is actually based on Knaster-Tarski (for proving safety) and Kleene (for counterexample) fixed-point theorems \cite{DP02}.
+LT-PDR is presented in Figure~\ref{fig:sota:lt-pdr}. With respect to \code{ic3}, it differs a little in the notation. Given a complete lattice $L$, a monotone function $F: L \rightarrow L$ and a property $\alpha \in L$, the goal of the algorithm is to either prove or find a counterexample to $\lfp(F) \le \alpha$. To encode for instance the original \code{ic3} problem in this settings, it is sufficient to take $L = \pow(\states)$, $F(S) = I \cup T(S)$ and $\alpha = P$; it is not hard to verify that this gives exactly the model checking problem.
+With this in mind, $F$ broadly correspond to the transition relation $T$; the sequence of over-approximations is $( X_i )_{0 \le i \le k + 1}$, while $C$ is the so-called \emph{negative sequence}, and is more or less the call stack for the recursion on predecessors of error states.
+Intuitively, the algorithm is building an over-approximating sequence $X_i$ of the fixpoint iterates, hoping to reach a safe abstract fixpoint. However, when the next over-approximating iterate is not safe, it must contain a counterexample, that is then either traced back toward initial states or identified as spurious and hence removed.
+
+The algorithm keeps the following invariants on $X$, that matches those of \code{ic3}: (1) $X_i \le X_{i+1}$, (2) $F(X_i) \le X_{i+1}$, (3) $X_k \le \alpha$.
+\textbf{Unfold} increases $k$, advancing the major iteration. It doesn't perform clause propagation, though: this is the duty of \textbf{Induction}. The algorithm is nevertheless sound, as it basically already propagates clauses in \textbf{Conflict}. 
+\textbf{Candidate} broadly correspond to the case when $T(X_k) \timplies P$ is not satisfied, with a slight difference. Here $x$ is a counterexample to $X_{k+1} \le \alpha$, not an element of $X_k$ that is predecessor of a bad state. This difference is insubstantial, though, as the algorithm just recurse on this element going to its predecessors.
+\textbf{Decide} and \textbf{Conflict} are, respectively, a new recursive call and the conclusion of a previous one. On the one hand, when $C_i$, the current predecessor of a bad state, is contained in $F (X_{i-1})$, it means it has a predecessor in the over-approximation. This predecessor is $x$, and the algorithm goes on recursing on it. On the other hand, if $C_i$ is not in $F (X_{i-1})$ it's a spurious counterexample, introduced by the over-approximation: it is then removed refining $X_{i-1}$ by conjoining with a suitable $x$ that excludes $C_i$, just like the clause $c$ is conjoined to $X_i$ in \code{ic3}.
+Lastly, \textbf{Valid} and \textbf{Decide} are the termination conditions: the former checks whether it reached an invariant (that is $X_{i+1} = X_i$, but it checks for inequality as the direction $X_i \le X_{i+1}$ is guaranteed by the algorithm invariant); the latter verifies whether the predecessors reached an initial state (as $F(\bot) = I$ with the given definition of $L$ and $F$).
+
+The choice of $x$ in \textbf{Induction}, \textbf{Candidate}, \textbf{Decide} and \textbf{Conflict} is left unspecified by the algorithm. Save for induction (that is anyway not necessary for neither soundness nor termination), there are canonical choices for $x$ in the rules, but better solutions can be provided by heuristics. This allows LT-PDR to accommodate for other known instances of the algorithm, such as \code{ic3} and \code{PrIC3}, just fixing the right lattice and heuristics.
+While in general LT-PDR doesn't help in this choice, it's able to highlight pros and cons behind them. As briefly remarked above, in general we can look for either a bigger or a smaller $x$ in each of the rules. There are two different kind of choices here: \textbf{Induction} and \textbf{Conflict}, which pick an $x$ to \emph{refine} the over-approximation, and \textbf{Candidate} and \textbf{Decide}, whose goal is identify a counterexample.
+For the latter, a bigger $x$ means that we are possibly examining more counterexamples at once. However, if any of these counterexample is spurious we have to apply \textbf{Conflict} to remove that $x$, and possibly restart with a smaller one containing all the counterexamples we didn't discard with the refinement (that are all the true ones, but possibly also some of the false ones). Moreover, this requires to work on many states (eg. application of $F$, that must be exact for the algorithm to work) at once, that may be costly. On the other hand, a smaller $x$ means considering just a few counterexamples. While a lucky choice of such an $x$ may lead very cheaply to a counterexample, if the safety property is satisfied this may cause the removal of counterexample one by one, possibly taking a lot of time. We note that \code{ic3} follows the second path, only examining the single counterexample returned by the SAT solver.
+Considering instead the $x$ used to refine the over-approximation, there are two conflicting, driving forces guiding the choice. On the one hand, a smaller $x$ removes more counterexamples (this is the path chosen by \code{ic3} with its generalization to a minimal subclause). On the other hand, a bigger $x$ ensures more abstract over-approximations, yielding less expensive computations and, when there are no counterexamples, a faster fixpoint convergence.
+
+The authors discuss the termination of LT-PDR. As many choices are left unspecified, the best they were able to prove unconditionally is the \emph{existence} of a sequence of choices that make the algorithm ends. On the contrary, to have termination for all possible sequence of choices they need more restrictive conditions:
+\begin{itemize}
+	\item the complete lattice $L$ is well-founded
+	\item either $\lfp(F) \nleq \alpha$ (ie. there is a counterexample) or $\lfp(F) \le \alpha$ (the property is satisfied) and there are no strictly increasing infinite chains bounded by $\alpha$
+\end{itemize}
+Intuitively, the first condition means that eventually the algorithm proceeds to the next major iteration (ie. increases $k$). The second instead limit the number of major iterations to a finite number: either it find a counterexample at some point, or it doesn't but then it can't increase arbitrarily while staying below $\alpha$.
+
+\section{Outcome Logic}\label{sec:sota:ol}
+\todo[inline]{OL section}
+
+\section{Conclusions}
+In this chapter, we showed some works that exploits both over and under-approximation. They pinpoint symmetries as well as fundamental differences between the two, and combines them so that they help each other, in order to get the best out of both. We discussed an algebraic formulation that incorporate both, then two techniques - namely $\LCLA$ and \code{ic3}/PDR - which are able to exploit this combination in different and non trivial ways. However, we believe there are other ways to exploit such an interaction, and this is what we are discussing in the next chapter.

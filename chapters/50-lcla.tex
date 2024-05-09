@@ -1,0 +1,18 @@
+% !TEX root = ../phd-thesis.tex
+
+\chapter{Local Completeness Logic}\label{ch:lcla}
+In this chapter, we extend $\LCLA$ with new capabilities. We investigate the possibility of relaxing point (3) of Theorem~\ref{th:sota:lcl-soundness} to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$ to achieve extensional soundness, i.e., to untie the set of properties that can be proved about the function computed by the program from the way the program is written . To do so, we follow the idea introduced in~\cite{BGGR23} of \emph{changing the abstract domain} during the analysis, possibly in different ways for different portions of the code.
+While~\cite{BGGR23} proposes a single rule for domain refinement, we study here both \emph{refinement} and \emph{simplification} rules for $\LCLA$.
+Moreover, we study here how to circumvent another limitation of $\LCLA$ due to the fact that the whole theory of completeness in abstract interpretation is based on the framework of Galois connection, and thus on the existence of a best approximation for concrete points. Regrettably, this cannot be guaranteed for all abstract domains~\cite[§15]{CC92}: for instance, convex polyhedra abstractions~\cite{CH78} are widely used in static analysis, even if they do not admit a best abstraction function.
+
+The content of this chapter is based on~\cite{ABG23}.
+
+\section{Motivation}
+
+\section{Locally Complete Refinement}
+
+\section{Locally Complete Simplification}
+
+\section{Exploiting Convexity}
+
+\section{Conclusions}
