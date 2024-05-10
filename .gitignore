@@ -35,6 +35,9 @@ unused
 todo.md
 *.tdo
 
+# Used to make images from tikz
+standalone
+
 ## Images
 !images/*.pdf
 images/logo_unipi-eps-converted-to.pdf

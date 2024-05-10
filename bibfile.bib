@@ -715,3 +715,141 @@
 	biburl       = {https://dblp.org/rec/journals/iandc/BaldanRZ22.bib},
 	bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
+
+@inproceedings{LL09,
+	author    = {Vincent Laviron and Francesco Logozzo},
+	editor    = {Zhenjiang Hu},
+	title     = {Refining Abstract Interpretation-Based Static Analyses with Hints},
+	booktitle = {Proc. of {APLAS}'09},
+	series    = {LNCS},
+	volume    = {5904},
+	pages     = {343--358},
+	publisher = {Springer},
+	year      = {2009},
+	doi       = {10.1007/978-3-642-10672-9\_24},
+	timestamp = {Tue, 14 May 2019 10:00:41 +0200},
+	biburl    = {https://dblp.org/rec/conf/aplas/LavironL09.bib},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{CGJLV00,
+	author = {Clarke, Edmund and Grumberg, Orna and Jha, Somesh and Lu, Yuan and Veith, Helmut},
+	editor = {Emerson, E. Allen and Sistla, Aravinda Prasad},
+	title = {Counterexample-Guided Abstraction Refinement},
+	booktitle = {Proc. of {CAV}'00},
+	year = {2000},
+	publisher = {Springer},
+	OPTaddress = {Berlin, Heidelberg},
+	pages = {154--169},
+	doi = {10.1007/10722167\_15},
+	isbn = {978-3-540-45047-4}
+}
+
+@inproceedings{HJMS02,
+	author    = {Thomas A. Henzinger and
+	Ranjit Jhala and
+	Rupak Majumdar and
+	Gr{\'{e}}goire Sutre},
+	editor    = {John Launchbury and
+	John C. Mitchell},
+	title     = {Lazy abstraction},
+	booktitle = {Proc. of {POPL}'02},
+	pages     = {58--70},
+	publisher = {{ACM}},
+	year      = {2002},
+	OPTurl    = {https://doi.org/10.1145/503272.503279},
+	doi       = {10.1145/503272.503279},
+	timestamp = {Wed, 07 Jul 2021 17:30:33 +0200},
+	biburl    = {https://dblp.org/rec/conf/popl/HenzingerJMS02.bib},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{McMillan06,
+	author    = {Kenneth L. McMillan},
+	editor    = {Thomas Ball and
+	Robert B. Jones},
+	title     = {Lazy Abstraction with Interpolants},
+	booktitle = {Proc. of {CAV}'06},
+	series    = {LNCS},
+	volume    = {4144},
+	pages     = {123--136},
+	publisher = {Springer},
+	year      = {2006},
+	OPTurl    = {https://doi.org/10.1007/11817963\_14},
+	doi       = {10.1007/11817963\_14},
+	timestamp = {Tue, 14 May 2019 10:00:43 +0200},
+	biburl    = {https://dblp.org/rec/conf/cav/McMillan06.bib},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{SPV15,
+	author = {Singh, Gagandeep and P\"{u}schel, Markus and Vechev, Martin},
+	title = {Making Numerical Program Analysis Fast},
+	year = {2015},
+	isbn = {9781450334686},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	OPTurl = {https://doi.org/10.1145/2737924.2738000},
+	doi = {10.1145/2737924.2738000},
+	abstract = { Numerical abstract domains are a fundamental component in modern static program analysis and are used in a wide range of scenarios (e.g. computing array bounds, disjointness, etc). However, analysis with these domains can be very expensive, deeply affecting the scalability and practical applicability of the static analysis. Hence, it is critical to ensure that these domains are made highly efficient. In this work, we present a complete approach for optimizing the performance of the Octagon numerical abstract domain, a domain shown to be particularly effective in practice. Our optimization approach is based on two key insights: i) the ability to perform online decomposition of the octagons leading to a massive reduction in operation counts, and ii) leveraging classic performance optimizations from linear algebra such as vectorization, locality of reference, scalar replacement and others, for improving the key bottlenecks of the domain. Applying these ideas, we designed new algorithms for the core Octagon operators with better asymptotic runtime than prior work and combined them with the optimization techniques to achieve high actual performance. We implemented our approach in the Octagon operators exported by the popular APRON C library, thus enabling existing static analyzers using APRON to immediately benefit from our work. To demonstrate the performance benefits of our approach, we evaluated our framework on three published static analyzers showing massive speed-ups for the time spent in Octagon analysis (e.g., up to 146x) as well as significant end-to-end program analysis speed-ups (up to 18.7x). Based on these results, we believe that our framework can serve as a new basis for static analysis with the Octagon numerical domain. },
+	booktitle = {Proceedings of the 36th ACM SIGPLAN Conference on Programming Language Design and Implementation},
+	pages = {303–313},
+	numpages = {11},
+	keywords = {octagon closure algorithm, octagon abstract do- main, vectorized octagon operators, Fast numerical program analysis, sparse octagon operators, octagon decomposition},
+	location = {Portland, OR, USA},
+	series = {PLDI '15}
+}
+
+@inproceedings{SPV17,
+	author = {Singh, Gagandeep and P\"{u}schel, Markus and Vechev, Martin},
+	title = {Fast Polyhedra Abstract Domain},
+	year = {2017},
+	isbn = {9781450346603},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	OPTurl = {https://doi.org/10.1145/3009837.3009885},
+	doi = {10.1145/3009837.3009885},
+	abstract = {Numerical abstract domains are an important ingredient of modern static analyzers used for verifying critical program properties (e.g., absence of buffer overflow or memory safety). Among the many numerical domains introduced over the years, Polyhedra is the most expressive one, but also the most expensive: it has worst-case exponential space and time complexity. As a consequence, static analysis with the Polyhedra domain is thought to be impractical when applied to large scale, real world programs. In this paper, we present a new approach and a complete implementation for speeding up Polyhedra domain analysis. Our approach does not lose precision, and for many practical cases, is orders of magnitude faster than state-of-the-art solutions. The key insight underlying our work is that polyhedra arising during analysis can usually be kept decomposed, thus considerably reducing the overall complexity. We first present the theory underlying our approach, which identifies the interaction between partitions of variables and domain operators. Based on the theory we develop new algorithms for these operators that work with decomposed polyhedra. We implemented these algorithms using the same interface as existing libraries, thus enabling static analyzers to use our implementation with little effort. In our evaluation, we analyze large benchmarks from the popular software verification competition, including Linux device drivers with over 50K lines of code. Our experimental results demonstrate massive gains in both space and time: we show end-to-end speedups of two to five orders of magnitude compared to state-of-the-art Polyhedra implementations as well as significant memory gains, on all larger benchmarks. In fact, in many cases our analysis terminates in seconds where prior code runs out of memory or times out after 4 hours. We believe this work is an important step in making the Polyhedra abstract domain both feasible and practically usable for handling large, real-world programs.},
+	booktitle = {Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Programming Languages},
+	pages = {46–59},
+	numpages = {14},
+	keywords = {Numerical program analysis, Abstract interpretation, Partitions, Performance optimization, Polyhedra decomposition},
+	location = {Paris, France},
+	series = {POPL 2017}
+}
+
+@article{SPV18,
+	author = {Singh, Gagandeep and P\"{u}schel, Markus and Vechev, Martin},
+	title = {A Practical Construction for Decomposing Numerical Abstract Domains},
+	year = {2017},
+	issue_date = {January 2018},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	volume = {2},
+	number = {POPL},
+	OPTurl = {https://doi.org/10.1145/3158143},
+	doi = {10.1145/3158143},
+	abstract = {Numerical abstract domains such as Polyhedra, Octahedron, Octagon, Interval, and others are an essential component of static program analysis. The choice of domain offers a performance/precision tradeoff ranging from cheap and imprecise (Interval) to expensive and precise (Polyhedra). Recently, significant speedups were achieved for Octagon and Polyhedra by manually decomposing their transformers to work with the Cartesian product of projections associated with partitions of the variable set. While practically useful, this manual process is time consuming, error-prone, and has to be applied from scratch for every domain.  In this paper, we present a generic approach for decomposing the transformers of sub-polyhedra domains along with conditions for checking whether the decomposed transformers lose precision with respect to the original transformers. These conditions are satisfied by most practical transformers, thus our approach is suitable for increasing the performance of these transformers without compromising their precision. Furthermore, our approach is ``black box:'' it does not require changes to the internals of the original non-decomposed transformers or additional manual effort per domain.  We implemented our approach and applied it to the domains of Zones, Octagon, and Polyhedra. We then compared the performance of the decomposed transformers obtained with our generic method versus the state of the art: the (non-decomposed) PPL for Polyhedra and the much faster ELINA (which uses manual decomposition) for Polyhedra and Octagon. Against ELINA we demonstrate finer partitions and an associated speedup of about 2x on average. Our results indicate that the general construction presented in this work is a viable method for improving the performance of sub-polyhedra domains. It enables designers of abstract domains to benefit from decomposition without re-writing all of their transformers from scratch as required by prior work.},
+	journal = {Proc. ACM Program. Lang.},
+	month = {dec},
+	articleno = {55},
+	numpages = {28},
+	keywords = {Domain Decomposition, Abstract Interpretation, Numerical Domains, Performance Optimization}
+}
+
+@inproceedings{GQ01,
+	author       = {Roberto Giacobazzi and Elisa Quintarelli},
+	editor       = {Patrick Cousot},
+	title        = {Incompleteness, Counterexamples, and Refinements in Abstract Model-Checking},
+	booktitle    = {Static Analysis, 8th International Symposium, {SAS} 2001, Paris, France, July 16-18, 2001, Proceedings},
+	series       = {Lecture Notes in Computer Science},
+	volume       = {2126},
+	pages        = {356--373},
+	publisher    = {Springer},
+	year         = {2001},
+	OPTurl       = {https://doi.org/10.1007/3-540-47764-0\_20},
+	doi          = {10.1007/3-540-47764-0\_20},
+	timestamp    = {Tue, 14 May 2019 10:00:52 +0200},
+	biburl       = {https://dblp.org/rec/conf/sas/GiacobazziQ01.bib},
+	bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
