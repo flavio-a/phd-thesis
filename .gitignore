@@ -33,6 +33,7 @@ _minted*
 ## Random things
 unused
 todo.md
+*.tdo
 
 ## Images
 !images/*.pdf

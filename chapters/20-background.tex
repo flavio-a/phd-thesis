@@ -149,7 +149,7 @@ Thus, we can state soundness of HL:
 	\]
 \end{theorem}
 
-The reverse implication is called \emph{completeness} of the logic, and in general it doesn't hold for HL because program analysis is undecidable. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}.
+The reverse implication is called \emph{completeness} of the logic,\footnote{For the sake of readability, we must warn the reader that this thesis deals with three different notions of completeness. (Logical) completeness, used here, refers to the ability of a proof system to derive all valid triples. The terms global and local completeness are instead properties of abstract interpretation, that will be defined later. We will make sure to disambiguate the term whenever it is not clear from the context.} and in general it doesn't hold for HL because program analysis is undecidable. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}.
 Cook~\cite{Cook78} overcame these limitations for the first time by adding an oracle to decide implications and requiring that all strongest post (including loop-invariants) are expressible in the assertion language, proving the first completeness result for HL.\footnote{This was later called completeness \emph{in the sense of Cook}~\cite[§2.8]{Apt81}.}
 Another approach (see, e.g., \cite{CCLB12,OHearn20}) is to assume $P$ and $Q$ to be \emph{set} of states instead of formulae in some assertion language. This allows us to dodge at once both the issue of expressibility of the assertion language (since we can write any subset) and of decidability of the implication (since it reduces to subset inclusion).
 In this thesis, we will always consider this latter setting where $P$ and $Q$ are sets of states, with the only exception of Separation SIL (Section~\ref{}). Therefore, we will write $\sigma \in P$ to mean that state $\sigma$ satisfies the assertion $P$, and use standard set-theoretic symbols such as $\subseteq$ and $\cup$ instead of the logical $\implies$ and $\lor$.
@@ -428,7 +428,7 @@ Through abstraction, it may very well happens that we lose precision, as shown b
 		f^{A} \alpha(\{ -1, 1\}) = f^{A}([-1; 1]) = [0; 1]
 	\end{align*}
 \end{example}
-This issue is well known in abstract interpretation, and for this reason the definition of \emph{completeness} was given \cite{CC79,GRS00}. Note that, despite the overload of the term, completeness in abstract interpretation and logical completeness of a proof system are unrelated. We'll make sure to disambiguate the term whenever it is not clear from the context.
+This issue is well known in abstract interpretation, and for this reason the definition of (global) \emph{completeness} was given \cite{CC79,GRS00}.
 \begin{definition}[Complete abstraction]
 	A sound abstraction $f^{\sharp}$ of $f$ is \emph{complete} when
 	\[

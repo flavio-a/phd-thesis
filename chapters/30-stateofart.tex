@@ -11,7 +11,7 @@ Section~\ref{sec:sota:ol} summarizes Outcome Logic, a triple based program logic
 Hoare and Incorrectness Logic operate on dual principles. Because of this, some properties are shared among the two, others are dualized and others still are just different. In order to highlight these similarities and differences, it is interesting to embed HL and IL in a common formalism. As recalled in Section~\ref{sec:bg:algebra}, KATs are able to encode regular commands \cite{Kozen97} as well as HL \cite{Kozen00} making it a purely equational theory.
 It would be interesting to do the same for IL, and in principle it seems reasonable to do so given the duality with HL. However, the symmetry is at the level of images of functions (precisely, strongest postconditions), something that is not explicit in the syntax of KAT. Therefore, it is interesting to study which additional algebraic properties are needed to encode IL in KATs.
 
-In \cite{MOH21}, the authors propose modal KATs as the diamond modality can be used to represent strongest postcondition \cite{DMS06}. This way they are able to encode all IL rules but the infinitary \lrule{iter}, that is needed for completeness of the proof system\footnote{We remark that Kleene star can be handled using some weaker but finitary rules. While this approach isn't complete, it is sufficient to prove many triples. However, this topic lies outside the goal of this presentation, so we refer the reader to \cite{OHearn20} and \cite{MOH21} for finitary rules dealing with Kleene star.} but requires the existence of countable joins of tests. The authors add this requirement explicitly to the algebraic structure, defining countably-test complete (CTC for short) modal KATs.
+In \cite{MOH21}, the authors propose modal KATs as the diamond modality can be used to represent strongest postcondition \cite{DMS06}. This way they are able to encode all IL rules but the infinitary \lclrule{iter}, that is needed for completeness of the proof system\footnote{We remark that Kleene star can be handled using some weaker but finitary rules. While this approach isn't complete, it is sufficient to prove many triples. However, this topic lies outside the goal of this presentation, so we refer the reader to \cite{OHearn20} and \cite{MOH21} for finitary rules dealing with Kleene star.} but requires the existence of countable joins of tests. The authors add this requirement explicitly to the algebraic structure, defining countably-test complete (CTC for short) modal KATs.
 \begin{definition}[Backward diamond]
 	A backward diamond modality on a KAT $A$ is an operator $\bdiamond{\cdot} : A \rightarrow \test(A) \rightarrow \test(A)$ satisfying, for all $a, b \in A$, $p, q \in \test(A)$
 	\begin{align*}
@@ -123,14 +123,21 @@ As described in Section~\ref{sec:bg:absint}, abstract interpretation is always s
 	Af(c) = AfA(c) .
 	\]
 \end{definition}
-While local completeness is a weaker property, so it holds more often, it has a crucial drawback with respect to global completeness. In fact, the latter can be proved compositionally on the command only \cite{GLR15}, while the former needs also the input to each fragment of the program. To help cope with this issue, the authors observe that local completeness enjoys an ``abstract convexity" property: whenever it holds on a concrete point $c$ it does so also on all points $d$ between $c$ and its abstraction $A(c)$. This property became crucial in the design of the $\LCLA$ proof system, whose goal is to prove a program is locally complete on a given input.
 
-$\LCLA$ depends on an abstract domain $A$, and a triple $\lcl{A}{P}{\regr}{Q}$ provable in the logic ensures three conditions:
+A remarkable difference between global and local completeness is that, while the former can be proved compositionally on the command only~\cite{GLR15}, the latter needs the input to each fragment of the program. Consequently, to carry on a compositional proof of local completeness, information on the input to each subpart of the program is also required, i.e., all traversed states are important. However, local completeness enjoys an ``abstract convexity" property: if $f$ is locally complete on a point $c$, then it is locally complete on any point $d$ between $c$ and $A(c)$:
+
+\begin{lemma}[Abstract convexity, cf.~\cite{BGGR21}]\label{lmm:sota:abstract-convexity}
+	If $\complete{A}{c}{f}$ and $c \le d \le A(c)$, then $\complete{A}{d}{f}$.
+\end{lemma}
+
+This observation has been crucial in the design of the proof system $\LCLA$. The proof system depends on an abstract domain $A$, and is able to prove triples $\lcl{A}{P}{\regr}{Q}$  ensuring that:
+
 \begin{enumerate}
 	\item $Q$ is an under-approximation of the concrete semantics $\denot{\regr}P$,
 	\item $Q$ and $\denot{\regr}P$ have the same over-approximation in $A$,
 	\item $A$ is locally complete for $\denot{\regr}$ on input $P$.
 \end{enumerate}
+
 Point (2) means that, given a specification \textit{Spec} expressible in $A$, any provable triple $\lcl{A}{P}{\regr}{Q}$ either proves correctness of $\regr$ with respect to \textit{Spec} or expose an alert in $Q \setminus \textit{Spec}$. This in turns correspond to a true one because $Q$ is an under-approximation of the concrete semantics $\denot{\regr}P$, as pointed out by Corollary~\ref{th:sota:corollary-verification} below.
 
 \begin{figure*}[t]
@@ -139,29 +146,29 @@ Point (2) means that, given a specification \textit{Spec} expressible in $A$, an
 		\resizebox{\textwidth}{!}{
 			\(
 			\begin{array}{l}
-				\infer[(\mathsf{transfer})]
+				\infer[\lclrule{transfer}]
 				{\lcl{A}{P}{\expe}{\denot{\expe}P}}
 				{\complete{A}{P}{\denot{\expe}}}
 				\quad %&
-				\infer[(\mathsf{relax})]
+				\infer[\lclrule{relax}]
 				{\lcl{A}{P}{\regr}{Q}}
 				{P'\leq P \leq A(P')& \lcl{A}{P'}{\regr}{Q'}& Q \leq Q' \leq A(Q)}
 				\\[7.5pt]
-				\infer[(\mathsf{seq})]
+				\infer[\lclrule{seq}]
 				{\lcl{A}{P}{\regr_1;\regr_2}{Q}}
 				{\lcl{A}{P}{\regr_1}{R} &
 					\lcl{A}{R}{\regr_2}{Q}}
 				\qquad %&
-				\infer[(\mathsf{join})]
+				\infer[\lclrule{join}]
 				{\lcl{A}{P}{\regr_1 \regplus \regr_2}{Q_1\vee Q_2}}
 				{ \lcl{A}{P}{\regr_1}{Q_1} &
 					\lcl{A}{P}{\regr_2}{Q_2}}
 				\\[7.5pt] 
-				\infer[(\mathsf{rec})]
+				\infer[\lclrule{rec}]
 				{\lcl{A}{P}{\regr^\kstar}{Q}}
 				{\lcl{A}{P}{\regr}{R} & \lcl{A}{P\vee R}{\regr^\kstar}{Q} }
 				\qquad %&
-				\infer[(\mathsf{iterate})]
+				\infer[\lclrule{iterate}]
 				{\lcl{A}{P}{\regr^\kstar}{P\vee Q}}
 				{\lcl{A}{P}{\regr}{Q} & Q\leq A(P)}
 			\end{array}
@@ -172,8 +179,8 @@ Point (2) means that, given a specification \textit{Spec} expressible in $A$, an
 	\caption{The proof system $\LCLA$, from \cite{BGGR21}.}\label{fig:sota:lcla-rules}
 	%	\vspace{-4ex}
 \end{figure*}
-The proof system is defined in Figure~\ref{fig:sota:lcla-rules}. It is a logic of under-approximations, much like IL (actually IL is a special case of $\LCLA$), but with one additional constraint: the under approximation $Q$ must have the same abstraction of the concrete semantics $\denot{\regr} P$, as for instance explicitly required in rule \lrule{relax}. This, by the abstract convexity property mentioned above, means that local completeness of $\denot{\regr}$ on the \emph{under-approximation} $P$ of the concrete store is enough to prove local completeness.
-This way, $\LCLA$ exploits the interaction of over- and under-approximation. The latter is used to ensure the abstraction is locally complete, ie. guarantees precision of the over-approximation. Conversely, the presence of the abstraction in rule \lrule{iterate} speeds up the computation as it allows to stop as soon as $A(P)$ is an abstract loop invariant, not having to deal with (possible infinitary) concrete invariants.
+The proof system is defined in Figure~\ref{fig:sota:lcla-rules}. It is a logic of under-approximations, much like IL (actually IL is a special case of $\LCLA$), but with one additional constraint: the under approximation $Q$ must have the same abstraction of the concrete semantics $\denot{\regr} P$, as for instance explicitly required in rule \lclrule{relax}. This, by the abstract convexity property mentioned above, means that local completeness of $\denot{\regr}$ on the \emph{under-approximation} $P$ of the concrete store is enough to prove local completeness.
+This way, $\LCLA$ exploits the interaction of over- and under-approximation. The latter is used to ensure the abstraction is locally complete, ie. guarantees precision of the over-approximation. Conversely, the presence of the abstraction in rule \lclrule{iterate} speeds up the computation as it allows to stop as soon as $A(P)$ is an abstract loop invariant, not having to deal with (possible infinitary) concrete invariants.
 
 Formally, the three key properties (1--3) listed above are formalized by the following soundness result:
 \begin{theorem}[Soundness, cf.\cite{BGGR21}]\label{th:sota:lcl-soundness}
@@ -210,7 +217,7 @@ To better show how this work, we briefly introduce the following example (discus
 	For the latter, $Q$ exhibits two witnesses to the violation of $\text{Spec}'$, that are $0, 2 \in Q \setminus \text{Spec}'$. By point (1) of soundness we then know that $0, 2 \in Q \subseteq \denot{\regr} P$ are true alerts.
 \end{example}
 
-In $\LCLA$, being able to prove any triple $\lcl{A}{P}{\regr}{Q}$ allows to show both correctness and incorrectness of $\regr$. However, if $\regr$ is not locally complete on $P$, or more in general any of the local completeness proof obligations introduced by rule \lrule{transfer} (the only axiom of the logic) fails, the proof cannot be completed.
+In $\LCLA$, being able to prove any triple $\lcl{A}{P}{\regr}{Q}$ allows to show both correctness and incorrectness of $\regr$. However, if $\regr$ is not locally complete on $P$, or more in general any of the local completeness proof obligations introduced by rule \lclrule{transfer} (the only axiom of the logic) fails, the proof cannot be completed.
 To handle this issue, \cite{BGGR22} proposes the idea of changing the abstract domain in which the derivation is performed. Following what had been done for completeness \cite{GRS00}, they propose to minimally (in the lattice of abstract interpretations) refine the abstract domain. Unluckily, such a minimal refinement in general does not exists, so that the authors propose a different notion of ``best" refinement. They consider pointed refinements, that are defined by the addition of a single point to the abstract domain (followed by a Moore closure operation). Then they compare these pointed refinements not in the lattice of abstract interpretations but by the precision of the additional point. When there exists a most abstract point whose pointed refinement is locally complete, they call this domain \emph{pointed (locally complete) shell}:
 \begin{definition}[Pointed shell, cfr. \cite{BGGR22}]
 	Let $f : C \rightarrow C$ be a monotone concrete function, $A \in \Abs(C)$ be an abstract domain and $c \in C$ a concrete point. The pointed shell of $A$ on $c$ w.r.t. $f$ exists when the maximum of the set
