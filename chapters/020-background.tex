@@ -247,26 +247,26 @@ if (x is even) {
 	\[
 	\overtriple{ \text{odd}(y) \land \text{even}(x)}{\regr}{Q}
 	\]
-	
+
 	\noindent
 	identifies input states that will surely end up in an  error state, while the triple
 	\[
 	\overtriple{ \neg Q \land (\text{odd}(x) \lor \text{even}(y))}{\regr}{\neg Q}
 	\]
-	
+
 	\noindent
 	characterize input states that will not produce any error.
 	On the other hand, the valid IL triple
 	\[
 	\undertriple{\true}{\regr}{Q \wedge \text{odd}(y) \wedge \text{even}(x) }
 	\]
-	
+
 	\noindent
 	expresses the fact that error states in $Q$ are reachable by some initial state. Similarly, also the IL triple
 	\[
 	\undertriple{\true}{\regr}{\neg Q \wedge(\text{odd}(x)\vee \text{even}(y)) }
 	\]
-	
+
 	\noindent
 	is valid since the postcondition $\neg Q$ can be reached only when the path conditions to reach the assignment are not satisfied.
 \end{example}
@@ -362,7 +362,7 @@ The HL proof system embedded in KATs is shown in Figure~\ref{fig:bg:hl-kat}. It 
 \subsection{Abstract Domains}
 Abstract interpretation \cite{CC77,CC79} is a general framework to define static analyses sound by construction, with the main idea of approximating the program semantics on some abstract domain $A$ instead of working on the concrete domain $C$. The main tool used to study abstract interpretation are Galois connections.
 \begin{definition}[Galois connection]
-	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define a Galois connection when 
+	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define a Galois connection when
 	\[
 	\forall c \in C, a \in A.\quad \alpha(c) \le_A a \iff c \le_C \gamma(a)
 	\]
@@ -396,7 +396,7 @@ To give an intuition of the role of Galois connections in program analysis, we p
 	with the usual conventions for $\min$ and $\max$ of empty/unbound set.
 %	with the convention that $\min(\emptyset) = +\infty$, $\min(\emptyset) = -\infty$, the minimum of a lower-unbound set is $-\infty$ and the maximum of an upper-unbound set is $+\infty$.
 	Since no smaller interval can describe the set $S$, and this is a superset of $S$, $\alpha(S)$ is exactly the best abstraction of $S$.
-	
+
 	The concretization $\gamma$ is the function that does the inverse operation: given an interval $[n, m]$, thought as formal writing or machine representation, gives back its ``meaning", that is the largest subset of $\setZ$ that matches that property:
 	\[
 	\gamma([n, m]) = \{ x \in \setZ \svert n \le x \le m \}
@@ -494,7 +494,7 @@ Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. Whil
 \begin{figure}[t]
 	\begin{align*}
 		\begin{split}
-			\denot{\expe}^{\sharp}_{A} a &\eqdef \denot{\expe}^{A} a = \alpha \edenot{\expe} \gamma (a)\\ 
+			\denot{\expe}^{\sharp}_{A} a &\eqdef \denot{\expe}^{A} a = \alpha \edenot{\expe} \gamma (a)\\
 			\denot{\regr_1 ; \regr_2}^{\sharp}_{A} a &\eqdef \denot{\regr_2}^{\sharp}_{A} \denot{\regr_1}^{\sharp}_{A} (a) \\
 			\denot{\regr_1 \regplus \regr_2}^{\sharp}_{A} a &\eqdef \denot{\regr_1}^{\sharp}_{A} a \vee A \denot{\regr_2}^{\sharp}_{A} a \\
 			\denot{\regr^\kstar}^{\sharp}_{A} a &\eqdef \bigvee_{n \ge 0}  (\denot{\regr}^{\sharp}_{A})^n a
@@ -520,7 +520,7 @@ that is caused by the fact the abstract interpreter operates on abstract propert
 \subsection{Under-approximation Abstract Domains}
 The definition of Galois connection is not symmetric, in the sense that it puts $\gamma$ above and $\alpha$ below. This favours over-approximation. A way to see this is the fact that $A$ is an \emph{upper} closure operator, that is $c \le_C A(c)$. For this reason, to talk about under-approximation domains, we consider ``reversed" Galois connections:
 \begin{definition}[Under-approximation Galois connection]
-	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define an under-approximation Galois connection when 
+	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define an under-approximation Galois connection when
 	\[
 	\forall c \in C, a \in A.\quad a \le_A \alpha(c) \iff \gamma(a) \le_C c
 	\]

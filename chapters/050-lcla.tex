@@ -29,8 +29,8 @@ The difference between $\denot{\regc}^{A}$ and $\denot{\regc}^{\sharp}_{A}$ is e
 %			\draw (-0,2) node[name=6] {\footnotesize$\setZ_{\geq 0}$};
 %			\draw (-1,3) node[name=7] {\footnotesize$\setZ$};
 %			\draw (-3.5,2.9) node[name=n] {{\normalsize $\Sign$}};
-%			
-%			
+%
+%
 %			\draw[semithick] (1) -- (2);
 %			\draw[semithick] (1) -- (3);
 %			\draw[semithick] (1) -- (4);
@@ -48,10 +48,10 @@ The difference between $\denot{\regc}^{A}$ and $\denot{\regc}^{\sharp}_{A}$ is e
 	\end{center}
 	The meaning of each abstract elements of $\Sign$ is to represent concrete values that satisfy the respective property: for instance, $\gamma(\setZ_{< 0}) = \{ n \in \setZ \svert n < 0 \}$ and $\alpha( \{ 0; 1; 100 \}) = \setZ_{\ge 0}$.
 	The bca of a concrete function $f: \pow(\setZ) \to \pow(\setZ)$ is defined as $f^{\Sign}\eqdef \alpha~f~\gamma: \Sign \to \Sign$.
-	
-	Consider the simple program fragment 
+
+	Consider the simple program fragment
 	$$\regc \eqdef \code{x := x + 1; x := x - 1}\ .$$
-	
+
 	Its denotational semantics $\denot{\regc}$ is the identity function $\id_{\setZ}$, so its bca $$\denot{\regc}^{\Sign} \eqdef \alpha~\id_{\setZ}~\gamma = \id_{\Sign}$$
 	is just the abstract identity. We say that $\denot{\regc}^{\Sign}$ is \emph{extensional} because it only depends on the function computed by $\regc$, i.e., its denotational semantics. However, an analyser does not know the semantics of $\regc$, so it has to analyse the program syntactically, breaking it down in elementary pieces and gluing the results together. So for instance, starting from the concrete point $P = \{ 1 \}$ the analysis first abstracts it to the property $\alpha(P) = \setZ_{> 0}$, then it computes
 	\begin{align*}
@@ -64,11 +64,11 @@ The difference between $\denot{\regc}^{A}$ and $\denot{\regc}^{\sharp}_{A}$ is e
 		\varnothing & if $a = \varnothing$ \\
 		\setZ_{\ge 0} & if $a \in \{ \colorbox{lightgray}{$\setZ_{= 0}$}, \colorbox{lightgray}{$\setZ_{> 0}$}, \setZ_{\ge 0} \}$ \\
 		\setZ_{< 0} & if $a = \setZ_{< 0}$ \\
-		\setZ & if $a \in \{ \colorbox{lightgray}{$\setZ_{\le 0}$}, \colorbox{lightgray}{$\setZ_{\neq 0}$}, \setZ \}$ 
+		\setZ & if $a \in \{ \colorbox{lightgray}{$\setZ_{\le 0}$}, \colorbox{lightgray}{$\setZ_{\neq 0}$}, \setZ \}$
 	\end{cases*}
 	\]
-	that, albeit sound, is less precise than $\id_{\Sign}$ (we highlight with a gray background all inputs on which $\denot{\regc}^{\sharp}_{\Sign}$ loses accuracy). 
-	
+	that, albeit sound, is less precise than $\id_{\Sign}$ (we highlight with a gray background all inputs on which $\denot{\regc}^{\sharp}_{\Sign}$ loses accuracy).
+
 	The program $\regc$ is equivalent to the command $\code{skip}$, because $\denot{\code{skip}}=\id_{\setZ}$, and thus $\regc$ and $\code{skip}$ are assigned the same bca $\denot{\code{skip}}^{\Sign} = \denot{\code{skip}}^{\Sign} =  \id_{\Sign}$.
 	However, $\denot{\code{skip}}^{\sharp}_{\Sign} = \id_{\Sign} \neq \denot{\regc}^{\sharp}_{\Sign}$, exposing the \emph{intensional} essence of the abstract interpreter: the abstraction depends on how the program is written and not only on its semantics.\footnote{While it falls outside the scope of this thesis, we refer the interested reader to, e.g.,~\cite{BGGGP19,BRZ22} for more about intensional and extensional abstract properties.}
 \end{example}
@@ -103,10 +103,10 @@ As anticipated at the beginning of the Chapter, one of our goals is to weaken po
 	So all the lines are equal, in particular $\alpha(Q) = \alpha(\denot{\regr} P)$.
 	The proof is then by induction on the derivation tree of $\lcl{A}{P}{\regr}{Q}$, but we only have to prove (1) and (3) because of the observation above.
 	We only include one inductive case as an example; the full proof is in Appendix~\ref{ch:app:lcla}.
-	
+
 	\proofcase{\lclrule{seq}}
 	\noindent (1) $Q \le \denot{\regr_2} R \le \denot{\regr_2} (\denot{\regr_1} P) = \denot{\regr1; \regr_2} P$, where the inequalities follow from inductive hypotheses and monotonicity of $\denot{\regr_2}$.
-	
+
 	\noindent (3) We recall that $\denot{\regr_1; \regr_2}^{A} \le \denot{\regr_2}^{A} \denot{\regr_1}^{A}$.
 	\begin{align*}
 		\alpha(Q) &\le \alpha(\denot{\regr_1; \regr_2} P) &[\text{(1) and monotonicity of }\alpha] \\
@@ -193,7 +193,7 @@ The necessary infinitary rule, called \lclrule{limit}, allows the proof system t
 		&\le \denot{\regr}^A \alpha(P) &[\text{soundness of } \denot{\regr}^{A}]
 	\end{align*}
 	Hence $\alpha(\denot{\regr} P) = \denot{\regr}^A \alpha(P) = \alpha \denot{\regr} \gamma \alpha(P)$, that is local completeness, and $\alpha(Q) = \alpha(\denot{\regr} P)$.
-	
+
 	Now consider $\regr, P, Q$ satisfying the hypotheses. If $Q < \denot{\regr} P$, by \lclrule{relax} we get
 	\[
 	\infer[(\mathsf{relax})]
@@ -201,7 +201,7 @@ The necessary infinitary rule, called \lclrule{limit}, allows the proof system t
 	{P \le P \le A(P) & \lcl{A}{P}{\regr}{\denot{\regr} P} & Q \leq \denot{\regr} P \le A(Q)}
 	\]
 	But the first condition is trivial, and the third one is made of $Q \le \denot{r}P$ (the hypothesis) and $\denot{r} P \le A(Q)$, that follows because $\alpha(\denot{r} P) = \alpha(Q)$ (shown above) and in a Galois connection this implies $\denot{r} P \le \gamma \alpha(Q) = A(Q)$. Hence, without loss of generality, we can assume $Q = \denot{\regr} P$.
-	
+
 	Now we want to apply \lclrule{refine\mbox{-}ext} to move to the concrete domain $C$. Clearly $C \preceq A$. The last hypothesis of the rule can be readily verified recalling that $\denot{r}^{C} = \denot{r}$ and $\alpha' = \gamma' = \id_C$:
 	\begin{align*}
 		\alpha \denot{r}^{C} A(P) &= \alpha \denot{r} A(P) \\
@@ -209,7 +209,7 @@ The necessary infinitary rule, called \lclrule{limit}, allows the proof system t
 		&= \alpha(\denot{\regr} P)
 	\end{align*}
 	To say that triple $\lcl{C}{P}{\regr}{\denot{\regr} P}$ is provable we resort to Theorem~5.11 of \cite{BGGR21}. The hypothesis of that theorem are satisfied: all expressions are globally complete in the concrete domain $C$, $\denot{r} P \le \denot{r} P$ and $\denot{r}^{\sharp}_C \id_C(P) = \denot{\regr} P = \id_C(\denot{r} P)$, where we used $\alpha' = \id_C$ and $\denot{r}^{\sharp}_C = \denot{r}$.
-	
+
 	Thus, by applying \lclrule{refine\mbox{-}ext}, we can prove the triple $\lcl{A}{P}{\regr}{\denot{\regr} P}$:
 	\[
 	\infer[(\mathsf{refine\mbox{-}ext})]
@@ -245,8 +245,8 @@ The hypothesis $A \denot{\regr}^{A'} A(P) = A(Q)$ is added to rule \lclrule{refi
 %			\draw (-0,1.6) node[name=6] {\footnotesize$\setZ_{\geq 0}$};
 %			\draw (-1,3) node[name=7] {\footnotesize$\setZ$};
 %			\draw (-3,2.9) node[name=n] {{\normalsize $\Sign$}};
-%			
-%			
+%
+%
 %			\draw[semithick] (1) -- (2);
 %			\draw[semithick] (1) -- (3);
 %			\draw[semithick] (1) -- (4);
@@ -273,8 +273,8 @@ The hypothesis $A \denot{\regr}^{A'} A(P) = A(Q)$ is added to rule \lclrule{refi
 %			\draw (-0,1.8) node[name=6] {\footnotesize$\setZ_{\geq 0}$};
 %			\draw (-1,3) node[name=7] {\footnotesize$\setZ$};
 %			\draw (-3,2.9) node[name=n] {{\normalsize $\Sign_1$}};
-%			
-%			
+%
+%
 %			\draw[semithick] (1) -- (2);
 %			\draw[semithick] (1) -- (3);
 %			\draw[semithick] (2) -- (5);
@@ -309,7 +309,7 @@ Despite being necessary, the hypothesis of rule \lclrule{refine\mbox{-}ext} cann
 		\[
 		\infer[\lclrule{refine\mbox{-}int}]
 		{\lcl{A}{P}{\regr}{Q}}
-		{\lcl{A'}{P}{\regr}{Q} \quad A' \preceq A \quad A \denot{\regr}^{\sharp}_{A'} A(P) = A(Q) }		
+		{\lcl{A'}{P}{\regr}{Q} \quad A' \preceq A \quad A \denot{\regr}^{\sharp}_{A'} A(P) = A(Q) }
 		\]
 	\end{framed}
 	\vspace{-1ex}
@@ -324,7 +324,7 @@ The first rule we present replaces the requirement on the extensional bca $\deno
 \end{prop}
 \begin{proof}[Proof sketch]
 	We show that the hypotheses of \lclrule{refine\mbox{-}int} implies those of \lclrule{refine\mbox{-}ext}. Since the first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the two rules, we only have to show that $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. The details of this are in Appendix~\ref{ch:app:lcla}.
-	
+
 	Because the hypotheses of \lclrule{refine\mbox{-}int} implies those of \lclrule{refine\mbox{-}ext}, whenever we can apply the former we can also apply the latter, so that Theorem~\ref{th:lcla:soundness-rule-refine} ensures extensional soundness.
 \end{proof}
 
@@ -392,13 +392,13 @@ We present an example to highlight the advantages of this rule (as well as \lclr
 	\Int_{\neq 0} = \Int \cup \{ I_{\neq 0} \svert I \in \Int \}
 	\]
 	with $\gamma'(I_{\neq 0 }) = \gamma(I) \setminus \{ 0 \}$.
-	
+
 	While there is no need for a relational domain to analyse $\regr_1$ since  variable \code{x} is never mentioned in it,
 	the analysis of $\regr_2$ requires a relational domain to track the information that the value of variable \code{x} is equal to the value of variable \code{y}.
 	This suggests to use the octagons domain $\Oct$~\cite{Mine06} to analyse $\regr_2$. It is worth noting that the abstract domain $\Oct$ would not be able to perform a locally complete analysis of $\regr_1$ for the same reasons that the domain $\Int$ could not.
-	
+
 	However, rule \lclrule{refine\mbox{-}pre} allows us to combine these different proof derivations. Since the program state between $\regr_1$ and $\regr_2$ can be precisely represented in $\Int$, we use this domain as a baseline and refine it to $\Int_{\neq 0}$ and to $\Oct$ for the two parts, respectively.
-	
+
 	%	\begin{figure*}[t]
 		%		\[
 		%		\text{\small
@@ -420,7 +420,7 @@ We present an example to highlight the advantages of this rule (as well as \lclr
 		%		\]
 		%		\caption{Derivation of $\lcl{\Int_{\neq 0}}{P}{\regr_1}{R}$ for Example~\ref{ex:refine-pre-usefulness}.}\label{fig:ex-refine-pre-derivation-1}
 		%	\end{figure*}
-	
+
 	Let $R = (\code{y} \in \{ 1; 2; 100 \})$ that is an under\hyp{}approximation of the concrete state in between $\regr_1$ and $\regr_2$ with the same abstraction in $\Int$, so the triple $\lcl{\Int}{P}{\regr_1}{R}$ is valid. Note that the concrete point $2$ was added to $R$ in order to have local completeness for \code{(x > 1)?} in $\regr_2$. However, this triple cannot be proved in $\Int$ because $\denot{\regr_1}^{\sharp}_{\Int}$ is not locally complete on $P$, so we resort to \lclrule{refine\mbox{-}pre} to change the domain to $\Int_{\neq 0}$.
 	In the derivation below, we let $R_1 = (\code{y} \in [-100; 100] \land \code{y} \neq 0)$ and we omit for simplicity the additional hypothesis of \lclrule{relax}:
 	\[
@@ -439,10 +439,10 @@ We present an example to highlight the advantages of this rule (as well as \lclr
 		}
 	}
 	\]
-	
+
 	Again $\denot{\regr_2}$ is locally complete on $R$ in $\Int$, but the compositional analysis $\denot{\regr_2}^{\sharp}_{\Int}$ is not. Hence to perform the derivation we resort to \lclrule{refine\mbox{-}pre} to introduce relational information in the abstract domain, using $\Oct$ instead of $\Int$. Let $Q = (\code{x} = 1 \land \code{y} = 1)$, that is the concrete output of the program, so that we can prove $\lcl{\Int}{R}{\regr_2}{Q}$.
 	The derivation of this triple is in Appendix~\ref{ch:app:lcla}, Figure~\ref{fig:app:ex-refine-pre-derivation-2}. However, the proof is just a straightforward application of rules \lclrule{seq}, \lclrule{iterate} and \lclrule{transfer}.
-	
+
 	With those two derivation, we can prove the triple $\lcl{\Int}{P}{\regr}{Q}$ using \lclrule{refine\mbox{-}pre}:
 	\[
 	\infer[(\mathsf{seq})]
@@ -458,7 +458,7 @@ We present an example to highlight the advantages of this rule (as well as \lclr
 	}
 	\]
 	For space constraints, we write here the additional hypotheses of the rules. For the first application, $\Int_{\neq 0} \preceq \Int$ and $\Int_{\neq 0}(P) = P = \Int(P)$. For the second, $\Oct \preceq \Int$ and $\Int(R) = (\code{y} \in [1; 100]) = \Oct(R)$.
-	
+
 	It is worth noting that, in this example, all applications of \lclrule{refine\mbox{-}pre} can be replaced by \lclrule{refine\mbox{-}int}. This means that also the latter is able to exploit $\Int_{\neq 0}$ and $\Oct$ to prove the triple in the very same way, but its application requires more expensive abstract analyses than the simple checks of \lclrule{refine\mbox{-}pre}.
 \end{example}
 
@@ -472,9 +472,9 @@ For the first, we propose a valid triple that $\LCLA$ extended with \lclrule{ref
 		\regr_w &\eqdef \code{while (true) \{ skip \}} \\
 		\regr &\eqdef \regr_1 \code{; }\regr_w
 	\end{align*}
-	the concrete domain $\pow(\setZ)$, the abstract domains $\Int_{\neq 0}$ (see Example~\ref{ex:lcla:refine-pre-usefulness}) and the initial state $P = \{ -4, 0 \}$. 
+	the concrete domain $\pow(\setZ)$, the abstract domains $\Int_{\neq 0}$ (see Example~\ref{ex:lcla:refine-pre-usefulness}) and the initial state $P = \{ -4, 0 \}$.
 	Then $\lclvalid{\Int_{\neq 0}}{P}{\regr}{\emptyset}$ but this triple cannot be proved in $\LCLA$ extended with \lclrule{refine\mbox{-}pre}.
-	
+
 	To show that the triple is (intensionally) valid, we observe that
 	\[
 	\denot{\regr}^{\sharp}_{\Int_{\neq 0}} \alpha(P) = \denot{\regr_w}^{\sharp}_{\Int_{\neq 0}} \denot{\regr_1}^{\sharp}_{\Int_{\neq 0}} \alpha(P) = \bot
@@ -484,13 +484,13 @@ For the first, we propose a valid triple that $\LCLA$ extended with \lclrule{ref
 	\denot{\regr}^{\sharp}_{\Int_{\neq 0}} \alpha(P) = \alpha(\denot{\regr} P) = \alpha(\emptyset) = \bot .
 	\]
 	To show that the triple is not provable in $\LCLA$ extended with \lclrule{refine\mbox{-}pre}, we rely on two observations.
-	
+
 	The first is that all strict subset $P' \subset P$ are such that $\Int_{\neq 0}(P') \subset P$, and the same property holds for all refinements $A' \preceq \Int_{\neq 0}$. To see this, take $P' \subset P$: there are only three such $P'$, and for all of them $\Int_{\neq 0}(P') = P' \subset P$. Moreover, $A' \preceq \Int_{\neq 0}$ means that $A'(P') \subseteq \Int_{\neq 0}(P')$, so
 	\[
 	A'(P') \subseteq \Int_{\neq 0}(P') = P' \subset P .
 	\]
 	This property is important because it means that we cannot apply \lclrule{relax} to change $P$: to do it, we would need a $P' \subset P$ such that $P \subseteq A'(P')$.
-	
+
 	The second is that $\denot{\regr_1}$ is not locally complete on $P$ in $\Int_{\neq 0}$ or any of its refinements $A' \preceq \Int_{\neq 0}$ such that $A'(P) = \Int_{\neq 0}(P)$:
 	\begin{align*}
 		A'(\denot{\regr_1} P) &\subseteq \Int_{\neq 0}(\denot{\regr_1} P) \\
@@ -501,7 +501,7 @@ For the first, we propose a valid triple that $\LCLA$ extended with \lclrule{ref
 		&= A'(\denot{\regr_1} (\Int_{\neq 0}(P))) \\
 		&= A'(\denot{\regr_1} A'(P))
 	\end{align*}
-	
+
 	Now suppose to have a derivation of $\lcl{\Int_{\neq 0}}{P}{\regr}{\emptyset}$. This proof must use \lclrule{seq} to handle the sequential composition $\regr_1 \code{; }\regr_w$, so it needs a triple for $\regr_1$. By the first observation above, any use of \lclrule{relax} cannot change the precondition of this triple, even if we resort first to \lclrule{refine\mbox{-}pre} to refine the domain. Thus we must have a triple $\lcl{A'}{P}{\regr_1}{R}$ for some $R$ and $A' \preceq \Int_{\neq 0}$ satisfying $A'(P) = \Int_{\neq 0}(P)$. However, by soundness, any such triple would imply local completeness of $\denot{\regr_1}$ on $P$ in $A'$, which is a contradiction by the second observation above.
 \end{example}
 
@@ -517,11 +517,11 @@ We now present an example to illustrate that there are situations in which \lclr
 		\regr_2 &\eqdef \code{x := y; while (x > 1) \{ y := y - 1; x := x - 1 \}}
 	\end{align*}
 	and the program $\regr \eqdef \regr_1; \regr_2$. Consider also the initial state $P = \code{y} \in [-100; 100]$.
-	
+
 	This example is a variation of Example~\ref{ex:lcla:refine-pre-usefulness}: the difference is the introduction of the relational dependency \code{x := y} in $\regr_1$, that is partially stored in the postcondition $R$ of $\regr_1$. Because of this, $\Oct(R)$ and $\Int(R)$ are different, so we cannot apply \lclrule{refine\mbox{-}pre} to prove $\lcl{}{R}{\regr_2}{Q}$ for some $Q$.
-	
+
 	%	We keep $\regr$ deliberately simple, but an actual program could do something between $\regr_1$ and $\regr_2$ with the value in \code{x}.
-	
+
 	Following Example~\ref{ex:lcla:refine-pre-usefulness}, the domain $\Int_{\neq 0}$ is able to infer on $\regr_1$ a subset $R$ of the strongest postcondition $\code{y} \in [1; 100] \land \code{y} = \text{abs}(\code{x})$ with the same abstraction $\Int_{\neq 0}(R) = [-100; 100]_{\neq 0} \times [1; 100]$. However, for any such $R$ we cannot use \lclrule{refine\mbox{-}pre} to prove the triple $\lcl{\Int}{R}{\regr_2}{\code{x} = 1 \land \code{y} = 1}$ via $\Oct$ because $\Int(R) = \code{x} \in [-100; 100] \land \code{y} \in [1; 100]$ while $\Oct(R) = 1 \le \code{y} \le 100 \land -\code{y} \le \code{x} \le \code{y}$. More in general, any subset of the strongest postcondition contains the relational information $\code{y} = \text{abs}(\code{x})$, so relational domains like octagons and polyhedra \cite{CH78} do not have the same abstraction as the non-relational $\Int$, preventing the use of \lclrule{refine\mbox{-}pre}. However, we can apply \lclrule{refine\mbox{-}int}: considering $R = (\code{y} \in \{1; 2; 100\} \land \code{y} = \text{abs}(\code{x}) )$, $Q = (\code{x} = 1 \land \code{y} = 1)$ and $\regr_w \eqdef \code{while (x > 1) \{ y := y - 1; x := x - 1 \}}$, we have
 	\begin{align*}
 		\Int \denot{\regr_2}^{\sharp}_{\Oct} \Int(R) &= \Int \denot{\regr_2}^{\sharp}_{\Oct} (\code{x} \in [-100; 100] \land \code{y} \in [1; 100])\\
@@ -530,7 +530,7 @@ We now present an example to illustrate that there are situations in which \lclr
 		&= \Int(\code{x} = 1 \land \code{y} = 1) \\
 		&= \Int(Q) .
 	\end{align*}
-	
+
 	In this example, rule \lclrule{refine\mbox{-}pre} can be applied to prove the triple, but it requires to have relational information from the assignment \code{x := y} in $\regr_1$, hence forcing the use of a relational domain (e.g. the reduced product~\cite{CC79} of $\Oct$ and $\Int_{\neq 0}$) for the whole $\regr$, making the analysis more expensive.
 \end{example}
 
@@ -645,14 +645,14 @@ On the other hand, rule \lclrule{simplify} perform the ``global" analysis in $\P
 		&= \code{x := y; y := y - 3; x := x - 4; z := y; y := 0; w := z - x}
 	\end{align*}
 	and the initial state $P = -100 \le y \le 100$. At the end, the value for $\code{w}$ is always $1$. To prove it, the analysis must track the dependency between variables using a relational domain such as polyhedra. However, for the first three assignments (i.e., the fragment $\regr_1$) we do not need to track any dependency involving $\code{z}$ and $\code{w}$, and after the assignment \code{y := 0} in $\regr_2$ there is no dependency to track with $\code{y}$.
-	
-	Consider the final set of states 
+
+	Consider the final set of states
 	\[
 	Q \eqdef (y = 0 \land x \in \{ -104, 96 \} \land z = x + 1 \land w = 1)
 	\]
 	and partitions $\pi_1 = \{ \{ x , y \}, \{ z \}, \{ w \} \}$ and $\pi_2 = \{ \{ x, z \}, \{ y \}, \{ w \} \}$.
 	A proof for the triple $\lcl{\Poly}{P}{\regr}{Q}$ can exploit \lclrule{simplify} to work in $\Poly_{\pi_1}$ and $\Poly_{\pi_2}$ for parts of the program, therefore simplifying the computation of the local completeness proof obligations for \lclrule{transfer}. Fixed $R_1 \eqdef (y \in \{ -103, 97 \} \land x = y - 1)$ and $R_2 \eqdef (x \in \{ -104, 96 \} \land y = 0 \land z = x + 1)$, the proof sketch looks like
-	
+
 	\[
 	\infer[\lclrule{seq}]
 	{\lcl{\Poly}{P}{\regr}{Q}}
@@ -668,7 +668,7 @@ On the other hand, rule \lclrule{simplify} perform the ``global" analysis in $\P
 		{\infer{\lcl{\Poly_{\pi_2}}{R_2}{\regr_3}{Q}}{\dots}}
 	}
 	\]
-	
+
 	Note that $\Poly(R_1) = \Poly_{\pi_1}(R_1)$ and $\Poly(Q) = \Poly_{\pi_2}(Q)$ because $R_1$ (resp. $Q$) only contains constraints between variables in the same partition of $\pi_1$ (resp. $\pi_2$).
 \end{example}
 
@@ -703,7 +703,7 @@ Under this hypothesis, we show the following lemma:
 
 \begin{prop}
 	Assume that $\denot{\regr}_L$ is forward complete on $P$, that $\lclvalid{A}{P}{\regr}{Q}$ is valid taking $L$ as the concrete domain and that invariant~\eqref{eqn:lcla:I} holds.
-	Then 
+	Then
 	\[
 	\gamma_0(Q) \le \denot{\regr} X \le \gamma_0\gamma\alpha(Q) \text{.}
 	\]
@@ -726,7 +726,7 @@ Under this hypothesis, we show the following lemma:
 
 This lemma allows us to use $\LCLA$ even in the absence of a best abstraction function. However, to do so we need to identify a set $L$ of assertions which is concrete enough to be forward complete and abstract enough to have an abstraction function $\alpha: L \rightarrow A$.
 
-Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr}_L P) = \denot{\regr} \gamma_0(P)$ implies that all the concrete state traversed are ``close enough'' to have an abstraction that a proof in $\LCLA$ yields useful information. In other words, the local forward completeness is a ``sanity check'' that the program did not traverse a concrete state for which the $\LCLA$ theory is not applicable, that are states $X$ for which there exists no $P \in L$ s.t. \eqref{eqn:lcla:I} holds. For instance, with the previous example of polyhedra and finite unions of polyhedra, any shape with a curved ``edge'' (e.g., a circle) does not satisfy the requirement \eqref{eqn:lcla:I}, and the local forward completeness condition ensures such states are not traversed. 
+Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr}_L P) = \denot{\regr} \gamma_0(P)$ implies that all the concrete state traversed are ``close enough'' to have an abstraction that a proof in $\LCLA$ yields useful information. In other words, the local forward completeness is a ``sanity check'' that the program did not traverse a concrete state for which the $\LCLA$ theory is not applicable, that are states $X$ for which there exists no $P \in L$ s.t. \eqref{eqn:lcla:I} holds. For instance, with the previous example of polyhedra and finite unions of polyhedra, any shape with a curved ``edge'' (e.g., a circle) does not satisfy the requirement \eqref{eqn:lcla:I}, and the local forward completeness condition ensures such states are not traversed.
 \begin{example}
 	Consider the concrete domain $\mathbb{R}^2$ of two real variables $\code{x}$ and $\code{y}$, the polyhedra domain $\Poly$ as $A$ and the set of finite unions of polyhedra $\Poly_{\cup}$ as $L$.
 	Consider the program fragment
@@ -734,7 +734,7 @@ Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr
 		\regr_r &\eqdef \code{x := ($\sqrt{2}$ / $2$) * x - ($\sqrt{2}$ / $2$) * y; y := x + $\sqrt{2}$ * y}
 	\end{align*}
 	the program $\regr \eqdef \regr_r^\kstar$ and the set of states $X = -5 \le x \le 5 \land -5 \le y \le 5$, describing a square in the Cartesian plane. Please note that the program $\regr_r$ rotates the point $(x, y)$ in the Cartesian plane by $\pi / 4$ radiants, therefore applying $\regr_r$ to $X$ twice returns $X$. In particular, letting $X' \eqdef \denot{\regr_r} X$, this means that $\denot{\regr} X = X \cup X'$.
-	
+
 	Consider the initial assertion $P = \{ (5, 5), (-5, 5), (5, -5), (-5, -5) \}$, where a pair denote the value for variables $\code{x}$ and $\code{y}$, that is the union of four polyhedra, each containing a single point. It holds that $\gamma_0(P) \subseteq X = \gamma_0 (\Poly(P))$. We also define $P' = \{ (5 \sqrt{2}, 0), (- 5 \sqrt{2}, 0), (0, 5 \sqrt{2}), (0, -5 \sqrt{2}) \}$ and $Q = P \cup P'$.
 	Using $\text{LCL}_{\Poly}$ over $L=\Poly_{\cup}$, we can first prove the two triples $\lcl{\Poly}{P}{\regr_r}{P'}$ and $\lcl{\Poly}{P \cup P'}{\regr_r}{Q}$ using \lclrule{seq} and \lclrule{transfer}. Then, we compose them using \lclrule{iterate} and \lclrule{req} to conclude:
 	\[
@@ -752,7 +752,7 @@ Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr
 		}
 	}
 	\]
-	
+
 	This tells us that the triple $\lcl{\Poly}{P}{\regr}{P \cup Q}$ is valid relative to the semantics in $\Poly_{\cup}$. To transfer the same analysis to the concrete domain $\mathbb{R}^2$, we  check forward completeness. In this case, the check is trivial because the semantics of $\regr$ in $L$ on $P$, $P'$ and $Q$ is exactly the same as the concrete semantics on $\gamma_0(P)$, $\gamma_0(P')$ and $\gamma_0(Q)$.
 	Note that this triple allows us to identify errors: given the specification Spec $= x \le 7$, we observe that $Q \nleq $ Spec. Since Spec is expressible in $\Poly$, this in turn highlights the error $(5 \sqrt{2}, 0) \in Q \setminus $Spec, which is a true alert because $(5 \sqrt{2}, 0) \in X \cup X'$.
 \end{example}
@@ -771,7 +771,7 @@ For the latter, in the absence of $\alpha$ we investigated the possibility to in
 		\node[draw,circle,minimum size=6em,align=center] (RefInt) at (0,4.5) {$\LCLA$ + \\ \lclrule{refine\mbox{-}int}};
 		\node[draw,circle,minimum size=6em,align=center] (RefExt) at (-4,4.5) {$\LCLA$ + \\ \lclrule{refine\mbox{-}ext}};
 		\node[draw,circle,minimum size=6em,align=center] (Simpl) at (3,1.5) {$\LCLA$ + \\ \lclrule{simplify}};
-		
+
 		\draw[-latex] (RefPre) edge [right] node {Ex.~\ref{ex:lcla:refine-pre-usefulness}} (LCL);
 		\draw[-latex] (Simpl) edge [below right] node[shift={(-0.3,-0.1)}] {Ex.~\ref{ex:lcla:simplify-stronger}} (LCL);
 		\draw[-latex] (RefExt) edge [below left] node {Ex.~\ref{ex:lcla:refine-pre-incomplete}} (RefPre);
@@ -808,8 +808,8 @@ The only simplification rule \lclrule{simplify} is theoretically slightly strong
 
 \subsection{Future work}
 While the new rules we introduced are relevant from both a theoretical and practical point of view, they do not define an algorithm because of their nondeterminism:
-% In principle, they may be applied to prove every triple moving to any refinement of the abstract domain, so 
+% In principle, they may be applied to prove every triple moving to any refinement of the abstract domain, so
 we need techniques to determine \emph{when} a change of abstract domain is needed and \emph{how} to choose the most convenient new domain.
-We believe these two issues are actually related. For instance, if the analysis is unable to satisfy a local completeness proof obligation to apply \lclrule{transfer}, an heuristics may determine both what additional information is needed to make it true (i.e., how to refine the abstract domain) and where that additional information came from (i.e., when to refine). We briefly discussed in Section~\ref{sec:lcla:choose-refinement} some possibilities to perform this choice. 
+We believe these two issues are actually related. For instance, if the analysis is unable to satisfy a local completeness proof obligation to apply \lclrule{transfer}, an heuristics may determine both what additional information is needed to make it true (i.e., how to refine the abstract domain) and where that additional information came from (i.e., when to refine). We briefly discussed in Section~\ref{sec:lcla:choose-refinement} some possibilities to perform this choice.
 Ideally, one would systematically select an off-the-shelf abstract domain best suited to deal with each code fragment and the heuristic would inspect the proof obligations, and exploit some sort of catalogue that can track suitable abstract domains that are locally complete for the code and input at hand or derive on-the-fly some convenient domain refinement as done, e.g., by partition refinement.
 To this aim, we intend to investigate a mutual exchange of ideas between CEGAR and our approach, and to integrate abstract interpretation repair into our framework.
