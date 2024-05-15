@@ -209,7 +209,7 @@ The validity of an IL triple is given by the under-approximation condition
 \[
 \fwsem{\regr} P \supseteq Q \tag{IL}\label{eq:bg:il-validity}
 \]
-In other words, a valid IL triple $\undertriple{P}{\regr}{Q}$ means that all states in $Q$ are reachable when executing $\regr$ starting from states in $P$. This can be better seen from the equivalent first-order formula
+In other words, a valid IL triple $\vDash \undertriple{P}{\regr}{Q}$ means that all states in $Q$ are reachable when executing $\regr$ starting from states in $P$. This can be better seen from the equivalent first-order formula
 \[
 \forall \sigma' \in Q \sdot \exists \sigma \in P \sdot \sigma' \in \fwsem{\regr} \sigma \tag{IL$_{\text{FOL}}$}\label{eq:bg:il-fol}
 \]
@@ -219,7 +219,57 @@ We consider the proof system for IL in Figure~\ref{fig:bg:il}, adapting the one 
 Rule \ilrule{cons} looks similar, but uses reversed implication: in IL we can grow the precondition ($P' \subseteq P$) and shrink the post ($Q \subseteq Q'$), while in HL we do the opposite (cf. \hlrule{cons} in Figure~\ref{fig:bg:hl}). This fits the the under/over-approximation duality: if we know $Q'$ is an under-approximation of the result, also $Q \subseteq Q'$ is such, and dually in HL.
 Another important difference is in rule \ilrule{iter} for Kleene iteration. HL rule \hlrule{iter} is based on loop invariants, but while these are sound in under-approximation, they are not complete because they don't account for invariants that are reached after a number of iterations~\cite[§4]{OHearn20}.
 
-\todo[inline]{soundness and completeness of IL, the example comparing HL and IL.}
+Just like HL, this set of rule is sound and complete for IL:
+
+\begin{theorem}[IL is sound and complete~\cite{OHearn20}]
+	An IL triple is provable if and only if it is valid:
+	\[
+	\vdash\undertriple{P}{\regr}{Q} \iff \vDash\undertriple{P}{\regr}{Q}
+	\]
+\end{theorem}
+
+The following example compares HL and IL on a simple program to give an intuition on how they work and differs.
+
+\begin{example}
+	HL and IL aim at addressing different properties. To show their differences, we use the simple, deterministic, terminating program
+	\begin{minted}{C}
+x := nondet();
+if (x is even) {
+	if (y is odd) {
+		z := 42;
+	}
+}
+// assert(z != 42)
+	\end{minted}
+	We call this program $\regr$ for this example.
+	We let $Q \eqdef (z = 42)$ denote the set of erroneous states, i.e., the incorrectness specification.
+	The valid HL triple
+	\[
+	\overtriple{ \text{odd}(y) \land \text{even}(x)}{\regr}{Q}
+	\]
+	
+	\noindent
+	identifies input states that will surely end up in an  error state, while the triple
+	\[
+	\overtriple{ \neg Q \land (\text{odd}(x) \lor \text{even}(y))}{\regr}{\neg Q}
+	\]
+	
+	\noindent
+	characterize input states that will not produce any error.
+	On the other hand, the valid IL triple
+	\[
+	\undertriple{\true}{\regr}{Q \wedge \text{odd}(y) \wedge \text{even}(x) }
+	\]
+	
+	\noindent
+	expresses the fact that error states in $Q$ are reachable by some initial state. Similarly, also the IL triple
+	\[
+	\undertriple{\true}{\regr}{\neg Q \wedge(\text{odd}(x)\vee \text{even}(y)) }
+	\]
+	
+	\noindent
+	is valid since the postcondition $\neg Q$ can be reached only when the path conditions to reach the assignment are not satisfied.
+\end{example}
 
 \section{Kleene Algebras}\label{sec:bg:algebra}
 In this Section, we present Kleene algebras as an algebraic formulation that is able to describe programs.
