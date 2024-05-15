@@ -109,11 +109,6 @@ The authors then use this definition to embed IL in a generic TopKAT.
 We remark that in this article the focus is not on completeness of the logic, so there isn't the CTC assumption on the algebraic structure, but only the those join needed to apply \ilrule{iter} are required to exist. Even with this focus shift, the work already shows that a top element is a viable alternative to modality for encoding IL in Kleene algebras.
 
 \section{Local completeness}\label{sec:sota:lcl}
-\todo[inline]{Section TODO list}
-\begin{itemize}
-	\item ...
-\end{itemize}
-
 Local Completeness Logic on an abstract domain $A$ ($\LCLA$ for short) \cite{BGGR21} is a first example of non-trivial over and under-approximation interaction, with the former embodied by abstract interpretation and the latter by IL.
 
 As described in Section~\ref{sec:bg:absint}, abstract interpretation is always sound, but in general it is not complete: composition of best correct abstractions (bcas) is not the bca of the composition. While in theory completeness ensures no precision is lost, it is a very uncommon situation in general. One of the causes is its requirement to hold \emph{for all inputs}. To weaken this condition, in \cite{BGGR21} the authors propose a notion of \emph{local} completeness, that depends on a specific input.
@@ -182,7 +177,8 @@ Point (2) means that, given a specification \textit{Spec} expressible in $A$, an
 The proof system is defined in Figure~\ref{fig:sota:lcla-rules}. It is a logic of under-approximations, much like IL (actually IL is a special case of $\LCLA$), but with one additional constraint: the under approximation $Q$ must have the same abstraction of the concrete semantics $\denot{\regr} P$, as for instance explicitly required in rule \lclrule{relax}. This, by the abstract convexity property mentioned above, means that local completeness of $\denot{\regr}$ on the \emph{under-approximation} $P$ of the concrete store is enough to prove local completeness.
 This way, $\LCLA$ exploits the interaction of over- and under-approximation. The latter is used to ensure the abstraction is locally complete, ie. guarantees precision of the over-approximation. Conversely, the presence of the abstraction in rule \lclrule{iterate} speeds up the computation as it allows to stop as soon as $A(P)$ is an abstract loop invariant, not having to deal with (possible infinitary) concrete invariants.
 
-Formally, the three key properties (1--3) listed above are formalized by the following soundness result:
+Formally, the three key properties (1--3) above are formalized by the following result:
+
 \begin{theorem}[Soundness, cf.\cite{BGGR21}]\label{th:sota:lcl-soundness}
 	Let $A_{\alpha, \gamma} \in \Abs(C)$.
 	If $\lcl{A}{P}{\regr}{Q}$ then:
@@ -192,7 +188,10 @@ Formally, the three key properties (1--3) listed above are formalized by the fol
 		\item $\denot{\regr}^{\sharp}_{A} \alpha(P) = \alpha(Q)$.
 	\end{enumerate}
 \end{theorem}
+
+We say that a triple satisfying these three conditions is \emph{valid}, written $\lclvalid{A}{P}{\regr}{Q}$.
 As a consequence of this theorem, given a specification expressible in the abstract domain $A$, a provable triple $\lcl{A}{P}{\regr}{Q}$ can determine both correctness and incorrectness of the program $\regr$:
+
 \begin{corollary}[Proofs of Verification, cf. \cite{BGGR21}]\label{th:sota:corollary-verification}
 	Let $A_{\alpha, \gamma} \in \Abs(C)$ and $a \in A$. If $\lcl{A}{P}{\regr}{Q}$ then
 	\[

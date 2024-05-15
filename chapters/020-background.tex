@@ -6,10 +6,8 @@ In this chapter, we lay the background for the thesis. We fix the notation and r
 
 \todo[inline]{TODO list}
 \begin{itemize}
-	\item IL here
 	\item NC here
 	\item take HL stuff from the SIL paper
-	\item Abstract domain refinements and simplification
 \end{itemize}
 
 \section{Order structures}
@@ -312,7 +310,7 @@ The HL proof system embedded in KATs is shown in Figure~\ref{fig:bg:hl-kat}. It 
 
 \section{Abstract interpretation}\label{sec:bg:absint}
 \subsection{Abstract Domains}
-Abstract interpretation \cite{CC77,CC79} is a general framework to define static analyses sound by construction, with the main idea of approximating the program semantics on some abstract domain $A$ instead of working on the concrete domain $C$. The main tool used to study abstract interpretations are Galois connections.
+Abstract interpretation \cite{CC77,CC79} is a general framework to define static analyses sound by construction, with the main idea of approximating the program semantics on some abstract domain $A$ instead of working on the concrete domain $C$. The main tool used to study abstract interpretation are Galois connections.
 \begin{definition}[Galois connection]
 	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define a Galois connection when 
 	\[
@@ -331,7 +329,7 @@ We recall some properties of Galois connections:
 	\end{enumerate}
 \end{prop}
 A concrete value $c \in C$ is called \emph{expressible} in $A$ if $\gamma \alpha(c) = c$.
-We only consider Galois connections in which $\alpha \gamma = \id_A$, called Galois insertions. In a Galois insertion $\alpha$ is onto and $\gamma$ is injective.
+We mostly consider Galois connections in which $\alpha \gamma = \id_A$, called Galois insertions. In a Galois insertion $\alpha$ is onto and $\gamma$ is injective.
 A Galois insertion is said to be trivial if $A$ is isomorphic to the concrete domain or if it is the singleton $\{ \top_A \}$.
 
 To give an intuition of the role of Galois connections in program analysis, we present the following example.
@@ -376,7 +374,7 @@ To give an intuition of the role of Galois connections in program analysis, we p
 \end{example}
 
 We overload the symbol $A$ to denote also the function $\gamma \alpha: C \rightarrow C$: this is always an upper closure operator, that is a monotone, increasing (i.e. $c \le A(c)$ for all $c$) and idempotent function. In the following, we use closure operators as much as possible to simplify the notation. Particularly, they are useful to denote domain refinements, as exemplified in the next paragraph.
-Note that they are still very expressive because $\gamma$ is injective: for instance $A(c) = A(c')$ if and only if $\alpha(c) = \alpha(c')$. Nonetheless, the use of closure operators is only a matter of notation and it is always possible to rewrite them using the adjoints, as the two formulation are equivalent \cite{CC79}.
+Note that they are still very expressive for a Galois insertion (where $\gamma$ is injective): for instance $A(c) = A(c')$ if and only if $\alpha(c) = \alpha(c')$. Nonetheless, the use of closure operators is only a matter of notation and it is always possible to rewrite them using the adjoints, as the two formulation are equivalent \cite{CC79}.
 
 The image of an upper closure operator is a Moore family, that is a subset of $C$ containing the top element $\top_C$ and that is closed under meet. Given a subset $S \subseteq C$, we define its Moore-closure (or meet-closure) as
 \[

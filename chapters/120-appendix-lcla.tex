@@ -1,0 +1,423 @@
+% !TEX root = ../phd-thesis.tex
+
+\chapter{\texorpdfstring{$\LCLA$}{LCL} supplementary materials}\label{ch:app:lcla}
+This appendix contains technical details of proofs and examples for Chapter~\ref{ch:lcla}.
+
+\begin{proof}[Proof of Theorem~\ref{th:lcla:soundness-ext}, extensional soundness of $\LCLA$]
+	First we remark that points (1) and (3) implies point (2):
+	\begin{align*}
+		\alpha(Q) &\le \alpha(\denot{\regr} P) &[\text{(1) and monotonocity of }\alpha] \\
+		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
+		&= \alpha(Q) &[\text{(3)}]
+	\end{align*}
+	So all the lines are equal, in particular $\alpha(Q) = \alpha(\denot{\regr} P)$.
+	The proof is then by induction on the derivation tree of $\lcl{A}{P}{\regr}{Q}$, but we only have to prove (1) and (3) because of the observation above.
+	
+	\proofcase{\lclrule{transfer}}
+	\noindent (1) It follows since $\denot{\expe} P \le \denot{\expe} P$.
+	
+	\noindent (3) It follows from the local completeness hypothesis $\complete{A}{P}{\denot{\expe}}$: $\denot{\expe}^{A} \alpha(P) = \alpha(\denot{\expe} \gamma \alpha(P)) = \alpha(\denot{\expe} P)$.
+	
+	\proofcase{\lclrule{relax}}
+	\noindent (1) By inductive hypothesis we know $Q' \le \denot{\regr} P'$, and together with the other two hypotheses of the rule we have $Q \le Q' \le \denot{\regr} P' \le \denot{\regr} P$.
+	
+	\noindent (3) We remark that $\alpha(P) = \alpha(P')$ if and only if $A(P) = A(P')$ by injectivity of $\gamma$ in a GI, and that $P' \le P \le A(P')$ implies $A(P) = A(P')$. Thus the hypotheses of the rule gives $\alpha(P) = \alpha(P')$ and $\alpha(Q) = \alpha(Q')$. Point (3) then follow by the inductive hypothesis $\denot{\regr}^{A} \alpha(P') = \alpha(Q')$:
+	\[
+	\denot{\regr}^{A} \alpha(P) = \denot{\regr}^{A} \alpha(P') = \alpha(Q') = \alpha(Q)
+	\]
+	
+	\proofcase{\lclrule{seq}} (1) $Q \le \denot{\regr_2} R \le \denot{\regr_2} (\denot{\regr_1} P) = \denot{\regr1; \regr_2} P$, where the inequalities follow from inductive hypotheses and monotonicity of $\denot{\regr_2}$.
+	
+	\noindent (3) We recall that $\denot{\regr_1; \regr_2}^{A} \le \denot{\regr_2}^{A} \denot{\regr_1}^{A}$.
+	\begin{align*}
+		\alpha(Q) &\le \alpha(\denot{\regr_1; \regr_2} P) &[\text{(1) and monotonicity of }\alpha] \\
+		&\le \denot{\regr_1; \regr_2}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
+		&\le \denot{\regr_2}^{A} \denot{\regr_1}^{A} \alpha(P) &[\text{recalled above}] \\
+		&= \denot{\regr_2}^{A} \alpha(R) &[\text{inductive hp}] \\
+		&= \alpha(Q) &[\text{inductive hp}]
+	\end{align*}
+	So all the lines are equal, in particular $\denot{\regr_1; \regr_2}^{A} \alpha(P) = \alpha(Q)$.
+	
+	\proofcase{\lclrule{join}}
+	\noindent (1) By inductive hypotheses, $Q_1 \le \denot{\regr_1} P$ and $Q_2 \le \denot{\regr_2} P$. Hence $Q_1 \lor Q_2 \le \denot{\regr_1} P \lor \denot{\regr_2} P = \denot{\regr_1 \oplus \regr_2} P$.
+	
+	\noindent (3) We observe that
+	\begin{align*}
+		\denot{\regr_1 \oplus \regr_2}^{A} \alpha(P) &= \alpha \denot{\regr_1 \oplus \regr_2} \gamma \alpha(P) \\
+		&= \alpha (\denot{\regr_1} \gamma \alpha (P) \sqcup \denot{\regr_2} \gamma \alpha (P)) \\
+		&= \alpha \denot{\regr_1} \gamma \alpha (P) \sqcup \alpha \denot{\regr_2} \gamma \alpha (P) \\
+		&= \denot{\regr_1}^{A}\alpha (P) \sqcup \denot{\regr_2}^{A} \alpha (P)
+	\end{align*}
+	where we used additivity of $\alpha$. 
+	Recalling that by inductive hypotheses, $\alpha(Q_1) = \denot{\regr_1}^{A} \alpha(P)$ and $\alpha(Q_2) = \denot{\regr_2}^{A} \alpha(P)$, we get
+	\begin{align*}
+		\alpha(Q_1 \lor Q_2) &= \alpha(Q_1) \sqcup \alpha(Q_2) &[\alpha\text{ is additive}] \\
+		&= \denot{\regr_1}^{A} \alpha(P) \sqcup \denot{\regr_2}^{A} \alpha(P) &[\text{inductive hypotheses}] \\
+		&= (\denot{\regr_1 \oplus \regr_2}^{A}) \alpha(P) &[\text{observation above}]
+	\end{align*}
+	
+	\proofcase{\lclrule{rec}}
+	\noindent (1) First, we show that $\denot{\regr^{\kstar}} R \le \denot{\regr^{\kstar}} P$ using the inductive hypothesis $R \le \denot{\regr} P$:
+	\begin{align*}
+		\denot{\regr^{\kstar}} R &= \bigsqcup_{n \ge 0} \denot{\regr}^n R &[\text{definition}] \\
+		&\le \bigsqcup_{n \ge 0} \denot{\regr}^n \denot{\regr} P &[\text{inductive hp on all operands}] \\
+		&= \bigsqcup_{n \ge 1} \denot{\regr}^n P &[\text{renaming the index variable }n] \\
+		&\le \bigsqcup_{n \ge 0} \denot{\regr}^n P &[\text{adding an element to the lub}] \\
+		&= \denot{\regr^{\kstar}} P &[\text{definition}]
+	\end{align*}
+	Now we show (1):
+	\begin{align*}
+		Q &\le \denot{\regr^{\kstar}} (P \lor R) &[\text{inductive hp}] \\
+		&= \denot{\regr^{\kstar}} P \lor \denot{\regr^{\kstar}} R &[\text{additivity of }\denot{\regr^{\kstar}}] \\
+		&\le \denot{\regr^{\kstar}} P \lor \denot{\regr^{\kstar}} P &[\text{observation above}] \\
+		&= \denot{\regr^{\kstar}} P
+	\end{align*}
+	
+	\noindent (3)
+	\begin{align*}
+		\denot{\regr^{\kstar}}^{A} \alpha(P) &\le \denot{\regr^{\kstar}}^{A} \alpha(P \lor R) &[\text{monotonicity of }\denot{\regr^{\kstar}}^{A} \alpha] \\
+		&= \alpha(Q) &[\text{inductive hp}] \\
+		&\le \alpha(\denot{\regr^{\kstar}} P) &[\text{(1) and monotonicity of }\alpha] \\
+		&\le \denot{\regr^{\kstar}}^{A} \alpha(P) &[\text{soundness of }\denot{\regr^{\kstar}}^{A}]
+	\end{align*}
+	Hence all the lines are equal, and in particular $\denot{\regr^{\kstar}}^{A} \alpha(P) = \alpha(Q)$.
+	
+	\proofcase{\lclrule{iterate}}
+	\noindent (1) We observe that $P = \denot{\regr}^0 P \le \denot{\regr^{\kstar}} P$. Moreover, by inductive hypothesis $Q \le \denot{\regr} P$ so also $Q \le \denot{\regr^{\kstar}} P$. So by definition of lub $P \lor Q \le \denot{\regr^{\kstar}} P$.
+	
+	\noindent (3) First we show by induction on $n \ge 1$ that $\alpha \denot{\regr}^n \gamma \alpha(P) \le \denot{\regr}^{A} \alpha(P)$.
+	The base case $n = 1$ is trivial recalling that $\denot{\regr}^{A} = \alpha \denot{\regr} \gamma$. So suppose it is true for $n$ and let us show it for $n + 1$:
+	\begin{align*}
+		\alpha \denot{\regr}^{n+1} \gamma \alpha(P) &\le \alpha \denot{\regr} \gamma \alpha \denot{\regr}^n \gamma \alpha(P) &[\gamma \alpha \le \id] \\
+		&\le \denot{\regr}^{A} \denot{\regr}^{A} \alpha(P) &[\text{inductive hp } \alpha \denot{\regr}^n \gamma \alpha(P) \le \denot{\regr}^{A} \alpha(P)] \\
+		&= \denot{\regr}^{A} \alpha(Q) &[\text{inductive hp }\lcl{A}{P}{\regr}{Q}] \\
+		&\le \denot{\regr}^{A} \alpha(P) &[\text{hypothesis of the rule }Q \le A(P)]
+	\end{align*}
+	For the last inequality, we used that in any GC $Q \le A(P) = \gamma \alpha(P)$ if and only if $\alpha(Q) \le \alpha(P)$.
+	Now we can prove the following chain of inequalities:
+	\begin{align*}
+		\denot{\regr^{\kstar}}^{A} \alpha(P) &= \alpha \bigsqcup_{n \ge 0} \denot{\regr}^n \gamma \alpha(P) &[\text{definition}] \\
+		&= \bigsqcup_{n \ge 0} \alpha \denot{\regr}^n \gamma \alpha(P) &[\alpha \text{ is additive}] \\
+		&= \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \left( \bigsqcup_{n \ge 1} \alpha \denot{\regr}^n \gamma \alpha(P) \right) &[\text{splitting the lub}] \\
+		&\le \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \left( \bigsqcup_{n \ge 1} \denot{\regr}^{A} \alpha(P) \right) &[\text{shown above by induction}] \\
+		&= \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \denot{\regr}^{A} \alpha(P) &[\text{lub of constant terms}] \\
+		&= \alpha(P) \sqcup \denot{\regr}^{A} \alpha(P) &[\denot{\regr}^0 = \id \text{ and }\alpha \gamma \alpha = \alpha] \\
+		&= \alpha(P) \sqcup \alpha(Q) &[\text{inductive hp}] \\
+		&= \alpha(P \lor Q) &[\alpha \text{ is additive}] \\
+		&\le \alpha (\denot{\regr^{\kstar}} P) &[\text{(1) and monotonicity of }\alpha] \\
+		&\le \denot{\regr^{\kstar}}^{A} \alpha(P) &[\text{soundness of }\denot{\regr^{\kstar}}^{A}]
+	\end{align*}
+	Thus all the lines above are equal, and in particular $\denot{\regr^{\kstar}}^{A} \alpha(P) = \alpha(P \lor Q)$.
+\end{proof}
+
+This technical lemma is used in the following proofs.
+\begin{lemma}\label{th:lemma-AA'}
+	If $A' \preceq A$ then $A = A A' = A' A$
+\end{lemma}
+\begin{proof}
+	Fix a concrete element $c \in C$. Since $A' \preceq A$ we have $c \le A'(c) \le A(c)$. Applying $A$, by monotonicity we get $A(c) \le AA'(c) \le AA(c) = A(c)$, where the last equality is idempotency of $A$. This means $A = AA'$.
+	Now consider $A' A(c)$. Since $A$ is a closure operator $A' A(c) \le A (A' A(c))$. But we just showed $A A' (A(c)) = A (A(c)) = A(c)$. Lastly, since $A'$ is a closure operator too, $A(c) \le A' A(c)$. Hence $A(c) \le A' A(c) \le A(c)$, so $A(c) = A' A(c)$.
+\end{proof}
+We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \alpha' = \alpha$.
+
+\begin{proof}[Proof of Theorem~\ref{th:lcla:soundness-rule-refine}, extensional soundness of rule \lclrule{refine\mbox{-}ext}]
+	We recall that the intuitive premise $A \denot{\regr}^{A'} A(P) = A(Q)$ of the rule formally is $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$.
+	Since the proof of Theorem~\ref{th:lcla:soundness-ext} is by induction, we extend it by just proving the new inductive case. We also remark that we only need to prove points~(1) and~(3), since they imply point~(2).
+	
+	\proofcase{\lclrule{refine\mbox{-}ext}}
+	\noindent (1) It's the same as point (1) of extensional soundness applied to $\lcl{A'}{P}{\regr}{Q}$, since this conclusion does not depend on the abstract domain.
+	
+	\noindent (3)
+	\begin{align*}
+		\alpha(Q) &\le \alpha(\denot{\regr} P) &[\text{(1) and monotonicity of }\alpha] \\
+		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of } \denot{\regr}^{A}] \\
+		&= \alpha \denot{\regr} \gamma \alpha(P) &[\text{definition}] \\
+		&= \alpha \gamma' \alpha' \denot{\regr} \gamma' \alpha' \gamma \alpha(P) &[\text{Lemma~\ref{th:lemma-AA'}}] \\
+		&= \alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) &[\text{definition}] \\
+		&= \alpha(Q) &[\text{hypothesis of the rule}]
+	\end{align*}
+	Hence all the lines are equal; in particular $\denot{r}^{A} \alpha(P) = \alpha(Q)$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{th:lcla:refine-int-sound}, extensional soundness of rule \lclrule{refine\mbox{-}int}]
+	We show that the hypotheses of \lclrule{refine\mbox{-}int} implies those of \lclrule{refine\mbox{-}ext}. This means than whenever we can apply the former we could also apply the latter, so that Theorem~\ref{th:lcla:soundness-rule-refine} ensures extensional soundness.
+	
+	The first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the two rules, so we only have to show $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. We recall that $\lcl{A'}{P}{\regr}{Q}$ implies $Q \le \denot{\regr} P$ by extensional soundness.
+	\begin{align*}
+		\alpha(Q) &\le \alpha(\denot{\regr} P ) &[Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
+		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
+		&= \alpha \denot{\regr} A(P) &[\text{definition}] \\
+		&= \alpha \gamma' \alpha' \denot{\regr} A' A(P) &[\text{Lemma~\ref{th:lemma-AA'}}] \\
+		&= \alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) &[\text{definition}] \\
+		&\le \alpha \gamma' \denot{\regr}^{\sharp}_{A'} \alpha' A(P) &[\denot{\regr}^{A'} \le \denot{\regr}^{\sharp}_{A'}] \\
+		&= \alpha(Q) &[\text{Last hypothesis of the rule}]
+	\end{align*}
+	Hence all the lines are equal, and in particular $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{th:lcla:refine-pre-sound}, extensional soundness of rule \lclrule{refine\mbox{-}pre}]
+	As in the above proof or Proposition~\ref{th:lcla:refine-int-sound}, we show that the hypotheses of \lclrule{refine\mbox{-}pre} implies those of \lclrule{refine\mbox{-}ext}.
+	
+	The first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the two rules, so we only have to show $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. We recall that $\lcl{A'}{P}{\regr}{Q}$ implies by extensional soundness (1) $Q \le \denot{\regr} P$ and (3) $\denot{\regr}^{A'} \alpha'(P) = \alpha'(Q)$.
+	\begin{align*}
+		\alpha(Q) &\le \alpha(\denot{\regr} P ) &[Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
+		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
+		&= \alpha \denot{\regr} A(P) &[\text{definition}] \\
+		&= \alpha \denot{\regr} A'(P) &[\text{hp of the rule}] \\
+		&= \alpha \gamma' \alpha' \denot{\regr} A'(P) &[\text{Lemma~\ref{th:lemma-AA'}}] \\
+		&= \alpha \gamma' \denot{\regr}^{A'} \alpha'(P) &[\text{definition}] \\
+		&= \alpha \gamma' \alpha'(Q) &[\text{extensional soundness (3)}] \\
+		&= \alpha(Q) &[\text{Lemma~\ref{th:lemma-AA'}}]
+	\end{align*}
+	Hence all the lines are equal, and in particular $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$.
+\end{proof}
+
+\begin{sidewaysfigure}
+	\[
+	\text{\scriptsize
+		\infer[(\mathsf{seq})]
+		{ ($**$) }
+		{
+			\infer[(\mathsf{transfer})]
+			{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1}}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} } }
+			{ \complete{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\denot{\code{y := y - 1}}} }
+			&
+			\infer[(\mathsf{transfer})]
+			{ \lcl{\Oct}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} }{\code{x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
+			{ \complete{\Oct}{\code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y}}{\denot{\code{x := x - 1}}} }
+		}
+	}
+	\]
+	\[
+	\text{\small
+		\infer[(\mathsf{iterate})]
+		{ ($*$) }
+		{
+			\infer[(\mathsf{seq})]
+			{ \lcl{\Oct}{R_2}{\regr_i}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}}
+				\qquad (\code{y} \in \{1; 99\} \land \code{x} = \code{y}) \le A(R_2) }
+			{
+				\infer[(\mathsf{transfer})]
+				{ \lcl{\Oct}{R_2}{\code{(x > 1)?}}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}} }
+				{ \complete{\Oct}{R_2}{\denot{\code{(x > 1)?}}}}
+				&
+				\infer[(\mathsf{seq})]
+				{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1; x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
+				{ ($**$) }
+			}
+		}
+	}
+	\]
+	\[
+	\text{\small
+		\infer[(\mathsf{seq})]
+		{\lcl{\Oct}{R}{\regr_2}{Q}
+			%					\qquad \Int_{\neq 0} \preceq \Int \qquad \Int(P) = \Int_{\neq 0}(P)
+		}
+		{
+			\infer[(\mathsf{transfer})]
+			{\lcl{\Oct}{R}{\code{x := y}}{R_2}}{ \complete{\Oct}{R}{\denot{\code{x := y}}} }
+			&
+			\infer[(\mathsf{seq})]
+			{\lcl{\Oct}{R_2}{\regr_i^{\kstar}\code{; (x <= 1)?}}{Q}}
+			{
+				\infer[(\mathsf{iterate})]
+				{\lcl{\Oct}{R_2}{\regr_i^{\kstar}}{R_2 \lor (\code{y} \in \{1; 99\} \land \code{x} = \code{y})}}
+				{ ($*$) }
+				&
+				\infer[(\mathsf{transfer})]
+				{\lcl{\Oct}{R_2}{\code{(x <= 1)?}}{Q}}{ \complete{\Oct}{R_2}{\denot{\code{(x <= 1)?}}} }
+			}
+		}
+	}
+	\]
+	\caption{Derivation of $\lcl{\Oct}{R}{\regr_2}{Q}$ for Example~\ref{ex:lcla:refine-pre-usefulness}.}\label{fig:app:ex-refine-pre-derivation-2}
+\end{sidewaysfigure}
+
+\begin{example}[Details of Example~\ref{ex:lcla:refine-pre-usefulness}.]
+	The full derivation of the triple $\lcl{\Oct}{R}{\regr_2}{Q}$ is shown in Figure~\ref{fig:app:ex-refine-pre-derivation-2}, rotated and split to fit the page. We call the command iterated with the Kleene star $\regr_i \eqdef \code{(x > 1)?; y := y - 1; x := x - 1}$, and we let $R_2 \eqdef (\code{y} \in \{1; 2; 100\} \land \code{x} = \code{y})$. We also used the logical implication $R_2 \implies (\code{y} \in \{1; 99\} \land \code{x} = \code{y})$, both explicitly and implicitly in the equivalence $R_2 \lor (\code{y} \in \{1; 99\} \land \code{x} = \code{y}) \iff R_2$.
+\end{example}
+
+\begin{example}\label{ex:app:refine-pre-incomplete-2-appendix}
+	Similarly to Example~\ref{ex:lcla:refine-pre-incomplete}, we present another triple which is sound but cannot be proved in $\LCLA$ extended with \lclrule{refine\mbox{-}pre}. The key difference is that this triple does not rely on divergence, but only on actual (im)precisions in the abstract domain.
+	
+	Consider the concrete domain $C = \pow(\setZ)$ of integers, the abstract domain $\Int$ of intervals, the concrete initial states $P = \{ -1, 1 \}$ and commands
+	\begin{align*}
+		\regr_1 &\eqdef \code{x != 0?} \\
+		\regr_2 &\eqdef \code{x >= 0?}
+	\end{align*}
+	Then, the triple $\lcl{\Int}{P}{\regr_1; \regr_2}{\{ 1 \}}$ is sound but cannot be proved in $\LCLA$ extended with \lclrule{refine\mbox{-}pre}.
+	
+	Following the same line of reasoning in Example~\ref{ex:lcla:refine-pre-incomplete}, we observe that all strict subset $P' \subset P$ are such that $\Int(P') \subset P$, and the same property holds for all refinements $A' \preceq \Int$. Again, this means that we cannot apply \lclrule{relax} to change $P$: to do it, we would need a $P' \subset P$ such that $P \subseteq A'(P')$.
+
+	Let $f_1 = \denot{\regr_1}$ and $f_2 = \denot{\regr_2}$. Observe that in the concrete semantics $f_1(P) = P$ and $f_2(P) = \{ 1 \}$.
+	Inspecting the logic, to prove the triple $\lcl{\Int}{P}{\regr_1; \regr_2}{\{ 1 \}}$ we can only apply three rules: \lclrule{relax}, \lclrule{refine\mbox{-}pre} or \lclrule{seq}.
+	To apply rule \lclrule{relax} we would need either an under\hyp{}approximation $P'$ of $P$ with the same abstraction, that does not exist by the observation above, or an over\hyp{}approximation of $Q$, that would be unsound since $Q = f(P)$. Hence we cannot apply \lclrule{relax}. Suppose to apply \lclrule{refine\mbox{-}pre}: any $A'$ used in the rule should satisfy $A' \preceq \Int$ and $A'(P) = \Int(P)$. As we pointed out above, we cannot apply \lclrule{relax} even after the domain refinement. Therefore, the only rule that can be applied is \lclrule{seq}. To do that, we must prove two triples $\lcl{A'}{P}{\regr_1}{R}$ and $\lcl{A'}{R}{\regr_2}{Q}$ for some $R$.
+	
+	Irrespective of how we prove the first triple, by soundness (Theorem~\ref{th:lcla:soundness-ext}) we have $R \subseteq f_1(P) = P$ and $A'(R) = A'(f_1(P)) = A'(P)$. If $R \subset P$ then $A'(R) \subset P \subseteq A'(P)$, which is a contradiction. So $R = P$.
+	Now we should prove a triple $\lcl{A'}{P}{\regr_2}{Q}$, but this is impossible since, by soundness, this would imply local completeness of $\denot{\regr_2} = f_2$ on $P$ in $A'$, that does not hold:
+	\begin{align*}
+		A' f_2(P) &= A'(\{ 1 \}) \\
+		&\subseteq \Int(\{ 1 \}) = \{ 1 \} \\
+		&\subset \{ 0, 1 \} = f_2(\Int(P)) = f_2 A'(P) \\
+		&\subseteq A' f_2 A'(P)
+	\end{align*}
+	
+	\begin{figure*}[t]
+		\[
+		\text{\small
+			\infer[(\mathsf{refine\mbox{-}int})]
+			{\lcl{\Int}{P}{\regr_1; \regr_2}{Q}}
+			{\infer[(\mathsf{seq})]
+				{\lcl{\Int_P}{P}{\regr_1; \regr_2}{Q} \quad \Int_P \preceq \Int \quad \Int(\denot{\regr}^{\sharp}_{\Int_P}(\Int(P))) = \Int(Q)}
+				{
+					\infer[(\mathsf{transfer})]
+					{\lcl{\Int_P}{P}{\code{x != 0?}}{P}}{ \complete{\Int_P}{P}{\denot{\code{x != 0?}}} }
+					& &
+					\infer[(\mathsf{transfer})]
+					{\lcl{\Int_P}{P}{\code{x >= 0?}}{Q}}{ \complete{\Int_P}{P}{\denot{\code{x >= 0?}}} }
+				}
+			}
+		}
+		\]
+		\caption{Derivation of $\lcl{\Int}{P}{\regr}{Q}$ for Example~\ref{ex:app:refine-pre-incomplete-2-appendix}.}\label{fig:app:ex-refine-int-incomplete-2}
+	\end{figure*}
+
+	Observe that, if we add \lclrule{refine\mbox{-}int} to the proof system, we can use it to change the domain to one where we can express $P$ (for instance, the concrete domain $\pow(\setZ)$ or the refinement $\Int_P \eqdef \Int \cup \{ P \}$) to prove the triple by applying \lclrule{seq} and then \lclrule{transfer} on both subtrees, as shown in Figure~\ref{fig:app:ex-refine-int-incomplete-2}.
+	The two local completeness proof obligations are trivially satisfied because $P \in \Int_P$, and the hypothesis of \lclrule{refine\mbox{-}int} is verified:
+	\begin{align*}
+		\Int( \denot{\regr}^{\sharp}_{\Int_P} \Int(P)) &= \Int( \denot{\regr_2}^{\Int_P} \denot{\regr_1}^{\Int_P} \Int(P)) \\
+		&= \Int( \denot{\regr_2}^{\Int_P} \denot{\code{x != 0?}^{\Int_P}} P) \\
+		&= \Int( \denot{\code{x >= 0?}} P) \\
+		&= \Int( [1; 1] ) = \Int(Q)
+	\end{align*}
+\end{example}
+
+The following lemma is used in the subsequent proof.
+\begin{lemma}\label{lmm:app:comp-abs-monotone-domain}
+	Let $\regr \in \Reg$ be a regular command. If $A \preceq A'$ then $\gamma \denot{\regr}^{\sharp}_{A} \alpha \le \gamma' \denot{\regr}^{\sharp}_{A'} \alpha'$.
+\end{lemma}
+\begin{proof}
+	The proof is by structural induction on $\regr$.
+	
+	\proofcase{($\regr = \expe$)}
+	$\gamma \denot{\regr}^{\sharp}_A \alpha = \gamma \alpha \edenot{\expe} \gamma \alpha = A \edenot{\expe} A \le A' \edenot{\expe} A' = \gamma' \denot{\regr}^{\sharp}_{A'} \alpha'$.
+	
+	\proofcase{($\regr_1; \regr_2$)}
+	\begin{align*}
+		\gamma \denot{\regr_1; \regr_2}^{\sharp}_A \alpha &= \gamma \denot{\regr_2}^{\sharp}_A \denot{\regr_1}^{\sharp}_A \alpha &[\text{definition}]\\
+		&= \gamma \denot{\regr_2}^{\sharp}_A \alpha \gamma \denot{\regr_1}^{\sharp}_A \alpha &[\alpha \gamma = \id_A] \\
+		&\le \gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha' &[\text{inductive hp}] \\
+		&= \gamma' \denot{\regr_2}^{\sharp}_{A'} \denot{\regr_1}^{\sharp}_{A'} \alpha' &[\alpha' \gamma' = \id_{A'}] \\
+		&= \gamma' \denot{\regr_1; \regr_2}^{\sharp}_{A'} \alpha' &[\text{definition}]
+	\end{align*}
+	
+	\proofcase{($\regr_1 \oplus \regr_2$)}
+	\begin{align*}
+		\gamma \denot{\regr_1 \oplus \regr_2}^{\sharp}_A \alpha &= \gamma (\denot{\regr_2}^{\sharp}_A \alpha \sqcup \denot{\regr_1}^{\sharp}_A \alpha) &[\text{definition}]\\
+		&= \gamma (\alpha \gamma \denot{\regr_2}^{\sharp}_A \alpha \sqcup \alpha \gamma \denot{\regr_1}^{\sharp}_A \alpha) &[\alpha \gamma = \id_A] \\
+		&= \gamma \alpha (\gamma \denot{\regr_2}^{\sharp}_A \alpha \sqcup \gamma \denot{\regr_1}^{\sharp}_A \alpha) &[\alpha \text{ is additive}] \\
+		&\le A (\gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha') &[\text{inductive hp}] \\
+		&\le A' (\gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha') &[A \le A'] \\
+		&= \gamma' (\alpha' \gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \alpha' \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha') &[\alpha' \text{ is additive}] \\
+		&= \gamma' (\denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \denot{\regr_1}^{\sharp}_{A'} \alpha') &[\alpha' \gamma' = \id_{A'}] \\
+		&= \gamma' \denot{\regr_1 \oplus \regr_2}^{\sharp}_{A'} \alpha' &[\text{definition}]
+	\end{align*}
+	
+	\proofcase{($\regr^{\kstar}$)}
+	First we prove by induction on $n \ge 0$ that $\gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \le \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha'$ using the inductive hypothesis that $\gamma \denot{\regr}^{\sharp}_{A} \alpha \le \gamma' \denot{\regr}^{\sharp}_{A'} \alpha'$. For $n = 0$ the inequality to prove reduces to $\gamma \id_A \alpha = A \le A' = \gamma' \id_{A'} \alpha'$. So suppose it is true for $n$:
+	\begin{align*}
+		\gamma (\denot{\regr}^{\sharp}_{A})^{n+1} \alpha &= \gamma (\denot{\regr}^{\sharp}_{A})^n \denot{\regr}^{\sharp}_{A} \alpha &[\text{definition}]\\
+		&= \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \gamma \denot{\regr}^{\sharp}_{A} \alpha &[\gamma \alpha = \id_A] \\
+		&\le \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \gamma' \denot{\regr}^{\sharp}_{A'} \alpha' &[\text{inductive hps}] \\
+		&= \gamma' (\denot{\regr}^{\sharp}_{A'})^{n+1} \alpha' &[\gamma' \alpha' = \id_{A'}]
+	\end{align*}
+	Now we proceed with the proof of the structural inductive statement:
+	\begin{align*}
+		\gamma \denot{\regr^\kstar}^{\sharp}_{A} \alpha &= \gamma \left( \bigsqcup_{n \ge 0} (\denot{\regr}^{\sharp}_{A})^n \alpha \right) &[\text{definition}]\\
+		&= \gamma \left( \bigsqcup_{n \ge 0} \alpha \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \right) &[\alpha \gamma = \id_A] \\
+		&= \gamma \alpha \left( \bigsqcup_{n \ge 0} \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \right) &[\alpha \text{ is additive}] \\
+		&\le A \left( \bigsqcup_{n \ge 0} \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) &[\text{statement above}] \\
+		&\le A' \left( \bigsqcup_{n \ge 0} \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) &[A \le A'] \\
+		&= \gamma' \left( \bigsqcup_{n \ge 0} \alpha' \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) &[\alpha' \text{ is additive}] \\
+		&= \gamma' \left( \bigsqcup_{n \ge 0} (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) &[\alpha' \gamma' = \id_{A'}] \\
+		&= \gamma' \denot{\regr^\kstar}^{\sharp}_{A'} \alpha' &[\text{definition}]
+	\end{align*}
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:lcla:soundness-rule-simpl}, intensional soundness of rule \lclrule{simplify}]
+	Since the proof of Theorem~\ref{th:sota:lcl-soundness} in~\cite{BGGR21} is by induction, we extend it by just proving the new inductive case.
+	
+	\proofcase{\lclrule{simplify}}
+	(1) It's the same as point (1) of intensional soundness applied to $\lcl{A'}{P}{\regr}{Q}$, since this conclusion doesn't depend on the abstract domain.
+	
+	\noindent (2-3)
+	\begin{align*}
+		A'(Q) &= A(Q) &[\text{hypothesis of the rule}] \\
+		&\le A(\denot{\regr} P) &[\text{(1) and monotonicity of }A] \\
+		&= \gamma \alpha(\denot{\regr} P) &[\text{definition}] \\
+		&\le \gamma \denot{\regr}^{\sharp}_{A} \alpha(P) &[\text{soundness of } \denot{\regr}^{\sharp}_{A}] \\
+		&\le \gamma' \denot{\regr}^{\sharp}_{A'} \alpha'(P) &[\text{Lemma~\ref{lmm:app:comp-abs-monotone-domain}}] \\
+		&= \gamma' \alpha'(Q) &[\text{Soundness of }\lcl{A'}{P}{\regr}{Q}] \\
+		&= A'(Q) &[\text{definition}]
+	\end{align*}
+	Hence all the lines are equal; in particular $\gamma \alpha(Q) = \gamma \alpha(\denot{r} P)$ and $\gamma \denot{r}^{\sharp}_{A} \alpha(P) = \gamma \alpha(Q)$. Since $\gamma$ is injective, we get points (2-3) of intensional soundness.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:lcla:intrinsic-incompl-simplify}, intrinsic incompleteness of $\LCLA$ with rule \lclrule{simplify}]
+	The proof follows closely that of intrinsic incompleteness of $\LCLA$ \cite[Theorem~5.12]{BGGR21}.
+	The Turing completeness hypothesis allows to define, for any store $c \in \Sigma$, three regular commands $\regr_{c?}$, $\regr_{\lnot c?}$ and $\regr_{c}$ such that, given any input $S \in C = \pow(\Sigma)$
+	\begin{align*}
+		\denot{\regr_{c?}} S &= S \cap \{ c \} \\
+		\denot{\regr_{\lnot c?}} S &= S \setminus \{ c \} \\
+		\denot{\regr_{c}} S &= \{ c \}
+	\end{align*}
+	Moreover, by Turing completeness we are able to define a regular command $\regr_w$ such that, for all $S \in C$ we have $\denot{\regr_w} S = \emptyset$.
+	As an example, for a single variable \code{x} these four commands are
+	\begin{align*}
+		\regr_w  &\eqdef \code{while (true) \{ skip \}} \\
+		\regr_{c?} &\eqdef \code{if (x == c) then skip else } \regr_w\\
+		\regr_{\lnot c?} &\eqdef \code{if (x == c) then }\regr_w \code{ else skip} \\
+		\regr_{c} &\eqdef \code{x := c}
+	\end{align*}
+	
+	Since $A$ is not trivial, there exists two set of stores $P$ and $R$ such that $P \subsetneq A(P)$ and $A(R) \subsetneq C$. These imply that there exists two stores $a \in A(P) \setminus P$ and $b \in C \setminus A(R)$. Since by monotonicity of $A$ we get $A(\emptyset) \subseteq A(R)$ and we know $b \notin A(R)$, we conclude that $A(\{ b \}) \neq A(\emptyset)$. Moreover, by monotonicity of $A$ we also have $A(\emptyset) \subseteq A(\{ b \})$, so that $A(\emptyset) \subsetneq A(\{ b \})$.
+	Given such $a$ and $b$, let us consider the command $\regr$ defined as
+	\[
+	\regr = (\regr_{a?}; \regr_{b}) \regplus (\regr_{\lnot a?}; \regr_w)
+	\]
+	for $\regr_{a?}$, $\regr_{b}$, $\regr_{\lnot a?}$ and $\regr_w$ as defined above. We now show that we cannot prove the triple $\lcl{A}{P}{\regr_1; \regr_w}{\emptyset}$ in $\LCLA$ extended with \lclrule{simplify} even though it is intensionally sound.
+	
+	First, we verify soundness: $\denot{\regr; \regr_w} P = \denot{\regr_w} (\denot{\regr} P) = \emptyset$, so that $\emptyset \subseteq \denot{\regr; \regr_w} P$, and
+	\[
+	\alpha(\denot{\regr; \regr_w} P) = \alpha(\emptyset) = \denot{\regr_w}^{\sharp}_{A} (\denot{\regr}^{\sharp}_{A} \alpha(P)) = \denot{\regr; \regr_w}^{\sharp}_{A} \alpha(P)
+	\]
+	so the triple is intensionally sound.
+	
+	However, we can't derive the triple because $\regr$ is not locally complete on $P$ in $A$, nor in any $A' \succeq A$ such that $A(\emptyset) = A'(\emptyset)$, that are the only domain we can simplify to using rule \lclrule{simplify}. The local incompleteness is a consequence of
+	\[
+	\denot{\regr} A(P) = \denot{\regr_{a?}; \regr_{b}} A(P) \cup \denot{\regr_{\lnot a?}; \regr_w} A(P) = \denot{\regr_{b}} \denot{\regr_{a?}} A(P) \cup \emptyset = \denot{\regr_{b}} \{ a \} = \{ b \}
+	\]
+	where we used $a \in A(P)$. Using this we easily get $\lnot \complete{A}{P}{\denot{\regr}}$:
+	\[
+	A(\denot{\regr} P) = A(\emptyset) \subsetneq A(\{ b \}) = A(\denot{\regr} A(P))
+	\]
+	
+	Formally, to derive the triple $\lcl{A}{P}{\regr; \regr_w}{\emptyset}$, we can apply only three rules: \lclrule{relax}, \lclrule{seq} and \lclrule{simplify}. By the arbitrariness of $P$ we can assume without loss of generality that there is no $P' \subseteq P \subseteq A(P')$, and clearly any $Q' \supseteq \emptyset$ is no longer sound because $\emptyset = \denot{\regr; \regr_w} P$. So we can't apply \lclrule{relax}. Let us distinguish the other two cases.
+	
+	\noindent If we apply \lclrule{seq}, we get
+	\[
+	\infer[(\mathsf{seq})]{\lcl{A}{P}{\regr; \regr_w}{\emptyset}}{\lcl{A}{P}{\regr}{Q} & \lcl{A}{Q}{\regr_w}{\emptyset}}
+	\]
+	for some intermediate $Q$. However, any provable triple $\lcl{A}{P}{\regr}{Q}$ would imply by soundness (of $\LCLA$ extended with \lclrule{simplify}, Theorem~\ref{th:lcla:soundness-rule-simpl}) local completeness $\complete{A}{P}{\denot{\regr}}$, that is false. So we can't prove the triple starting with an application of \lclrule{seq}
+	
+	\noindent If we apply \lclrule{simplify}, we get
+	\[
+	\infer[(\mathsf{simplify})]{\lcl{A}{P}{\regr; \regr_w}{\emptyset}}{\lcl{A}{P}{\regr; \regr_w}{\emptyset} & A' \succeq A & A'(\emptyset) = A(\emptyset)}
+	\]
+	for some simplification $A'$ of $A$. Note that we have $A'(\emptyset) \subsetneq A'(\{ b \})$:
+	\[
+	A'(\emptyset) = A(\emptyset) \subsetneq A(\{ b \}) \subseteq A'(\{ b \})
+	\]
+	Now we could apply \lclrule{relax} to change $P$ with a $P'$ satisfying $P' \subseteq P \subseteq A'(P')$. However, we have $a \notin P$, hence $a \notin P' \subseteq P$, and $a \in A(P) \subseteq A'(P) = A'(P')$. Now the only rule we can apply is \lclrule{seq}, and as before we need a triple $\lcl{A'}{P'}{\regr}{Q}$ for some $Q$, that would imply $\complete{A'}{P'}{\denot{\regr}}$. But this is not the case, and can be shown with computations as before using that $a \in A'(P') \setminus P'$ to obtain $\denot{\regr} P' = \emptyset$ and $\denot{\regr} A'(P') = \{ b \}$, and the already shown $A'(\emptyset) \subsetneq A'(\{ b \})$.
+\end{proof}

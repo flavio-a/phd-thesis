@@ -17,9 +17,11 @@
 \usepackage{stmaryrd}
 %\usepackage{fancyhdr}
 %\usepackage[Rejne]{fncychap}
+\usepackage{pifont}
 
 %\usepackage{indentfirst}
 \usepackage{subcaption}
+\usepackage{rotating}
 %\usepackage{enumitem}
 \usepackage{hyphenat}
 \usepackage{proof}
@@ -69,15 +71,15 @@
 \tableofcontents
 
 \pagenumbering{arabic}
-\input{chapters/10-introduction}
-\input{chapters/20-background}
-\input{chapters/30-stateofart}
-\input{chapters/40-limits-underapprox-domain}
-\input{chapters/40-sil}
-\input{chapters/50-lcla}
-\input{chapters/60-pdr}
+\input{chapters/010-introduction}
+\input{chapters/020-background}
+\input{chapters/030-stateofart}
+\input{chapters/040-limits-underapprox-domain}
+\input{chapters/040-sil}
+\input{chapters/050-lcla}
+\input{chapters/060-pdr}
 
-\input{chapters/90-conclusions}
+\input{chapters/090-conclusions}
 
 %\bibliography{bibfile}
 \printbibliography
@@ -91,8 +93,11 @@
 %	\begin{appendices}
 %		\input{chapters/appendixA}
 %	\end{appendices}
-%\appendix
-%\input{10-appendix}
+\appendix
+\input{chapters/100-appendix}
+\input{chapters/110-appendix-sil}
+\input{chapters/120-appendix-lcla}
+\input{chapters/130-appendix-pdf}
 
 \listoftodos
 \todototoc
