@@ -1,3 +1,120 @@
 % !TEX root = ../phd-thesis.tex
 
-\chapter{Sufficient Incorrectness Logic}\label{ch:sil}
+\chapter{A Comparison of Program Logics}\label{ch:sil}
+In this chapter, we consider three known triple-based program logics, namely Hoare Logic (HL), Incorrectness Logic (IL) and Necessary Conditions (NC). We characterize their validity conditions in term of over or under-approximation of forward and backward semantics. First, this allows us to identify the absence of one combination, and thus to define a new program logic, called Sufficient Incorrectness Logic (SIL), for it. Second, this guides a thorough comparison of the four validity conditions, highlighting analogies and differences between them.
+
+The content of this chapter is based on~\cite{ABGL24}.
+
+\section{Taxonomy}
+\begin{figure}[t]
+	\centering
+	\begin{tabular}{c|ccc}
+		& Forward & & Backward\\[3pt]
+		\hline &&& \\[-5pt]
+		\quad Over\quad\  &\quad Hoare Logic  & $\xleftrightarrow{\qquad\simeq\qquad}$ & Necessary Conditions \\ [5pt]
+		\quad Under\quad\  & \quad Incorrectness Logic & & \textcolor{ACMBlue}{Sufficient Incorrectness Logic}
+	\end{tabular}
+	\caption{The taxonomy of triple-based logics. The column determines whether it is based on forward or backward semantics. The row determines whether it performs under or over-approximation. HL and NC are equivalent ($\simeq$). SIL is the new logic we introduce here.}
+	\label{fig:sil:taxonomy}
+\end{figure}
+
+As discussed in Sections~\ref{sec:bg:hl} and \ref{sec:bg:il}, the validity conditions of HL and IL are defined as over and under-approximation of the forward semantics $\fwsem{\cdot}$. However, there are other program logics that cannot be naturally described in terms of $\fwsem{\cdot}$. To this end, we consider a backward semantics $\bwsem{\cdot}$ defined as the opposite relation of the forward semantics, that is
+
+\begin{equation}
+	\bwsem{\regr} \sigma' \eqdef \{ \sigma \svert \sigma' \in \fwsem{\regr} \sigma \} \label{eq:sil:bwsem-definition}
+\end{equation}
+
+\noindent or, equivalently,
+
+\begin{equation}
+	\sigma \in \bwsem{\regr} \sigma' \iff \sigma' \in \fwsem{\regr} \sigma  \label{eq:sil:bwsem-sigma-sigma'}
+\end{equation}
+
+\noindent and we lift the definition of backward semantics to set of states by union.
+Intuitively, on the one hand the forward semantics $\fwsem{\regr} P$ denotes the set of all possible output states of $\regr$ when execution starts from a state in $P$ (and $\regr$ terminates).
+On the other hand, the backward semantics $\bwsem{\regr} Q$ denotes the set of all input states that can lead to a state in $Q$.
+
+The backward semantics can also be characterized compositionally, similarly to the forward one:
+
+\begin{lemma}\label{lmm:sil:bwsem-calculus}
+	For any regular commands $\regr,\regr_1,\regr_2\in \Reg$, the following equalities hold:
+	\[
+	\bwsem{\regr_1; \regr_2} = \bwsem{\regr_1} \circ \bwsem{\regr_2} \qquad\qquad
+	\bwsem{\regr_1 \regplus \regr_2} = \bwsem{\regr_1} \cup \bwsem{\regr_2} \qquad\qquad
+	\bwsem{{\regr^\kstar}} = \bigcup\limits_{n \ge 0} \bwsem{\regr}^n
+	\]
+\end{lemma}
+
+Using the backward semantics, we can characterize NC triples $\necctriple{P}{\regr}{Q}$ with the validity condition $\bwsem{\regr} Q \subseteq P$ (see Proposition~\ref{}\todo{mettere da qualche parte la proposizione, con la citazione a Zhang e Kaminski}), and this leads to the taxonomy in Figure~\ref{fig:sil:taxonomy}: we classify logics depending on (1) whether the condition is expressed in terms of forward or backward semantics and (2) whether it is an over or an under-approximation.
+This naturally sparks the question on what does the backward under-approximation condition mean and whether a logic for it has been developed.
+
+
+\paragraph{Backward under-approximation and Lisbon Triples}
+At POPL'19 in Lisbon, D. Dreyer and R. Jung suggested that P. O'Hearn should look at bug-finding in terms of a logic for proving the presence of faults (as reported in~\cite{OHearn20,ZDS23}).
+However, the proposed model of triples did not fit well with a key feature of Pulse, a bug-catching tool developed mainly by J. Villard at Meta, namely its ability to drop the analysis of some program paths, for which IL provides a sound logical foundation instead.
+The idea of such ``Lisbon'' triples is that \emph{for any initial state satisfying the pre, there exists some execution trace leading to a final state satisfying the post} and it can be dated back to Hoare's calculus of possible correctness~\cite{Hoare78}, even if no form of approximation was considered there.
+Lisbon triples were then briefly discussed in~\cite[\S 5]{MOH21} and \cite[\S 3.2]{LRVBDO22} under the name \emph{backwards under-approximate triples}. They were also one of the motivations for OL~\cite{ZDS23} and are identified as certain OL triple.
+
+Ideally, given an incorrectness specification, the goal of backward under-approximation would be to report to programmers all dangerous input states that lead to bugs.
+However, all the above proposals are designed according to the forward semantics of programs and thus are best suited to infer postconditions starting from some given precondition: in general, their backward analysis may require the instantiation of their consequence rules with some ingenious guess.
+To tackle this issue, we introduce Sufficient Incorrectness Logic (SIL) as a proof system for Lisbon triples with backward\hyp{}oriented rules.
+
+Since we deal with different kinds of program logics, a summary of the notation for the various triples is reported below.
+
+\begin{center}
+	%\resizebox{\textwidth}{!}{
+		\begin{tabular}{c|c@{\qquad}c@{\qquad}c@{\qquad}c@{\qquad}c}
+			Logic &
+			HL \cite{Hoare69} &
+			IL \cite{OHearn20} &
+			NC \cite{CCL11} &
+			OL \cite{ZDS23} &
+			SIL
+			\\[2pt] \hline &&&&& \\[-10pt]
+			Triples &
+			$\overtriple{P}{\regr}{Q}$ &
+			$\undertriple{P}{\regr}{Q}$ &
+			$\necctriple{P}{\regr}{Q}$ &
+			$\oltriple{P}{\regr}{Q}$ &
+			$\angletriple{P}{\regr}{Q}$
+		\end{tabular}
+		%	}
+\end{center}
+
+
+\paragraph{Rest}
+\todo{Understand how much of this I wanna keep}
+We summarize the validity of different kinds of triples in the
+
+\begin{definition}[Triples validity]\label{def:sil:validity}
+	For any program $\regr$ and sets of states $P,Q$ we let the following:
+
+	\smallskip
+
+	\begin{tabular}{llll}
+		\textbf{HL triples:} & $\overtriple{P}{\regr}{Q}$ & is valid if & $\fwsem{\regr} P \subseteq Q$; \\
+		\textbf{IL triples:} & $\undertriple{P}{\regr}{Q}$ & is valid if & $\fwsem{\regr} P \supseteq Q$; \\
+		\textbf{NC triples:} & $\necctriple{P}{\regr}{Q}$ & is valid if & $\bwsem{\regr} Q \subseteq P$; \\
+		\textbf{SIL triples:} & $\angletriple{P}{\regr}{Q}$ & is valid if & $\bwsem{\regr} Q \supseteq P$.
+	\end{tabular}
+\end{definition}
+
+By using the validity conditions in Definition~\ref{def:sil:validity}, we can characterize HL, IL, NC, and SIL according to (i) whether the condition is expressed in terms of forward or backward semantics, and (ii) whether it is an over- or an under-approximation (Figure~\ref{fig:sil:taxonomy}).
+Indeed, in HL and NC it is safe to enlarge the respective target set (i.e., $Q$ and $P$) so we do categorize them as over-approximations.
+Similarly, in IL and SIL it is safe to shrink their target sets, so we do classify them as under-approximations.
+Furthermore, from the validity conditions, we can immediately derive the consequence rules for each logic: for HL and SIL we are allowed to weaken $Q$ and strengthen $P$, while for IL and NC we can do the opposite, i.e. the direction of the consequence rules are determined by the diagonals in Figure~\ref{fig:sil:taxonomy}.
+Notwithstanding the fact that NC and IL share the same consequence rule, we will show that NC and IL are not related, whereas NC is tightly connected to HL.
+We obtain that an NC triple $\necctriple{P}{\regr}{Q}$ is valid \emph{if and only if} the HL triple $\overtriple{\lnot P}{\regr}{\lnot Q}$ is valid.
+%
+By duality, one might expect a similar connection to hold between IL and SIL, but we show this is not the case.
+
+Interestingly, IL and SIL share the possibility to drop disjuncts, which was in fact one of the leading motivations for the introduction of IL to increase scalability and make the methods effective: the difference is that IL drops disjuncts in the postconditions, while SIL in the preconditions, a feature that is illustrated in Section~\ref{sec:separation-sil-derivation}.
+
+
+\section{Sufficient Incorrectness Logic}
+
+\section{Relations Among Logics}
+
+\section{Separation Sufficient Incorrectness Logic}
+
+\section{Conclusions}

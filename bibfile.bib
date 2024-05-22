@@ -695,7 +695,7 @@
 	OPTurl = {https://doi.org/10.1145/3371096},
 	doi = {10.1145/3371096},
 	journal = {Proc. ACM Program. Lang.},
-	month = {dec},
+	month = {12},
 	articleno = {28},
 	numpages = {28},
 	keywords = {Extensionality, Obfuscation, Intensionality, Abstract Interpretation}
@@ -831,7 +831,7 @@
 	doi = {10.1145/3158143},
 	abstract = {Numerical abstract domains such as Polyhedra, Octahedron, Octagon, Interval, and others are an essential component of static program analysis. The choice of domain offers a performance/precision tradeoff ranging from cheap and imprecise (Interval) to expensive and precise (Polyhedra). Recently, significant speedups were achieved for Octagon and Polyhedra by manually decomposing their transformers to work with the Cartesian product of projections associated with partitions of the variable set. While practically useful, this manual process is time consuming, error-prone, and has to be applied from scratch for every domain.  In this paper, we present a generic approach for decomposing the transformers of sub-polyhedra domains along with conditions for checking whether the decomposed transformers lose precision with respect to the original transformers. These conditions are satisfied by most practical transformers, thus our approach is suitable for increasing the performance of these transformers without compromising their precision. Furthermore, our approach is ``black box:'' it does not require changes to the internals of the original non-decomposed transformers or additional manual effort per domain.  We implemented our approach and applied it to the domains of Zones, Octagon, and Polyhedra. We then compared the performance of the decomposed transformers obtained with our generic method versus the state of the art: the (non-decomposed) PPL for Polyhedra and the much faster ELINA (which uses manual decomposition) for Polyhedra and Octagon. Against ELINA we demonstrate finer partitions and an associated speedup of about 2x on average. Our results indicate that the general construction presented in this work is a viable method for improving the performance of sub-polyhedra domains. It enables designers of abstract domains to benefit from decomposition without re-writing all of their transformers from scratch as required by prior work.},
 	journal = {Proc. ACM Program. Lang.},
-	month = {dec},
+	month = {12},
 	articleno = {55},
 	numpages = {28},
 	keywords = {Domain Decomposition, Abstract Interpretation, Numerical Domains, Performance Optimization}
@@ -852,4 +852,94 @@
 	timestamp    = {Tue, 14 May 2019 10:00:52 +0200},
 	biburl       = {https://dblp.org/rec/conf/sas/GiacobazziQ01.bib},
 	bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{ABGL24,
+	title={Sufficient Incorrectness Logic: SIL and Separation SIL},
+	author={Flavio Ascari and Roberto Bruni and Roberta Gori and Francesco Logozzo},
+	year={2024},
+	eprint={2310.18156},
+	archivePrefix={arXiv},
+	primaryClass={cs.LO}
+}
+
+@article{Hoare78,
+	author       = {C. A. R. Hoare},
+	title        = {Some Properties of Predicate Transformers},
+	journal      = {J. {ACM}},
+	volume       = {25},
+	number       = {3},
+	pages        = {461--480},
+	year         = {1978},
+	OPTurl       = {https://doi.org/10.1145/322077.322088},
+	doi          = {10.1145/322077.322088},
+	timestamp    = {Tue, 06 Nov 2018 12:51:46 +0100},
+	biburl       = {https://dblp.org/rec/journals/jacm/Hoare78.bib},
+	bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{LRVBDO22,
+	author       = {Quang Loc Le and Azalea Raad and Jules Villard and Josh Berdine and Derek Dreyer and Peter W. O'Hearn},
+	title        = {Finding Real Bugs in Big Programs with Incorrectness Logic},
+	journal      = {Proc. {ACM} Program. Lang.},
+	volume       = {6},
+	number       = {{OOPSLA1}},
+	pages        = {1--27},
+	year         = {2022},
+	OPTurl       = {https://doi.org/10.1145/3527325},
+	doi          = {10.1145/3527325},
+	timestamp    = {Tue, 10 Jan 2023 16:19:51 +0100},
+	biburl       = {https://dblp.org/rec/journals/pacmpl/LeRVBDO22.bib},
+	bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{Zilberstein24,
+	title={A Relatively Complete Program Logic for Effectful Branching},
+	author={Noam Zilberstein},
+	year={2024},
+	eprint={2401.04594},
+	archivePrefix={arXiv},
+	primaryClass={cs.LO},
+	note = {Preprint},
+}
+
+@misc{RVO24,
+	author = {Azalea Raad and Julien Vanegue and Peter O'Hearn},
+	title = {Compositional Non-Termination Proving},
+	year = {2024},
+	url = {https://www.soundandcomplete.org/papers/Unter.pdf},
+	note = {Preprint},
+}
+
+
+@inproceedings{CCL11,
+	author    = {Patrick Cousot and Radhia Cousot and Francesco Logozzo},
+	editor    = {Ranjit Jhala and David A. Schmidt},
+	title     = {Precondition Inference from Intermittent Assertions and Application to Contracts on Collections},
+	booktitle = {Verification, Model Checking, and Abstract Interpretation - 12th International Conference, {VMCAI} 2011, Austin, TX, USA, January 23-25, 2011. Proceedings},
+	series    = {Lecture Notes in Computer Science},
+	volume    = {6538},
+	pages     = {150--168},
+	publisher = {Springer},
+	year      = {2011},
+	doi       = {10.1007/978-3-642-18275-4\_12},
+	timestamp = {Tue, 14 May 2019 10:00:43 +0200},
+	biburl    = {https://dblp.org/rec/conf/vmcai/CousotCL11.bib},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{CCFL13,
+	author    = {Patrick Cousot and Radhia Cousot and Manuel F{\"{a}}hndrich and Francesco Logozzo},
+	editor    = {Roberto Giacobazzi and Josh Berdine and Isabella Mastroeni},
+	title     = {Automatic Inference of Necessary Preconditions},
+	booktitle = {Verification, Model Checking, and Abstract Interpretation, 14th International Conference, {VMCAI} 2013, Rome, Italy, January 20-22, 2013. Proceedings},
+	series    = {Lecture Notes in Computer Science},
+	volume    = {7737},
+	pages     = {128--148},
+	publisher = {Springer},
+	year      = {2013},
+	doi       = {10.1007/978-3-642-35873-9\_10},
+	timestamp = {Tue, 14 May 2019 10:00:43 +0200},
+	biburl    = {https://dblp.org/rec/conf/vmcai/CousotCFL13.bib},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
