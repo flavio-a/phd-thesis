@@ -6,9 +6,9 @@ This appendix contains technical details of proofs and examples for Chapter~\ref
 \begin{proof}[Proof of Theorem~\ref{th:lcla:soundness-ext}, extensional soundness of $\LCLA$]
 	First we remark that points (1) and (3) implies point (2):
 	\begin{align*}
-		\alpha(Q) &\le \alpha(\denot{\regr} P) &[\text{(1) and monotonocity of }\alpha] \\
-		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
-		&= \alpha(Q) &[\text{(3)}]
+		\alpha(Q) & \le \alpha(\denot{\regr} P)     & [\text{(1) and monotonocity of }\alpha] \\
+		          & \le \denot{\regr}^{A} \alpha(P) & [\text{soundness of }\denot{\regr}^{A}] \\
+		          & = \alpha(Q)                     & [\text{(3)}]
 	\end{align*}
 	So all the lines are equal, in particular $\alpha(Q) = \alpha(\denot{\regr} P)$.
 	The proof is then by induction on the derivation tree of $\lcl{A}{P}{\regr}{Q}$, but we only have to prove (1) and (3) because of the observation above.
@@ -30,11 +30,11 @@ This appendix contains technical details of proofs and examples for Chapter~\ref
 
 	\noindent (3) We recall that $\denot{\regr_1; \regr_2}^{A} \le \denot{\regr_2}^{A} \denot{\regr_1}^{A}$.
 	\begin{align*}
-		\alpha(Q) &\le \alpha(\denot{\regr_1; \regr_2} P) &[\text{(1) and monotonicity of }\alpha] \\
-		&\le \denot{\regr_1; \regr_2}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
-		&\le \denot{\regr_2}^{A} \denot{\regr_1}^{A} \alpha(P) &[\text{recalled above}] \\
-		&= \denot{\regr_2}^{A} \alpha(R) &[\text{inductive hp}] \\
-		&= \alpha(Q) &[\text{inductive hp}]
+		\alpha(Q) & \le \alpha(\denot{\regr_1; \regr_2} P)                & [\text{(1) and monotonicity of }\alpha] \\
+		          & \le \denot{\regr_1; \regr_2}^{A} \alpha(P)            & [\text{soundness of }\denot{\regr}^{A}] \\
+		          & \le \denot{\regr_2}^{A} \denot{\regr_1}^{A} \alpha(P) & [\text{recalled above}]                 \\
+		          & = \denot{\regr_2}^{A} \alpha(R)                       & [\text{inductive hp}]                   \\
+		          & = \alpha(Q)                                           & [\text{inductive hp}]
 	\end{align*}
 	So all the lines are equal, in particular $\denot{\regr_1; \regr_2}^{A} \alpha(P) = \alpha(Q)$.
 
@@ -43,42 +43,42 @@ This appendix contains technical details of proofs and examples for Chapter~\ref
 
 	\noindent (3) We observe that
 	\begin{align*}
-		\denot{\regr_1 \oplus \regr_2}^{A} \alpha(P) &= \alpha \denot{\regr_1 \oplus \regr_2} \gamma \alpha(P) \\
-		&= \alpha (\denot{\regr_1} \gamma \alpha (P) \sqcup \denot{\regr_2} \gamma \alpha (P)) \\
-		&= \alpha \denot{\regr_1} \gamma \alpha (P) \sqcup \alpha \denot{\regr_2} \gamma \alpha (P) \\
-		&= \denot{\regr_1}^{A}\alpha (P) \sqcup \denot{\regr_2}^{A} \alpha (P)
+		\denot{\regr_1 \oplus \regr_2}^{A} \alpha(P) & = \alpha \denot{\regr_1 \oplus \regr_2} \gamma \alpha(P)                                   \\
+		                                             & = \alpha (\denot{\regr_1} \gamma \alpha (P) \sqcup \denot{\regr_2} \gamma \alpha (P))      \\
+		                                             & = \alpha \denot{\regr_1} \gamma \alpha (P) \sqcup \alpha \denot{\regr_2} \gamma \alpha (P) \\
+		                                             & = \denot{\regr_1}^{A}\alpha (P) \sqcup \denot{\regr_2}^{A} \alpha (P)
 	\end{align*}
 	where we used additivity of $\alpha$.
 	Recalling that by inductive hypotheses, $\alpha(Q_1) = \denot{\regr_1}^{A} \alpha(P)$ and $\alpha(Q_2) = \denot{\regr_2}^{A} \alpha(P)$, we get
 	\begin{align*}
-		\alpha(Q_1 \lor Q_2) &= \alpha(Q_1) \sqcup \alpha(Q_2) &[\alpha\text{ is additive}] \\
-		&= \denot{\regr_1}^{A} \alpha(P) \sqcup \denot{\regr_2}^{A} \alpha(P) &[\text{inductive hypotheses}] \\
-		&= (\denot{\regr_1 \oplus \regr_2}^{A}) \alpha(P) &[\text{observation above}]
+		\alpha(Q_1 \lor Q_2) & = \alpha(Q_1) \sqcup \alpha(Q_2)                                     & [\alpha\text{ is additive}]   \\
+		                     & = \denot{\regr_1}^{A} \alpha(P) \sqcup \denot{\regr_2}^{A} \alpha(P) & [\text{inductive hypotheses}] \\
+		                     & = (\denot{\regr_1 \oplus \regr_2}^{A}) \alpha(P)                     & [\text{observation above}]
 	\end{align*}
 
 	\proofcase{\lclrule{rec}}
 	\noindent (1) First, we show that $\denot{\regr^{\kstar}} R \le \denot{\regr^{\kstar}} P$ using the inductive hypothesis $R \le \denot{\regr} P$:
 	\begin{align*}
-		\denot{\regr^{\kstar}} R &= \bigsqcup_{n \ge 0} \denot{\regr}^n R &[\text{definition}] \\
-		&\le \bigsqcup_{n \ge 0} \denot{\regr}^n \denot{\regr} P &[\text{inductive hp on all operands}] \\
-		&= \bigsqcup_{n \ge 1} \denot{\regr}^n P &[\text{renaming the index variable }n] \\
-		&\le \bigsqcup_{n \ge 0} \denot{\regr}^n P &[\text{adding an element to the lub}] \\
-		&= \denot{\regr^{\kstar}} P &[\text{definition}]
+		\denot{\regr^{\kstar}} R & = \bigsqcup_{n \ge 0} \denot{\regr}^n R                 & [\text{definition}]                    \\
+		                         & \le \bigsqcup_{n \ge 0} \denot{\regr}^n \denot{\regr} P & [\text{inductive hp on all operands}]  \\
+		                         & = \bigsqcup_{n \ge 1} \denot{\regr}^n P                 & [\text{renaming the index variable }n] \\
+		                         & \le \bigsqcup_{n \ge 0} \denot{\regr}^n P               & [\text{adding an element to the lub}]  \\
+		                         & = \denot{\regr^{\kstar}} P                              & [\text{definition}]
 	\end{align*}
 	Now we show (1):
 	\begin{align*}
-		Q &\le \denot{\regr^{\kstar}} (P \lor R) &[\text{inductive hp}] \\
-		&= \denot{\regr^{\kstar}} P \lor \denot{\regr^{\kstar}} R &[\text{additivity of }\denot{\regr^{\kstar}}] \\
-		&\le \denot{\regr^{\kstar}} P \lor \denot{\regr^{\kstar}} P &[\text{observation above}] \\
-		&= \denot{\regr^{\kstar}} P
+		Q & \le \denot{\regr^{\kstar}} (P \lor R)                      & [\text{inductive hp}]                         \\
+		  & = \denot{\regr^{\kstar}} P \lor \denot{\regr^{\kstar}} R   & [\text{additivity of }\denot{\regr^{\kstar}}] \\
+		  & \le \denot{\regr^{\kstar}} P \lor \denot{\regr^{\kstar}} P & [\text{observation above}]                    \\
+		  & = \denot{\regr^{\kstar}} P
 	\end{align*}
 
 	\noindent (3)
 	\begin{align*}
-		\denot{\regr^{\kstar}}^{A} \alpha(P) &\le \denot{\regr^{\kstar}}^{A} \alpha(P \lor R) &[\text{monotonicity of }\denot{\regr^{\kstar}}^{A} \alpha] \\
-		&= \alpha(Q) &[\text{inductive hp}] \\
-		&\le \alpha(\denot{\regr^{\kstar}} P) &[\text{(1) and monotonicity of }\alpha] \\
-		&\le \denot{\regr^{\kstar}}^{A} \alpha(P) &[\text{soundness of }\denot{\regr^{\kstar}}^{A}]
+		\denot{\regr^{\kstar}}^{A} \alpha(P) & \le \denot{\regr^{\kstar}}^{A} \alpha(P \lor R) & [\text{monotonicity of }\denot{\regr^{\kstar}}^{A} \alpha] \\
+		                                     & = \alpha(Q)                                     & [\text{inductive hp}]                                      \\
+		                                     & \le \alpha(\denot{\regr^{\kstar}} P)            & [\text{(1) and monotonicity of }\alpha]                    \\
+		                                     & \le \denot{\regr^{\kstar}}^{A} \alpha(P)        & [\text{soundness of }\denot{\regr^{\kstar}}^{A}]
 	\end{align*}
 	Hence all the lines are equal, and in particular $\denot{\regr^{\kstar}}^{A} \alpha(P) = \alpha(Q)$.
 
@@ -88,24 +88,24 @@ This appendix contains technical details of proofs and examples for Chapter~\ref
 	\noindent (3) First we show by induction on $n \ge 1$ that $\alpha \denot{\regr}^n \gamma \alpha(P) \le \denot{\regr}^{A} \alpha(P)$.
 	The base case $n = 1$ is trivial recalling that $\denot{\regr}^{A} = \alpha \denot{\regr} \gamma$. So suppose it is true for $n$ and let us show it for $n + 1$:
 	\begin{align*}
-		\alpha \denot{\regr}^{n+1} \gamma \alpha(P) &\le \alpha \denot{\regr} \gamma \alpha \denot{\regr}^n \gamma \alpha(P) &[\gamma \alpha \le \id] \\
-		&\le \denot{\regr}^{A} \denot{\regr}^{A} \alpha(P) &[\text{inductive hp } \alpha \denot{\regr}^n \gamma \alpha(P) \le \denot{\regr}^{A} \alpha(P)] \\
-		&= \denot{\regr}^{A} \alpha(Q) &[\text{inductive hp }\lcl{A}{P}{\regr}{Q}] \\
-		&\le \denot{\regr}^{A} \alpha(P) &[\text{hypothesis of the rule }Q \le A(P)]
+		\alpha \denot{\regr}^{n+1} \gamma \alpha(P) & \le \alpha \denot{\regr} \gamma \alpha \denot{\regr}^n \gamma \alpha(P) & [\gamma \alpha \le \id]                                                                        \\
+		                                            & \le \denot{\regr}^{A} \denot{\regr}^{A} \alpha(P)                       & [\text{inductive hp } \alpha \denot{\regr}^n \gamma \alpha(P) \le \denot{\regr}^{A} \alpha(P)] \\
+		                                            & = \denot{\regr}^{A} \alpha(Q)                                           & [\text{inductive hp }\lcl{A}{P}{\regr}{Q}]                                                     \\
+		                                            & \le \denot{\regr}^{A} \alpha(P)                                         & [\text{hypothesis of the rule }Q \le A(P)]
 	\end{align*}
 	For the last inequality, we used that in any GC $Q \le A(P) = \gamma \alpha(P)$ if and only if $\alpha(Q) \le \alpha(P)$.
 	Now we can prove the following chain of inequalities:
 	\begin{align*}
-		\denot{\regr^{\kstar}}^{A} \alpha(P) &= \alpha \bigsqcup_{n \ge 0} \denot{\regr}^n \gamma \alpha(P) &[\text{definition}] \\
-		&= \bigsqcup_{n \ge 0} \alpha \denot{\regr}^n \gamma \alpha(P) &[\alpha \text{ is additive}] \\
-		&= \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \left( \bigsqcup_{n \ge 1} \alpha \denot{\regr}^n \gamma \alpha(P) \right) &[\text{splitting the lub}] \\
-		&\le \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \left( \bigsqcup_{n \ge 1} \denot{\regr}^{A} \alpha(P) \right) &[\text{shown above by induction}] \\
-		&= \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \denot{\regr}^{A} \alpha(P) &[\text{lub of constant terms}] \\
-		&= \alpha(P) \sqcup \denot{\regr}^{A} \alpha(P) &[\denot{\regr}^0 = \id \text{ and }\alpha \gamma \alpha = \alpha] \\
-		&= \alpha(P) \sqcup \alpha(Q) &[\text{inductive hp}] \\
-		&= \alpha(P \lor Q) &[\alpha \text{ is additive}] \\
-		&\le \alpha (\denot{\regr^{\kstar}} P) &[\text{(1) and monotonicity of }\alpha] \\
-		&\le \denot{\regr^{\kstar}}^{A} \alpha(P) &[\text{soundness of }\denot{\regr^{\kstar}}^{A}]
+		\denot{\regr^{\kstar}}^{A} \alpha(P) & = \alpha \bigsqcup_{n \ge 0} \denot{\regr}^n \gamma \alpha(P)                                                               & [\text{definition}]                                               \\
+		                                     & = \bigsqcup_{n \ge 0} \alpha \denot{\regr}^n \gamma \alpha(P)                                                               & [\alpha \text{ is additive}]                                      \\
+		                                     & = \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \left( \bigsqcup_{n \ge 1} \alpha \denot{\regr}^n \gamma \alpha(P) \right) & [\text{splitting the lub}]                                        \\
+		                                     & \le \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \left( \bigsqcup_{n \ge 1} \denot{\regr}^{A} \alpha(P) \right)           & [\text{shown above by induction}]                                 \\
+		                                     & = \alpha \denot{\regr}^0 \gamma \alpha(P) \sqcup \denot{\regr}^{A} \alpha(P)                                                & [\text{lub of constant terms}]                                    \\
+		                                     & = \alpha(P) \sqcup \denot{\regr}^{A} \alpha(P)                                                                              & [\denot{\regr}^0 = \id \text{ and }\alpha \gamma \alpha = \alpha] \\
+		                                     & = \alpha(P) \sqcup \alpha(Q)                                                                                                & [\text{inductive hp}]                                             \\
+		                                     & = \alpha(P \lor Q)                                                                                                          & [\alpha \text{ is additive}]                                      \\
+		                                     & \le \alpha (\denot{\regr^{\kstar}} P)                                                                                       & [\text{(1) and monotonicity of }\alpha]                           \\
+		                                     & \le \denot{\regr^{\kstar}}^{A} \alpha(P)                                                                                    & [\text{soundness of }\denot{\regr^{\kstar}}^{A}]
 	\end{align*}
 	Thus all the lines above are equal, and in particular $\denot{\regr^{\kstar}}^{A} \alpha(P) = \alpha(P \lor Q)$.
 \end{proof}
@@ -129,12 +129,12 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 
 	\noindent (3)
 	\begin{align*}
-		\alpha(Q) &\le \alpha(\denot{\regr} P) &[\text{(1) and monotonicity of }\alpha] \\
-		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of } \denot{\regr}^{A}] \\
-		&= \alpha \denot{\regr} \gamma \alpha(P) &[\text{definition}] \\
-		&= \alpha \gamma' \alpha' \denot{\regr} \gamma' \alpha' \gamma \alpha(P) &[\text{Lemma~\ref{th:lemma-AA'}}] \\
-		&= \alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) &[\text{definition}] \\
-		&= \alpha(Q) &[\text{hypothesis of the rule}]
+		\alpha(Q) & \le \alpha(\denot{\regr} P)                                             & [\text{(1) and monotonicity of }\alpha]  \\
+		          & \le \denot{\regr}^{A} \alpha(P)                                         & [\text{soundness of } \denot{\regr}^{A}] \\
+		          & = \alpha \denot{\regr} \gamma \alpha(P)                                 & [\text{definition}]                      \\
+		          & = \alpha \gamma' \alpha' \denot{\regr} \gamma' \alpha' \gamma \alpha(P) & [\text{Lemma~\ref{th:lemma-AA'}}]        \\
+		          & = \alpha \gamma' \denot{\regr}^{A'} \alpha' A(P)                        & [\text{definition}]                      \\
+		          & = \alpha(Q)                                                             & [\text{hypothesis of the rule}]
 	\end{align*}
 	Hence all the lines are equal; in particular $\denot{r}^{A} \alpha(P) = \alpha(Q)$.
 \end{proof}
@@ -144,13 +144,13 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 
 	The first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the two rules, so we only have to show $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. We recall that $\lcl{A'}{P}{\regr}{Q}$ implies $Q \le \denot{\regr} P$ by extensional soundness.
 	\begin{align*}
-		\alpha(Q) &\le \alpha(\denot{\regr} P ) &[Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
-		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
-		&= \alpha \denot{\regr} A(P) &[\text{definition}] \\
-		&= \alpha \gamma' \alpha' \denot{\regr} A' A(P) &[\text{Lemma~\ref{th:lemma-AA'}}] \\
-		&= \alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) &[\text{definition}] \\
-		&\le \alpha \gamma' \denot{\regr}^{\sharp}_{A'} \alpha' A(P) &[\denot{\regr}^{A'} \le \denot{\regr}^{\sharp}_{A'}] \\
-		&= \alpha(Q) &[\text{Last hypothesis of the rule}]
+		\alpha(Q) & \le \alpha(\denot{\regr} P )                                & [Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
+		          & \le \denot{\regr}^{A} \alpha(P)                             & [\text{soundness of }\denot{\regr}^{A}]                    \\
+		          & = \alpha \denot{\regr} A(P)                                 & [\text{definition}]                                        \\
+		          & = \alpha \gamma' \alpha' \denot{\regr} A' A(P)              & [\text{Lemma~\ref{th:lemma-AA'}}]                          \\
+		          & = \alpha \gamma' \denot{\regr}^{A'} \alpha' A(P)            & [\text{definition}]                                        \\
+		          & \le \alpha \gamma' \denot{\regr}^{\sharp}_{A'} \alpha' A(P) & [\denot{\regr}^{A'} \le \denot{\regr}^{\sharp}_{A'}]       \\
+		          & = \alpha(Q)                                                 & [\text{Last hypothesis of the rule}]
 	\end{align*}
 	Hence all the lines are equal, and in particular $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$.
 \end{proof}
@@ -160,14 +160,14 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 
 	The first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the two rules, so we only have to show $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. We recall that $\lcl{A'}{P}{\regr}{Q}$ implies by extensional soundness (1) $Q \le \denot{\regr} P$ and (3) $\denot{\regr}^{A'} \alpha'(P) = \alpha'(Q)$.
 	\begin{align*}
-		\alpha(Q) &\le \alpha(\denot{\regr} P ) &[Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
-		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
-		&= \alpha \denot{\regr} A(P) &[\text{definition}] \\
-		&= \alpha \denot{\regr} A'(P) &[\text{hp of the rule}] \\
-		&= \alpha \gamma' \alpha' \denot{\regr} A'(P) &[\text{Lemma~\ref{th:lemma-AA'}}] \\
-		&= \alpha \gamma' \denot{\regr}^{A'} \alpha'(P) &[\text{definition}] \\
-		&= \alpha \gamma' \alpha'(Q) &[\text{extensional soundness (3)}] \\
-		&= \alpha(Q) &[\text{Lemma~\ref{th:lemma-AA'}}]
+		\alpha(Q) & \le \alpha(\denot{\regr} P )                   & [Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
+		          & \le \denot{\regr}^{A} \alpha(P)                & [\text{soundness of }\denot{\regr}^{A}]                    \\
+		          & = \alpha \denot{\regr} A(P)                    & [\text{definition}]                                        \\
+		          & = \alpha \denot{\regr} A'(P)                   & [\text{hp of the rule}]                                    \\
+		          & = \alpha \gamma' \alpha' \denot{\regr} A'(P)   & [\text{Lemma~\ref{th:lemma-AA'}}]                          \\
+		          & = \alpha \gamma' \denot{\regr}^{A'} \alpha'(P) & [\text{definition}]                                        \\
+		          & = \alpha \gamma' \alpha'(Q)                    & [\text{extensional soundness (3)}]                         \\
+		          & = \alpha(Q)                                    & [\text{Lemma~\ref{th:lemma-AA'}}]
 	\end{align*}
 	Hence all the lines are equal, and in particular $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$.
 \end{proof}
@@ -243,8 +243,8 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 
 	Consider the concrete domain $C = \pow(\setZ)$ of integers, the abstract domain $\Int$ of intervals, the concrete initial states $P = \{ -1, 1 \}$ and commands
 	\begin{align*}
-		\regr_1 &\eqdef \code{x != 0?} \\
-		\regr_2 &\eqdef \code{x >= 0?}
+		\regr_1 & \eqdef \code{x != 0?} \\
+		\regr_2 & \eqdef \code{x >= 0?}
 	\end{align*}
 	Then, the triple $\lcl{\Int}{P}{\regr_1; \regr_2}{\{ 1 \}}$ is sound but cannot be proved in $\LCLA$ extended with \lclrule{refine\mbox{-}pre}.
 
@@ -257,27 +257,27 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 	Irrespective of how we prove the first triple, by soundness (Theorem~\ref{th:lcla:soundness-ext}) we have $R \subseteq f_1(P) = P$ and $A'(R) = A'(f_1(P)) = A'(P)$. If $R \subset P$ then $A'(R) \subset P \subseteq A'(P)$, which is a contradiction. So $R = P$.
 	Now we should prove a triple $\lcl{A'}{P}{\regr_2}{Q}$, but this is impossible since, by soundness, this would imply local completeness of $\denot{\regr_2} = f_2$ on $P$ in $A'$, that does not hold:
 	\begin{align*}
-		A' f_2(P) &= A'(\{ 1 \}) \\
-		&\subseteq \Int(\{ 1 \}) = \{ 1 \} \\
-		&\subset \{ 0, 1 \} = f_2(\Int(P)) = f_2 A'(P) \\
-		&\subseteq A' f_2 A'(P)
+		A' f_2(P) & = A'(\{ 1 \})                                 \\
+		          & \subseteq \Int(\{ 1 \}) = \{ 1 \}             \\
+		          & \subset \{ 0, 1 \} = f_2(\Int(P)) = f_2 A'(P) \\
+		          & \subseteq A' f_2 A'(P)
 	\end{align*}
 
 	\begin{figure*}[t]
 		\[
 		\text{\small
-			\infer[(\mathsf{refine\mbox{-}int})]
-			{\lcl{\Int}{P}{\regr_1; \regr_2}{Q}}
-			{\infer[(\mathsf{seq})]
-				{\lcl{\Int_P}{P}{\regr_1; \regr_2}{Q} \quad \Int_P \preceq \Int \quad \Int(\denot{\regr}^{\sharp}_{\Int_P}(\Int(P))) = \Int(Q)}
-				{
-					\infer[(\mathsf{transfer})]
-					{\lcl{\Int_P}{P}{\code{x != 0?}}{P}}{ \complete{\Int_P}{P}{\denot{\code{x != 0?}}} }
-					& &
-					\infer[(\mathsf{transfer})]
-					{\lcl{\Int_P}{P}{\code{x >= 0?}}{Q}}{ \complete{\Int_P}{P}{\denot{\code{x >= 0?}}} }
-				}
-			}
+		\infer[(\mathsf{refine\mbox{-}int})]
+		{\lcl{\Int}{P}{\regr_1; \regr_2}{Q}}
+		{\infer[(\mathsf{seq})]
+		{\lcl{\Int_P}{P}{\regr_1; \regr_2}{Q} \quad \Int_P \preceq \Int \quad \Int(\denot{\regr}^{\sharp}_{\Int_P}(\Int(P))) = \Int(Q)}
+		{
+		\infer[(\mathsf{transfer})]
+		{\lcl{\Int_P}{P}{\code{x != 0?}}{P}}{ \complete{\Int_P}{P}{\denot{\code{x != 0?}}} }
+		& &
+		\infer[(\mathsf{transfer})]
+		{\lcl{\Int_P}{P}{\code{x >= 0?}}{Q}}{ \complete{\Int_P}{P}{\denot{\code{x >= 0?}}} }
+		}
+		}
 		}
 		\]
 		\caption{Derivation of $\lcl{\Int}{P}{\regr}{Q}$ for Example~\ref{ex:app:refine-pre-incomplete-2-appendix}.}\label{fig:app:ex-refine-int-incomplete-2}
@@ -286,10 +286,10 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 	Observe that, if we add \lclrule{refine\mbox{-}int} to the proof system, we can use it to change the domain to one where we can express $P$ (for instance, the concrete domain $\pow(\setZ)$ or the refinement $\Int_P \eqdef \Int \cup \{ P \}$) to prove the triple by applying \lclrule{seq} and then \lclrule{transfer} on both subtrees, as shown in Figure~\ref{fig:app:ex-refine-int-incomplete-2}.
 	The two local completeness proof obligations are trivially satisfied because $P \in \Int_P$, and the hypothesis of \lclrule{refine\mbox{-}int} is verified:
 	\begin{align*}
-		\Int( \denot{\regr}^{\sharp}_{\Int_P} \Int(P)) &= \Int( \denot{\regr_2}^{\Int_P} \denot{\regr_1}^{\Int_P} \Int(P)) \\
-		&= \Int( \denot{\regr_2}^{\Int_P} \denot{\code{x != 0?}^{\Int_P}} P) \\
-		&= \Int( \denot{\code{x >= 0?}} P) \\
-		&= \Int( [1; 1] ) = \Int(Q)
+		\Int( \denot{\regr}^{\sharp}_{\Int_P} \Int(P)) & = \Int( \denot{\regr_2}^{\Int_P} \denot{\regr_1}^{\Int_P} \Int(P))  \\
+		                                               & = \Int( \denot{\regr_2}^{\Int_P} \denot{\code{x != 0?}^{\Int_P}} P) \\
+		                                               & = \Int( \denot{\code{x >= 0?}} P)                                   \\
+		                                               & = \Int( [1; 1] ) = \Int(Q)
 	\end{align*}
 \end{example}
 
@@ -305,43 +305,43 @@ The following lemma is used in the subsequent proof.
 
 	\proofcase{($\regr_1; \regr_2$)}
 	\begin{align*}
-		\gamma \denot{\regr_1; \regr_2}^{\sharp}_A \alpha &= \gamma \denot{\regr_2}^{\sharp}_A \denot{\regr_1}^{\sharp}_A \alpha &[\text{definition}]\\
-		&= \gamma \denot{\regr_2}^{\sharp}_A \alpha \gamma \denot{\regr_1}^{\sharp}_A \alpha &[\alpha \gamma = \id_A] \\
-		&\le \gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha' &[\text{inductive hp}] \\
-		&= \gamma' \denot{\regr_2}^{\sharp}_{A'} \denot{\regr_1}^{\sharp}_{A'} \alpha' &[\alpha' \gamma' = \id_{A'}] \\
-		&= \gamma' \denot{\regr_1; \regr_2}^{\sharp}_{A'} \alpha' &[\text{definition}]
+		\gamma \denot{\regr_1; \regr_2}^{\sharp}_A \alpha & = \gamma \denot{\regr_2}^{\sharp}_A \denot{\regr_1}^{\sharp}_A \alpha                           & [\text{definition}]          \\
+		                                                  & = \gamma \denot{\regr_2}^{\sharp}_A \alpha \gamma \denot{\regr_1}^{\sharp}_A \alpha             & [\alpha \gamma = \id_A]      \\
+		                                                  & \le \gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha' & [\text{inductive hp}]        \\
+		                                                  & = \gamma' \denot{\regr_2}^{\sharp}_{A'} \denot{\regr_1}^{\sharp}_{A'} \alpha'                   & [\alpha' \gamma' = \id_{A'}] \\
+		                                                  & = \gamma' \denot{\regr_1; \regr_2}^{\sharp}_{A'} \alpha'                                        & [\text{definition}]
 	\end{align*}
 
 	\proofcase{($\regr_1 \oplus \regr_2$)}
 	\begin{align*}
-		\gamma \denot{\regr_1 \oplus \regr_2}^{\sharp}_A \alpha &= \gamma (\denot{\regr_2}^{\sharp}_A \alpha \sqcup \denot{\regr_1}^{\sharp}_A \alpha) &[\text{definition}]\\
-		&= \gamma (\alpha \gamma \denot{\regr_2}^{\sharp}_A \alpha \sqcup \alpha \gamma \denot{\regr_1}^{\sharp}_A \alpha) &[\alpha \gamma = \id_A] \\
-		&= \gamma \alpha (\gamma \denot{\regr_2}^{\sharp}_A \alpha \sqcup \gamma \denot{\regr_1}^{\sharp}_A \alpha) &[\alpha \text{ is additive}] \\
-		&\le A (\gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha') &[\text{inductive hp}] \\
-		&\le A' (\gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha') &[A \le A'] \\
-		&= \gamma' (\alpha' \gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \alpha' \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha') &[\alpha' \text{ is additive}] \\
-		&= \gamma' (\denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \denot{\regr_1}^{\sharp}_{A'} \alpha') &[\alpha' \gamma' = \id_{A'}] \\
-		&= \gamma' \denot{\regr_1 \oplus \regr_2}^{\sharp}_{A'} \alpha' &[\text{definition}]
+		\gamma \denot{\regr_1 \oplus \regr_2}^{\sharp}_A \alpha & = \gamma (\denot{\regr_2}^{\sharp}_A \alpha \sqcup \denot{\regr_1}^{\sharp}_A \alpha)                                          & [\text{definition}]           \\
+		                                                        & = \gamma (\alpha \gamma \denot{\regr_2}^{\sharp}_A \alpha \sqcup \alpha \gamma \denot{\regr_1}^{\sharp}_A \alpha)              & [\alpha \gamma = \id_A]       \\
+		                                                        & = \gamma \alpha (\gamma \denot{\regr_2}^{\sharp}_A \alpha \sqcup \gamma \denot{\regr_1}^{\sharp}_A \alpha)                     & [\alpha \text{ is additive}]  \\
+		                                                        & \le A (\gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha')                     & [\text{inductive hp}]         \\
+		                                                        & \le A' (\gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha')                    & [A \le A']                    \\
+		                                                        & = \gamma' (\alpha' \gamma' \denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \alpha' \gamma' \denot{\regr_1}^{\sharp}_{A'} \alpha') & [\alpha' \text{ is additive}] \\
+		                                                        & = \gamma' (\denot{\regr_2}^{\sharp}_{A'} \alpha' \sqcup \denot{\regr_1}^{\sharp}_{A'} \alpha')                                 & [\alpha' \gamma' = \id_{A'}]  \\
+		                                                        & = \gamma' \denot{\regr_1 \oplus \regr_2}^{\sharp}_{A'} \alpha'                                                                 & [\text{definition}]
 	\end{align*}
 
 	\proofcase{($\regr^{\kstar}$)}
 	First we prove by induction on $n \ge 0$ that $\gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \le \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha'$ using the inductive hypothesis that $\gamma \denot{\regr}^{\sharp}_{A} \alpha \le \gamma' \denot{\regr}^{\sharp}_{A'} \alpha'$. For $n = 0$ the inequality to prove reduces to $\gamma \id_A \alpha = A \le A' = \gamma' \id_{A'} \alpha'$. So suppose it is true for $n$:
 	\begin{align*}
-		\gamma (\denot{\regr}^{\sharp}_{A})^{n+1} \alpha &= \gamma (\denot{\regr}^{\sharp}_{A})^n \denot{\regr}^{\sharp}_{A} \alpha &[\text{definition}]\\
-		&= \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \gamma \denot{\regr}^{\sharp}_{A} \alpha &[\gamma \alpha = \id_A] \\
-		&\le \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \gamma' \denot{\regr}^{\sharp}_{A'} \alpha' &[\text{inductive hps}] \\
-		&= \gamma' (\denot{\regr}^{\sharp}_{A'})^{n+1} \alpha' &[\gamma' \alpha' = \id_{A'}]
+		\gamma (\denot{\regr}^{\sharp}_{A})^{n+1} \alpha & = \gamma (\denot{\regr}^{\sharp}_{A})^n \denot{\regr}^{\sharp}_{A} \alpha                       & [\text{definition}]          \\
+		                                                 & = \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \gamma \denot{\regr}^{\sharp}_{A} \alpha         & [\gamma \alpha = \id_A]      \\
+		                                                 & \le \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \gamma' \denot{\regr}^{\sharp}_{A'} \alpha' & [\text{inductive hps}]       \\
+		                                                 & = \gamma' (\denot{\regr}^{\sharp}_{A'})^{n+1} \alpha'                                           & [\gamma' \alpha' = \id_{A'}]
 	\end{align*}
 	Now we proceed with the proof of the structural inductive statement:
 	\begin{align*}
-		\gamma \denot{\regr^\kstar}^{\sharp}_{A} \alpha &= \gamma \left( \bigsqcup_{n \ge 0} (\denot{\regr}^{\sharp}_{A})^n \alpha \right) &[\text{definition}]\\
-		&= \gamma \left( \bigsqcup_{n \ge 0} \alpha \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \right) &[\alpha \gamma = \id_A] \\
-		&= \gamma \alpha \left( \bigsqcup_{n \ge 0} \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \right) &[\alpha \text{ is additive}] \\
-		&\le A \left( \bigsqcup_{n \ge 0} \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) &[\text{statement above}] \\
-		&\le A' \left( \bigsqcup_{n \ge 0} \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) &[A \le A'] \\
-		&= \gamma' \left( \bigsqcup_{n \ge 0} \alpha' \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) &[\alpha' \text{ is additive}] \\
-		&= \gamma' \left( \bigsqcup_{n \ge 0} (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) &[\alpha' \gamma' = \id_{A'}] \\
-		&= \gamma' \denot{\regr^\kstar}^{\sharp}_{A'} \alpha' &[\text{definition}]
+		\gamma \denot{\regr^\kstar}^{\sharp}_{A} \alpha & = \gamma \left( \bigsqcup_{n \ge 0} (\denot{\regr}^{\sharp}_{A})^n \alpha \right)                    & [\text{definition}]           \\
+		                                                & = \gamma \left( \bigsqcup_{n \ge 0} \alpha \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \right)      & [\alpha \gamma = \id_A]       \\
+		                                                & = \gamma \alpha \left( \bigsqcup_{n \ge 0} \gamma (\denot{\regr}^{\sharp}_{A})^n \alpha \right)      & [\alpha \text{ is additive}]  \\
+		                                                & \le A \left( \bigsqcup_{n \ge 0} \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right)             & [\text{statement above}]      \\
+		                                                & \le A' \left( \bigsqcup_{n \ge 0} \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right)            & [A \le A']                    \\
+		                                                & = \gamma' \left( \bigsqcup_{n \ge 0} \alpha' \gamma' (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right) & [\alpha' \text{ is additive}] \\
+		                                                & = \gamma' \left( \bigsqcup_{n \ge 0} (\denot{\regr}^{\sharp}_{A'})^n \alpha' \right)                 & [\alpha' \gamma' = \id_{A'}]  \\
+		                                                & = \gamma' \denot{\regr^\kstar}^{\sharp}_{A'} \alpha'                                                 & [\text{definition}]
 	\end{align*}
 \end{proof}
 
@@ -353,13 +353,13 @@ The following lemma is used in the subsequent proof.
 
 	\noindent (2-3)
 	\begin{align*}
-		A'(Q) &= A(Q) &[\text{hypothesis of the rule}] \\
-		&\le A(\denot{\regr} P) &[\text{(1) and monotonicity of }A] \\
-		&= \gamma \alpha(\denot{\regr} P) &[\text{definition}] \\
-		&\le \gamma \denot{\regr}^{\sharp}_{A} \alpha(P) &[\text{soundness of } \denot{\regr}^{\sharp}_{A}] \\
-		&\le \gamma' \denot{\regr}^{\sharp}_{A'} \alpha'(P) &[\text{Lemma~\ref{lmm:app:comp-abs-monotone-domain}}] \\
-		&= \gamma' \alpha'(Q) &[\text{Soundness of }\lcl{A'}{P}{\regr}{Q}] \\
-		&= A'(Q) &[\text{definition}]
+		A'(Q) & = A(Q)                                             & [\text{hypothesis of the rule}]                       \\
+		      & \le A(\denot{\regr} P)                             & [\text{(1) and monotonicity of }A]                    \\
+		      & = \gamma \alpha(\denot{\regr} P)                   & [\text{definition}]                                   \\
+		      & \le \gamma \denot{\regr}^{\sharp}_{A} \alpha(P)    & [\text{soundness of } \denot{\regr}^{\sharp}_{A}]     \\
+		      & \le \gamma' \denot{\regr}^{\sharp}_{A'} \alpha'(P) & [\text{Lemma~\ref{lmm:app:comp-abs-monotone-domain}}] \\
+		      & = \gamma' \alpha'(Q)                               & [\text{Soundness of }\lcl{A'}{P}{\regr}{Q}]           \\
+		      & = A'(Q)                                            & [\text{definition}]
 	\end{align*}
 	Hence all the lines are equal; in particular $\gamma \alpha(Q) = \gamma \alpha(\denot{r} P)$ and $\gamma \denot{r}^{\sharp}_{A} \alpha(P) = \gamma \alpha(Q)$. Since $\gamma$ is injective, we get points (2-3) of intensional soundness.
 \end{proof}
@@ -368,17 +368,17 @@ The following lemma is used in the subsequent proof.
 	The proof follows closely that of intrinsic incompleteness of $\LCLA$ \cite[Theorem~5.12]{BGGR21}.
 	The Turing completeness hypothesis allows to define, for any store $c \in \Sigma$, three regular commands $\regr_{c?}$, $\regr_{\lnot c?}$ and $\regr_{c}$ such that, given any input $S \in C = \pow(\Sigma)$
 	\begin{align*}
-		\denot{\regr_{c?}} S &= S \cap \{ c \} \\
-		\denot{\regr_{\lnot c?}} S &= S \setminus \{ c \} \\
-		\denot{\regr_{c}} S &= \{ c \}
+		\denot{\regr_{c?}} S       & = S \cap \{ c \}      \\
+		\denot{\regr_{\lnot c?}} S & = S \setminus \{ c \} \\
+		\denot{\regr_{c}} S        & = \{ c \}
 	\end{align*}
 	Moreover, by Turing completeness we are able to define a regular command $\regr_w$ such that, for all $S \in C$ we have $\denot{\regr_w} S = \emptyset$.
 	As an example, for a single variable \code{x} these four commands are
 	\begin{align*}
-		\regr_w  &\eqdef \code{while (true) \{ skip \}} \\
-		\regr_{c?} &\eqdef \code{if (x == c) then skip else } \regr_w\\
-		\regr_{\lnot c?} &\eqdef \code{if (x == c) then }\regr_w \code{ else skip} \\
-		\regr_{c} &\eqdef \code{x := c}
+		\regr_w          & \eqdef \code{while (true) \{ skip \}}                    \\
+		\regr_{c?}       & \eqdef \code{if (x == c) then skip else } \regr_w        \\
+		\regr_{\lnot c?} & \eqdef \code{if (x == c) then }\regr_w \code{ else skip} \\
+		\regr_{c}        & \eqdef \code{x := c}
 	\end{align*}
 
 	Since $A$ is not trivial, there exists two set of stores $P$ and $R$ such that $P \subsetneq A(P)$ and $A(R) \subsetneq C$. These imply that there exists two stores $a \in A(P) \setminus P$ and $b \in C \setminus A(R)$. Since by monotonicity of $A$ we get $A(\emptyset) \subseteq A(R)$ and we know $b \notin A(R)$, we conclude that $A(\{ b \}) \neq A(\emptyset)$. Moreover, by monotonicity of $A$ we also have $A(\emptyset) \subseteq A(\{ b \})$, so that $A(\emptyset) \subsetneq A(\{ b \})$.

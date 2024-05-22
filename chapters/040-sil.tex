@@ -9,10 +9,10 @@ The content of this chapter is based on~\cite{ABGL24}.
 \begin{figure}[t]
 	\centering
 	\begin{tabular}{c|ccc}
-		& Forward & & Backward\\[3pt]
-		\hline &&& \\[-5pt]
-		\quad Over\quad\  &\quad Hoare Logic  & $\xleftrightarrow{\qquad\simeq\qquad}$ & Necessary Conditions \\ [5pt]
-		\quad Under\quad\  & \quad Incorrectness Logic & & \textcolor{ACMBlue}{Sufficient Incorrectness Logic}
+		                   & Forward                   &                                        & Backward                                            \\[3pt]
+		\hline             &                           &                                        &                                                     \\[-5pt]
+		\quad Over\quad\   & \quad Hoare Logic         & $\xleftrightarrow{\qquad\simeq\qquad}$ & Necessary Conditions                                \\ [5pt]
+		\quad Under\quad\  & \quad Incorrectness Logic &                                        & \textcolor{ACMBlue}{Sufficient Incorrectness Logic}
 	\end{tabular}
 	\caption{The taxonomy of triple-based logics. They are sorted depending on whether they use forward or backward semantics and over or under-approximation. HL and NC are equivalent ($\simeq$). SIL is the new logic introduced here.}
 	\label{fig:sil:taxonomy}
@@ -59,7 +59,6 @@ Note that this is not an entirely new understanding of NC (it was already hinted
 We organize the validity conditions of HL, IL and NC in the taxonomy in Figure~\ref{fig:sil:taxonomy}. We classify logics depending on (1) whether the condition is expressed in terms of forward or backward semantics and (2) whether it is an over or an under-approximation.
 This naturally sparks the question on what does the backward under-approximation condition mean and whether a logic for it has been developed.
 
-
 \paragraph{Backward under-approximation and Lisbon Triples}
 At POPL'19 in Lisbon, D. Dreyer and R. Jung suggested that P. O'Hearn should look at bug-finding in terms of a logic for proving the presence of faults (as reported in~\cite{OHearn20,ZDS23}).
 However, the proposed model of triples did not fit well with a key feature of Pulse, a bug-catching tool developed mainly by J. Villard at Meta, namely its ability to drop the analysis of some program paths, for which IL provides a sound logical foundation instead.
@@ -73,18 +72,18 @@ To tackle this issue, we introduce Sufficient Incorrectness Logic (SIL) as a pro
 \begin{figure}
 	\centering
 	\begin{tabular}{c|c@{\qquad}c@{\qquad}c@{\qquad}c@{\qquad}c}
-		Logic &
-		HL \cite{Hoare69} &
-		IL \cite{OHearn20} &
-		NC \cite{CCL11} &
-		OL \cite{ZDS23} &
+		Logic                       &
+		HL \cite{Hoare69}           &
+		IL \cite{OHearn20}          &
+		NC \cite{CCL11}             &
+		OL \cite{ZDS23}             &
 		SIL
 		\\[2pt] \hline &&&&& \\[-10pt]
-		Triples &
-		$\overtriple{P}{\regr}{Q}$ &
+		Triples                     &
+		$\overtriple{P}{\regr}{Q}$  &
 		$\undertriple{P}{\regr}{Q}$ &
-		$\necctriple{P}{\regr}{Q}$ &
-		$\oltriple{P}{\regr}{Q}$ &
+		$\necctriple{P}{\regr}{Q}$  &
+		$\oltriple{P}{\regr}{Q}$    &
 		$\angletriple{P}{\regr}{Q}$
 	\end{tabular}
 	\caption{Summary of the notation for different program logics}
@@ -105,9 +104,9 @@ We summarize the validity of different kinds of triples in the
 	\smallskip
 
 	\begin{tabular}{llll}
-		\textbf{HL triples:} & $\overtriple{P}{\regr}{Q}$ & is valid if & $\fwsem{\regr} P \subseteq Q$; \\
-		\textbf{IL triples:} & $\undertriple{P}{\regr}{Q}$ & is valid if & $\fwsem{\regr} P \supseteq Q$; \\
-		\textbf{NC triples:} & $\necctriple{P}{\regr}{Q}$ & is valid if & $\bwsem{\regr} Q \subseteq P$; \\
+		\textbf{HL triples:}  & $\overtriple{P}{\regr}{Q}$  & is valid if & $\fwsem{\regr} P \subseteq Q$; \\
+		\textbf{IL triples:}  & $\undertriple{P}{\regr}{Q}$ & is valid if & $\fwsem{\regr} P \supseteq Q$; \\
+		\textbf{NC triples:}  & $\necctriple{P}{\regr}{Q}$  & is valid if & $\bwsem{\regr} Q \subseteq P$; \\
 		\textbf{SIL triples:} & $\angletriple{P}{\regr}{Q}$ & is valid if & $\bwsem{\regr} Q \supseteq P$.
 	\end{tabular}
 \end{definition}

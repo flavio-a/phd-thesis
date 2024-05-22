@@ -55,10 +55,10 @@ For the generic semantics of regular commands, we assume a concrete set of value
 The semantics of regular commands $\denot{\cdot} : \Reg \rightarrow C \rightarrow C$ is defined inductively in Figure~\ref{fig:bg:regcom-sem}.
 \begin{figure}[t]
 	\begin{align*}
-		\denot{\expe} &\eqdef \edenot{\expe} c \\
-		\denot{\regr_1 ; \regr_2 } c &\eqdef \denot{\regr_2}\denot{\regr_1} (c) \\
-		\denot{\regr_1 \regplus \regr_2} c &\eqdef \denot{\regr_1}c \vee_C \denot{\regr_2}c \\
-		\denot{\regr^\kstar}c &\eqdef \bigvee_{n \ge 0} \denot{\regr}^n c
+		\denot{\expe}                      & \eqdef \edenot{\expe} c                         \\
+		\denot{\regr_1 ; \regr_2 } c       & \eqdef \denot{\regr_2}\denot{\regr_1} (c)       \\
+		\denot{\regr_1 \regplus \regr_2} c & \eqdef \denot{\regr_1}c \vee_C \denot{\regr_2}c \\
+		\denot{\regr^\kstar}c              & \eqdef \bigvee_{n \ge 0} \denot{\regr}^n c
 	\end{align*}
 	\caption{Generic semantics of regular commands.}
 	\label{fig:bg:regcom-sem}
@@ -73,14 +73,14 @@ With this set of expressions, regular commands are very similar to Dijkstra's gu
 We can define \code{if} and \code{while} statements as syntactic sugar:
 \begin{align*}
 	\code{if (b) then } \code{c}_1 \code{ else } \code{c}_2 & \ \eqdef\  (\code{b?; c}_1) \regplus ((\lnot \code{b})\code{?; c}_2) \\
-	\code{while (b) do c} & \ \eqdef\  (\code{b?; c})^\kstar; (\lnot \code{b})\code{?}
+	\code{while (b) do c}                                   & \ \eqdef\  (\code{b?; c})^\kstar; (\lnot \code{b})\code{?}
 \end{align*}
 
 For the semantics of these basic expressions, we consider a finite set of variables $\Var$, then the set of stores $\Sigma = \Var \rightarrow \setZ$ that are (total) functions $\sigma$ from $\Var$ to integers. The complete lattice $C$ is defined as $\pow(\Sigma)$ with the usual order structure given by set inclusion. Given a store $\sigma \in \Sigma$, $\sigma[ x \mapsto v ]$ denotes function update as usual for $x \in \Var$ and $v \in \setZ$. We consider standard, inductively defined semantics $\edenot{\cdot}$ for arithmetic and boolean expressions $\code{a} \in \text{AExp}$ and $\code{b} \in \text{BExp}$. The semantics of expressions $\expe \in \Exp$ is then defined as
 \begin{align*}
-	\edenot{\code{skip}} S &\eqdef S \\
-	\edenot{\code{x := a}} S &\eqdef \left\lbrace \sigma[x \mapsto \edenot{\code{a}} \sigma] \svert \sigma \in S \right\rbrace \\
-	\edenot{\code{b?}} S &\eqdef \left\lbrace \sigma \in S \svert \edenot{\code{b}} \sigma = \code{tt} \right\rbrace
+	\edenot{\code{skip}} S   & \eqdef S                                                                                         \\
+	\edenot{\code{x := a}} S & \eqdef \left\lbrace \sigma[x \mapsto \edenot{\code{a}} \sigma] \svert \sigma \in S \right\rbrace \\
+	\edenot{\code{b?}} S     & \eqdef \left\lbrace \sigma \in S \svert \edenot{\code{b}} \sigma = \code{tt} \right\rbrace
 \end{align*}
 It is now easy to check that the semantics of $\code{if}$ and $\code{while}$ is the standard one for while-language. We also remark that this semantics $\edenot{\cdot}$ is both monotone and additive, and these properties are lifted to the semantics of regular commands $\denot{\cdot}$:
 \begin{prop}
@@ -105,32 +105,29 @@ An HL triple $\overtriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \overtr
 \begin{figure}[t]
 	\centering
 	\begin{framed}
-		%		\resizebox{\textwidth}{!}{
-			\(
-			\begin{array}{cc}
-				\infer[\hlrule{atom}]
-				{\overtriple{P}{\expe}{\denot{\expe}P}}
-				{}
-				\quad &
-				\infer[\hlrule{cons}]
-				{\overtriple{P}{\regr}{Q}}
-				{P \Rightarrow P' & \overtriple{P'}{\regr}{Q'}& Q' \Rightarrow Q}
-				\\[7.5pt]
-				\infer[\hlrule{seq}]
-				{\overtriple{P}{\regr_1;\regr_2}{Q}}
-				{\overtriple{P}{\regr_1}{R} &
-					\overtriple{R}{\regr_2}{Q}}
-				\qquad &
-				\infer[\hlrule{choice}]
-				{\overtriple{P}{\regr_1 \regplus \regr_2}{Q}}
-				{\overtriple{P}{\regr_1}{Q} & \overtriple{P}{\regr_2}{Q}}
-				\\[7.5pt]
-				\infer[\hlrule{iter}]
-				{\overtriple{P}{\regr^\kstar}{P}}
-				{\overtriple{P}{\regr}{P}}
-			\end{array}
-			\)
-			%		}
+		\(
+		\begin{array}{cc}
+			\infer[\hlrule{atom}]
+			{\overtriple{P}{\expe}{\denot{\expe}P}}
+			{}
+			\quad                       &
+			\infer[\hlrule{cons}]
+			{\overtriple{P}{\regr}{Q}}
+			{P \Rightarrow P'           & \overtriple{P'}{\regr}{Q'}  & Q' \Rightarrow Q}
+			\\[7.5pt]
+			\infer[\hlrule{seq}]
+			{\overtriple{P}{\regr_1;\regr_2}{Q}}
+			{\overtriple{P}{\regr_1}{R} & \overtriple{R}{\regr_2}{Q}}
+			\qquad                      &
+			\infer[\hlrule{choice}]
+			{\overtriple{P}{\regr_1 \regplus \regr_2}{Q}}
+			{\overtriple{P}{\regr_1}{Q} & \overtriple{P}{\regr_2}{Q}}
+			\\[7.5pt]
+			\infer[\hlrule{iter}]
+			{\overtriple{P}{\regr^\kstar}{P}}
+			{\overtriple{P}{\regr}{P}}
+		\end{array}
+		\)
 	\end{framed}
 	\vspace{-1ex}
 	\caption{Hoare logic for regular commands}\label{fig:bg:hl}
@@ -167,36 +164,33 @@ When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:h
 \begin{figure}[t]
 	\centering
 	\begin{framed}
-		%		\resizebox{\textwidth}{!}{
-			\(
-			\begin{array}{cc}
-				\infer[\ilrule{atom}]
-				{\undertriple{P}{\expe}{\denot{\expe}P}}
-				{}
-				\quad &
-				\infer[\ilrule{cons}]
-				{\undertriple{P}{\regr}{Q}}
-				{P \supseteq P' & \undertriple{P'}{\regr}{Q'}& Q' \supseteq Q}
-				\\[7.5pt]
-				\infer[\ilrule{seq}]
-				{\undertriple{P}{\regr_1;\regr_2}{Q}}
-				{\undertriple{P}{\regr_1}{R} &
-					\undertriple{R}{\regr_2}{Q}}
-				\qquad &
-				\infer[\ilrule{choice}]
-				{\undertriple{P}{\regr_1 \regplus \regr_2}{Q_1 \cup Q_2}}
-				{\undertriple{P}{\regr_1}{Q_1} & \undertriple{P}{\regr_2}{Q_2}}
-				\\[7.5pt]
-				\infer[\ilrule{iter}]
-				{\undertriple{P_0}{\regr^\kstar}{\bigcup\limits_{n \ge 0} P_n}}
-				{\forall n \ge 0 \sdot \undertriple{P_n}{\regr}{P_{n+1}}}
-				&
-%				\infer[\ilrule{disj}]
-%				{\undertriple{P_1 \lor P_2}{\regr}{Q_1 \lor Q_2}}
-%				{\undertriple{P_1}{\regr}{Q_1} & \undertriple{P_2}{\regr}{Q_2} }
-			\end{array}
-			\)
-			%		}
+		\(
+		\begin{array}{cc}
+			\infer[\ilrule{atom}]
+			{\undertriple{P}{\expe}{\denot{\expe}P}}
+			{}
+			\quad                          &
+			\infer[\ilrule{cons}]
+			{\undertriple{P}{\regr}{Q}}
+			{P \supseteq P'                & \undertriple{P'}{\regr}{Q'}    & Q' \supseteq Q}
+			\\[7.5pt]
+			\infer[\ilrule{seq}]
+			{\undertriple{P}{\regr_1;\regr_2}{Q}}
+			{\undertriple{P}{\regr_1}{R}   & \undertriple{R}{\regr_2}{Q}}
+			\qquad                         &
+			\infer[\ilrule{choice}]
+			{\undertriple{P}{\regr_1 \regplus \regr_2}{Q_1 \cup Q_2}}
+			{\undertriple{P}{\regr_1}{Q_1} & \undertriple{P}{\regr_2}{Q_2}}
+			\\[7.5pt]
+			\infer[\ilrule{iter}]
+			{\undertriple{P_0}{\regr^\kstar}{\bigcup\limits_{n \ge 0} P_n}}
+			{\forall n \ge 0 \sdot \undertriple{P_n}{\regr}{P_{n+1}}}
+			                               &
+			% \infer[\ilrule{disj}]
+			% {\undertriple{P_1 \lor P_2}{\regr}{Q_1 \lor Q_2}}
+			% {\undertriple{P_1}{\regr}{Q_1} & \undertriple{P_2}{\regr}{Q_2} }
+		\end{array}
+		\)
 	\end{framed}
 	\vspace{-1ex}
 	\caption{Simplified Incorrectness Logic, adapted from~\cite{MOH21}}\label{fig:bg:il}
@@ -288,10 +282,8 @@ Intuitively, elements of the idempotent semiring are programs, and the operation
 \begin{definition}[Kleene algebra]\label{def:bg:kleene-algebra}
 	A Kleene algebra is an idempotent semiring with an additional operator $\kstar$ satisfying the following axiom:
 	\begin{align*}
-		&1 + a \cdot a^\kstar = a^\kstar
-		&&1 + a^\kstar \cdot a = a^\kstar &(\textit{Star unfold})\\
-		&b + a \cdot c \le c \implies a^\kstar \cdot b \le c
-		&&b + c \cdot a \le c \implies b \cdot a^\kstar \le c &(\textit{Star induction})
+		 & 1 + a \cdot a^\kstar = a^\kstar                     &  & 1 + a^\kstar \cdot a = a^\kstar                     & (\textit{Star unfold})    \\
+		 & b + a \cdot c \le c \implies a^\kstar \cdot b \le c &  & b + c \cdot a \le c \implies b \cdot a^\kstar \le c & (\textit{Star induction})
 	\end{align*}
 \end{definition}
 \textit{(Star unfold)} axioms describes that $\kstar$ behaves as nondeterministic iteration. \textit{(Star induction)} axioms are the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the `increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $c$ and the inductive step $a \cdot b$ are below (ie. satisfies) the inductive thesis $b$ (since we prove their lub, that is their sum, is below $b$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
@@ -323,7 +315,7 @@ Since we can describe programs in KATs, it is natural to ask ourselves whether w
 			\infer[\hlrule{zero}]
 			{\overtriple{p}{0}{1}}
 			{}
-			\quad &
+			\quad                     &
 			\infer[\hlrule{one}]
 			{\overtriple{p}{1}{p}}
 			{}
@@ -331,16 +323,16 @@ Since we can describe programs in KATs, it is natural to ask ourselves whether w
 			\infer[\hlrule{atom}]
 			{\overtriple{p}{a}{q}}
 			{p \cdot a = p \cdot a \cdot q}
-			\quad &
+			\quad                     &
 			\infer[\hlrule{cons}]
 			{\overtriple{p}{a}{q}}
-			{p \leq p' & \overtriple{p'}{a}{q'}& q' \leq q}
+			{p \leq p'                & \overtriple{p'}{a}{q'}  & q' \leq q}
 			\\[7.5pt]
 			\infer[\hlrule{seq}]
 			{\overtriple{p}{a \cdot b}{q}}
-			{\overtriple{p}{a}{r} &
+			{\overtriple{p}{a}{r}     &
 				\overtriple{r}{b}{q}}
-			\qquad &
+			\qquad                    &
 			\infer[\hlrule{choice}]
 			{\overtriple{p}{a_1 + a_2}{q}}
 			{\forall i \in \{ 1, 2 \} & \overtriple{p}{a_i}{q}}
@@ -391,10 +383,10 @@ To give an intuition of the role of Galois connections in program analysis, we p
 	This defines the well known abstract domain of intervals \cite{CC77}.
 	$\alpha$ is the function that abstracts a set $S$ of possible values of \code{i} to the best (ie. most precise) abstract property:
 	\begin{align*}
-		\alpha(S) &= [\min(S); \max(S)]
+		\alpha(S) & = [\min(S); \max(S)]
 	\end{align*}
 	with the usual conventions for $\min$ and $\max$ of empty/unbound set.
-%	with the convention that $\min(\emptyset) = +\infty$, $\min(\emptyset) = -\infty$, the minimum of a lower-unbound set is $-\infty$ and the maximum of an upper-unbound set is $+\infty$.
+	%	with the convention that $\min(\emptyset) = +\infty$, $\min(\emptyset) = -\infty$, the minimum of a lower-unbound set is $-\infty$ and the maximum of an upper-unbound set is $+\infty$.
 	Since no smaller interval can describe the set $S$, and this is a superset of $S$, $\alpha(S)$ is exactly the best abstraction of $S$.
 
 	The concretization $\gamma$ is the function that does the inverse operation: given an interval $[n, m]$, thought as formal writing or machine representation, gives back its ``meaning", that is the largest subset of $\setZ$ that matches that property:
@@ -403,24 +395,24 @@ To give an intuition of the role of Galois connections in program analysis, we p
 	\]
 	that is exactly what is commonly represented with $[n; m]$: $\gamma$ is simply translating the formal writing (or, in our context, an abstract property) to a semantic set of values.
 	We omit for simplicity the cases for infinite ends, as they are as expected.
-%	The above definition of $\gamma$ is incomplete, missing cases for infinite ends:
-%	\begin{align*}
-%		\gamma([-\infty, m]) &= \{ x \in \setZ \svert x \le m \} \\
-%		\gamma([n, +\infty]) &= \{ x \in \setZ \svert n \le x \} \\
-%		\gamma([-\infty, +\infty]) &= \setZ \\
-%		\gamma([+\infty, -\infty]) &= \emptyset
-%	\end{align*}
+	%	The above definition of $\gamma$ is incomplete, missing cases for infinite ends:
+	%	\begin{align*}
+	%		\gamma([-\infty, m]) &= \{ x \in \setZ \svert x \le m \} \\
+	%		\gamma([n, +\infty]) &= \{ x \in \setZ \svert n \le x \} \\
+	%		\gamma([-\infty, +\infty]) &= \setZ \\
+	%		\gamma([+\infty, -\infty]) &= \emptyset
+	%	\end{align*}
 
-	With these definition, is a straightforward check to show that these two functions define a Galois connection (actually, a Galois insertion).
-%	Fixed $S \in \pow(\setZ)$ and the interval $[n, m] \in \Int$ (for simplicity, we assume both $n$ and $m$ finite) we have
-%	\begin{align*}
-%		& \alpha(S) \preceq [n, m] \\
-%		\iff &[\min(S); \max(S)] \preceq [n, m] \\
-%		\iff &n \le \min(S),\, \max(S) \le m \\
-%		\iff &\forall x \in S\ .\ n \le x,\, \forall x \in S\ .\ x \le m \\
-%		\iff &S \subseteq \{ x \in \setZ \svert n \le x \le m \} \\
-%		\iff &S \subseteq \gamma([n, m])
-%	\end{align*}
+	With these definition, it is straightforward to check that these two functions define a Galois connection (actually, a Galois insertion).
+	%	Fixed $S \in \pow(\setZ)$ and the interval $[n, m] \in \Int$ (for simplicity, we assume both $n$ and $m$ finite) we have
+	%	\begin{align*}
+	%		& \alpha(S) \preceq [n, m] \\
+	%		\iff &[\min(S); \max(S)] \preceq [n, m] \\
+	%		\iff &n \le \min(S),\, \max(S) \le m \\
+	%		\iff &\forall x \in S\ .\ n \le x,\, \forall x \in S\ .\ x \le m \\
+	%		\iff &S \subseteq \{ x \in \setZ \svert n \le x \le m \} \\
+	%		\iff &S \subseteq \gamma([n, m])
+	%	\end{align*}
 \end{example}
 
 We overload the symbol $A$ to denote also the function $\gamma \alpha: C \rightarrow C$: this is always an upper closure operator, that is a monotone, increasing (i.e. $c \le A(c)$ for all $c$) and idempotent function. In the following, we use closure operators as much as possible to simplify the notation. Particularly, they are useful to denote domain refinements, as exemplified in the next paragraph.
@@ -439,18 +431,18 @@ and that this defines a Galois connection $\gc{C}{\rho_M}{\id_M}{M}$.
 We use $\Abs(C)$ to denote the set of abstract domains over $C$, and we write $A_{\alpha, \gamma} \in \Abs(C)$ when we need to make the two maps $\alpha$ and $\gamma$ explicit (we omit them when not needed).
 Given two abstract domains $A_{\alpha, \gamma}, A'_{\alpha', \gamma'} \in \Abs(C)$ over $C$, we say $A'$ is a \emph{refinement} of $A$, written $A' \preceq A$, when $\gamma(A) \subseteq \gamma'(A')$. When this happens, the abstract domain $A'$ is more expressive than $A$, and in particular for all concrete elements $c \in C$ the inequality $A'(c) \le_C A(c)$ holds. This define a partial order on $\Abs(C)$, and when $C$ is a complete lattice the resulting structure is known to be a complete lattice too \cite{CC79}.
 
-A particular kind of domain refinements are pointed refinement \cite{BGGR22}. They are defined adding a single point to the abstract domain, and the performing Moore closure to recover an abstract domain.
-\begin{definition}[Pointed refinement]
+A particular kind of domain refinements are pointed refinement~\cite{BGGR22}. They are defined adding a single point to the abstract domain, and then performing Moore closure to recover an abstract domain.
+\begin{definition}[Pointed refinement~\cite{BGGR22}]
 	Let $A_{\alpha, \gamma} \in \Abs(C)$ be an abstract domain, and let $z \in C$ be a concrete point. Then the pointed refinement $A_z$ is defined as
 	\[
 	A_z = \Moore(\gamma(A) \cup z)
 	\]
 \end{definition}
-A pointed refinement is a refinement, that is $A_z \preceq A$. In particular, the two are related by
+We remark that, for any $z$, $A_z \preceq A$ and, in particular, the two are related by
 \[
 A_z(c) = \begin{cases*}
-	A(c) \wedge z &if $c \le z$ \\
-	A(c) &otherwise
+	A(c) \wedge z & if $c \le z$ \\
+	A(c)          & otherwise
 \end{cases*}
 \]
 
@@ -494,10 +486,10 @@ Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. Whil
 \begin{figure}[t]
 	\begin{align*}
 		\begin{split}
-			\denot{\expe}^{\sharp}_{A} a &\eqdef \denot{\expe}^{A} a = \alpha \edenot{\expe} \gamma (a)\\
-			\denot{\regr_1 ; \regr_2}^{\sharp}_{A} a &\eqdef \denot{\regr_2}^{\sharp}_{A} \denot{\regr_1}^{\sharp}_{A} (a) \\
-			\denot{\regr_1 \regplus \regr_2}^{\sharp}_{A} a &\eqdef \denot{\regr_1}^{\sharp}_{A} a \vee A \denot{\regr_2}^{\sharp}_{A} a \\
-			\denot{\regr^\kstar}^{\sharp}_{A} a &\eqdef \bigvee_{n \ge 0}  (\denot{\regr}^{\sharp}_{A})^n a
+			\denot{\expe}^{\sharp}_{A} a                    & \eqdef \denot{\expe}^{A} a = \alpha \edenot{\expe} \gamma (a)               \\
+			\denot{\regr_1 ; \regr_2}^{\sharp}_{A} a        & \eqdef \denot{\regr_2}^{\sharp}_{A} \denot{\regr_1}^{\sharp}_{A} (a)        \\
+			\denot{\regr_1 \regplus \regr_2}^{\sharp}_{A} a & \eqdef \denot{\regr_1}^{\sharp}_{A} a \vee A \denot{\regr_2}^{\sharp}_{A} a \\
+			\denot{\regr^\kstar}^{\sharp}_{A} a             & \eqdef \bigvee_{n \ge 0}  (\denot{\regr}^{\sharp}_{A})^n a
 		\end{split}
 	\end{align*}
 	\caption{Abstract semantics of regular commands}

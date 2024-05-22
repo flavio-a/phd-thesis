@@ -30,7 +30,7 @@ Intuitively, $\bdiamond{a} p$ is the strongest postcondition of $a$ on input $p$
 			\infer[\ilrule{divergence}]
 			{\undertriple{p}{0}{0}}
 			{}
-			\quad &
+			\quad                      &
 			\infer[\ilrule{skip}]
 			{\undertriple{p}{1}{p}}
 			{}
@@ -38,24 +38,24 @@ Intuitively, $\bdiamond{a} p$ is the strongest postcondition of $a$ on input $p$
 			\infer[\ilrule{atom}]
 			{\undertriple{p}{a}{\bdiamond{a}p}}
 			{}
-			\quad &
+			\quad                      &
 			\infer[\ilrule{cons}]
 			{\undertriple{p}{a}{q}}
-			{p \geq p' & \undertriple{p'}{a}{q'}& q' \geq q}
+			{p \geq p'                 & \undertriple{p'}{a}{q'}     & q' \geq q}
 			\\[7.5pt]
 			\infer[\ilrule{seq}]
 			{\undertriple{p}{a \cdot b}{q}}
-			{\undertriple{p}{a}{r} &
+			{\undertriple{p}{a}{r}     &
 				\undertriple{r}{b}{q}}
-			\qquad &
+			\qquad                     &
 			\infer[\ilrule{choice}]
 			{\undertriple{p}{a_1 + a_2}{q}}
-			{\exists i \in \{ 1, 2 \} & \undertriple{p}{a_i}{q}}
+			{\exists i \in \{ 1, 2 \}  & \undertriple{p}{a_i}{q}}
 			\\[7.5pt]
 			\infer[\ilrule{disj}]
 			{\undertriple{p_1 \lor p_2}{a}{q_1 \lor q_2}}
 			{\undertriple{p_1}{a}{q_1} & \undertriple{p_2}{a}{q_2} }
-			\qquad &
+			\qquad                     &
 			\infer[\ilrule{iter}]
 			{\undertriple{p_0}{a^\kstar}{\bigvee\limits_{n \ge 0} p_n}}
 			{\forall n \ge 0 \sdot \undertriple{p_n}{a}{p_{n+1}}}
@@ -101,8 +101,8 @@ With this addition, given any element $a$ of the TopKAT we have that $\top a$ re
 \begin{prop}[cf. \cite{ZAG22}]
 	In any relational TopKAT $\katR$, for any two elements $p, q \in \katR$ and letting $\text{cod}$ be the codomain operator of a relation,
 	\begin{align*}
-		\top p = \top q &\iff \text{cod}(p) = \text{cod}(q) \\
-		\top p \le \top q &\iff \text{cod}(p) \subseteq \text{cod}(q)
+		\top p = \top q   & \iff \text{cod}(p) = \text{cod}(q)         \\
+		\top p \le \top q & \iff \text{cod}(p) \subseteq \text{cod}(q)
 	\end{align*}
 \end{prop}
 The authors then use this definition to embed IL in a generic TopKAT.
@@ -147,11 +147,11 @@ Point (2) means that, given a specification \textit{Spec} expressible in $A$, an
 				\quad %&
 				\infer[\lclrule{relax}]
 				{\lcl{A}{P}{\regr}{Q}}
-				{P'\leq P \leq A(P')& \lcl{A}{P'}{\regr}{Q'}& Q \leq Q' \leq A(Q)}
+				{P'\leq P \leq A(P')       & \lcl{A}{P'}{\regr}{Q'}              & Q \leq Q' \leq A(Q)}
 				\\[7.5pt]
 				\infer[\lclrule{seq}]
 				{\lcl{A}{P}{\regr_1;\regr_2}{Q}}
-				{\lcl{A}{P}{\regr_1}{R} &
+				{\lcl{A}{P}{\regr_1}{R}    &
 					\lcl{A}{R}{\regr_2}{Q}}
 				\qquad %&
 				\infer[\lclrule{join}]
@@ -161,11 +161,11 @@ Point (2) means that, given a specification \textit{Spec} expressible in $A$, an
 				\\[7.5pt]
 				\infer[\lclrule{rec}]
 				{\lcl{A}{P}{\regr^\kstar}{Q}}
-				{\lcl{A}{P}{\regr}{R} & \lcl{A}{P\vee R}{\regr^\kstar}{Q} }
+				{\lcl{A}{P}{\regr}{R}      & \lcl{A}{P\vee R}{\regr^\kstar}{Q} }
 				\qquad %&
 				\infer[\lclrule{iterate}]
 				{\lcl{A}{P}{\regr^\kstar}{P\vee Q}}
-				{\lcl{A}{P}{\regr}{Q} & Q\leq A(P)}
+				{\lcl{A}{P}{\regr}{Q}      & Q\leq A(P)}
 			\end{array}
 			\)
 		}
@@ -207,8 +207,8 @@ To better show how this work, we briefly introduce the following example (discus
 \begin{example}
 	Consider the concrete domain $C = \pow(\setZ)$, the abstract domain $\Int$ of intervals, the precondition $P = \{ 1; 999 \}$ and the command $\regr \eqdef (\regr_1 \oplus \regr_2)^{\kstar}$, where
 	\begin{align*}
-		\regr_1 &\eqdef \code{(x > 0)?; x := x - 1} \\
-		\regr_2 &\eqdef \code{(x < 1000)?; x := x + 1}
+		\regr_1 & \eqdef \code{(x > 0)?; x := x - 1}    \\
+		\regr_2 & \eqdef \code{(x < 1000)?; x := x + 1}
 	\end{align*}
 	In $\LCLA$ it is possible to prove the triple $\lcl{\Int}{P}{\regr}{Q}$, whose postcondition is $Q = \{ 0; 2; 1000 \}$. Consider the two specification $\text{Spec}= (x \le 1000)$ and $\text{Spec}' = (x \ge 100)$.
 	The triple is then able to prove correctness of $\text{Spec}$ and incorrectness of $\text{Spec}'$.

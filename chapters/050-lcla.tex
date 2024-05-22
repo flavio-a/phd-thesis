@@ -19,31 +19,31 @@ The difference between $\denot{\regc}^{A}$ and $\denot{\regc}^{\sharp}_{A}$ is e
 \begin{example}[Extensional and intensional properties]\label{ex:lcla:ext-vs-int}
 	Consider the concrete domain $\pow(\setZ)$ of sets of integers and the abstract domain of signs given below:
 	\begin{center}
-%		\begin{tikzpicture}
-%			\draw (-1,0) node[name=1] {\footnotesize$\varnothing$};
-%			\draw (-2,1) node[name=2] {\footnotesize$\setZ_{<0}$};
-%			\draw (-1,1) node[name=3] {\footnotesize$\setZ_{=0}$};
-%			\draw (0,1) node[name=4] {\footnotesize$\setZ_{>0}$};
-%			\draw (-2,2) node[name=5] {\footnotesize$\setZ_{\leq 0}$};
-%			\draw (-1,2) node[name=8] {\footnotesize$\setZ_{\neq 0}$};
-%			\draw (-0,2) node[name=6] {\footnotesize$\setZ_{\geq 0}$};
-%			\draw (-1,3) node[name=7] {\footnotesize$\setZ$};
-%			\draw (-3.5,2.9) node[name=n] {{\normalsize $\Sign$}};
-%
-%
-%			\draw[semithick] (1) -- (2);
-%			\draw[semithick] (1) -- (3);
-%			\draw[semithick] (1) -- (4);
-%			\draw[semithick] (2) -- (5);
-%			\draw[semithick] (2) -- (8);
-%			\draw[semithick] (3) -- (5);
-%			\draw[semithick] (3) -- (6);
-%			\draw[semithick] (4) -- (6);
-%			\draw[semithick] (4) -- (8);
-%			\draw[semithick] (5) -- (7);
-%			\draw[semithick] (6) -- (7);
-%			\draw[semithick] (8) -- (7);
-%		\end{tikzpicture}
+		% \begin{tikzpicture}
+		% 	\draw (-1,0) node[name=1] {\footnotesize$\varnothing$};
+		% 	\draw (-2,1) node[name=2] {\footnotesize$\setZ_{<0}$};
+		% 	\draw (-1,1) node[name=3] {\footnotesize$\setZ_{=0}$};
+		% 	\draw (0,1) node[name=4] {\footnotesize$\setZ_{>0}$};
+		% 	\draw (-2,2) node[name=5] {\footnotesize$\setZ_{\leq 0}$};
+		% 	\draw (-1,2) node[name=8] {\footnotesize$\setZ_{\neq 0}$};
+		% 	\draw (-0,2) node[name=6] {\footnotesize$\setZ_{\geq 0}$};
+		% 	\draw (-1,3) node[name=7] {\footnotesize$\setZ$};
+		% 	\draw (-3.5,2.9) node[name=n] {{\normalsize $\Sign$}};
+		%
+		%
+		% 	\draw[semithick] (1) -- (2);
+		% 	\draw[semithick] (1) -- (3);
+		% 	\draw[semithick] (1) -- (4);
+		% 	\draw[semithick] (2) -- (5);
+		% 	\draw[semithick] (2) -- (8);
+		% 	\draw[semithick] (3) -- (5);
+		% 	\draw[semithick] (3) -- (6);
+		% 	\draw[semithick] (4) -- (6);
+		% 	\draw[semithick] (4) -- (8);
+		% 	\draw[semithick] (5) -- (7);
+		% 	\draw[semithick] (6) -- (7);
+		% 	\draw[semithick] (8) -- (7);
+		% \end{tikzpicture}
 		\includegraphics{sign-domain.pdf}
 	\end{center}
 	The meaning of each abstract elements of $\Sign$ is to represent concrete values that satisfy the respective property: for instance, $\gamma(\setZ_{< 0}) = \{ n \in \setZ \svert n < 0 \}$ and $\alpha( \{ 0; 1; 100 \}) = \setZ_{\ge 0}$.
@@ -55,16 +55,16 @@ The difference between $\denot{\regc}^{A}$ and $\denot{\regc}^{\sharp}_{A}$ is e
 	Its denotational semantics $\denot{\regc}$ is the identity function $\id_{\setZ}$, so its bca $$\denot{\regc}^{\Sign} \eqdef \alpha~\id_{\setZ}~\gamma = \id_{\Sign}$$
 	is just the abstract identity. We say that $\denot{\regc}^{\Sign}$ is \emph{extensional} because it only depends on the function computed by $\regc$, i.e., its denotational semantics. However, an analyser does not know the semantics of $\regc$, so it has to analyse the program syntactically, breaking it down in elementary pieces and gluing the results together. So for instance, starting from the concrete point $P = \{ 1 \}$ the analysis first abstracts it to the property $\alpha(P) = \setZ_{> 0}$, then it computes
 	\begin{align*}
-		\denot{\regc}^{\sharp}_{\Sign} (\setZ_{> 0}) &= \denot{\code{x := x - 1}}^{\sharp}_{\Sign} \denot{\code{x := x + 1}}^{\sharp}_{\Sign} (\setZ_{> 0}) \\
-		&= \denot{\code{x := x - 1}}^{\sharp}_{\Sign} (\setZ_{> 0}) = \setZ_{\ge 0} .
+		\denot{\regc}^{\sharp}_{\Sign} (\setZ_{> 0}) & = \denot{\code{x := x - 1}}^{\sharp}_{\Sign} \denot{\code{x := x + 1}}^{\sharp}_{\Sign} (\setZ_{> 0}) \\
+		                                             & = \denot{\code{x := x - 1}}^{\sharp}_{\Sign} (\setZ_{> 0}) = \setZ_{\ge 0} .
 	\end{align*}
 	Analogous calculations for all properties in $\Sign$ yields the abstraction
 	\[
 	\denot{\regc}^{\sharp}_{\Sign}(a) = \begin{cases*}
-		\varnothing & if $a = \varnothing$ \\
+		\varnothing   & if $a = \varnothing$                                                                                     \\
 		\setZ_{\ge 0} & if $a \in \{ \colorbox{lightgray}{$\setZ_{= 0}$}, \colorbox{lightgray}{$\setZ_{> 0}$}, \setZ_{\ge 0} \}$ \\
-		\setZ_{< 0} & if $a = \setZ_{< 0}$ \\
-		\setZ & if $a \in \{ \colorbox{lightgray}{$\setZ_{\le 0}$}, \colorbox{lightgray}{$\setZ_{\neq 0}$}, \setZ \}$
+		\setZ_{< 0}   & if $a = \setZ_{< 0}$                                                                                     \\
+		\setZ         & if $a \in \{ \colorbox{lightgray}{$\setZ_{\le 0}$}, \colorbox{lightgray}{$\setZ_{\neq 0}$}, \setZ \}$
 	\end{cases*}
 	\]
 	that, albeit sound, is less precise than $\id_{\Sign}$ (we highlight with a gray background all inputs on which $\denot{\regc}^{\sharp}_{\Sign}$ loses accuracy).
@@ -96,9 +96,9 @@ As anticipated at the beginning of the Chapter, one of our goals is to weaken po
 \begin{proof}
 	First we remark that points (1) and (3) implies point (2):
 	\begin{align*}
-		\alpha(Q) &\le \alpha(\denot{\regr} P) &[\text{(1) and monotonocity of }\alpha] \\
-		&\le \denot{\regr}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
-		&= \alpha(Q) &[\text{(3)}]
+		\alpha(Q) & \le \alpha(\denot{\regr} P)     & [\text{(1) and monotonocity of }\alpha] \\
+		          & \le \denot{\regr}^{A} \alpha(P) & [\text{soundness of }\denot{\regr}^{A}] \\
+		          & = \alpha(Q)                     & [\text{(3)}]
 	\end{align*}
 	So all the lines are equal, in particular $\alpha(Q) = \alpha(\denot{\regr} P)$.
 	The proof is then by induction on the derivation tree of $\lcl{A}{P}{\regr}{Q}$, but we only have to prove (1) and (3) because of the observation above.
@@ -109,11 +109,11 @@ As anticipated at the beginning of the Chapter, one of our goals is to weaken po
 
 	\noindent (3) We recall that $\denot{\regr_1; \regr_2}^{A} \le \denot{\regr_2}^{A} \denot{\regr_1}^{A}$.
 	\begin{align*}
-		\alpha(Q) &\le \alpha(\denot{\regr_1; \regr_2} P) &[\text{(1) and monotonicity of }\alpha] \\
-		&\le \denot{\regr_1; \regr_2}^{A} \alpha(P) &[\text{soundness of }\denot{\regr}^{A}] \\
-		&\le \denot{\regr_2}^{A} \denot{\regr_1}^{A} \alpha(P) &[\text{recalled above}] \\
-		&= \denot{\regr_2}^{A} \alpha(R) &[\text{inductive hp}] \\
-		&= \alpha(Q) &[\text{inductive hp}]
+		\alpha(Q) & \le \alpha(\denot{\regr_1; \regr_2} P)                & [\text{(1) and monotonicity of }\alpha] \\
+		          & \le \denot{\regr_1; \regr_2}^{A} \alpha(P)            & [\text{soundness of }\denot{\regr}^{A}] \\
+		          & \le \denot{\regr_2}^{A} \denot{\regr_1}^{A} \alpha(P) & [\text{recalled above}]                 \\
+		          & = \denot{\regr_2}^{A} \alpha(R)                       & [\text{inductive hp}]                   \\
+		          & = \alpha(Q)                                           & [\text{inductive hp}]
 	\end{align*}
 	So all the lines are equal, in particular $\denot{\regr_1; \regr_2}^{A} \alpha(P) = \alpha(Q)$.
 \end{proof}
@@ -161,7 +161,7 @@ We remark that a rule like \lclrule{refine\mbox{-}ext}, that allows to carry on 
 	\]
 	Then $C \preceq \Sign$ and we can prove $\lcl{C}{P}{\regr}{\{ 5; 9 \}}$ applying \lclrule{transfer} since all functions are locally complete in the concrete domain. However, if $f = \denot{\regr} = \edenot{\code{x := x + 10}}$, it is not the case that $\complete{\Sign}{P}{f}$: indeed
 	\begin{align*}
-		\Sign (f (\Sign(P))) &= \Sign (f(\setZ_{< 0})) = \Sign(\{ n \in \setZ \svert n < 10 \}) = \top
+		\Sign (f (\Sign(P))) & = \Sign (f(\setZ_{< 0})) = \Sign(\{ n \in \setZ \svert n < 10 \}) = \top
 	\end{align*}
 	while
 	\begin{align*}
@@ -188,9 +188,9 @@ The necessary infinitary rule, called \lclrule{limit}, allows the proof system t
 \begin{proof}
 	First, the hypotheses of the theorem implies $\complete{A}{P}{\denot{\regr}}$:
 	\begin{align*}
-		\denot{\regr}^A \alpha(P) &= \alpha(Q) &[\text{hp of the theorem}]\\
-		&\le \alpha(\denot{\regr} P) &[\text{monotonicity of } \alpha \text{ and hp } Q \le \denot{\regr} P]\\
-		&\le \denot{\regr}^A \alpha(P) &[\text{soundness of } \denot{\regr}^{A}]
+		\denot{\regr}^A \alpha(P) & = \alpha(Q)                   & [\text{hp of the theorem}]                                             \\
+		                          & \le \alpha(\denot{\regr} P)   & [\text{monotonicity of } \alpha \text{ and hp } Q \le \denot{\regr} P] \\
+		                          & \le \denot{\regr}^A \alpha(P) & [\text{soundness of } \denot{\regr}^{A}]
 	\end{align*}
 	Hence $\alpha(\denot{\regr} P) = \denot{\regr}^A \alpha(P) = \alpha \denot{\regr} \gamma \alpha(P)$, that is local completeness, and $\alpha(Q) = \alpha(\denot{\regr} P)$.
 
@@ -204,9 +204,9 @@ The necessary infinitary rule, called \lclrule{limit}, allows the proof system t
 
 	Now we want to apply \lclrule{refine\mbox{-}ext} to move to the concrete domain $C$. Clearly $C \preceq A$. The last hypothesis of the rule can be readily verified recalling that $\denot{r}^{C} = \denot{r}$ and $\alpha' = \gamma' = \id_C$:
 	\begin{align*}
-		\alpha \denot{r}^{C} A(P) &= \alpha \denot{r} A(P) \\
-		&= \denot{r}^{A} \alpha(P) \\
-		&= \alpha(\denot{\regr} P)
+		\alpha \denot{r}^{C} A(P) & = \alpha \denot{r} A(P)   \\
+		                          & = \denot{r}^{A} \alpha(P) \\
+		                          & = \alpha(\denot{\regr} P)
 	\end{align*}
 	To say that triple $\lcl{C}{P}{\regr}{\denot{\regr} P}$ is provable we resort to Theorem~5.11 of \cite{BGGR21}. The hypothesis of that theorem are satisfied: all expressions are globally complete in the concrete domain $C$, $\denot{r} P \le \denot{r} P$ and $\denot{r}^{\sharp}_C \id_C(P) = \denot{\regr} P = \id_C(\denot{r} P)$, where we used $\alpha' = \id_C$ and $\denot{r}^{\sharp}_C = \denot{r}$.
 
@@ -235,60 +235,35 @@ The hypothesis $A \denot{\regr}^{A'} A(P) = A(Q)$ is added to rule \lclrule{refi
 	Consider the concrete domain $\pow(\setZ)$, the abstract domain of signs $\Sign_{\alpha, \gamma} \in \Abs(\pow(\setZ))$ (introduced in Example~\ref{ex:lcla:ext-vs-int}) and its refinement $\Sign_{1}$ below:
 
 	\begin{center}
-%		\begin{tikzpicture}[scale=0.7,shorten >=-2pt, shorten <=-2pt]
-%			\draw (-1,-1) node[name=1] {\footnotesize$\varnothing$};
-%			\draw (-2,0.3) node[name=2] {\footnotesize$\setZ_{<0}$};
-%			\draw (-1,0.3) node[name=3] {\footnotesize$\setZ_{=0}$};
-%			\draw (0,0.3) node[name=4] {\footnotesize$\setZ_{>0}$};
-%			\draw (-2,1.6) node[name=5] {\footnotesize$\setZ_{\leq 0}$};
-%			\draw (-1,1.6) node[name=8] {\footnotesize$\setZ_{\neq 0}$};
-%			\draw (-0,1.6) node[name=6] {\footnotesize$\setZ_{\geq 0}$};
-%			\draw (-1,3) node[name=7] {\footnotesize$\setZ$};
-%			\draw (-3,2.9) node[name=n] {{\normalsize $\Sign$}};
-%
-%
-%			\draw[semithick] (1) -- (2);
-%			\draw[semithick] (1) -- (3);
-%			\draw[semithick] (1) -- (4);
-%			\draw[semithick] (2) -- (5);
-%			\draw[semithick] (2) -- (8);
-%			\draw[semithick] (3) -- (5);
-%			\draw[semithick] (3) -- (6);
-%			\draw[semithick] (4) -- (6);
-%			\draw[semithick] (4) -- (8);
-%			\draw[semithick] (5) -- (7);
-%			\draw[semithick] (6) -- (7);
-%			\draw[semithick] (8) -- (7);
-%		\end{tikzpicture}
 		\includegraphics{sign-domain.pdf}
 		\qquad\qquad
-%		\begin{tikzpicture}[scale=0.7,shorten >=-2pt, shorten <=-2pt]
-%			\draw (-1,-1) node[name=1] {\footnotesize$\varnothing$};
-%			\draw (-2,0.2) node[name=2] {\footnotesize$\setZ_{<0}$};
-%			\draw (-1,0.2) node[name=3] {\footnotesize$\setZ_{=0}$};
-%			\draw (0,-0.3) node[name=9] {\footnotesize$\setZ_{=1}$};
-%			\draw (0,0.6) node[name=4] {\footnotesize$\setZ_{>0}$};
-%			\draw (-2,1.8) node[name=5] {\footnotesize$\setZ_{\leq 0}$};
-%			\draw (-1,1.8) node[name=8] {\footnotesize$\setZ_{\neq 0}$};
-%			\draw (-0,1.8) node[name=6] {\footnotesize$\setZ_{\geq 0}$};
-%			\draw (-1,3) node[name=7] {\footnotesize$\setZ$};
-%			\draw (-3,2.9) node[name=n] {{\normalsize $\Sign_1$}};
-%
-%
-%			\draw[semithick] (1) -- (2);
-%			\draw[semithick] (1) -- (3);
-%			\draw[semithick] (2) -- (5);
-%			\draw[semithick] (2) -- (8);
-%			\draw[semithick] (3) -- (5);
-%			\draw[semithick] (3) -- (6);
-%			\draw[semithick] (4) -- (6);
-%			\draw[semithick] (4) -- (8);
-%			\draw[semithick] (5) -- (7);
-%			\draw[semithick] (6) -- (7);
-%			\draw[semithick] (8) -- (7);
-%			\draw[semithick] (1) -- (9);
-%			\draw[semithick] (9) -- (4);
-%		\end{tikzpicture}
+		% \begin{tikzpicture}[scale=0.7,shorten >=-2pt, shorten <=-2pt]
+		% 	\draw (-1,-1) node[name=1] {\footnotesize$\varnothing$};
+		% 	\draw (-2,0.2) node[name=2] {\footnotesize$\setZ_{<0}$};
+		% 	\draw (-1,0.2) node[name=3] {\footnotesize$\setZ_{=0}$};
+		% 	\draw (0,-0.3) node[name=9] {\footnotesize$\setZ_{=1}$};
+		% 	\draw (0,0.6) node[name=4] {\footnotesize$\setZ_{>0}$};
+		% 	\draw (-2,1.8) node[name=5] {\footnotesize$\setZ_{\leq 0}$};
+		% 	\draw (-1,1.8) node[name=8] {\footnotesize$\setZ_{\neq 0}$};
+		% 	\draw (-0,1.8) node[name=6] {\footnotesize$\setZ_{\geq 0}$};
+		% 	\draw (-1,3) node[name=7] {\footnotesize$\setZ$};
+		% 	\draw (-3,2.9) node[name=n] {{\normalsize $\Sign_1$}};
+		%
+		%
+		% 	\draw[semithick] (1) -- (2);
+		% 	\draw[semithick] (1) -- (3);
+		% 	\draw[semithick] (2) -- (5);
+		% 	\draw[semithick] (2) -- (8);
+		% 	\draw[semithick] (3) -- (5);
+		% 	\draw[semithick] (3) -- (6);
+		% 	\draw[semithick] (4) -- (6);
+		% 	\draw[semithick] (4) -- (8);
+		% 	\draw[semithick] (5) -- (7);
+		% 	\draw[semithick] (6) -- (7);
+		% 	\draw[semithick] (8) -- (7);
+		% 	\draw[semithick] (1) -- (9);
+		% 	\draw[semithick] (9) -- (4);
+		% \end{tikzpicture}
 		\includegraphics{sign1-domain.pdf}
 	\end{center}
 
@@ -315,7 +290,6 @@ Despite being necessary, the hypothesis of rule \lclrule{refine\mbox{-}ext} cann
 	\vspace{-1ex}
 	\caption{Rule \lclrule{refine\mbox{-}int} for $\LCLA$.}\label{fig:lcla:rule-refine-int}
 \end{figure*}
-
 
 The first rule we present replaces the requirement on the extensional bca $\denot{\regr}^{A'}$ with requirements on the intensional compositional abstraction $\denot{\regr}^{\sharp}_{A'}$ computed in $A'$ (see Figure~\ref{fig:lcla:rule-refine-int}). For this reason, we call this rule \lclrule{refine\mbox{-}int}.
 
@@ -367,24 +341,24 @@ We present an example to highlight the advantages of this rule (as well as \lclr
 \begin{example}[The use of \lclrule{refine\mbox{-}pre}]\label{ex:lcla:refine-pre-usefulness}
 	Consider the two program fragments
 	\begin{align*}
-		\regr_1 &\eqdef \code{(y != 0)?; y := abs(y)} \\
-		\regr_2 &\eqdef \code{x := y; while (x > 1) \{ y := y - 1; x := x - 1 \}} \\
-		&= \code{x := y; ((x > 1)?; y := y - 1; x := x - 1)$^{\kstar}$; (x <= 1)? }
+		\regr_1 & \eqdef \code{(y != 0)?; y := abs(y)}                                       \\
+		\regr_2 & \eqdef \code{x := y; while (x > 1) \{ y := y - 1; x := x - 1 \}}           \\
+		        & = \code{x := y; ((x > 1)?; y := y - 1; x := x - 1)$^{\kstar}$; (x <= 1)? }
 	\end{align*}
 	and the program $\regr \eqdef \regr_1; \regr_2$. Here \code{abs} is a function to compute the absolute value, and we assume, for the sake of simplicity, that the analyser knows its best abstraction. Consider the concrete domain $\pow(\setZ^2)$ where a pair $(n, m)$ denote a state $\code{x} = n$, $\code{y} = m$, and the initial state $P = (\code{y} \in [-100; 100])$, a logical description of the concrete points $\{ (n, m) \svert m \in [-100; 100] \} \in \pow(\setZ^2)$.
 	The bca $\denot{\regr}^{\Int}$ in the abstract domain of intervals is locally complete on $P$ (since $P$ is expressible in $\Int$), but the compositional abstraction $\denot{\regr}^{\sharp}_{\Int}$ is not:
 	\begin{align*}
-		\denot{\regr}^{\Int} \alpha(P) &= \Int (\denot{\regr_2} \denot{\regr_1} (\{ (n, m) \svert m \in [-100; 100] \})) \\
-		&= \Int (\denot{\regr_2} (\{ (n, m) \svert m \in [1; 100] \})) \\
-		&= \Int (\{ (1, 1) \}) \\
-		&= ([1; 1] \times [1; 1]) ,
+		\denot{\regr}^{\Int} \alpha(P) & = \Int (\denot{\regr_2} \denot{\regr_1} (\{ (n, m) \svert m \in [-100; 100] \})) \\
+		                               & = \Int (\denot{\regr_2} (\{ (n, m) \svert m \in [1; 100] \}))                    \\
+		                               & = \Int (\{ (1, 1) \})                                                            \\
+		                               & = ([1; 1] \times [1; 1]) ,
 	\end{align*}
 	while
 	\begin{align*}
-		\denot{\regr}^{\sharp}_{\Int} \alpha(P) &= \denot{\regr_2}^{\sharp}_{\Int} \denot{\regr_1}^{\sharp}_{\Int} ([-\infty; +\infty] \times [-100; 100]) \\
-		&= \denot{\regr_2}^{\sharp}_{\Int} \denot{\code{y := abs(y)}}^{\Int} ([-\infty; +\infty] \times [-100; 100]) \\
-		&= \denot{\regr_2}^{\sharp}_{\Int} ([-\infty; +\infty] \times [0; 100]) \\
-		&= ([1; 1] \times [0; 100]) \neq ([1; 1] \times [1; 1]) .
+		\denot{\regr}^{\sharp}_{\Int} \alpha(P) & = \denot{\regr_2}^{\sharp}_{\Int} \denot{\regr_1}^{\sharp}_{\Int} ([-\infty; +\infty] \times [-100; 100])   \\
+		                                        & = \denot{\regr_2}^{\sharp}_{\Int} \denot{\code{y := abs(y)}}^{\Int} ([-\infty; +\infty] \times [-100; 100]) \\
+		                                        & = \denot{\regr_2}^{\sharp}_{\Int} ([-\infty; +\infty] \times [0; 100])                                      \\
+		                                        & = ([1; 1] \times [0; 100]) \neq ([1; 1] \times [1; 1]) .
 	\end{align*}
 	The issues are twofold.
 	First, the analysis of $\regr_1$ in $\Int$ is incomplete, so we need a more concrete domain. For instance, we can select $\Int_{\neq 0}$, the Moore closure of $\Int$ with the addition of the element $\setZ_{\neq 0}$ representing the property of being nonzero. Intuitively, $\Int_{\neq 0}$ contains all intervals, possibly having a ``hole" in $0$. Formally
@@ -400,26 +374,26 @@ We present an example to highlight the advantages of this rule (as well as \lclr
 	However, rule \lclrule{refine\mbox{-}pre} allows us to combine these different proof derivations. Since the program state between $\regr_1$ and $\regr_2$ can be precisely represented in $\Int$, we use this domain as a baseline and refine it to $\Int_{\neq 0}$ and to $\Oct$ for the two parts, respectively.
 
 	%	\begin{figure*}[t]
-		%		\[
-		%		\text{\small
-			%			\infer[(\mathsf{seq})]
-			%			{\lcl{\Int_{\neq 0}}{P}{\regr_1}{R}
-				%%					\qquad \Int_{\neq 0} \preceq \Int \qquad \Int(P) = \Int_{\neq 0}(P)
-				%			}
-			%			{
-				%				\infer[(\mathsf{transfer})]
-				%				{\lcl{\Int_{\neq 0}}{P}{\code{y != 0?}}{R_1}}{ \complete{\Int_{\neq 0}}{P}{\denot{\code{y != 0?}}} }
-				%				&
-				%				\infer[(\mathsf{relax})]
-				%				{\lcl{\Int_{\neq 0}}{R_1}{\code{y := abs(y)}}{R}}
-				%				{\infer[(\mathsf{transfer})]
-					%					{\lcl{\Int_{\neq 0}}{R_1}{\code{y := abs(y)}}{\code{y} \in [1; 100]}}{ \complete{\Int_{\neq 0}}{R_1}{\denot{\code{y := abs(y)}}} }
-					%				}
-				%			}
-			%		}
-		%		\]
-		%		\caption{Derivation of $\lcl{\Int_{\neq 0}}{P}{\regr_1}{R}$ for Example~\ref{ex:refine-pre-usefulness}.}\label{fig:ex-refine-pre-derivation-1}
-		%	\end{figure*}
+	%		\[
+	%		\text{\small
+	%			\infer[(\mathsf{seq})]
+	%			{\lcl{\Int_{\neq 0}}{P}{\regr_1}{R}
+	%					\qquad \Int_{\neq 0} \preceq \Int \qquad \Int(P) = \Int_{\neq 0}(P)
+	%			}
+	%			{
+	%				\infer[(\mathsf{transfer})]
+	%				{\lcl{\Int_{\neq 0}}{P}{\code{y != 0?}}{R_1}}{ \complete{\Int_{\neq 0}}{P}{\denot{\code{y != 0?}}} }
+	%				&
+	%				\infer[(\mathsf{relax})]
+	%				{\lcl{\Int_{\neq 0}}{R_1}{\code{y := abs(y)}}{R}}
+	%				{\infer[(\mathsf{transfer})]
+	%					{\lcl{\Int_{\neq 0}}{R_1}{\code{y := abs(y)}}{\code{y} \in [1; 100]}}{ \complete{\Int_{\neq 0}}{R_1}{\denot{\code{y := abs(y)}}} }
+	%				}
+	%			}
+	%		}
+	%		\]
+	%		\caption{Derivation of $\lcl{\Int_{\neq 0}}{P}{\regr_1}{R}$ for Example~\ref{ex:refine-pre-usefulness}.}\label{fig:ex-refine-pre-derivation-1}
+	%	\end{figure*}
 
 	Let $R = (\code{y} \in \{ 1; 2; 100 \})$ that is an under\hyp{}approximation of the concrete state in between $\regr_1$ and $\regr_2$ with the same abstraction in $\Int$, so the triple $\lcl{\Int}{P}{\regr_1}{R}$ is valid. Note that the concrete point $2$ was added to $R$ in order to have local completeness for \code{(x > 1)?} in $\regr_2$. However, this triple cannot be proved in $\Int$ because $\denot{\regr_1}^{\sharp}_{\Int}$ is not locally complete on $P$, so we resort to \lclrule{refine\mbox{-}pre} to change the domain to $\Int_{\neq 0}$.
 	In the derivation below, we let $R_1 = (\code{y} \in [-100; 100] \land \code{y} \neq 0)$ and we omit for simplicity the additional hypothesis of \lclrule{relax}:
@@ -468,9 +442,9 @@ For the first, we propose a valid triple that $\LCLA$ extended with \lclrule{ref
 \begin{example}[Logical incompleteness of \lclrule{refine\mbox{-}pre}]\label{ex:lcla:refine-pre-incomplete}
 	Consider the program fragments\footnote{Note that $\regr_w$ is equivalent to the regular command $\code{false?}$.}
 	\begin{align*}
-		\regr_1 &\eqdef \code{x := x + 2} \\
-		\regr_w &\eqdef \code{while (true) \{ skip \}} \\
-		\regr &\eqdef \regr_1 \code{; }\regr_w
+		\regr_1 & \eqdef \code{x := x + 2}              \\
+		\regr_w & \eqdef \code{while (true) \{ skip \}} \\
+		\regr   & \eqdef \regr_1 \code{; }\regr_w
 	\end{align*}
 	the concrete domain $\pow(\setZ)$, the abstract domains $\Int_{\neq 0}$ (see Example~\ref{ex:lcla:refine-pre-usefulness}) and the initial state $P = \{ -4, 0 \}$.
 	Then $\lclvalid{\Int_{\neq 0}}{P}{\regr}{\emptyset}$ but this triple cannot be proved in $\LCLA$ extended with \lclrule{refine\mbox{-}pre}.
@@ -493,13 +467,13 @@ For the first, we propose a valid triple that $\LCLA$ extended with \lclrule{ref
 
 	The second is that $\denot{\regr_1}$ is not locally complete on $P$ in $\Int_{\neq 0}$ or any of its refinements $A' \preceq \Int_{\neq 0}$ such that $A'(P) = \Int_{\neq 0}(P)$:
 	\begin{align*}
-		A'(\denot{\regr_1} P) &\subseteq \Int_{\neq 0}(\denot{\regr_1} P) \\
-		&= \{ -2, -1, 1, 2 \} \\
-		&\subset \{ -2, -1, 0, 1, 2 \} \\
-		&\subseteq A'(\{ -2, -1, 0, 1, 2 \}) \\
-		&= A'(\denot{\regr_1} (\{ -4, -3, -2, -1, 0 \})) \\
-		&= A'(\denot{\regr_1} (\Int_{\neq 0}(P))) \\
-		&= A'(\denot{\regr_1} A'(P))
+		A'(\denot{\regr_1} P) & \subseteq \Int_{\neq 0}(\denot{\regr_1} P)      \\
+		                      & = \{ -2, -1, 1, 2 \}                            \\
+		                      & \subset \{ -2, -1, 0, 1, 2 \}                   \\
+		                      & \subseteq A'(\{ -2, -1, 0, 1, 2 \})             \\
+		                      & = A'(\denot{\regr_1} (\{ -4, -3, -2, -1, 0 \})) \\
+		                      & = A'(\denot{\regr_1} (\Int_{\neq 0}(P)))        \\
+		                      & = A'(\denot{\regr_1} A'(P))
 	\end{align*}
 
 	Now suppose to have a derivation of $\lcl{\Int_{\neq 0}}{P}{\regr}{\emptyset}$. This proof must use \lclrule{seq} to handle the sequential composition $\regr_1 \code{; }\regr_w$, so it needs a triple for $\regr_1$. By the first observation above, any use of \lclrule{relax} cannot change the precondition of this triple, even if we resort first to \lclrule{refine\mbox{-}pre} to refine the domain. Thus we must have a triple $\lcl{A'}{P}{\regr_1}{R}$ for some $R$ and $A' \preceq \Int_{\neq 0}$ satisfying $A'(P) = \Int_{\neq 0}(P)$. However, by soundness, any such triple would imply local completeness of $\denot{\regr_1}$ on $P$ in $A'$, which is a contradiction by the second observation above.
@@ -513,8 +487,8 @@ We now present an example to illustrate that there are situations in which \lclr
 \begin{example}
 	Consider the two program fragments
 	\begin{align*}
-		\regr_1 &\eqdef \code{(y != 0)?; x := y; y := abs(y)} \\
-		\regr_2 &\eqdef \code{x := y; while (x > 1) \{ y := y - 1; x := x - 1 \}}
+		\regr_1 & \eqdef \code{(y != 0)?; x := y; y := abs(y)}                     \\
+		\regr_2 & \eqdef \code{x := y; while (x > 1) \{ y := y - 1; x := x - 1 \}}
 	\end{align*}
 	and the program $\regr \eqdef \regr_1; \regr_2$. Consider also the initial state $P = \code{y} \in [-100; 100]$.
 
@@ -524,11 +498,11 @@ We now present an example to illustrate that there are situations in which \lclr
 
 	Following Example~\ref{ex:lcla:refine-pre-usefulness}, the domain $\Int_{\neq 0}$ is able to infer on $\regr_1$ a subset $R$ of the strongest postcondition $\code{y} \in [1; 100] \land \code{y} = \text{abs}(\code{x})$ with the same abstraction $\Int_{\neq 0}(R) = [-100; 100]_{\neq 0} \times [1; 100]$. However, for any such $R$ we cannot use \lclrule{refine\mbox{-}pre} to prove the triple $\lcl{\Int}{R}{\regr_2}{\code{x} = 1 \land \code{y} = 1}$ via $\Oct$ because $\Int(R) = \code{x} \in [-100; 100] \land \code{y} \in [1; 100]$ while $\Oct(R) = 1 \le \code{y} \le 100 \land -\code{y} \le \code{x} \le \code{y}$. More in general, any subset of the strongest postcondition contains the relational information $\code{y} = \text{abs}(\code{x})$, so relational domains like octagons and polyhedra \cite{CH78} do not have the same abstraction as the non-relational $\Int$, preventing the use of \lclrule{refine\mbox{-}pre}. However, we can apply \lclrule{refine\mbox{-}int}: considering $R = (\code{y} \in \{1; 2; 100\} \land \code{y} = \text{abs}(\code{x}) )$, $Q = (\code{x} = 1 \land \code{y} = 1)$ and $\regr_w \eqdef \code{while (x > 1) \{ y := y - 1; x := x - 1 \}}$, we have
 	\begin{align*}
-		\Int \denot{\regr_2}^{\sharp}_{\Oct} \Int(R) &= \Int \denot{\regr_2}^{\sharp}_{\Oct} (\code{x} \in [-100; 100] \land \code{y} \in [1; 100])\\
-		&= \Int \denot{\regr_w}^{\sharp}_{\Oct} \denot{\code{x := y}}^{\sharp}_{\Oct} (\code{x} \in [-100; 100] \land \code{y} \in [1; 100]) \\
-		&= \Int \denot{\regr_w}^{\sharp}_{\Oct} (1 \le \code{y} \le 100, \code{y} = \code{x}) \\
-		&= \Int(\code{x} = 1 \land \code{y} = 1) \\
-		&= \Int(Q) .
+		\Int \denot{\regr_2}^{\sharp}_{\Oct} \Int(R) & = \Int \denot{\regr_2}^{\sharp}_{\Oct} (\code{x} \in [-100; 100] \land \code{y} \in [1; 100])                                       \\
+		                                             & = \Int \denot{\regr_w}^{\sharp}_{\Oct} \denot{\code{x := y}}^{\sharp}_{\Oct} (\code{x} \in [-100; 100] \land \code{y} \in [1; 100]) \\
+		                                             & = \Int \denot{\regr_w}^{\sharp}_{\Oct} (1 \le \code{y} \le 100, \code{y} = \code{x})                                                \\
+		                                             & = \Int(\code{x} = 1 \land \code{y} = 1)                                                                                             \\
+		                                             & = \Int(Q) .
 	\end{align*}
 
 	In this example, rule \lclrule{refine\mbox{-}pre} can be applied to prove the triple, but it requires to have relational information from the assignment \code{x := y} in $\regr_1$, hence forcing the use of a relational domain (e.g. the reduced product~\cite{CC79} of $\Oct$ and $\Int_{\neq 0}$) for the whole $\regr$, making the analysis more expensive.
@@ -638,11 +612,11 @@ On the other hand, rule \lclrule{simplify} perform the ``global" analysis in $\P
 \begin{example}
 	Consider the program fragments
 	\begin{align*}
-		\regr_1 &\eqdef \code{x := y; y := y - 3; x := x - 4} \\
-		\regr_2 &\eqdef \code{z := y; y := 0} \\
-		\regr_3 &\eqdef \code{w := z - x} \\
-		\regr &\eqdef \regr_1; \regr_2; \regr_3 \\
-		&= \code{x := y; y := y - 3; x := x - 4; z := y; y := 0; w := z - x}
+		\regr_1 & \eqdef \code{x := y; y := y - 3; x := x - 4}                        \\
+		\regr_2 & \eqdef \code{z := y; y := 0}                                        \\
+		\regr_3 & \eqdef \code{w := z - x}                                            \\
+		\regr   & \eqdef \regr_1; \regr_2; \regr_3                                    \\
+		        & = \code{x := y; y := y - 3; x := x - 4; z := y; y := 0; w := z - x}
 	\end{align*}
 	and the initial state $P = -100 \le y \le 100$. At the end, the value for $\code{w}$ is always $1$. To prove it, the analysis must track the dependency between variables using a relational domain such as polyhedra. However, for the first three assignments (i.e., the fragment $\regr_1$) we do not need to track any dependency involving $\code{z}$ and $\code{w}$, and after the assignment \code{y := 0} in $\regr_2$ there is no dependency to track with $\code{y}$.
 
@@ -671,7 +645,6 @@ On the other hand, rule \lclrule{simplify} perform the ``global" analysis in $\P
 
 	Note that $\Poly(R_1) = \Poly_{\pi_1}(R_1)$ and $\Poly(Q) = \Poly_{\pi_2}(Q)$ because $R_1$ (resp. $Q$) only contains constraints between variables in the same partition of $\pi_1$ (resp. $\pi_2$).
 \end{example}
-
 
 Since \lclrule{simplify} is analogous to \lclrule{refine\mbox{-}pre}, a natural question is whether there exists one simplification rule similar to the stronger \lclrule{refine\mbox{-}ext}. We believe this is not the case.
 A dual of \lclrule{refine\mbox{-}ext} for simplification should involve $\denot{\regr}^{A'}$, because the goal of the rule is to perform the analysis in $A'$. The only reasonable input to which we can apply $\denot{\regr}^{A'}$ is $\alpha'(P)$. Note that, since $A' \succeq A$, abstracting with $A$ before does not change the result: $\alpha' A(P) = \alpha'(P)$. The hypothesis $\lcl{A'}{P}{\regr}{Q}$ implies, by soundness, $\denot{\regr}^{A'} \alpha'(P) = \alpha'(Q)$. Moreover, for the rule to be sound its hypotheses must ensure that $\alpha(Q) = \alpha(\denot{\regr} P) = \denot{\regr}^{A} \alpha(P)$, so any condition involving $\denot{\regr}^{A'} \alpha'(P)$ and any of those three is equivalent to $A'(Q) = A(Q)$.
@@ -711,16 +684,16 @@ Under this hypothesis, we show the following lemma:
 \begin{proof}
 	We prove the two inequalities separately. We recall that $\denot{\regr}$ and $\gamma_0$ are monotone, and we use this fact implicitly in the chains of inequalities below.
 	\begin{align*}
-		\gamma_0 (Q) &\le \gamma_0 (\denot{\regr}_L P) &[\text{validity of }\lcl{A}{P}{\regr}{Q}\text{, pt. (1)}] \\
-		&= \denot{\regr} \gamma_0(P) &[\text{forward completeness}] \\
-		&\le \denot{\regr} X &[\gamma_0(P) \le X]
+		\gamma_0 (Q) & \le \gamma_0 (\denot{\regr}_L P) & [\text{validity of }\lcl{A}{P}{\regr}{Q}\text{, pt. (1)}] \\
+		             & = \denot{\regr} \gamma_0(P)      & [\text{forward completeness}]                             \\
+		             & \le \denot{\regr} X              & [\gamma_0(P) \le X]
 	\end{align*}
 	and
 	\begin{align*}
-		\denot{\regr} X &\le \denot{\regr} \gamma_0 \gamma \alpha(P) &[X \le \gamma_0 \gamma \alpha(P)] \\
-		&\le \gamma_0 (\denot{\regr}_L \gamma\alpha(P)) &[\text{soundness of }\denot{\regr}_L] \\
-		&\le \gamma_0 \gamma ((\denot{\regr}_L)^A \alpha(P)) &[\text{soundness of }(\denot{\regr}_L)^A] \\
-		&= \gamma_0 \gamma \alpha(Q) &[\text{validity of }\lcl{A}{P}{\regr}{Q}\text{, pt. (3)}]
+		\denot{\regr} X & \le \denot{\regr} \gamma_0 \gamma \alpha(P)         & [X \le \gamma_0 \gamma \alpha(P)]                         \\
+		                & \le \gamma_0 (\denot{\regr}_L \gamma\alpha(P))      & [\text{soundness of }\denot{\regr}_L]                     \\
+		                & \le \gamma_0 \gamma ((\denot{\regr}_L)^A \alpha(P)) & [\text{soundness of }(\denot{\regr}_L)^A]                 \\
+		                & = \gamma_0 \gamma \alpha(Q)                         & [\text{validity of }\lcl{A}{P}{\regr}{Q}\text{, pt. (3)}]
 	\end{align*}
 \end{proof}
 
@@ -731,7 +704,7 @@ Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr
 	Consider the concrete domain $\mathbb{R}^2$ of two real variables $\code{x}$ and $\code{y}$, the polyhedra domain $\Poly$ as $A$ and the set of finite unions of polyhedra $\Poly_{\cup}$ as $L$.
 	Consider the program fragment
 	\begin{align*}
-		\regr_r &\eqdef \code{x := ($\sqrt{2}$ / $2$) * x - ($\sqrt{2}$ / $2$) * y; y := x + $\sqrt{2}$ * y}
+		\regr_r & \eqdef \code{x := ($\sqrt{2}$ / $2$) * x - ($\sqrt{2}$ / $2$) * y; y := x + $\sqrt{2}$ * y}
 	\end{align*}
 	the program $\regr \eqdef \regr_r^\kstar$ and the set of states $X = -5 \le x \le 5 \land -5 \le y \le 5$, describing a square in the Cartesian plane. Please note that the program $\regr_r$ rotates the point $(x, y)$ in the Cartesian plane by $\pi / 4$ radiants, therefore applying $\regr_r$ to $X$ twice returns $X$. In particular, letting $X' \eqdef \denot{\regr_r} X$, this means that $\denot{\regr} X = X \cup X'$.
 
@@ -794,12 +767,12 @@ The only simplification rule \lclrule{simplify} is theoretically slightly strong
 	\renewcommand{\arraystretch}{1.5}
 	\setlength{\tabcolsep}{0.6em}
 	\begin{tabular}{c|c|c}
-		Proof system & Extensional & Logical completeness \\ \hline \hline
-		Plain $\LCLA$ & \ding{55} & \ding{55} \\ \hline
-		$\LCLA$ + \lclrule{refine\mbox{-}ext} & \checkmark & \checkmark \\ \hline
-		$\LCLA$ + \lclrule{refine\mbox{-}int} & \checkmark & \checkmark \\ \hline
-		$\LCLA$ + \lclrule{refine\mbox{-}pre} & \checkmark & \ding{55} \\ \hline
-		$\LCLA$ + \lclrule{simplify} & \ding{55} & \ding{55} \\
+		Proof system                          & Extensional & Logical completeness \\ \hline \hline
+		Plain $\LCLA$                         & \ding{55}   & \ding{55}            \\ \hline
+		$\LCLA$ + \lclrule{refine\mbox{-}ext} & \checkmark  & \checkmark           \\ \hline
+		$\LCLA$ + \lclrule{refine\mbox{-}int} & \checkmark  & \checkmark           \\ \hline
+		$\LCLA$ + \lclrule{refine\mbox{-}pre} & \checkmark  & \ding{55}            \\ \hline
+		$\LCLA$ + \lclrule{simplify}          & \ding{55}   & \ding{55}            \\
 	\end{tabular}
 	\vspace{1em}
 	\caption{Comparison of the proof systems}
