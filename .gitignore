@@ -34,6 +34,7 @@ _minted*
 unused
 todo.md
 *.tdo
+chapters/*.bak
 
 # Used to make images from tikz
 standalone

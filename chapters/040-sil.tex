@@ -11,7 +11,7 @@ The content of this chapter is based on~\cite{ABGL24}.
 	\begin{tabular}{c|ccc}
 		                   & Forward                   &                                        & Backward                                            \\[3pt]
 		\hline             &                           &                                        &                                                     \\[-5pt]
-		\quad Over\quad\   & \quad Hoare Logic         & $\xleftrightarrow{\qquad\simeq\qquad}$ & Necessary Conditions                                \\ [5pt]
+		\quad Over \quad\  & \quad Hoare Logic         & $\xleftrightarrow{\qquad\simeq\qquad}$ & Necessary Conditions                                \\[5pt]
 		\quad Under\quad\  & \quad Incorrectness Logic &                                        & \textcolor{ACMBlue}{Sufficient Incorrectness Logic}
 	\end{tabular}
 	\caption{The taxonomy of triple-based logics. They are sorted depending on whether they use forward or backward semantics and over or under-approximation. HL and NC are equivalent ($\simeq$). SIL is the new logic introduced here.}
@@ -21,7 +21,7 @@ The content of this chapter is based on~\cite{ABGL24}.
 As discussed in Sections~\ref{sec:bg:hl} and \ref{sec:bg:il}, the validity conditions of HL and IL are defined as over and under-approximation of the forward semantics $\fwsem{\cdot}$. However, other program logics cannot be naturally described in terms of $\fwsem{\cdot}$. To this end, we consider a backward semantics $\bwsem{\cdot}$ defined as the opposite relation of the forward semantics, that is
 
 \begin{equation}
-	\bwsem{\regr} \sigma' \eqdef \{ \sigma \svert \sigma' \in \fwsem{\regr} \sigma \} \label{eq:sil:bwsem-definition}
+	\bwsem{\regr} \sigma' \eqdef \{ \sigma \mid \sigma' \in \fwsem{\regr} \sigma \} \label{eq:sil:bwsem-definition}
 \end{equation}
 
 \noindent or, equivalently,
@@ -54,7 +54,7 @@ Using $\bwsem{\cdot}$, we characterize NC with the validity condition $\bwsem{\r
 	\]
 \end{prop}
 
-Note that this is not an entirely new understanding of NC (it was already hinted in the work that introduced them, and an analogous characterization appeared in~\cite[§6.3]{ZK22} in terms of weakest precondition), but the explicit use of the backward semantics in our contest enables a more streamlined comparison with other logics in Section~\ref{sec:sil:comparison}.
+Note that this is not a new understanding of NC (it was already hinted in the work that introduced them, and an analogous characterization appeared in~\cite[§6.3]{ZK22} in terms of weakest precondition), but the explicit use of the backward semantics in our contest enables a more streamlined comparison with other logics in Section~\ref{sec:sil:comparison}.
 
 We organize the validity conditions of HL, IL and NC in the taxonomy in Figure~\ref{fig:sil:taxonomy}. We classify logics depending on (1) whether the condition is expressed in terms of forward or backward semantics and (2) whether it is an over or an under-approximation.
 This naturally sparks the question on what does the backward under-approximation condition mean and whether a logic for it has been developed.
@@ -93,17 +93,176 @@ To tackle this issue, we introduce Sufficient Incorrectness Logic (SIL) as a pro
 Since in this chapter we deal with different kinds of program logics, a summary of the notation for the various triples is reported in Figure~\ref{fig:sil:notation-summary}.
 
 \section{Sufficient Incorrectness Logic}
-Interestingly, IL and SIL share the possibility to drop disjuncts, which was in fact one of the leading motivations for the introduction of IL to increase scalability and make the methods effective: the difference is that IL drops disjuncts in the postconditions, while SIL in the preconditions, a feature that is illustrated in Section~\ref{sec:separation-sil-derivation}.
+Sufficient incorrectness conditions identify the source of incorrectness and provide programmers with evidence of the inputs that can cause the errors.
+The SIL triple
+\[
+\angletriple{P}{\regr}{Q}
+\]
+asserts that ``\emph{all states in $P$ have at least one execution leading to a state in $Q$}'', which can be summarized with the validity condition
+\[
+\bwsem{\regr} Q \supseteq P \text{.}
+\]
+Please note that, in the presence of nondeterminism, states in $P$ are required to have one execution leading to $Q$, not necessarily all of them.
+We make this point evident by the following proposition.
+
+\begin{prop}[Characterization of SIL validity]\label{prop:sil:validity-characterization}
+	For any $\regr \in \Reg$, $P, Q \subseteq \Sigma$ we have
+	\[
+	\bwsem{\regr} Q \supseteq P \iff \forall \sigma \in P \sdot \exists \sigma' \in Q \sdot \sigma' \in \fwsem{\regr} \sigma
+	\]
+\end{prop}
+
+A convenient way to exploit SIL is to assume that the analysis takes as input the incorrectness specification $Q$, i.e., the set of erroneous final states. Then, any valid SIL triple $\angletriple{P}{\regr}{Q}$ yields a precondition which surely captures erroneous executions. In this sense, $P$ gives a sufficient condition for incorrectness. This is dual to the interpretation of IL where, for a given precondition $P$, any IL triple $\undertriple{P}{\regr}{Q}$ yields a set $Q$ of final states which are for sure
+reachable, so that any error state in $Q$ is a true bug reachable from some input in $P$.
+We show that SIL and IL triples differ via a simple example.
+
+\begin{example}\label{ex:sil:sil-vs-il}
+	Let us consider the simple deterministic program $\regr 42$, already used in~\cite{OHearn20} to show the essence of IL triples:
+	\begin{minted}{C}
+if (x is even) {
+	if (y is odd) {
+		z := 42;
+	}
+}
+// assert(z != 42)
+	\end{minted}
+	We assume that $Q_{42} \eqdef (z = 42)$ denotes the set of erroneous states.
+	Any SIL triple provides a sufficient condition for the input state that causes the error. For instance, in SIL (but not with IL) we can prove the triple $\angletriple{\text{odd}(y) \wedge \text{even}(x)}{\regr 42}{Q_{42}}$ stating that any state where $x$ is even and $y$ is odd will lead to the error (i.e., $z=42$).
+	In IL, but \emph{not} in SIL, one can prove that some errors can be reached even when we start in a safe state. For instance, $\undertriple{z=11}{\regr 42}{Q_{42} \wedge \text{odd}(y) \wedge \text{even}(x)}$ is a valid IL but not in SIL. In fact, it is not true that for any state where $z=11$ the program $\regr 42$ will reach an error, e.g., when we start with $z \mapsto 11, x \mapsto 0, y \mapsto 0$.
+\end{example}
+
+Sufficient incorrectness preconditions are extremely valuable to programmers: by pointing out the sources of errors, they serve as a starting point to scope down debugging, fuzzing, and testing. Moreover, it is known that, contrary to IL and its extensions, backward under\hyp{}approximation can expose manifest errors~\cite[§3.2]{LRVBDO22}: an error $Q$ is manifest if and only if the SIL triple $\angletriple{\true}{\regr}{Q}$ is valid. Intuitively, an error is manifest if it happens regardless of the context, and experimentally it has been observed that manifest errors are likely to be fixed when reported~\cite[§5]{LRVBDO22}.
+Moreover, IL and SIL share the possibility to drop disjuncts, one of the leading factors for the introduction of IL to increase scalability and make bug\hyp{}finding effective: the key difference is that IL drops disjuncts in the post, while SIL in the pre.
+
+\subsection{Proof System}\label{sec:sil:sil-rules}
+
+\begin{figure*}[t]
+	\centering
+	\begin{framed}
+		\(
+		\begin{array}{cc}
+			\infer[\silrule{atom}]
+			{\angletriple{\bwsem{\regc}Q}{\regc}{Q}}
+			{}
+			\quad                        &
+			\infer[\silrule{cons}]
+			{\angletriple{P}{\regr}{Q}}
+			{P \subseteq P'              & \angletriple{P'}{\regr}{Q'}    & Q' \subseteq Q}
+			\\[7.5pt]
+			\infer[\silrule{seq}]
+			{\angletriple{P}{\regr_1;\regr_2}{Q}}
+			{\angletriple{P}{\regr_1}{R} & \angletriple{R}{\regr_2}{Q}}
+			\qquad                       &
+			\infer[\silrule{choice}]
+			{\angletriple{P_1 \cup P_2}{\regr_1 \regplus \regr_2}{Q}}
+			{\forall i \in \{ 1, 2 \}    & \angletriple{P_i}{\regr_i}{Q}}
+			\\[7.5pt]
+			\infer[\silrule{iter}]
+			{\angletriple{\bigcup\limits_{n \ge 0} Q_n}{\regr^\kstar}{Q_0}}
+			{\forall n \ge 0 \sdot \angletriple{Q_{n+1}}{\regr}{Q_n}}
+		\end{array}
+		\)\\
+		\vspace{0.3em}
+		\hrulefill \\
+		\vspace{-2.5ex}\hrulefill
+		\vspace{-0.2em}
+		\begin{center}
+			\small Additional rules
+		\end{center}
+		\(
+		\begin{array}{cc}
+			\infer[\silrule{empty}]
+			{\angletriple{\emptyset}{\regr}{Q}}
+			{}
+			\qquad                         &
+			\infer[\silrule{iter0}]
+			{\angletriple{Q}{\regr^\kstar}{Q}}
+			{}
+			\\[7.5pt]
+			\infer[\silrule{unroll}]
+			{\angletriple{P}{\regr^\kstar}{Q}}
+			{\angletriple{P}{\regr^\kstar; \regr}{Q}}
+			\qquad                         &
+			\infer[\silrule{disj}]
+			{\angletriple{P_1 \cup P_2}{\regr}{Q_1 \cup Q_2}}
+			{\angletriple{P_1}{\regr}{Q_1} & \angletriple{P_2}{\regr}{Q_2} }
+		\end{array}
+		\)
+	\end{framed}
+	\caption{Sufficient Incorrectness Logic}\label{fig:sil:sil-rules}
+\end{figure*}
+
+The inference rules for SIL are in Figure~\ref{fig:sil:sil-rules}. The top five rules form a minimal, correct and complete proof system.
+Atomic commands are handled by \silrule{atom}, which exploits the backward semantics.
+Rule \silrule{seq} is standard.
+Rule \silrule{choice} is reminiscent of the equation for conditionals in the calculus of possible correctness \cite{Hoare78}. If all states in $P_i$ have an execution of $\regr_i$ ending in $Q$, they can choose nondeterministically to execute $\regr_i$ in $\regr_1 \regplus \regr_2$, ending in $Q$.
+For iteration, for each $n \ge 0$ we find inductively the precondition $Q_n$ of executing $\regr$ exactly $n$ times. The precondition of the whole $\regr^{\kstar}$ is then the union of all the $Q_n$, as formalized by rule \silrule{iter}, which first appeared in \cite[\S 5]{MOH21}.
+The consequence rule \silrule{cons} enables the under-approximation of the precondition and it follows from the validity condition. If all the states in $P'$ have an execution leading to a state in $Q'$, then any subset $P$ of $P'$ will lead to $Q'$ as well. Similarly, every superset $Q$ of $Q'$ is reachable by executions starting in $P$.
+
+The SIL proof system is both correct and complete. Correctness can be proved by induction on the derivation tree of a triple. Intuitively, if the premises of a rule are valid, then its consequence is valid as well, as we briefly observed in the previous section. To prove completeness, we rely on the fact that rules other than \silrule{cons} are exact, that is, if their premises satisfy the equality $\bwsem{\regr} Q = P$, their conclusion does as well. Using this, we prove the triple $\angletriple{\bwsem{\regr}Q}{\regr}{Q}$ for any $\regr$ and $Q$. Then we conclude using \silrule{cons} to get a proof of $\angletriple{P}{\regr}{Q}$ for any $P \subseteq \bwsem{\regr}Q$.
+
+\begin{theorem}[SIL is sound and complete]\label{thm:sil:sil-sound-complete}
+	A SIL triple is provable if and only if it is valid:
+	\[
+	\vdash\angletriple{P}{\regr}{Q} \iff \vDash\angletriple{P}{\regr}{Q}
+	\]
+\end{theorem}
+
+\paragraph*{Additional Rules for Program Analysis}
+The above set of five rules is deliberately minimal: if we remove any rule, SIL is no longer complete. However, there are other valid rules, not derivable from those five, that can be useful in practice. Some of them are at the bottom of Figure~\ref{fig:sil:sil-rules}.
+
+Rule \silrule{empty} is used to drop paths backward, just like IL can drop them forward (and analogous axiom $\undertriple{P}{\regr}{\emptyset}$ is valid for IL). Particularly, this allows to ignore one of the branches of \silrule{choice}, or to stop the backward iteration of \silrule{iter} without covering all the iterations. An example of such an application is the derived rule \silrule{iter0}, which corresponds to not entering the iteration at all. It can be proved from rules \silrule{iter} and \silrule{empty} by taking $Q_0 = Q$ and $Q_n = \emptyset$ for $n \ge 1$. It subsumes HL's rule \hlrule{iter}, which is based on loop invariants: those are a correct but not complete reasoning tool for under\hyp{}approximation~\cite{OHearn20}.
+Rule \silrule{unroll} allows to unroll a loop once. Subsequent applications of this rule allow to simulate (backward) a finite number of iterations, and then rule \silrule{iter0} can be used to ignore the remaining ones. This is on par with IL ability to unroll a loop a finite number of times to find some post, for which analogous rules are valid~\cite{OHearn20,MOH21}.
+
+\begin{example}\label{ex:sil-derivation-2}
+	Let us consider the program ``loop0'' from~\cite[\S 6.1]{OHearn20}:
+
+	\begin{minted}{C}
+x := 0;
+n := nondet();
+while(n > 0) {
+	x := x + n;
+	n := nondet();
+}
+// assert(x != 2000000)
+	\end{minted}
+
+	\noindent
+	We can translate it in the syntax of regular commands by letting
+	\begin{align*}
+		\regr_w         & \eqdef \code{(n > 0)?; x := x + n; n := nondet()}                         \\
+		\mathsf{rloop0} & \eqdef \code{x := 0; n := nondet(); }(\regr_w)^{\kstar}; \code{(n <= 0)?}
+	\end{align*}
+	Final error states are those in $Q_{2M} \eqdef (x = 2 000 000)$.
+
+	To prove a triple for $\mathsf{rloop0}$, we have to perform at least one iteration, and we do so using \silrule{unroll}.
+	We let $R_{2M} \eqdef (x = 2000000 \land n \le 0)$ and $T_{2M} \eqdef (x + n = 2000000 \land n > 0)$. It is straightforward to prove $\angletriple{T_{2M}}{\regr_w}{R_{2M}}$ via \silrule{seq} and \silrule{atom}. Given this triple, we can unroll the loop once and prove the same triple for $\regr_w^{\kstar}$:
+	\[
+	\infer[\silrule{unroll}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{R_{2M}}}{
+		\infer[\silrule{seq}]{\angletriple{T_{2M}}{\regr_w^{\kstar}; \regr_w}{R_{2M}}}{
+			\infer[\silrule{iter0}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{T_{2M}}}{}
+			&
+			\infer{\angletriple{T_{2M}}{\regr_w}{R_{2M}}}{\cdots}
+		}
+	}
+	\]
+	This is a property of under-approximation: a non-deterministic number of iterations can be under-approximated by a single iteration \cite[\S 6.1]{OHearn20}.
+	With this triple for the loop, we can prove for the whole program the triple $\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ using \silrule{seq} and \silrule{atom}. The full proof is in the Appendix, Figure~\ref{fig:app:sil-example-derivation-2}.
+
+	Differently than IL, this triple highlights that any initial state can lead to an error: instead of reporting the presence of a true bug, we can report an initial state which causes the bug.
+\end{example}
+
+Rule \silrule{disj} allows to split the analysis and join the results, just like HL and IL. However, while a corresponding rule \hlrule{conj} which perform intersection is sound for HL, it is unsound for both IL and SIL (see Example~\ref{ex:il-no-strongest-pre}).
 
 \section{Relations Among Logics}\label{sec:sil:comparison}
-We summarize the validity of different kinds of triples in the
+\todo[inline]{Check this whole section because rn is quite bad (also add some stuff for NC in the background and the appendix)}
+Following the two-dimensional taxonomy in Figure~\ref{fig:sil:taxonomy}, we carry out an exhaustive comparison among the four validity conditions. While the duality between HL and IL was crystal clear since the introduction of IL, their relations with NC and SIL has never been explored. For reference, we summarize the validity of different kinds of triples below.
 
-\begin{definition}[Triples validity]\label{def:sil:validity}
+\begin{definition}\label{def:sil:validity}
 	For any program $\regr$ and sets of states $P,Q$ we let the following:
 
 	\smallskip
-
-	\begin{tabular}{llll}
+	\begin{tabular}{lclr}
 		\textbf{HL triples:}  & $\overtriple{P}{\regr}{Q}$  & is valid if & $\fwsem{\regr} P \subseteq Q$; \\
 		\textbf{IL triples:}  & $\undertriple{P}{\regr}{Q}$ & is valid if & $\fwsem{\regr} P \supseteq Q$; \\
 		\textbf{NC triples:}  & $\necctriple{P}{\regr}{Q}$  & is valid if & $\bwsem{\regr} Q \subseteq P$; \\
@@ -111,14 +270,189 @@ We summarize the validity of different kinds of triples in the
 	\end{tabular}
 \end{definition}
 
-By using the validity conditions in Definition~\ref{def:sil:validity}, we can characterize HL, IL, NC, and SIL according to (i) whether the condition is expressed in terms of forward or backward semantics, and (ii) whether it is an over- or an under-approximation (Figure~\ref{fig:sil:taxonomy}).
-Indeed, in HL and NC it is safe to enlarge the respective target set (i.e., $Q$ and $P$) so we do categorize them as over-approximations.
-Similarly, in IL and SIL it is safe to shrink their target sets, so we do classify them as under-approximations.
-Furthermore, from the validity conditions, we can immediately derive the consequence rules for each logic: for HL and SIL we are allowed to weaken $Q$ and strengthen $P$, while for IL and NC we can do the opposite, i.e. the direction of the consequence rules are determined by the diagonals in Figure~\ref{fig:sil:taxonomy}.
-Notwithstanding the fact that NC and IL share the same consequence rule, we will show that NC and IL are not related, whereas NC is tightly connected to HL.
-We obtain that an NC triple $\necctriple{P}{\regr}{Q}$ is valid \emph{if and only if} the HL triple $\overtriple{\lnot P}{\regr}{\lnot Q}$ is valid.
+Validity of HL and IL corresponds to the constraints $\fwsem{\regr} P \subseteq Q$ and $\fwsem{\regr} P \supseteq Q$, respectively. Therefore, their validity is expressed using the forward semantics. The difference between the two inequalities resides in the direction of the inclusion: the postcondition is an over-approximation of the forward semantics in HL, while it is an under-approximation in IL.
+Dually, the validity condition for NC and SIL triples, $\bwsem{\regr} Q \subseteq P$ and $\bwsem{\regr} Q \supseteq P$ respectively. Note that we classify NC as an over-approximation because $P$ is a superset of the (backward) semantics applied to $Q$, and dually for SIL: we check the direction of the approximation on the ``target'' set of the condition (that is, $Q$ for forward and $P$ for backward semantics).
+
+\subsection{Pairwise Comparison}
+\subsubsection{NC and IL}
+Sufficient preconditions are properties that imply Dijkstra's weakest liberal precondition~\cite{Dijkstra75}: $\overline{P}$ is sufficient for a postcondition $Q$ if and only if $\overline{P} \Rightarrow \wlp[\regr](Q)$, which in turn is equivalent to validity of the HL triple $\overtriple{\overline{P}}{\regr}{Q}$. Necessary and sufficient preconditions are dual, and so are IL and HL. Moreover, NC and IL enjoy the same consequence rule: both can strengthen the post and weaken the pre. While this suggests that there could be a relation between NC and IL, the following example shows this is not the case.
+
+\begin{example}
+	Let us consider the deterministic program $\regr 42$ of Example~\ref{ex:sil:sil-vs-il}, with $Q_{42} \eqdef (z=42)$.
+	Let $Q'_{42} \eqdef (Q_{42} \wedge \text{odd}(y) \wedge \text{even}(x))$ and $P_{11} \eqdef (z = 11)$. We know from the previous example that $\undertriple{P_{11}}{\regr 42}{Q'_{42}}$ is a valid IL triple.
+	However, we observe that the NC triple $\necctriple{P_{11}}{\regr 42}{Q'_{42}}$ is not valid because the state $\sigma$ such that $\sigma(x) = 0$, $\sigma(y) = 1$, $\sigma(z) = 10$ has an execution leading to $Q'_{42}$ but is not in $P_{11}$.
+	Moreover, take for instance $\underline{P} = (\text{odd}(y) \land \text{even}(x))$, which makes the NC triple $\necctriple{\underline{P}}{\regr 42}{Q'_{42}}$ valid (any state \emph{not} satisfying $\underline{P}$ has either an even $y$ or an odd $x$, and those variables are not changed by the program). Then it is clear that $P_{11} \notimplies \underline{P}$. This shows that not only IL triples do not yield NC triples, but also that in general there are NC preconditions which are not implied by IL preconditions.
+
+	Conversely, consider $\neg Q_{42} = (z \neq 42)$. While the NC triple $\necctriple{\true}{\regr 42}{\neg Q_{42}}$ is valid, the IL triple $\undertriple{\true}{\regr 42}{\neg Q_{42}}$ is not: for instance, the final state $\sigma'$ such that $\sigma'(x) = \sigma'(y) = \sigma'(z) = 11$ is not reachable from any initial state. It follows that the IL triple $\undertriple{P}{\regr 42}{\neg Q_{42}}$ is not valid for any $P$.
+\end{example}
+
+Given a valid NC triple $\necctriple{\underline{P}}{\regr}{Q}$ and a valid IL triple $\undertriple{P}{\regr}{Q}$, there are states satisfying both $P$ and $\underline{P}$, i.e., $P \cap \underline{P} \neq \emptyset$. However, in general neither $P \subseteq \underline{P}$ nor $\underline{P} \subseteq P$ hold. The difference between NC and IL is striking when we spell out their validity conditions using quantifiers: initial states are universally quantified in (NC$^{\forall}$)---\emph{all} initial states with a good run must satisfy the precondition---but they are existentially quantified in (IL$^{\exists}$).
+\begin{align*}
+	\forall \sigma' \in Q \sdot \forall \sigma\in \bwsem{\regr}\sigma' \sdot\sigma\in P
+	\tag{NC$^{\forall}$} \\
+	\forall \sigma' \in Q \sdot \exists \sigma\in \bwsem{\regr}\sigma' \sdot \sigma \in P
+	\tag{IL$^{\exists}$}
+\end{align*}
+
+We observe that, whenever $\regr$ is reversible (i.e., $\fwsem{\regr}$ is injective) any valid IL triple is also a valid NC triple.
+
+\subsubsection{NC and HL}
+%\label{sec:nc-hl}
+It turns out that NC is strongly connected to weakest liberal preconditions and thus to HL.
+Let $Q$ be a correctness specification: a finite trace is in $\mathcal{T}(\sigma)$ if its final state satisfies $Q$ and in $\mathcal{E}(\sigma)$ otherwise.
+In general, a necessary precondition has no relationship with $\wlp[\regr](Q)$. However, if we consider $\lnot Q$ instead of $Q$, we observe that ``erroneous" executions becomes those in $\mathcal{T}(\sigma)$ and ``correct" ones those in $\mathcal{E}(\sigma)$. This means that
+\[
+(\mathcal{T}(\sigma) = \emptyset) \Leftrightarrow \sigma \in \wlp[\regr](\lnot Q),
+\]
+from which we derive
+\(\lnot \underline{P} \Rightarrow \wlp[\regr](\lnot Q)\)
+or, equivalently,
+\[\lnot \wlp[\regr](\lnot Q) \Rightarrow \underline{P} .\]
+
+\begin{example}
+	Building on Example~\ref{ex:nc-running}, consider again the correctness specification $\neg Q_{42} = (z\neq 42)$ for $\mathsf{r42nd}$. We have that $\wlp[\mathsf{r42nd}](\lnot \lnot Q_{42}) = Q_{42}$, because if initially $z \neq 42$ then it is possible that $x$ is assigned an odd value and $z$ is not updated.
+	Hence, a condition $P$ is implied by $\lnot \wlp[\regr](\lnot\lnot Q_{42}) = \lnot Q_{42}$ iff it is necessary, e.g., $(z\neq 42 \vee \text{odd}(y))$ is necessary but $(z > 42)$ is not.
+\end{example}
+
+The next bijection establishes the connection between NC and HL: a necessary precondition is just the negation of a sufficient precondition for the negated post. This was also observed using weakest (liberal) preconditions in \cite[Theorem~5.4]{ZK22}.
+
+\begin{prop}[Bijection between NC and HL]\label{prop:sil:fw-inclusion-negation-bw}
+	For any  $\regr\in \Reg$ and $P, Q \subseteq \Sigma$:
+	\[
+	\fwsem{\regr} P \subseteq Q \Leftrightarrow \bwsem{\regr} (\lnot Q) \subseteq \lnot P \text{.}
+	\]
+\end{prop}
+
+\subsubsection{SIL and IL}
+Proposition~\ref{prop:sil:fw-inclusion-negation-bw} highlights an isomorphism between (HL) and (NC). This naturally sparks the question if there exists a similar connections between (IL) and (SIL), but the next example shows this is not the case.
+
+\begin{example}\label{ex:sil:il-sil-incomparable}
+	Since IL and SIL enjoy different consequence rules, neither of the two can imply the other with the same $P$ and $Q$. For negated $P$ and $Q$, consider the program
+	\[
+	\mathsf{r1} \eqdef x := 1
+	\]
+	and the two sets of states $P_{\geq 0} \eqdef (x \geq 0)$ and $Q_{1} \eqdef (x = 1)$.
+	Both the SIL triple $\angletriple{P_{\geq 0}}{\mathsf{r1}}{Q_{1}}$ and the IL triple $\undertriple{P_{\geq 0}}{\mathsf{r1}}{Q_{1}}$ are valid. However, neither $\undertriple{\lnot P_{\geq 0}}{\mathsf{r1}}{\lnot Q_{1}}$ nor $\angletriple{\lnot P_{\geq 0}}{\mathsf{r1}}{\lnot Q_{1}}$ are valid. So neither (IL) implies negated (SIL) nor the other way around.
+\end{example}
+
+To gain some insights on why (SIL) and (IL) are not equivalent, we introduce the following concepts.
+
+\begin{definition}
+	Given a regular command $\regr$, we define the set of states that only diverges $D_{\regr}$ and the set of unreachable states $U_{\regr}$:
+	\[
+	D_{\regr} \eqdef \{ \sigma \mid \fwsem{\regr}\sigma = \emptyset \}
+	\qquad
+	U_{\regr} \eqdef \{ \sigma' \mid \sigma' \not\in\fwsem{\regr} \Sigma \} = \{ \sigma' \mid \bwsem{\regr}\sigma' = \emptyset \}.
+	\]
+\end{definition}
+
+In a sense, $U_{\regr}$ is the set of states which ``diverge" going backward. In fact, if we consider $\bwsem{\regr}$ instead of $\fwsem{\regr}$, the roles of $D$ and $U$ are swapped.
+
+\begin{lemma}\label{lmm:sil:CC-1-monotone}
+	For any regular command $\regr \in \Reg$ and sets of states $P, Q \subseteq \Sigma$ it holds:
+	\begin{enumerate}
+		\item\label{lmm:sil:CC-1-monotone:1} $\bwsem{\regr} \fwsem{\regr} P \supseteq P \setminus D_{\regr}$;
+		\item\label{lmm:sil:CC-1-monotone:2} $\fwsem{\regr} \bwsem{\regr} Q \supseteq Q \setminus U_{\regr}$.
+	\end{enumerate}
+\end{lemma}
+
+This lemma highlights the asymmetry between over and under-approximation: the composition of a function with its inverse is increasing (but for non-terminating states).
+This explains why (HL) and (NC) are related while (IL) and (SIL) are not: via over-approximation, $P \setminus D_{\regr} \subseteq \bwsem{\regr} \fwsem{\regr} P$ can be further exploited if we know $\fwsem{\regr} P \subseteq Q$ via (HL), but it cannot when $\fwsem{\regr} P \supseteq Q$ via (IL).
+
+Lastly, while IL and SIL are not directly comparable, the preprint~\cite{RVO24} introduces a forward-oriented proof system with a core set of rules that are sound for both IL and SIL, therefore proving only triples that are valid for both. It also becomes complete for IL, resp. SIL, when augmented with the corresponding consequence rule.
+
+\subsubsection{SIL and HL}
+In general, HL and SIL have different goals, but they coincide whenever the program $\regr$ is deterministic and terminates for every input. This is formally captured by:
+
+\begin{prop}\label{prop:sil:sil-hl-deterministic-terminating}
+	For any $\regr\in \Reg$ and $P, Q \subseteq \Sigma$:
+	\begin{itemize}
+		\item if $\regr$ is deterministic, $\bwsem{\regr} Q \supseteq P \Rightarrow \fwsem{\regr} P \subseteq Q$
+		\item if $\regr$ is terminating, $\fwsem{\regr} P \subseteq Q \Rightarrow \bwsem{\regr} Q \supseteq P$
+	\end{itemize}
+\end{prop}
+
+\subsection{Features Comparison}
+%\label{sec:duality}
+
+A rule-by-rule comparison emphasizes the similarities and differences among logics (see Figure~\ref{fig:HLvsILvsSIL}, in Appendix for reviewers' convenience).
+%We distinguished the two main axis in Figure~\ref{fig:square-full} as over/under-approximation and forward/backward.
+The reference semantics is evident from rules $\mathsf{atom}$: HL and IL are forward oriented, and SIL is backward oriented.
+%This is also confirmed by the row for rules $\mathsf{iter}$ when comparing IL with SIL.
+The rule \hlrule{iter} of HL is based on any invariant, not necessarily the minimal one, so HL relies on over-approximation.
+Conversely, the rules $\mathsf{iter0}$ for SIL and IL (called \emph{iterate zero} in \cite{DBLP:journals/pacmpl/OHearn20}) under-approximates the Kleene star with zero iterations.
+The consequence rules follow the diagonals of Figure~\ref{fig:square-full}: SIL and HL can strengthen the pre and weaken the post, while IL and NC can do the opposite.
+
+%\subsubsection*{Inference rules.}
+%Let us compare the rules of SIL, HL and IL, so to emphasize the similarities and differences among them (for reviewers' convenience, all rules are collected in Figure~\ref{fig:HLvsILvsSIL}).
+%%We distinguished the two main axis in Figure~\ref{fig:square-full} as over/under-approximation and forward/backward.
+%The $\mathsf{atom}$ and $\mathsf{iter}$ rules show that HL and IL exploit the forward semantics, and SIL the backward one.
+%%This is also confirmed by the row for rules $\mathsf{iter}$ when comparing IL with SIL.
+%Furthermore, the rule \horule{iter} of HL says that any invariant is acceptable, not necessarily the minimal one, so that HL relies on over-approximation.
+%This is confirmed by the rows for $\mathsf{cons}$ and $\mathsf{empty}$, where on the contrary IL and SIL are shown to rely on under-approximation.
+%The consequence rule is the key rule of all the logics, because it allows to generalize a proof by weakening/strengthening the two conditions $P$ and $Q$ involved. The direction of rules \lrule{cons} of SIL and \horule{cons} of HL is the same and it is exactly the opposite direction of rule \irule{cons} of IL and NC, which coincide. So the different consequence rules follow the diagonals of Figure~\ref{fig:square-full}.
+%The row for rules $\mathsf{seq}$ and $\mathsf{disj}$ show that in all cases triples can be composed sequentially and additively.
+%Rules $\mathsf{iter0}$, $\mathsf{unroll}$ and $\mathsf{unroll\mbox{-}split}$ are a prerogative of under-approximation: they are the same for SIL and IL, but they are unsound for HL.
+
+\subsubsection*{Weakest/Strongest Conditions}
+Depending on the way in which program analysis is conducted, it can be interesting to derive either the most general or most specific hypotheses for the given property.
+For instance, given a correctness specification $Q$, one is typically interested in finding the minimal constraint on the input that guarantees program correctness.
+Conversely, to infer necessary conditions we can be interested in devising the strongest hypotheses under which some correct run is possible.
 %
-By duality, one might expect a similar connection to hold between IL and SIL, but we show this is not the case.
+%To investigate the existence of weakest/strongest conditions, we build on the consequence rules of the four logics:
+%each consequence rule explains how pre and post can be weakened/strengthened.
+Therefore, we exploit Figure~\ref{fig:square-full} to investigate the existence of weakest/strongest conditions.
+
+The concrete semantics is trivially a strongest (HL and NC) or weakest (IL and SIL) condition for the ``target'' property ($P$ computing backward and $Q$ forward).
+It turns out that having a best condition on the ``source'' property is a prerogative of over-approximation, i.e., that over and under-approximation are not fully dual theories.
+\begin{prop}\label{prop:weakest-pre-existence1}\label{prop:weakest-pre-existence2}
+	For any regular command $\regr\in\Reg$:
+	\begin{itemize}
+		\item given $Q$, there exists a weakest $P$ such that $\fwsem{\regr} P \subseteq Q$ (HL);
+		\item given $P$, there exists a weakest $Q$ such that $\bwsem{\regr} Q \subseteq P$ (NC);
+		\item for some $Q$, there is no strongest $P$ such that $\fwsem{\regr} P \supseteq Q$ (IL);
+		\item for some $P$, there is no strongest $Q$ such that $\bwsem{\regr} Q \supseteq P$ (SIL).
+	\end{itemize}
+\end{prop}
+
+The reason why strongest conditions may not exist for IL and SIL is that collecting semantics (both forward and backward) are additive but not co-additive. In other words, rule \hlrule{disj} is sound for all triples, while a dual rule for conjunction such as
+\[
+\infer[\{\mathsf{conj}\}]
+{\overtriple{P_1 \cap P_2}{\regr}{Q_1 \cap Q_2}}
+{\overtriple{P_1}{\regr}{Q_1} & \overtriple{P_2}{\regr}{Q_2} }
+\]
+is valid for HL and NC but neither for IL nor SIL.
+For instance, given two HL preconditions $P_1$ and $P_2$ for the same post $Q$ (i.e., $\overtriple{P_1}{\regr}{Q}$ and $\overtriple{P_2}{\regr}{Q}$) also their union is a pre for $Q$, i.e., $\overtriple{P_1 \cup P_2}{\regr}{Q}$ using \hlrule{disj}. However, given two IL triples $\undertriple{P_1}{\regr}{Q}$ and $\undertriple{P_2}{\regr}{Q}$, in general $\fwsem{\regr} (P_1 \cap P_2) \nsupseteq Q$ and $\undertriple{P_1 \cap P_2}{\regr}{Q}$ is not valid.
+
+\begin{example}\label{ex:sil:il-no-strongest-pre}
+	Consider the program $\mathsf{r1} \eqdef x := 1$ of Example~\ref{ex:sil:il-sil-incomparable}.
+	We can prove the two IL triples $\undertriple{x = 0}{\mathsf{r1}}{x = 1}$ and $\undertriple{x = 10}{\mathsf{r1}}{x = 1}$, but their intersection is $\undertriple{\emptyset}{\mathsf{r1}}{x = 1}$, which is not a valid IL triple.
+
+	For SIL, consider the program $\mathsf{rnd} \eqdef \code{x := nondet()}$. For precondition $P_1 \eqdef (x = 1)$ we can prove both $\angletriple{P_1}{\mathsf{rnd}}{x = 0}$ and $\angletriple{P_1}{\mathsf{rnd}}{x = 10}$, that are incomparable, and again are both minimal because $\emptyset$ is not a valid postcondition.
+\end{example}
+
+\todo{Move this around}
+Rule \silrule{disj} allows to split the analysis and join the results, just like HL and IL. The validity of such a rule relies on the fact that collecting semantics (both forward and backward) are additive. However they are not co-additive, so the corresponding rule \silrule{conj} which perform intersection of pre/post pairs is sound for HL but not for IL and SIL.
+
+Since left adjoints are additive while right adjoints are co-additive~\cite{DP02}, this observation readily yields the existence of weakest conditions for over-approximation (i.e., weakest pre for HL and weakest post for NC) and non-existence of strongest conditions for under-approximations (strongest pre for IL and strongest post for SIL) since these would form an adjunction.
+
+\subsubsection*{Termination and Reachability}
+%Note that the forward semantics does not account for divergent computations. This means that if $\sigma_1$ and $\sigma_2$ can reach the same set of final states, but $\sigma_1$ has a divergent computation while $\sigma_2$ does not, they have the same forward semantics. The only kind of divergence this definition can distinguish is whether a state $\sigma$ \emph{always} diverges ($\fwsem{\regr}\sigma =\emptyset$) or \emph{may} terminate ($\fwsem{\regr}\sigma \neq\emptyset$). Analogously, the backward semantics only distinguishes between final states which are reachable or not.
+%
+%As we already noted in Section~\ref{sec:bwsem}, termination and reachability are two sides of the same coin when switching from forward to backward reasoning.
+%For HL, given the definition of collecting semantics we can only distinguish a precondition which always causes divergence. This is because the collecting semantics ``does not see" divergent computations, so we only know whether $Q$ is empty or not, which correspond to guaranteed divergence. Moreover, because of the over-approximation, a non empty $Q$ does not mean there are finite executions, as those may be introduced by the approximation.
+%Dually, NC cannot  say much about reachability of $Q$ other than the fact that it is unreachable if we find false as a necessary precondition for it.
+%On the other hand, under-approximation has much stronger guarantees on divergence/reachability. Taking IL, any triple $\undertriple{P}{\regr}{Q}$ ensures that all states in $Q$ are reachable from states in $P$ which, in particular, means every state in $Q$ is reachable. Dually, a SIL triple $\angletriple{P}{\regr}{Q}$ means that all states in $P$ have a convergent computation (which ends in a state in $Q$). This observation motivates the choice of a forward (resp. backward) rule for iteration in IL (resp. SIL): a backward (resp. forward) rule would be more involved as it would need to prove reachability of all points in the postcondition (resp. precondition). Instead, the forward rule of IL (resp. backward rule of SIL) ensures reachability (resp. termination) by construction, as it build $Q$ only from points which are known to be reachable (resp. terminating) by execution of the loop.
+
+Termination and reachability are two sides of the same coin when switching from forward to backward semantics, and over- and under-approximation behave differently with respect to these notions.
+
+For HL
+%, given the definition of collecting semantics,
+we can only distinguish a precondition which always causes divergence: if $\overtriple{P}{\regr}{\emptyset}$, all states in the precondition $P$ will always diverge. However, if just one state in $P$ has one terminating computation, its final state must be in $Q\neq \emptyset$, so we cannot say whether states in $P$ diverge or not. Moreover, because of the over-approximation, a non empty $Q$ does not mean there truly are finite executions, as those may be introduced by the approximation.
+Dually, NC cannot say much about reachability of $Q$ unless $P$ is empty, in which case $Q$ is unreachable.
+
+On the contrary, under-approximation offers much stronger guarantees on termination/reachability. Any IL triple $\undertriple{P}{\regr}{Q}$ ensures that all states in $Q$ are reachable (in particular, from states in $P$). Dually, a SIL triple $\angletriple{P}{\regr}{Q}$ means that all states in $P$ have a convergent computation that ends in some state in $Q$. This observation motivates the design of a forward iteration rule in IL (resp. backward in SIL): a backward (resp. forward) rule would need to prove reachability of all points in the post (resp. pre). Instead, the forward rule of IL (resp. backward rule of SIL) ensures reachability (resp. termination) by construction, as it builds $Q$ (resp. $P$) only with points known to be reachable (resp. terminating).
+% by unrolling the loop.
 
 \section{Separation Sufficient Incorrectness Logic}
 
