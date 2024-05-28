@@ -211,8 +211,9 @@ The SIL proof system is both correct and complete. Correctness can be proved by 
 \paragraph*{Additional Rules for Program Analysis}
 The above set of five rules is deliberately minimal: if we remove any rule, SIL is no longer complete. However, there are other valid rules, not derivable from those five, that can be useful in practice. Some of them are at the bottom of Figure~\ref{fig:sil:sil-rules}.
 
-Rule \silrule{empty} is used to drop paths backward, just like IL can drop them forward (and analogous axiom $\undertriple{P}{\regr}{\emptyset}$ is valid for IL). Particularly, this allows to ignore one of the branches of \silrule{choice}, or to stop the backward iteration of \silrule{iter} without covering all the iterations. An example of such an application is the derived rule \silrule{iter0}, which corresponds to not entering the iteration at all. It can be proved from rules \silrule{iter} and \silrule{empty} by taking $Q_0 = Q$ and $Q_n = \emptyset$ for $n \ge 1$. It subsumes HL's rule \hlrule{iter}, which is based on loop invariants: those are a correct but not complete reasoning tool for under\hyp{}approximation~\cite{OHearn20}.
+Rule \silrule{empty} is used to drop paths backward, just like IL can drop them forward (an analogous axiom $\undertriple{P}{\regr}{\emptyset}$ is valid for IL). Particularly, this allows to ignore one of the branches of \silrule{choice}, or to stop the backward iteration of \silrule{iter} without covering all the iterations. An example of such an application is the derived rule \silrule{iter0}, which corresponds to not entering the iteration at all. It can be proved from rules \silrule{iter} and \silrule{empty} by taking $Q_0 = Q$ and $Q_n = \emptyset$ for $n \ge 1$. It subsumes HL's rule \hlrule{iter}, which is based on loop invariants: those are a correct but not complete reasoning tool for under\hyp{}approximation~\cite{OHearn20}.
 Rule \silrule{unroll} allows to unroll a loop once. Subsequent applications of this rule allow to simulate (backward) a finite number of iterations, and then rule \silrule{iter0} can be used to ignore the remaining ones. This is on par with IL ability to unroll a loop a finite number of times to find some post, for which analogous rules are valid~\cite{OHearn20,MOH21}.
+Rule \silrule{disj} allows to split the analysis and join the results, just like HL and IL. However, while a corresponding rule \hlrule{conj} which perform intersection is sound for HL, it is unsound for both IL and SIL (see Example~\ref{ex:sil:under-approx-no-strongest}).
 
 \begin{example}\label{ex:sil-derivation-2}
 	Let us consider the program ``loop0'' from~\cite[\S 6.1]{OHearn20}:
@@ -227,13 +228,50 @@ while(n > 0) {
 // assert(x != 2000000)
 	\end{minted}
 
-	\noindent
 	We can translate it in the syntax of regular commands by letting
 	\begin{align*}
 		\regr_w         & \eqdef \code{(n > 0)?; x := x + n; n := nondet()}                         \\
 		\mathsf{rloop0} & \eqdef \code{x := 0; n := nondet(); }(\regr_w)^{\kstar}; \code{(n <= 0)?}
 	\end{align*}
 	Final error states are those in $Q_{2M} \eqdef (x = 2 000 000)$.
+
+	\begin{figure}[t]
+		\centering
+		\footnotesize
+		\[
+		\infer[]
+		{(*)}
+		{
+			\infer[\silrule{seq}]{\angletriple{T_{2M}}{\regr_w^{\kstar}; \code{(n <= 0)?}}{Q_{2M}}}{
+				\infer[\silrule{unroll}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{R_{2M}}}{
+					\infer[\silrule{seq}]{\angletriple{T_{2M}}{\regr_w^{\kstar}; \regr_w}{R_{2M}}}{
+						\infer[\silrule{iter0}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{T_{2M}}}{}
+						&
+						\infer{\angletriple{T_{2M}}{\regr_w}{R_{2M}}}{\vdots}
+					}
+				}
+				&
+				\infer[\silrule{atom}]{\angletriple{R_{2M}}{\code{(n <= 0)?}}{Q_{2M}}}{}
+			}
+		}
+		\]
+
+		\[
+		\infer[\silrule{seq}]
+		{\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}}
+		{
+			\infer[\silrule{seq}]{\angletriple{\true}{\code{x := 0; n := nondet()}}{T_{2M}}}{
+				\infer[\silrule{atom}]{\angletriple{\true}{\code{x := 0}}{x \le 2000000}}{}
+				&
+				\infer[\silrule{atom}]{\angletriple{x \le 2000000}{\code{n := nondet()}}{T_{2M}}}{}
+			}
+			&
+			(*)
+		}
+		\]
+		\caption{Derivation of the SIL triple $\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ for Example~\ref{ex:sil-derivation-2}.}
+		\label{fig:sil:example-derivation-2}
+	\end{figure}
 
 	To prove a triple for $\mathsf{rloop0}$, we have to perform at least one iteration, and we do so using \silrule{unroll}.
 	We let $R_{2M} \eqdef (x = 2000000 \land n \le 0)$ and $T_{2M} \eqdef (x + n = 2000000 \land n > 0)$. It is straightforward to prove $\angletriple{T_{2M}}{\regr_w}{R_{2M}}$ via \silrule{seq} and \silrule{atom}. Given this triple, we can unroll the loop once and prove the same triple for $\regr_w^{\kstar}$:
@@ -247,15 +285,13 @@ while(n > 0) {
 	}
 	\]
 	This is a property of under-approximation: a non-deterministic number of iterations can be under-approximated by a single iteration \cite[\S 6.1]{OHearn20}.
-	With this triple for the loop, we can prove for the whole program the triple $\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ using \silrule{seq} and \silrule{atom}. The full proof is in the Appendix, Figure~\ref{fig:app:sil-example-derivation-2}.
+	With this triple for the loop, we can prove for the whole program the triple $\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ using \silrule{seq} and \silrule{atom}. The full derivation is in Figure~\ref{fig:sil:example-derivation-2}.
 
 	Differently than IL, this triple highlights that any initial state can lead to an error: instead of reporting the presence of a true bug, we can report an initial state which causes the bug.
 \end{example}
 
-Rule \silrule{disj} allows to split the analysis and join the results, just like HL and IL. However, while a corresponding rule \hlrule{conj} which perform intersection is sound for HL, it is unsound for both IL and SIL (see Example~\ref{ex:il-no-strongest-pre}).
-
 \section{Relations Among Logics}\label{sec:sil:comparison}
-\todo[inline]{Check this whole section because rn is quite bad (also add some stuff for NC in the background and the appendix)}
+\todo[inline]{Check this whole section because rn is mid (also add some stuff for NC in the background and the appendix)}
 Following the two-dimensional taxonomy in Figure~\ref{fig:sil:taxonomy}, we carry out an exhaustive comparison among the four validity conditions. While the duality between HL and IL was crystal clear since the introduction of IL, their relations with NC and SIL has never been explored. For reference, we summarize the validity of different kinds of triples below.
 
 \begin{definition}\label{def:sil:validity}
@@ -310,8 +346,21 @@ or, equivalently,
 \[\lnot \wlp[\regr](\lnot Q) \Rightarrow \underline{P} .\]
 
 \begin{example}
-	Building on Example~\ref{ex:nc-running}, consider again the correctness specification $\neg Q_{42} = (z\neq 42)$ for $\mathsf{r42nd}$. We have that $\wlp[\mathsf{r42nd}](\lnot \lnot Q_{42}) = Q_{42}$, because if initially $z \neq 42$ then it is possible that $x$ is assigned an odd value and $z$ is not updated.
-	Hence, a condition $P$ is implied by $\lnot \wlp[\regr](\lnot\lnot Q_{42}) = \lnot Q_{42}$ iff it is necessary, e.g., $(z\neq 42 \vee \text{odd}(y))$ is necessary but $(z > 42)$ is not.
+	We consider again the same program $\regr$ from Example~\ref{ex:bg:il-hl-comparison}:
+
+	\begin{minted}{C}
+x := nondet();
+if (x is even) {
+	if (y is odd) {
+		z := 42;
+	}
+}
+// assert(z != 42)
+	\end{minted}
+
+	\noindent
+	and the correctness specification $\neg Q_{42} = (z\neq 42)$. We have that $\wlp[\mathsf{r42nd}](\lnot \lnot Q_{42}) = Q_{42}$, because if initially $z \neq 42$ then it is possible that $x$ is assigned an odd value and $z$ is not updated.
+	Hence, a condition $P$ is implied by $\lnot \wlp[\regr](\lnot\lnot Q_{42}) = \lnot Q_{42}$ if and only if it is necessary, e.g., $(z\neq 42 \vee \text{odd}(y))$ is necessary but $(z > 42)$ is not.
 \end{example}
 
 The next bijection establishes the connection between NC and HL: a necessary precondition is just the negation of a sufficient precondition for the negated post. This was also observed using weakest (liberal) preconditions in \cite[Theorem~5.4]{ZK22}.
@@ -372,16 +421,16 @@ In general, HL and SIL have different goals, but they coincide whenever the prog
 	\end{itemize}
 \end{prop}
 
-\subsection{Features Comparison}
+%\subsection{Features Comparison}
 %\label{sec:duality}
 
-A rule-by-rule comparison emphasizes the similarities and differences among logics (see Figure~\ref{fig:HLvsILvsSIL}, in Appendix for reviewers' convenience).
-%We distinguished the two main axis in Figure~\ref{fig:square-full} as over/under-approximation and forward/backward.
-The reference semantics is evident from rules $\mathsf{atom}$: HL and IL are forward oriented, and SIL is backward oriented.
-%This is also confirmed by the row for rules $\mathsf{iter}$ when comparing IL with SIL.
-The rule \hlrule{iter} of HL is based on any invariant, not necessarily the minimal one, so HL relies on over-approximation.
-Conversely, the rules $\mathsf{iter0}$ for SIL and IL (called \emph{iterate zero} in \cite{DBLP:journals/pacmpl/OHearn20}) under-approximates the Kleene star with zero iterations.
-The consequence rules follow the diagonals of Figure~\ref{fig:square-full}: SIL and HL can strengthen the pre and weaken the post, while IL and NC can do the opposite.
+%A rule-by-rule comparison emphasizes the similarities and differences among logics (see Figure~\ref{fig:HLvsILvsSIL}, in Appendix for reviewers' convenience).
+%%We distinguished the two main axis in Figure~\ref{fig:square-full} as over/under-approximation and forward/backward.
+%The reference semantics is evident from rules $\mathsf{atom}$: HL and IL are forward oriented, and SIL is backward oriented.
+%%This is also confirmed by the row for rules $\mathsf{iter}$ when comparing IL with SIL.
+%The rule \hlrule{iter} of HL is based on any invariant, not necessarily the minimal one, so HL relies on over-approximation.
+%Conversely, the rules $\mathsf{iter0}$ for SIL and IL (called \emph{iterate zero} in \cite{DBLP:journals/pacmpl/OHearn20}) under-approximates the Kleene star with zero iterations.
+%The consequence rules follow the diagonals of Figure~\ref{fig:square-full}: SIL and HL can strengthen the pre and weaken the post, while IL and NC can do the opposite.
 
 %\subsubsection*{Inference rules.}
 %Let us compare the rules of SIL, HL and IL, so to emphasize the similarities and differences among them (for reviewers' convenience, all rules are collected in Figure~\ref{fig:HLvsILvsSIL}).
@@ -394,18 +443,16 @@ The consequence rules follow the diagonals of Figure~\ref{fig:square-full}: SIL 
 %The row for rules $\mathsf{seq}$ and $\mathsf{disj}$ show that in all cases triples can be composed sequentially and additively.
 %Rules $\mathsf{iter0}$, $\mathsf{unroll}$ and $\mathsf{unroll\mbox{-}split}$ are a prerogative of under-approximation: they are the same for SIL and IL, but they are unsound for HL.
 
-\subsubsection*{Weakest/Strongest Conditions}
+\subsection{Weakest/Strongest Conditions}
 Depending on the way in which program analysis is conducted, it can be interesting to derive either the most general or most specific hypotheses for the given property.
 For instance, given a correctness specification $Q$, one is typically interested in finding the minimal constraint on the input that guarantees program correctness.
 Conversely, to infer necessary conditions we can be interested in devising the strongest hypotheses under which some correct run is possible.
-%
-%To investigate the existence of weakest/strongest conditions, we build on the consequence rules of the four logics:
-%each consequence rule explains how pre and post can be weakened/strengthened.
-Therefore, we exploit Figure~\ref{fig:square-full} to investigate the existence of weakest/strongest conditions.
+Therefore, we exploit Figure~\ref{fig:sil:taxonomy} to investigate the existence of weakest/strongest conditions.
 
 The concrete semantics is trivially a strongest (HL and NC) or weakest (IL and SIL) condition for the ``target'' property ($P$ computing backward and $Q$ forward).
-It turns out that having a best condition on the ``source'' property is a prerogative of over-approximation, i.e., that over and under-approximation are not fully dual theories.
-\begin{prop}\label{prop:weakest-pre-existence1}\label{prop:weakest-pre-existence2}
+However, it turns out that having a best condition on the ``source'' property is a prerogative of over-approximation, i.e., that over and under-approximation are not fully dual theories.
+
+\begin{prop}\label{prop:sil:best-condition-source}
 	For any regular command $\regr\in\Reg$:
 	\begin{itemize}
 		\item given $Q$, there exists a weakest $P$ such that $\fwsem{\regr} P \subseteq Q$ (HL);
@@ -417,12 +464,14 @@ It turns out that having a best condition on the ``source'' property is a prerog
 
 The reason why strongest conditions may not exist for IL and SIL is that collecting semantics (both forward and backward) are additive but not co-additive. In other words, rule \hlrule{disj} is sound for all triples, while a dual rule for conjunction such as
 \[
-\infer[\{\mathsf{conj}\}]
+\infer[\hlrule{conj}]
 {\overtriple{P_1 \cap P_2}{\regr}{Q_1 \cap Q_2}}
 {\overtriple{P_1}{\regr}{Q_1} & \overtriple{P_2}{\regr}{Q_2} }
 \]
 is valid for HL and NC but neither for IL nor SIL.
-For instance, given two HL preconditions $P_1$ and $P_2$ for the same post $Q$ (i.e., $\overtriple{P_1}{\regr}{Q}$ and $\overtriple{P_2}{\regr}{Q}$) also their union is a pre for $Q$, i.e., $\overtriple{P_1 \cup P_2}{\regr}{Q}$ using \hlrule{disj}. However, given two IL triples $\undertriple{P_1}{\regr}{Q}$ and $\undertriple{P_2}{\regr}{Q}$, in general $\fwsem{\regr} (P_1 \cap P_2) \nsupseteq Q$ and $\undertriple{P_1 \cap P_2}{\regr}{Q}$ is not valid.
+Since left adjoints are additive while right adjoints are co-additive~\cite{DP02}, this observation readily yields the existence of weakest conditions for over-approximation (i.e., weakest pre for HL and weakest post for NC) because these weakest conditions are right adjoints of the reference semantics. Conversely, strongest pre/post for IL/SIL cannot exists because they would be left adjoints of the reference semantics, which cannot be right adjoints because they are not co-additive.
+
+For instance, given two HL preconditions $P_1$ and $P_2$ for the same post $Q$ (i.e., $\overtriple{P_1}{\regr}{Q}$ and $\overtriple{P_2}{\regr}{Q}$) also their union is a pre for $Q$, i.e., $\overtriple{P_1 \cup P_2}{\regr}{Q}$ using \hlrule{disj}. However, given two IL triples $\undertriple{P_1}{\regr}{Q}$ and $\undertriple{P_2}{\regr}{Q}$, in general $\fwsem{\regr} (P_1 \cap P_2) \nsupseteq Q$ and $\undertriple{P_1 \cap P_2}{\regr}{Q}$ is not valid, as shown in the following example.
 
 \begin{example}\label{ex:sil:il-no-strongest-pre}
 	Consider the program $\mathsf{r1} \eqdef x := 1$ of Example~\ref{ex:sil:il-sil-incomparable}.
@@ -431,29 +480,344 @@ For instance, given two HL preconditions $P_1$ and $P_2$ for the same post $Q$ (
 	For SIL, consider the program $\mathsf{rnd} \eqdef \code{x := nondet()}$. For precondition $P_1 \eqdef (x = 1)$ we can prove both $\angletriple{P_1}{\mathsf{rnd}}{x = 0}$ and $\angletriple{P_1}{\mathsf{rnd}}{x = 10}$, that are incomparable, and again are both minimal because $\emptyset$ is not a valid postcondition.
 \end{example}
 
-\todo{Move this around}
-Rule \silrule{disj} allows to split the analysis and join the results, just like HL and IL. The validity of such a rule relies on the fact that collecting semantics (both forward and backward) are additive. However they are not co-additive, so the corresponding rule \silrule{conj} which perform intersection of pre/post pairs is sound for HL but not for IL and SIL.
+\subsection{Termination and Reachability}
+Termination and reachability are two sides of the same coin when switching from forward to backward semantics, and over and under-approximation behave differently with respect to these notions.
 
-Since left adjoints are additive while right adjoints are co-additive~\cite{DP02}, this observation readily yields the existence of weakest conditions for over-approximation (i.e., weakest pre for HL and weakest post for NC) and non-existence of strongest conditions for under-approximations (strongest pre for IL and strongest post for SIL) since these would form an adjunction.
-
-\subsubsection*{Termination and Reachability}
-%Note that the forward semantics does not account for divergent computations. This means that if $\sigma_1$ and $\sigma_2$ can reach the same set of final states, but $\sigma_1$ has a divergent computation while $\sigma_2$ does not, they have the same forward semantics. The only kind of divergence this definition can distinguish is whether a state $\sigma$ \emph{always} diverges ($\fwsem{\regr}\sigma =\emptyset$) or \emph{may} terminate ($\fwsem{\regr}\sigma \neq\emptyset$). Analogously, the backward semantics only distinguishes between final states which are reachable or not.
-%
-%As we already noted in Section~\ref{sec:bwsem}, termination and reachability are two sides of the same coin when switching from forward to backward reasoning.
-%For HL, given the definition of collecting semantics we can only distinguish a precondition which always causes divergence. This is because the collecting semantics ``does not see" divergent computations, so we only know whether $Q$ is empty or not, which correspond to guaranteed divergence. Moreover, because of the over-approximation, a non empty $Q$ does not mean there are finite executions, as those may be introduced by the approximation.
-%Dually, NC cannot  say much about reachability of $Q$ other than the fact that it is unreachable if we find false as a necessary precondition for it.
-%On the other hand, under-approximation has much stronger guarantees on divergence/reachability. Taking IL, any triple $\undertriple{P}{\regr}{Q}$ ensures that all states in $Q$ are reachable from states in $P$ which, in particular, means every state in $Q$ is reachable. Dually, a SIL triple $\angletriple{P}{\regr}{Q}$ means that all states in $P$ have a convergent computation (which ends in a state in $Q$). This observation motivates the choice of a forward (resp. backward) rule for iteration in IL (resp. SIL): a backward (resp. forward) rule would be more involved as it would need to prove reachability of all points in the postcondition (resp. precondition). Instead, the forward rule of IL (resp. backward rule of SIL) ensures reachability (resp. termination) by construction, as it build $Q$ only from points which are known to be reachable (resp. terminating) by execution of the loop.
-
-Termination and reachability are two sides of the same coin when switching from forward to backward semantics, and over- and under-approximation behave differently with respect to these notions.
-
-For HL
-%, given the definition of collecting semantics,
-we can only distinguish a precondition which always causes divergence: if $\overtriple{P}{\regr}{\emptyset}$, all states in the precondition $P$ will always diverge. However, if just one state in $P$ has one terminating computation, its final state must be in $Q\neq \emptyset$, so we cannot say whether states in $P$ diverge or not. Moreover, because of the over-approximation, a non empty $Q$ does not mean there truly are finite executions, as those may be introduced by the approximation.
+For HL we can only distinguish a precondition which always causes divergence: if $\overtriple{P}{\regr}{\emptyset}$, all states in the precondition $P$ will always diverge. However, if just one state in $P$ has one terminating computation, its final state must be in $Q\neq \emptyset$, so we cannot say whether states in $P$ diverge or not. Moreover, because of the over-approximation, a non empty $Q$ does not mean there truly are finite executions, as those may be introduced by the approximation.
 Dually, NC cannot say much about reachability of $Q$ unless $P$ is empty, in which case $Q$ is unreachable.
 
 On the contrary, under-approximation offers much stronger guarantees on termination/reachability. Any IL triple $\undertriple{P}{\regr}{Q}$ ensures that all states in $Q$ are reachable (in particular, from states in $P$). Dually, a SIL triple $\angletriple{P}{\regr}{Q}$ means that all states in $P$ have a convergent computation that ends in some state in $Q$. This observation motivates the design of a forward iteration rule in IL (resp. backward in SIL): a backward (resp. forward) rule would need to prove reachability of all points in the post (resp. pre). Instead, the forward rule of IL (resp. backward rule of SIL) ensures reachability (resp. termination) by construction, as it builds $Q$ (resp. $P$) only with points known to be reachable (resp. terminating).
-% by unrolling the loop.
 
 \section{Separation Sufficient Incorrectness Logic}
+We instantiate SIL to handle pointers and dynamic memory allocation, introducing Separation SIL. The goal of Separation SIL is to identify the causes of memory errors: it takes the backward under-approximation principles of SIL and combines it with the ability to deal with pointers from Separation Logic (SL)~\cite{Reynolds02,ORY01}
+
+\paragraph*{Heap Regular Commands}
+We denote by $\Regh$ the set of heap regular commands, obtained by plugging the following definition of heap atomic commands in~\eqref{eq:bg:regr-def} (in \textcolor{ACMBlue}{blue} new primitives):
+\begin{align*}
+	\Cmdh \ni \regc ::= \; & \code{skip} \mid \code{x := a} \mid \code{b?} \mid
+	\textcolor{ACMBlue}{\code{x := alloc()} \mid \code{free(x)} \mid \code{x := [y]} \mid \code{[x] := y}}
+\end{align*}
+where we assume that \code{x} and \code{y} are syntactically distinct variables.
+The command \code{x := alloc()} allocates a new memory location containing a nondeterministic value, \code{free(x)} deallocates memory, and \code{[$\cdot$]} dereferences a variable.
+The syntax only allows to allocate, free and dereference single variables. To use a value from the heap in an arithmetic $\code{a} \in \AExp$ or Boolean expressions $\code{b} \in \BExp$, it must be loaded in a variable beforehand.
+
+Given a heap command $\regr \in \Regh$, we let $\fv(\regr) \subseteq \Var$ be its set of free variables and $\modified(\regr) \subseteq \Var$ be the set of variables modified by $\regr$. The definition is standard (see Appendix, Definition~\ref{def:ssil-mod-regh}), but we remark that \code{free(x)} and \code{[x] := y} do not modify \code{x}: they only modify the value \emph{pointed by} \code{x}, not the actual value of \code{x} (the memory address itself).
+
+Given a heap command $\regr \in \Regh$, we let $\fv(\regr) \subseteq \Var$ be the set of (free) variables appearing in $\regr$. We define the set $\modified(\regr) \subseteq \Var$ of variables modified by $\regr$ inductively by
+\begin{align*}
+	 & \modified(\code{skip}) = \emptyset \qquad                                        &  & \modified(\code{x := a}) = \{ \code{x} \}                                \\
+	 & \modified(\code{b?}) = \emptyset \qquad                                          &  & \modified(\code{x := alloc()}) = \{ \code{x} \}                          \\
+	 & \modified(\code{free(x)}) = \emptyset \qquad                                     &  & \modified(\code{x := [y]}) = \{ \code{x} \}                              \\
+	 & \modified(\code{[x] := y}) = \emptyset                                           &  & \modified(\regr_1; \regr_2) = \modified(\regr_1) \cup \modified(\regr_2) \\
+	 & \modified(\regr_1 \regplus \regr_2) = \modified(\regr_1) \cup \modified(\regr_2) &  & \modified(\regr^{\kstar}) = \modified(\regr)
+\end{align*}
+
+Please note that \code{free(x)} and \code{[x] := y} do not modify \code{x}: this is because they only modify the value \emph{pointed by} \code{x}, not the actual value of \code{x} (the memory address itself).
+
+\paragraph*{Assertion Language}
+Our assertion language is derived from SL and Incorrectness Separation Logic (ISL)~\cite{RBDDOV20}:
+\begin{align*}
+	\Asl \ni p, q ::= & \; \false \mid \true \mid p \land q \mid p \lor q \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid x \dealloc \mid p \andsep q
+\end{align*}
+where $\asymp \in \{ =, \neq, \le, <, \dots \}$ replaces standard comparison operators, $x \in \Var$ is a generic variable and $\code{a} \in \AExp$ is an arithmetic expression. The first six constructs describe a fragment of first-order logic, called coherent logic~\cite{BC05}. The last four describe heaps.
+$\emp$ denotes an empty heap, $x \mapsto a$ represents an heap with a single memory cell pointed by $x$ and whose content is $a$, $x \dealloc$ describes that $x$ points to a previously deallocated memory cell.
+The separating conjunction $p \andsep q$ is a key feature of Separation Logics and describes an heap which can be divided in two disjoint sub-heaps, one satisfying $p$ and the other $q$.
+We let $x \mapsto - \eqdef \exists v. x \mapsto v$ describe that $x$ is allocated without tracking its exact value.
+Given a formula $p \in \Asl$, we call $\fv(p) \subseteq \Var$ the set of its free variables.
+
+\subsection{Proof System}\label{sec:sil:sepsil-proof-system}
+
+\begin{figure}[t]
+	\centering
+	\begin{framed}
+		\hspace*{-0.6em}
+		\(
+		\begin{array}{cc}
+			\infer[\silrule{skip}]
+			{\angletriple{\emp}{\code{skip}}{\emp}}
+			{}
+			\;                             &
+			\infer[\silrule{assign}]
+			{\angletriple{q[a / x]}{\code{x := a}}{q}}
+			{}
+			\\[7.5pt]
+			\infer[\silrule{assume}]
+			{\angletriple{q \land b}{\code{b?}}{q}}
+			{}
+			\;                             &
+			\infer[\silrule{alloc}]
+			{\angletriple{\emp}{\code{x := alloc()}}{x \mapsto v}}
+			{}
+			\\[7.5pt]
+			\infer[\silrule{free}]
+			{\angletriple{x \mapsto -}{\code{free(x)}}{x \dealloc}}
+			{}
+			\;                             &
+			\infer[\silrule{load}]
+			{\angletriple{y \mapsto a \andsep q[a / x]}{\code{x := [y]}}{y \mapsto a \andsep q}}
+			{x \notin \fv(a)}
+			\\[7.5pt]
+			\infer[\silrule{store}]
+			{\angletriple{x \mapsto -}{\code{[x] := y}}{x \mapsto y}}
+			{}
+			\\[7.5pt]
+			\hline\hline                   &                                                               \\[-2pt]
+			\infer[\silrule{exists}]
+			{\angletriple{\exists x. p}{\regr}{\exists x. q}}
+			{\angletriple{p}{\regr}{q}     & x \notin \fv(\regr)}
+			\;                             &
+			\infer[\silrule{frame}]
+			{\angletriple{p \andsep t}{\regr}{q \andsep t}}
+			{\angletriple{p}{\regr}{q}     & \fv(t) \cap \modified(\regr) = \emptyset}
+			\\[7.5pt]
+			\hline\hline                   &                                                               \\[-2pt]
+			\infer[\silrule{cons}]
+			{\angletriple{p}{\regr}{q}}
+			{p \Rightarrow p'              & \angletriple{p'}{\regr}{q'}               & q' \Rightarrow q}
+			\;                             &
+			\infer[\silrule{seq}]
+			{\angletriple{p}{\regr_1; \regr_2}{q}}
+			{\angletriple{p}{\regr_1}{t}   & \angletriple{t}{\regr_2}{q}}
+			\\[7.5pt]
+			\infer[\silrule{choice}]
+			{\angletriple{p_1 \lor p_2}{\regr_1 \regplus \regr_2}{q}}
+			{\angletriple{p_1}{\regr_1}{q} & \angletriple{p_2}{\regr_2}{q}}
+			\;                             &
+			\infer[\silrule{iter}]
+			{\angletriple{\exists n. q(n)}{\regr^\kstar}{q(0)}}
+			{\forall n \ge 0 \;\; \angletriple{q(n+1)}{\regr}{q(n)}}
+			\\[7.5pt]
+			\hline\hline                   &                                                               \\[-2pt]
+			\infer[\silrule{empty}]
+			{\angletriple{\false}{\regr}{q}}
+			{}
+			\;                             &
+			\infer[\silrule{disj}]
+			{\angletriple{p_1 \lor p_2}{\regr}{q_1 \lor q_2}}
+			{\angletriple{p_1}{\regr}{q_1} & \angletriple{p_2}{\regr}{q_2}}
+			\\[7.5pt]
+			\infer[\silrule{iter0}]
+			{\angletriple{q}{\regr^{\kstar}}{q}}
+			{}
+			\;                             &
+			\infer[\silrule{unroll}]
+			{\angletriple{p}{\regr^{\kstar}}{q}}
+			{\angletriple{p}{\regr^{\kstar}; \regr}{q}}
+		\end{array}
+		\)
+	\end{framed}
+	\caption{Proof rules for Separation SIL. The first group replaces SIL rule \silrule{atom}, the second includes rules peculiar of SL, the third includes rule from SIL core set, and the fourth includes additional SIL rules.}
+	\label{fig:sil:separation-sil}
+\end{figure}
+
+We present the rules of Separation SIL in Figure~\ref{fig:sil:separation-sil}. $q[a / x]$ denotes the usual capture-avoiding substitution of all free occurrences of $x$ in $q$ with the expression $a$.
+Unlike ISL, we do not distinguish between correct and erroneous termination -- the goal of SIL is to trace back the causes of errors, not to follow the flow of a program after an error has occurred.
+
+We split the rules in four groups.
+The first group includes new rules of Separation SIL. The second one includes rules borrowed from SL.
+The first group holds the rules for atomic commands $\regc \in \Cmdh$, i.e., all instances of the the SIL rule \silrule{atom}. The second has rules adapted from SL~\cite{Reynolds02,RBDDOV20}.
+The third and fourth groups are the core and additional rules of SIL from Figure~\ref{fig:sil:sil-rules}.
+
+All the rules in the first group are local: thanks to \silrule{frame}, they can specify only pre and post for the modified part of the heap.
+Rule \silrule{skip} is trivial: whatever is true before and after the \code{skip} can be added with \silrule{frame}.
+Rule \silrule{assign} is Hoare's backward assignment rule~\cite{Hoare69}.
+Rule \silrule{assume} conjoins the assertion \code{b} to the postcondition: only states satisfying the Boolean guard have an execution.
+Rule \silrule{alloc} allocates a new memory location for $x$. The premise is empty: if the previous content of $x$ is needed, $x = z$ can be introduced in the premise with \silrule{cons}.
+Rule \silrule{free} requires $x$ to be allocated before freeing it.
+Rule \silrule{load} is similar to \silrule{assign}, with the addition of the (disjoint) $y \mapsto a$ to make sure that $y$ is allocated.
+Rule \silrule{store} requires that $x$ is allocated, and updates the value it points to.
+
+The rule \silrule{exists} allows to ``hide" local variables.
+The rule \silrule{frame} is typical of separation logics~\cite{Reynolds02}: it exploits the separating conjunction $\andsep$ to add a frame around a derivation, plugging the proof for a small portion of a program inside a larger heap.
+In the third group, we instantiated the core set in Figure~\ref{fig:sil:sil-rules} for logical formulae, by replacing $\subseteq$ with $\Rightarrow$, $\cup$ with $\lor$ and $\emptyset$ with $\false$. The only notable difference is in rule \silrule{iter}, where Separation SIL uses a predicate $q(n)$ parametrized by the natural number $n \in \mathbb{N}$ and the precondition $\exists n. q(n)$ in the conclusion of the rule. This is a logical replacement for the infinite union used in SIL rule \silrule{iter}.
+In the fourth group, we instantiated the additional rules of Figure~\ref{fig:sil:sil-rules}.
+
+\subsection{Soundness}
+
+\begin{figure}[t]
+	\begin{subfigure}[t]{\linewidth}
+		\centering
+		\begin{align*}
+			\edenot{\code{skip}} (s, h)         & \eqdef \{ (s, h) \}                                                                                    \\
+			\edenot{\code{x := a}} (s, h)       & \eqdef \left\lbrace (s[x \mapsto \edenot{\code{a}} s], h) \right\rbrace                                \\
+			\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
+				                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
+				                                             \emptyset                         & otherwise
+			                                             \end{cases*}  \\
+			\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}(l)\right\rbrace \\
+			\edenot{\code{free(x)}} (s, h)      & \eqdef
+			\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                       \\
+			\edenot{\code{x := [y]}} (s, h)     & \eqdef
+			\left\lbrace (s[x \mapsto h(s(y))], h) \right\rbrace\quad \text{if}~h(s(y)) \in \Val                                                         \\
+			\edenot{\code{[x] := y}} (s, h)     & \eqdef
+			\left\lbrace (s, h[s(x) \mapsto s(y)]) \right\rbrace \quad \text{if}~h(s(x)) \in \Val
+		\end{align*}
+		\caption{Semantics of heap atomic commands, where we let $\mathit{avail}(l) \eqdef (l \notin \dom(h) \lor h(l) = \delta)$ and assume that $\edenot{\regc} (s, h)\eqdef \left\lbrace \errstate \right\rbrace$ unless differently stated.}
+		\label{fig:sil:ssil-model-commands}
+	\end{subfigure}
+	\begin{subfigure}[t]{\linewidth}
+		\vspace*{1ex}
+		\centering
+		\begin{align*}
+			 & \asldenot{\false} \eqdef \emptyset                                                                                                          &  & \asldenot{p \land q} \eqdef \asldenot{p} \cap \asldenot{q}    \\
+			 & \asldenot{\true} \eqdef \Sigma                                                                                                              &  & \asldenot{p \lor q} \eqdef \asldenot{p} \cup \asldenot{q}     \\
+			 & \asldenot{a_1 \asymp a_2} \eqdef \{ (s, h) \svert \edenot{a_1} s \asymp \edenot{a_2} s \}                                                   &  & \asldenot{\emp} \eqdef \{ (s, []) \}                          \\
+			 & \asldenot{x \mapsto a} \eqdef \{ (s, [s(x) \mapsto \edenot{a} s]) \}                                                                        &  & \asldenot{x \dealloc} \eqdef \{ (s, [s(x) \mapsto \delta]) \} \\
+			 & \rlap{$\asldenot{\exists x. p} \eqdef \{ (s, h) \svert \exists v \in \Val \sdot (s[x \mapsto v], h) \in \asldenot{p} \}$}                                                                                      \\
+			 & \rlap{$\asldenot{p \andsep q} \eqdef \{ (s, h_p \bullet h_q) \svert (s, h_p) \in \asldenot{p}, (s,h_q) \in \asldenot{q}, h_p \perp h_q \}$}
+		\end{align*}
+		\caption{Semantics of the assertion language.}
+		\label{fig:sil:ssil-model-assertions}
+	\end{subfigure}
+	\caption{Ingredients to prove soundness of Separation SIL.}
+\end{figure}
+
+To prove soundness of Separation SIL, we give a semantic model for heap regular commands.
+Fixed a finite set $\Var$ of variables and an infinite set $\Loc$ of memory locations, we define the set of values as $\Val \eqdef \setZ \uplus \Loc$ ($\uplus$ is disjoint union).
+Stores $s \in \Stores$ are (total) functions $s: \Var \rightarrow \Val$; heaps $h \in \Heaps$ are partial functions $h: \Loc \rightharpoonup \Val \uplus \{ \delta \}$. If $h(l) = v \in \Val$, location $l$ is allocated and holds value $v$, if $l \notin \dom(h)$ then it is not allocated. The special value $\delta$ describes a deallocated memory location: if $h(l) = \delta$, that location was previously allocated and then deallocated.
+As notation, we use $s[x \mapsto v]$ for function update, $[]$ for the empty heap and $[l \mapsto v]$ for the heap defined only on $l$ and associating value $v$ to it.
+We say two heaps are disjoint, written $h_1 \perp h_2$, when $\dom(h_1) \cap \dom(h_2) = \emptyset$, and in that case we define the $\bullet$ operation as the merge of the two: $h_1 \bullet h_2$ coincides with $h_1$ on $\dom(h_1)$, with $h_2$ on $\dom(h_2)$ and it is undefined everywhere else.
+
+Let $\Sigma = \Stores \times \Heaps$, and $\Sigma_e = \Sigma \uplus \{ \errstate \}$: states $\sigma \in \Sigma_e$ are either a pair store/heap or the error state \errstate{}.
+The denotational semantics of atomic commands $\edenot{\cdot}: \Cmdh \rightarrow \wp(\Sigma_e) \rightarrow \wp(\Sigma_e)$ is in Figure~\ref{fig:sil:ssil-model-commands}. To simplify the presentation, we define it as $\edenot{\cdot}: \Cmdh \rightarrow \Sigma \rightarrow \wp(\Sigma_e)$, we let $\edenot{\regc} \errstate = \{ \errstate \}$, and we lift it to set of states by union.
+Please note that evaluation of arithmetic $\code{a}$ and Boolean expressions $\code{b}$ only depends on the store since they cannot dereference variables.
+We define the forward collecting semantics of heap commands $\fwsem{\cdot}: \Regh \rightarrow \wp(\Sigma_e) \rightarrow \wp(\Sigma_e)$ just as in Figure~\ref{fig:bg:regcom-sem} using the different semantics of atomic commands for $\regc \in \Cmdh$.
+
+The semantics $\asldenot{\cdot}$ of a formula $p \in \Asl$ is a set of states in $\Sigma$. The full definition of $\asldenot{\cdot}$ is given in Figure~\ref{fig:sil:ssil-model-assertions}.
+
+Just like SIL, we say a Separation SIL triple $\angletriple{p}{\regr}{q}$ is valid if $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$.
+To prove soundness of Separation SIL, we rely on a stronger lemma, whose proof is by induction on the derivation tree.
+Then, by taking $t = \emp$ and using $p \andsep \emp \equiv p$, we get the soundness of the proof system.
+
+\begin{lemma}\label{lmm:sil:separation-sil-stronger-sound}
+	Let $p, q, t \in \Asl$ and $\regr \in \Regh$. If $\vdash \angletriple{p}{\regr}{q}$ and $\fv(t) \cap \modified(\regr) = \emptyset$,
+	\[
+	\bwsem{\regr} \asldenot{q \andsep t} \supseteq \asldenot{p \andsep t}
+	\]
+\end{lemma}
+
+\begin{corollary}[Separation SIL is sound]\label{th:sil:separation-sil-sound}
+	Any provable Separation SIL triple is valid:
+	\[
+	\vdash \angletriple{p}{\regr}{q} \implies \vDash \angletriple{p}{\regr}{q}
+	\]
+\end{corollary}
+
+\subsection{Separation SIL at Work}
+We now discuss in full detail the use-after-lifetime example in~\cite{RBDDOV20} to show how Separation SIL can infer preconditions ensuring that a provided error can happen, and we comment on how SIL principles apply in the derivation.
+
+\begin{figure}[t]
+	\begin{align*}
+		 & \angleexact{p: v \mapsto z \andsep z \mapsto - \andsep \true}                                                                            \\
+		 & \quad x := [v]                                                                                                                           \\
+		 & \angleexact{(\underline{v \mapsto z \andsep (x = z \lor x \dealloc)} \andsep z \mapsto - \andsep \true) \lor (x \dealloc \andsep \true)} \\
+		 & \left(
+		\begin{array}{l}
+				\angleexact{\true \andsep v \mapsto z \andsep z \mapsto - \andsep (x = z \lor x \dealloc)}               \\
+				\quad y := [v];                                                                                          \\
+				{\angleexact{\true \andsep \underline{v \mapsto z \andsep y \mapsto - \andsep (x = y \lor x \dealloc)}}} \\
+				\quad \text{free}(y);                                                                                    \\
+				{\angleexact{\true \andsep v \mapsto - \andsep \underline{y \dealloc} \andsep (x = y \lor x \dealloc)}}  \\
+				\quad y := \text{alloc}();                                                                               \\
+				{\angleexact{x \dealloc \andsep v \mapsto - \andsep \underline{y \mapsto -} \andsep \true}}              \\
+				\quad [v] := y                                                                                           \\
+				{\angleexact{x \dealloc \andsep \underline{v \mapsto y} \andsep \true}}
+			\end{array}
+		\right) \regplus \begin{array}{l}
+			                 \angleexact{x \dealloc \andsep \true} \\
+			                 \quad \code{skip}                     \\
+			                 \angleexact{x \dealloc \andsep \true}
+		                 \end{array}                                                                                      \\
+		 & \angleexact{q: x \dealloc \andsep \true}
+	\end{align*}
+	\caption{The proof sketch of $\angletriple{(v \mapsto z \andsep z \mapsto - \andsep \true)}{\mathsf{rclient}}{x \dealloc \andsep \true}$ (best read bottom-up). We write only the strengthened conditions obtained using \silrule{cons}, and \underline{underline} the post of the rule for the current atomic command. Everything else is shared between pre and post using \silrule{frame}.}
+	\label{fig:sil:ssil-derivation}
+\end{figure}
+
+\begin{example}
+	Consider the following program, used as example in~\cite{RBDDOV20}:
+
+	\begin{center}
+		\begin{minipage}{0.4\textwidth}
+			\begin{minted}{C}
+// rclient
+x := *v;
+push_back(v);
+*x := 1;
+
+\end{minted}
+		\end{minipage}\quad
+		\begin{minipage}{0.4\textwidth}
+			\begin{minted}{C}
+push_back(v) {
+	if (nondet()) {
+		free(*v);
+		*v := alloc();
+} }
+\end{minted}
+		\end{minipage}
+	\end{center}
+
+	We encode it as the regular command
+	\begin{align*}
+		\mathsf{rclient} & \eqdef x := [v];\ (\regr_{b} \regplus \code{skip})                \\
+		\regr_{b}        & \eqdef y := [v];\ \text{free}(y);\ y := \text{alloc}();\ [v] := y
+	\end{align*}
+
+	Since our syntax does not include functions, we inline \code{push\_back}.
+	We cannot free and allocate $*v$ directly, whence the auxiliary variable $y$. For simplicity,  we remove the last assignment \code{*x := 1} from $\mathsf{rclient}$: whenever the post $x \dealloc$ holds, an error occurs after $\mathsf{rclient}$.
+
+	The proof sketch is in Figure~\ref{fig:sil:ssil-derivation}, where we annotate every step with the corresponding assertion.
+	The derivation is best read bottom\hyp{}up: we start from the post and infer a suitable pre. For the sequential code in $\regr_b$, we start with a post, then strengthen it with rule \silrule{cons} to match the post of the rule for the corresponding atom, which may require adding some constraint on the shape of the heap.
+
+	Particularly, we remark that to apply \silrule{free} for the line \code{free(y)}, $y$ must be deallocated. This can happen either if $y$ is a new name or if $y = x$, since $x$ is deallocated. This is captured by $y \dealloc \andsep (x = y \lor x \dealloc)$.
+
+	We also observe that we use \silrule{cons} to drop the disjunct $(x \dealloc \andsep \true)$ before \code{x := [v]}: this is analogous to IL ability to drop disjuncts in the postcondition, but oriented backward.
+\end{example}
+
+In the example, we use as error postcondition $x \dealloc \andsep \true$. It is necessary to include $(\andsep\ \true)$ because, in final reachable states, $x$ is not the only variable allocated (there are also $v$ and $y$), so the final heap should talk about them as well. Adding $(\andsep\ \true)$ is a convenient way to focus only on the part of the heap that describes the error, that is $x \dealloc$, and just leave everything else unspecified.
+
+For the same program, the ISL triple in~\cite{RBDDOV20} is
+\[
+\undertriple{v \mapsto z \andsep z \mapsto -}{\mathsf{rclient}}{v \mapsto y \andsep y \mapsto - \andsep x \dealloc} \text{.}
+\]
+This proves the existence of a faulty execution, but tells nothing about which input states actually lead to the error. On the other hand, the Separation SIL triple has a more succinct post capturing the error and provides a stronger guarantee: \emph{every} state in the precondition reaches the error, thus giving (many) actual witnesses for testing and debugging.
+
+Lastly, we remark that, while in~\cite[Fig.~6]{ZDS23} a separation logic instance of Outcome Logic proves essentially the same triple, the deduction process is quite different from SIL.
+OL reasoning is forward oriented, as witnessed by the implication that concludes the proof and by the triple for the $\code{skip}$ branch, whereas Separation SIL proof system naturally guides the backward inference of the precondition starting from the error postcondition (e.g., the pointer deallocated right before its dereferencing).
+
+\subsection{Relative Completeness of Separation SIL}
+Separation SIL is complete for all atomic commands but \code{alloc}, because it misses the ability to refer the specific memory location that gets allocated.
+However, the naive solution to add $x = \alpha$ in the post of \silrule{alloc} would make the frame rule unsound: it would allow to prove, for instance, the invalid triple
+\[
+\angletriple{\emp \andsep \alpha \mapsto -}{\code{x := alloc()}}{(x \mapsto - \land x = \alpha) \andsep \alpha \mapsto -} \text{.}
+\]
+Just like ISL needs the deallocated assertion in the post~\cite[\S 3]{RBDDOV20}, Separation SIL needs a ``will be allocated'' assertion in the pre. To this end, we use the $\dealloc$ assertion, and change the semantic model to only allocate a memory location that is explicitly $\delta$. We formalize this by letting $\mathit{avail}(l) \eqdef h(l) = \delta$ in Figure~\ref{fig:sil:ssil-model-commands} and replacing the axiom \silrule{alloc} with
+
+\[
+\infer[\silrule{alloc}]
+{\angletriple{\beta \dealloc{}}{\code{x := alloc()}}{x = \beta \land x \mapsto v}}
+{}
+\]
+
+The proof system is still sound for this different semantics  model. Moreover, we can prove relative completeness~\cite[\S 4.3]{AO19} for loop-free programs:
+
+\begin{theorem}[Relative completeness for loop-free programs]\label{th:sil:separation-sil-sequential-complete}
+	Suppose to have an oracle to prove implications between formulas in $\Asl$. Let $\regr \in \Regh$ be a regular command without $\kstar$ and $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. Then the triple $\angletriple{p}{\regr}{q}$ is provable.
+\end{theorem}
+
+The proof relies on an algorithmic rewriting of the postcondition that makes constraints on a single memory location explicit. This is given by the following lemma, whose proof is constructive (see the proof in Appendix~\ref{ch:app:sil}):
+
+\begin{lemma}\label{lmm:sil:separation-assertion-rewrite}
+	Let $q \in \Asl$ be a formula without $\exists$, and let $x'$ be a fresh variable. Then,
+	\begin{enumerate}
+		\item there exists a $\bar{q}$ such that $q \land (x \mapsto x' \andsep \true) \equiv x \mapsto x' \andsep \bar{q}$
+		\item there exists a $\bar{q}$ such that $q \land (x \dealloc \andsep \true) \equiv x \dealloc \andsep \bar{q}$
+	\end{enumerate}
+\end{lemma}
+
+Using this, for any atomic command $\regc \in \Cmdh$ we compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regc} \asldenot{q}$, and prove the triple $\angletriple{t}{\regc}{q}$. Then, we extend this result to any program not containing $\kstar$, and conclude using the oracle and \silrule{cons} to prove the triple for any $p$ that implies $t$.
+We conclude remarking that this is a result of completeness \emph{in the sense of Cook}~\cite{Cook78} since it means we can prove a triple whenever the pre for any loop is expressible.
 
 \section{Conclusions}
+\todo[inline]{Write this}

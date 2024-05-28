@@ -1,42 +1,4 @@
 % !TEX root = ../phd-thesis.tex
 
-\chapter{Appendix}
-\todo[inline]{Brief description of what this appendix is for}
-
-\begin{figure}[t]
-	\centering
-	\footnotesize
-	\[
-	\infer[]
-	{(*)}
-	{
-		\infer[\silrule{seq}]{\angletriple{T_{2M}}{\regr_w^{\kstar}; \code{(n <= 0)?}}{Q_{2M}}}{
-			\infer[\silrule{unroll}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{R_{2M}}}{
-				\infer[\silrule{seq}]{\angletriple{T_{2M}}{\regr_w^{\kstar}; \regr_w}{R_{2M}}}{
-					\infer[\silrule{iter0}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{T_{2M}}}{}
-					&
-					\infer{\angletriple{T_{2M}}{\regr_w}{R_{2M}}}{\vdots}
-				}
-			}
-			&
-			\infer[\silrule{atom}]{\angletriple{R_{2M}}{\code{(n <= 0)?}}{Q_{2M}}}{}
-		}
-	}
-	\]
-
-	\[
-	\infer[\silrule{seq}]
-	{\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}}
-	{
-		\infer[\silrule{seq}]{\angletriple{\true}{\code{x := 0; n := nondet()}}{T_{2M}}}{
-			\infer[\silrule{atom}]{\angletriple{\true}{\code{x := 0}}{x \le 2000000}}{}
-			&
-			\infer[\silrule{atom}]{\angletriple{x \le 2000000}{\code{n := nondet()}}{T_{2M}}}{}
-		}
-		&
-		(*)
-	}
-	\]
-	\caption{Derivation of the SIL triple $\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ for Example~\ref{ex:sil-derivation-2}.}
-	\label{fig:app:sil-example-derivation-2}
-\end{figure}
+\chapter{Logics comparison supplementary materials}\label{ch:app:sil}
+This appendix contains technical details of proofs and examples for Chapter~\ref{ch:sil}.

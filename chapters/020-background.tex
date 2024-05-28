@@ -4,12 +4,6 @@
 
 In this chapter, we lay the background for the thesis. We fix the notation and recall known notions on different aspects of theoretical computer science.
 
-\todo[inline]{TODO list}
-\begin{itemize}
-	\item NC here
-	\item take HL stuff from the SIL paper
-\end{itemize}
-
 \section{Order structures}
 We write $\pow(S)$ for the powerset of $S$ and $\id_S: S \rightarrow S$ for the identity function on a set $S$. We omit subscripts when obvious from the context. If $f : S \rightarrow T$ is a function, we overload the symbol $f$ to denote also its lifting $f: \pow(S) \rightarrow \pow(T)$ defined as $f(X) = \{ f(x) \svert x \in X \}$ for any $X \subseteq S$.
 Given two functions $f: S \rightarrow T$ and $g: T \rightarrow V$ we denote their composition as $g \circ f$ or simply $gf$.
@@ -64,12 +58,12 @@ The semantics of regular commands $\denot{\cdot} : \Reg \rightarrow C \rightarro
 	\label{fig:bg:regcom-sem}
 \end{figure}
 
-To recover the standard while-language, using standard definitions for arithmetic and boolean expressions $\code{a} \in \text{AExp}$ and $\code{b} \in \text{BExp}$, we let
+To recover the standard while-language, using standard definitions for arithmetic and boolean expressions $\code{a} \in \AExp$ and $\code{b} \in \BExp$, we let
 \begin{align*}
 	\Exp \ni \expe ::= \; \code{skip} \mid \code{b?} \mid \code{x := a}
 \end{align*}
 The command \code{skip} does nothing. \code{x := a} is a standard deterministic assignment. \code{b?} is an ``assume" statement: it filters out inputs that falsify \code{b}.
-With this set of expressions, regular commands are very similar to Dijkstra's guarded commands~\cite{EWD472}.
+With this set of expressions, regular commands are very similar to Dijkstra's guarded commands~\cite{Dijkstra75}.
 We can define \code{if} and \code{while} statements as syntactic sugar:
 \begin{align*}
 	\code{if (b) then } \code{c}_1 \code{ else } \code{c}_2 & \ \eqdef\  (\code{b?; c}_1) \regplus ((\lnot \code{b})\code{?; c}_2) \\
@@ -224,7 +218,7 @@ Just like HL, this set of rule is sound and complete for IL:
 
 The following example compares HL and IL on a simple program to give an intuition on how they work and differs.
 
-\begin{example}
+\begin{example}\label{ex:bg:il-hl-comparison}
 	HL and IL aim at addressing different properties. To show their differences, we use the simple, deterministic, terminating program
 	\begin{minted}{C}
 x := nondet();
@@ -264,6 +258,9 @@ if (x is even) {
 	\noindent
 	is valid since the postcondition $\neg Q$ can be reached only when the path conditions to reach the assignment are not satisfied.
 \end{example}
+
+\section{Necessary Conditions}\label{sec:bg:nc}
+\todo[inline]{Write this (salvage the SIL paper)}
 
 \section{Kleene Algebras}\label{sec:bg:algebra}
 In this Section, we present Kleene algebras as an algebraic formulation that is able to describe programs.
