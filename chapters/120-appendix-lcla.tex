@@ -174,60 +174,57 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 
 \begin{sidewaysfigure}
 	\[
-	\text{\scriptsize
+	\scriptsize
+	\infer[(\mathsf{seq})]
+	{ ($**$) }
+	{
+		\infer[(\mathsf{transfer})]
+		{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1}}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} } }
+		{ \complete{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\denot{\code{y := y - 1}}} }
+		&
+		\infer[(\mathsf{transfer})]
+		{ \lcl{\Oct}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} }{\code{x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
+		{ \complete{\Oct}{\code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y}}{\denot{\code{x := x - 1}}} }
+	}
+	\]
+	\[
+	\small
+	\infer[(\mathsf{iterate})]
+	{ ($*$) }
+	{
 		\infer[(\mathsf{seq})]
-		{ ($**$) }
+		{ \lcl{\Oct}{R_2}{\regr_i}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}}
+			\qquad (\code{y} \in \{1; 99\} \land \code{x} = \code{y}) \le A(R_2) }
 		{
 			\infer[(\mathsf{transfer})]
-			{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1}}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} } }
-			{ \complete{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\denot{\code{y := y - 1}}} }
+			{ \lcl{\Oct}{R_2}{\code{(x > 1)?}}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}} }
+			{ \complete{\Oct}{R_2}{\denot{\code{(x > 1)?}}}}
 			&
-			\infer[(\mathsf{transfer})]
-			{ \lcl{\Oct}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} }{\code{x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
-			{ \complete{\Oct}{\code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y}}{\denot{\code{x := x - 1}}} }
+			\infer[(\mathsf{seq})]
+			{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1; x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
+			{ ($**$) }
 		}
 	}
 	\]
 	\[
-	\text{\small
-		\infer[(\mathsf{iterate})]
-		{ ($*$) }
-		{
-			\infer[(\mathsf{seq})]
-			{ \lcl{\Oct}{R_2}{\regr_i}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}}
-				\qquad (\code{y} \in \{1; 99\} \land \code{x} = \code{y}) \le A(R_2) }
-			{
-				\infer[(\mathsf{transfer})]
-				{ \lcl{\Oct}{R_2}{\code{(x > 1)?}}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}} }
-				{ \complete{\Oct}{R_2}{\denot{\code{(x > 1)?}}}}
-				&
-				\infer[(\mathsf{seq})]
-				{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1; x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
-				{ ($**$) }
-			}
-		}
+	\small
+	\infer[(\mathsf{seq})]
+	{\lcl{\Oct}{R}{\regr_2}{Q}
+		%					\qquad \Int_{\neq 0} \preceq \Int \qquad \Int(P) = \Int_{\neq 0}(P)
 	}
-	\]
-	\[
-	\text{\small
+	{
+		\infer[(\mathsf{transfer})]
+		{\lcl{\Oct}{R}{\code{x := y}}{R_2}}{ \complete{\Oct}{R}{\denot{\code{x := y}}} }
+		&
 		\infer[(\mathsf{seq})]
-		{\lcl{\Oct}{R}{\regr_2}{Q}
-			%					\qquad \Int_{\neq 0} \preceq \Int \qquad \Int(P) = \Int_{\neq 0}(P)
-		}
+		{\lcl{\Oct}{R_2}{\regr_i^{\kstar}\code{; (x <= 1)?}}{Q}}
 		{
-			\infer[(\mathsf{transfer})]
-			{\lcl{\Oct}{R}{\code{x := y}}{R_2}}{ \complete{\Oct}{R}{\denot{\code{x := y}}} }
+			\infer[(\mathsf{iterate})]
+			{\lcl{\Oct}{R_2}{\regr_i^{\kstar}}{R_2 \lor (\code{y} \in \{1; 99\} \land \code{x} = \code{y})}}
+			{ ($*$) }
 			&
-			\infer[(\mathsf{seq})]
-			{\lcl{\Oct}{R_2}{\regr_i^{\kstar}\code{; (x <= 1)?}}{Q}}
-			{
-				\infer[(\mathsf{iterate})]
-				{\lcl{\Oct}{R_2}{\regr_i^{\kstar}}{R_2 \lor (\code{y} \in \{1; 99\} \land \code{x} = \code{y})}}
-				{ ($*$) }
-				&
-				\infer[(\mathsf{transfer})]
-				{\lcl{\Oct}{R_2}{\code{(x <= 1)?}}{Q}}{ \complete{\Oct}{R_2}{\denot{\code{(x <= 1)?}}} }
-			}
+			\infer[(\mathsf{transfer})]
+			{\lcl{\Oct}{R_2}{\code{(x <= 1)?}}{Q}}{ \complete{\Oct}{R_2}{\denot{\code{(x <= 1)?}}} }
 		}
 	}
 	\]
@@ -422,3 +419,143 @@ The following lemma is used in the subsequent proof.
 	\]
 	Now we could apply \lclrule{relax} to change $P$ with a $P'$ satisfying $P' \subseteq P \subseteq A'(P')$. However, we have $a \notin P$, hence $a \notin P' \subseteq P$, and $a \in A(P) \subseteq A'(P) = A'(P')$. Now the only rule we can apply is \lclrule{seq}, and as before we need a triple $\lcl{A'}{P'}{\regr}{Q}$ for some $Q$, that would imply $\complete{A'}{P'}{\denot{\regr}}$. But this is not the case, and can be shown with computations as before using that $a \in A'(P') \setminus P'$ to obtain $\denot{\regr} P' = \emptyset$ and $\denot{\regr} A'(P') = \{ b \}$, and the already shown $A'(\emptyset) \subsetneq A'(\{ b \})$.
 \end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:lcla:clcl-sound-int}]
+	The proof follows closely that for LCL (Theorem~\ref{th:lcla:soundness-ext}).\todo{Check the proof for name consistency and references}
+
+	As for $\LCLA$, points (1) and (3) implies point (2):
+	\begin{align*}
+		\alpha(P) & \le_A \alpha(\bwsem{\regr} Q)              & [\text{(1) and monotonicity of }\alpha]          \\
+		          & \le_A \bwsem{\regr}^{\sharp}_{A} \alpha(Q) & [\text{soundness of }\bwsem{\cdot}^{\sharp}_{A}] \\
+		          & = \alpha(P)                                & [\text{(3)}]
+	\end{align*}
+	Therefore, we only have to prove (1) and (3).
+
+	The proof is by induction on the derivation tree of the provable triple $\clcltriple{A}{P}{\regr}{Q}$. We prove here only some relevant cases.\todo{Add all of them?}
+
+	\proofcase{\clclrule{transfer}}
+	For (1), we have trivially $\bwsem{\regc} Q \subseteq \bwsem{\regc} Q$. For (2), we have $\alpha(\bwsem{\regc} Q) = \alpha(\bwsem{\regc} \gamma \alpha Q) = \bwsem{\regc}^{\sharp}_A \alpha (Q)$ by $\complete{A}{Q}{\bwsem{\regc}}$ and definition of $\bwsem{\regc}^{\sharp}_A$, respectively (see Fig.~\ref{fig:abs-semantics:bw}).
+
+	\proofcase{\clclrule{relax}}
+	For (1) we have
+	\begin{align*}
+		P & \subseteq P'               & [\text{hp of the rule}]                                     \\
+		  & \subseteq \bwsem{\regr} Q' & [\text{inductive hp (1) on } \clcltriple{A}{P'}{\regr}{Q'}] \\
+		  & \subseteq \bwsem{\regr} Q  & [\text{hp of the rule}]
+	\end{align*}
+
+	For (2), we recall that $P \subseteq P' \subseteq A(P)$ implies $\alpha(P) = \alpha(P')$: one inequality holds by monotonicity of $\alpha$, the other by the adjunctive property of a GC since $A = \gamma \circ \alpha$. Then
+	\begin{align*}
+		\alpha(P) & = \alpha(P')                            & [\text{hp of the rule } P \subseteq P' \subseteq A(P)]      \\
+		          & = \bwsem{\regr}^{\sharp}_{A} \alpha(Q') & [\text{inductive hp (2) on } \clcltriple{A}{P'}{\regr}{Q'}] \\
+		          & = \bwsem{\regr}^{\sharp}_{A} \alpha(Q)  & [\text{hp of the rule } Q' \subseteq Q \subseteq A(Q')]
+	\end{align*}
+
+	\proofcase{\clclrule{rec}}
+	We first observe that
+	\begin{align*}
+		\bwsem{\regr^{\kstar}} \bwsem{\regr} Q & \le Q \cup \bwsem{\regr^{\kstar}} \bwsem{\regr} Q                                &                                         \\
+		                                       & =\bwsem{\regr}^0 Q \cup \bigcup\limits_{n \ge 0} \bwsem{\regr}^n \bwsem{\regr} Q & [\text{Lemma~}\ref{lmm:bwsem-calculus}] \\
+		                                       & =\bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q                                      &                                         \\
+		                                       & =\bwsem{\regr^{\kstar}} Q                                                        & [\text{Lemma~}\ref{lmm:bwsem-calculus}]
+	\end{align*}
+
+	We can then prove (1) by
+	\begin{align*}
+		P & \subseteq \bwsem{\regr^{\kstar}} (R \cup Q)                            & [\text{inductive hp (1) on } \clcltriple{A}{P}{\regr^{\kstar}}{R \cup Q}] \\
+		  & \subseteq \bwsem{\regr^{\kstar}} (\bwsem{\regr} Q \cup Q)              & [\text{inductive hp (1) on } \clcltriple{Q}{R}{\regr}{Q}]                 \\
+		  & = \bwsem{\regr^{\kstar}} \bwsem{\regr} Q \cup \bwsem{\regr^{\kstar}} Q & [\text{additivity of }\bwsem{\cdot}]                                      \\
+		  & \subseteq \bwsem{\regr^{\kstar}} Q \cup \bwsem{\regr^{\kstar}} Q       & [\text{observation above}]                                                \\
+		  & = \bwsem{\regr^{\kstar}} Q
+	\end{align*}
+
+	For (2)
+	\begin{align*}
+		\bwsem{\regr^{\kstar}}^{\sharp}_A \alpha(Q) & \le_A \bwsem{\regr^{\kstar}}^{\sharp}_A (Q \cup R) &                                                                           \\
+		                                            & = \alpha(P)                                        & [\text{inductive hp (2) on } \clcltriple{A}{P}{\regr^{\kstar}}{R \cup Q}] \\
+		                                            & \le_A \alpha(\bwsem{\regr^{\kstar}} Q)             & [\text{condition (1) shown above}]                                        \\
+		                                            & \le_A \bwsem{\regr^{\kstar}}^{\sharp}_A \alpha(Q)  & [\text{soundness of }\bwsem{\cdot}^{\sharp}_A]
+	\end{align*}
+
+	\proofcase{\clclrule{iterate}}
+	For (1)
+	\begin{align*}
+		P \cup Q & \subseteq \bwsem{\regr} Q \cup Q                     & [\text{inductive hp (1) on }\clcltriple{A}{P}{\regr}{Q}] \\
+		         & = \bwsem{\regr}^1 Q \cup \bwsem{\regr}^0 Q           &                                                          \\
+		         & \subseteq \bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q &                                                          \\
+		         & = \bwsem{\regr^{\kstar}} Q                           & [\text{Lemma~}\ref{lmm:bwsem-calculus}]
+	\end{align*}
+
+	For (2), we first prove by induction that $(\bwsem{\regr}^{\sharp}_{A})^n \alpha(Q) \le_A \alpha(Q)$. Recall that, by the adjunctive property of a Galois connection, $P \subseteq A(Q)$ iff $\alpha(P) \le_A \alpha(Q)$. The base case $n = 0$ is trivial because $(\bwsem{\regr}^{\sharp}_{A})^0$ is the identity. Suppose it holds for some $n$: then
+	\begin{align*}
+		(\bwsem{\regr}^{\sharp}_{A})^{n+1} \alpha(Q) & = \bwsem{\regr}^{\sharp}_{A} (\bwsem{\regr}^{\sharp}_{A})^n \alpha(Q) &                                                          \\
+		                                             & \le_A \bwsem{\regr}^{\sharp}_{A} \alpha(Q)                            & [\text{inductive hp}]                                    \\
+		                                             & = \alpha(P)                                                           & [\text{inductive hp (2) on }\clcltriple{A}{P}{\regr}{Q}] \\
+		                                             & \le_A \alpha(Q)                                                       & [\text{hp of the rule } P \le A(Q)]
+	\end{align*}
+
+	From this, we observe that
+	\[
+	\alpha(Q) = (\bwsem{\regr^{\kstar}}^{\sharp}_{A})^0 \alpha(Q) \le_A \bigcup\limits_{n \ge 0} (\bwsem{\regr^{\kstar}}^{\sharp}_{A})^n \alpha(Q) \le_A \bigcup\limits_{n \ge 0} \alpha(Q) = \alpha(Q)
+	\]
+	and therefore $\bwsem{\regr^{\kstar}}^{\sharp}_{A} \alpha(Q) = \alpha(Q)$ by Lemma~\ref{lmm:bwsem-calculus}.
+
+	We then conclude the proof of (2) with
+	\begin{align*}
+		\bwsem{\regr^{\kstar}}^{\sharp}_{A} \alpha(Q) & = \alpha(Q)                  &                                     \\
+		                                              & = \alpha(P) \vee_A \alpha(Q) & [\text{hp of the rule } P \le A(Q)] \\
+		                                              & = \alpha(P \cup Q)           & [\text{additivity of } \alpha]
+	\end{align*}
+\end{proof}
+
+\begin{sidewaysfigure}
+	\centering
+	{
+		\begin{math}
+			\infer[\clclrule{seq}]
+			{\clcltriple{\Oct}{T_{2M}}{\regr_w}{R_{2M}}}
+			{
+				\infer{\clcltriple{\Oct}{T_{2M}}{\code{n > 0?}}{x + n = \bar{k}}}{\complete{\Oct}{x + n = \bar{k}}{\bwsem{\code{n > 0?}}}}
+				&
+				\infer{\clcltriple{\Oct}{x + n = \bar{k}}{\code{x := x + n}}{x = \bar{k}}}{\complete{\Oct}{x = \bar{k}}{\bwsem{\code{x := x + n}}}}
+				&
+				\infer{\clcltriple{\Oct}{x = \bar{k}}{\code{n := nondet()}}{R_{2M}}}{\complete{\Oct}{R_{2M}}{\bwsem{\code{n := nondet()}}}}
+			}
+		\end{math}
+	}
+
+	\bigskip
+	{
+		\begin{math}
+			\infer[\clclrule{seq}]
+			{\clcltriple{\Oct}{S_{2M}}{\regr_w}{T_{2M} \lor R_{2M}}}
+			{
+				\infer{\clcltriple{\Oct}{S_{2M}}{\code{n > 0?}}{x + n \le \bar{k}}}{\complete{\Oct}{x + n \le \bar{k}}{\bwsem{\code{n > 0?}}}}
+				&
+				\infer{\clcltriple{\Oct}{x + n \le \bar{k}}{\code{x := x + n}}{x \le \bar{k}}}{\complete{\Oct}{x \le \bar{k}}{\bwsem{\code{x := x + n}}}}
+				&
+				\infer{\clcltriple{\Oct}{x < \bar{k} \lor x = \bar{k}}{\code{n := nondet()}}{T_{2M} \lor R_{2M}}}{\complete{\Oct}{T_{2M} \lor R_{2M}}{\bwsem{\code{n := nondet()}}}}
+			}
+		\end{math}
+	}
+
+	\bigskip
+	{
+		\begin{math}
+			\infer[\clclrule{rec}]
+			{\clcltriple{\Oct}{S_{2M} \lor R_{2M}}{\regr_w^{\kstar}}{R_{2M}}}
+			{
+				\infer[\clclrule{iterate}]
+				{\clcltriple{\Oct}{S_{2M} \lor R_{2M}}{\regr_w^{\kstar}}{T_{2M} \lor R_{2M}}}
+				{
+					S_{2M} \subseteq \Oct(T_{2M} \lor R_{2M})
+					& \infer{\clcltriple{\Oct}{S_{2M}}{\regr_w}{T_{2M} \lor R_{2M}}}{\dots}
+				}
+				& \infer{\clcltriple{\Oct}{T_{2M}}{\regr_w}{R_{2M}}}{\dots}
+			}
+		\end{math}
+	}
+
+	\caption{Derivation of the CLCL triple $\clcltriple{\Oct}{(n > 0 \land x + n \le 2000000) \lor R_{2M}}{\regr_w^{\kstar}}{R_{2M}}$. For brevity, we omit rule name \clclrule{transfer}, we let $\bar{k} \eqdef 2000000$, we recall that $R_{2M} \eqdef (x = \bar{k} \land n \le 0)$, $T_{2M} \eqdef (x + n = \bar{k} \land n > 0)$ and we define $S_{2M} \eqdef (x + n \le \bar{k} \land n > 0)$.}
+	\label{fig:app:clcl-derivation}
+\end{sidewaysfigure}

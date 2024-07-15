@@ -1,7 +1,7 @@
 % !TEX root = ../phd-thesis.tex
 
 \chapter{A Comparison of Program Logics}\label{ch:sil}
-In this chapter, we consider three known triple-based program logics, namely Hoare Logic (HL), Incorrectness Logic (IL) and Necessary Conditions (NC). We characterize their validity conditions in term of over or under-approximation of forward and backward semantics. First, this allows us to identify the absence of one combination, and thus to define a new program logic, called Sufficient Incorrectness Logic (SIL), for it. Second, this guides a thorough comparison of the four validity conditions, highlighting analogies and differences between them.
+In this chapter\todo{Take from popl25 for some parts of the presentation (I still like the current general flow of the chapter more)}, we consider three known triple-based program logics, namely Hoare Logic (HL), Incorrectness Logic (IL) and Necessary Conditions (NC). We characterize their validity conditions in term of over or under-approximation of forward and backward semantics. First, this allows us to identify the absence of one combination, and thus to define a new program logic, called Sufficient Incorrectness Logic (SIL), for it. Second, this guides a thorough comparison of the four validity conditions, highlighting analogies and differences between them.
 
 The content of this chapter is based on~\cite{ABGL24}.
 
@@ -488,7 +488,7 @@ Dually, NC cannot say much about reachability of $Q$ unless $P$ is empty, in whi
 
 On the contrary, under-approximation offers much stronger guarantees on termination/reachability. Any IL triple $\iltriple{P}{\regr}{Q}$ ensures that all states in $Q$ are reachable (in particular, from states in $P$). Dually, a SIL triple $\siltriple{P}{\regr}{Q}$ means that all states in $P$ have a convergent computation that ends in some state in $Q$. This observation motivates the design of a forward iteration rule in IL (resp. backward in SIL): a backward (resp. forward) rule would need to prove reachability of all points in the post (resp. pre). Instead, the forward rule of IL (resp. backward rule of SIL) ensures reachability (resp. termination) by construction, as it builds $Q$ (resp. $P$) only with points known to be reachable (resp. terminating).
 
-\section{Separation Sufficient Incorrectness Logic}
+\section{Separation Sufficient Incorrectness Logic}\label{sec:sil:separation-sil}
 We instantiate SIL to handle pointers and dynamic memory allocation, introducing Separation SIL. The goal of Separation SIL is to identify the causes of memory errors: it takes the backward under-approximation principles of SIL and combines it with the ability to deal with pointers from Separation Logic (SL)~\cite{Reynolds02,ORY01}
 
 \paragraph*{Heap Regular Commands}

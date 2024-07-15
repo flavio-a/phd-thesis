@@ -142,7 +142,7 @@ Thus, we can state soundness of HL:
 The reverse implication is called \emph{completeness} of the logic,\footnote{For the sake of readability, we must warn the reader that this thesis deals with three different notions of completeness. (Logical) completeness, used here, refers to the ability of a proof system to derive all valid triples. The terms global and local completeness are instead properties of abstract interpretation, that will be defined later. We will make sure to disambiguate the term whenever it is not clear from the context.} and in general it doesn't hold for HL because program analysis is undecidable. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}.
 Cook~\cite{Cook78} overcame these limitations for the first time by adding an oracle to decide implications and requiring that all strongest post (including loop-invariants) are expressible in the assertion language, proving the first completeness result for HL.\footnote{This was later called completeness \emph{in the sense of Cook}~\cite[§2.8]{Apt81}.}
 Another approach (see, e.g., \cite{CCLB12,OHearn20}) is to assume $P$ and $Q$ to be \emph{set} of states instead of formulae in some assertion language. This allows us to dodge at once both the issue of expressibility of the assertion language (since we can write any subset) and of decidability of the implication (since it reduces to subset inclusion).
-In this thesis, we will always consider this latter setting where $P$ and $Q$ are sets of states, with the only exception of Separation SIL (Section~\ref{}). Therefore, we will write $\sigma \in P$ to mean that state $\sigma$ satisfies the assertion $P$, and use standard set-theoretic symbols such as $\subseteq$ and $\cup$ instead of the logical $\implies$ and $\lor$.
+In this thesis, we will always consider this latter setting where $P$ and $Q$ are sets of states, with the only exception of Separation SIL (Section~\ref{sec:sil:separation-sil}). Therefore, we will write $\sigma \in P$ to mean that state $\sigma$ satisfies the assertion $P$, and use standard set-theoretic symbols such as $\subseteq$ and $\cup$ instead of the logical $\implies$ and $\lor$.
 
 When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:hl} is complete:
 
@@ -478,14 +478,12 @@ Intuitively, completeness means that the abstract function $f^{\sharp}$ is as pr
 Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. While any command $\regr$ has a bca $\denot{\regr}^{A}$, in general an analyser doesn't know it. Instead, it works inductively on the syntax of $\regr$ to define a sound abstraction of the concrete semantics $\denot{\regr}$. This (compositional) abstract semantics is given in Figure~\ref{fig:bg:regcom-abs-sem}, and defines the \emph{abstract interpreter} $\denot{\cdot}^{\sharp}_{A} : \Reg \rightarrow A \rightarrow A$.
 \begin{figure}[t]
 	\begin{align*}
-		\begin{split}
-			\denot{\expe}^{\sharp}_{A} a                    & \eqdef \denot{\expe}^{A} a = \alpha \edenot{\expe} \gamma (a)               \\
-			\denot{\regr_1 ; \regr_2}^{\sharp}_{A} a        & \eqdef \denot{\regr_2}^{\sharp}_{A} \denot{\regr_1}^{\sharp}_{A} (a)        \\
-			\denot{\regr_1 \regplus \regr_2}^{\sharp}_{A} a & \eqdef \denot{\regr_1}^{\sharp}_{A} a \vee A \denot{\regr_2}^{\sharp}_{A} a \\
-			\denot{\regr^\kstar}^{\sharp}_{A} a             & \eqdef \bigvee_{n \ge 0}  (\denot{\regr}^{\sharp}_{A})^n a
-		\end{split}
+		\denot{\expe}^{\sharp}_{A} a                    & \eqdef \denot{\expe}^{A} a = \alpha \edenot{\expe} \gamma (a)               \\
+		\denot{\regr_1 ; \regr_2}^{\sharp}_{A} a        & \eqdef \denot{\regr_2}^{\sharp}_{A} \denot{\regr_1}^{\sharp}_{A} (a)        \\
+		\denot{\regr_1 \regplus \regr_2}^{\sharp}_{A} a & \eqdef \denot{\regr_1}^{\sharp}_{A} a \vee A \denot{\regr_2}^{\sharp}_{A} a \\
+		\denot{\regr^\kstar}^{\sharp}_{A} a             & \eqdef \bigvee_{n \ge 0}  (\denot{\regr}^{\sharp}_{A})^n a
 	\end{align*}
-	\caption{Abstract semantics of regular commands}
+	\caption{Abstract semantics of regular commands.}
 	\label{fig:bg:regcom-abs-sem}
 \end{figure}
 This formulation tells a constructive way to compute an abstract semantics of any regular command $\regr$ provided that the analyser knows the bca of all expression $\expe \in \Exp$ (or at least those appearing in $\regr$). This condition could be further relaxed replacing $\denot{\expe}^{A}$ with any sound abstraction $\denot{\expe}^{\sharp}$ of $\denot{\expe}$, but for the sake of simplicity we assume the analyser is able to compute all bcas of basic expressions. All other rules are completely analogous to those of the concrete semantics but for the use of the abstract interpreter of syntactic components instead of the concrete semantics.

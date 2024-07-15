@@ -2,10 +2,14 @@
 
 \chapter{Related work}\label{ch:sota}
 This chapter surveys related work that combines over and under-approximations.
+Section~\ref{sec:sota:limits-underapprox-domains} highlights some issues in the design of abstract domains for under-approximation, presenting a limitation in the usage of abstract interpretation for this task.
 Section~\ref{sec:sota:kat} analyses KATs as a possible formalism to describe together over and under-approximation, represented respectively by HL and IL.
 Section~\ref{sec:sota:lcl} present $\LCLA$, a logic that exploits under-approximations to ensure precision of an (over-approximating) abstraction and is able to prove both correctness and incorrectness at once.
 Section~\ref{sec:sota:pdr} discusses \code{ic3}, an algorithm that combines over and under-approximations in a non-trivial way, and its generalizations.
 Section~\ref{sec:sota:ol} summarizes Outcome Logic, a triple based program logic that can express both over and under-approximation properties.
+
+\section{Under-Approximation Abstract Domains}\label{sec:sota:limits-underapprox-domains}
+Something something under-approximation abstract domains~\cite{ABG22,ABG24}.\todo{write}
 
 \section{Unifying formalism}\label{sec:sota:kat}
 Hoare and Incorrectness Logic operate on dual principles. Because of this, some properties are shared among the two, others are dualized and others still are just different. In order to highlight these similarities and differences, it is interesting to embed HL and IL in a common formalism. As recalled in Section~\ref{sec:bg:algebra}, KATs are able to encode regular commands \cite{Kozen97} as well as HL \cite{Kozen00} making it a purely equational theory.
