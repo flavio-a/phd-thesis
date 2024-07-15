@@ -72,19 +72,19 @@ To tackle this issue, we introduce Sufficient Incorrectness Logic (SIL) as a pro
 \begin{figure}
 	\centering
 	\begin{tabular}{c|c@{\qquad}c@{\qquad}c@{\qquad}c@{\qquad}c}
-		Logic                       &
-		HL \cite{Hoare69}           &
-		IL \cite{OHearn20}          &
-		NC \cite{CCL11}             &
-		OL \cite{ZDS23}             &
+		Logic                    &
+		HL \cite{Hoare69}        &
+		IL \cite{OHearn20}       &
+		NC \cite{CCL11}          &
+		OL \cite{ZDS23}          &
 		SIL
 		\\[2pt] \hline &&&&& \\[-10pt]
-		Triples                     &
-		$\overtriple{P}{\regr}{Q}$  &
-		$\undertriple{P}{\regr}{Q}$ &
-		$\necctriple{P}{\regr}{Q}$  &
-		$\oltriple{P}{\regr}{Q}$    &
-		$\angletriple{P}{\regr}{Q}$
+		Triples                  &
+		$\hltriple{P}{\regr}{Q}$ &
+		$\iltriple{P}{\regr}{Q}$ &
+		$\nctriple{P}{\regr}{Q}$ &
+		$\oltriple{P}{\regr}{Q}$ &
+		$\siltriple{P}{\regr}{Q}$
 	\end{tabular}
 	\caption{Summary of the notation for different program logics}
 	\label{fig:sil:notation-summary}
@@ -96,7 +96,7 @@ Since in this chapter we deal with different kinds of program logics, a summary 
 Sufficient incorrectness conditions identify the source of incorrectness and provide programmers with evidence of the inputs that can cause the errors.
 The SIL triple
 \[
-\angletriple{P}{\regr}{Q}
+\siltriple{P}{\regr}{Q}
 \]
 asserts that ``\emph{all states in $P$ have at least one execution leading to a state in $Q$}'', which can be summarized with the validity condition
 \[
@@ -112,7 +112,7 @@ We make this point evident by the following proposition.
 	\]
 \end{prop}
 
-A convenient way to exploit SIL is to assume that the analysis takes as input the incorrectness specification $Q$, i.e., the set of erroneous final states. Then, any valid SIL triple $\angletriple{P}{\regr}{Q}$ yields a precondition which surely captures erroneous executions. In this sense, $P$ gives a sufficient condition for incorrectness. This is dual to the interpretation of IL where, for a given precondition $P$, any IL triple $\undertriple{P}{\regr}{Q}$ yields a set $Q$ of final states which are for sure
+A convenient way to exploit SIL is to assume that the analysis takes as input the incorrectness specification $Q$, i.e., the set of erroneous final states. Then, any valid SIL triple $\siltriple{P}{\regr}{Q}$ yields a precondition which surely captures erroneous executions. In this sense, $P$ gives a sufficient condition for incorrectness. This is dual to the interpretation of IL where, for a given precondition $P$, any IL triple $\iltriple{P}{\regr}{Q}$ yields a set $Q$ of final states which are for sure
 reachable, so that any error state in $Q$ is a true bug reachable from some input in $P$.
 We show that SIL and IL triples differ via a simple example.
 
@@ -127,11 +127,11 @@ if (x is even) {
 // assert(z != 42)
 	\end{minted}
 	We assume that $Q_{42} \eqdef (z = 42)$ denotes the set of erroneous states.
-	Any SIL triple provides a sufficient condition for the input state that causes the error. For instance, in SIL (but not with IL) we can prove the triple $\angletriple{\text{odd}(y) \wedge \text{even}(x)}{\regr 42}{Q_{42}}$ stating that any state where $x$ is even and $y$ is odd will lead to the error (i.e., $z=42$).
-	In IL, but \emph{not} in SIL, one can prove that some errors can be reached even when we start in a safe state. For instance, $\undertriple{z=11}{\regr 42}{Q_{42} \wedge \text{odd}(y) \wedge \text{even}(x)}$ is a valid IL but not in SIL. In fact, it is not true that for any state where $z=11$ the program $\regr 42$ will reach an error, e.g., when we start with $z \mapsto 11, x \mapsto 0, y \mapsto 0$.
+	Any SIL triple provides a sufficient condition for the input state that causes the error. For instance, in SIL (but not with IL) we can prove the triple $\siltriple{\text{odd}(y) \wedge \text{even}(x)}{\regr 42}{Q_{42}}$ stating that any state where $x$ is even and $y$ is odd will lead to the error (i.e., $z=42$).
+	In IL, but \emph{not} in SIL, one can prove that some errors can be reached even when we start in a safe state. For instance, $\iltriple{z=11}{\regr 42}{Q_{42} \wedge \text{odd}(y) \wedge \text{even}(x)}$ is a valid IL but not in SIL. In fact, it is not true that for any state where $z=11$ the program $\regr 42$ will reach an error, e.g., when we start with $z \mapsto 11, x \mapsto 0, y \mapsto 0$.
 \end{example}
 
-Sufficient incorrectness preconditions are extremely valuable to programmers: by pointing out the sources of errors, they serve as a starting point to scope down debugging, fuzzing, and testing. Moreover, it is known that, contrary to IL and its extensions, backward under\hyp{}approximation can expose manifest errors~\cite[§3.2]{LRVBDO22}: an error $Q$ is manifest if and only if the SIL triple $\angletriple{\true}{\regr}{Q}$ is valid. Intuitively, an error is manifest if it happens regardless of the context, and experimentally it has been observed that manifest errors are likely to be fixed when reported~\cite[§5]{LRVBDO22}.
+Sufficient incorrectness preconditions are extremely valuable to programmers: by pointing out the sources of errors, they serve as a starting point to scope down debugging, fuzzing, and testing. Moreover, it is known that, contrary to IL and its extensions, backward under\hyp{}approximation can expose manifest errors~\cite[§3.2]{LRVBDO22}: an error $Q$ is manifest if and only if the SIL triple $\siltriple{\true}{\regr}{Q}$ is valid. Intuitively, an error is manifest if it happens regardless of the context, and experimentally it has been observed that manifest errors are likely to be fixed when reported~\cite[§5]{LRVBDO22}.
 Moreover, IL and SIL share the possibility to drop disjuncts, one of the leading factors for the introduction of IL to increase scalability and make bug\hyp{}finding effective: the key difference is that IL drops disjuncts in the post, while SIL in the pre.
 
 \subsection{Proof System}\label{sec:sil:sil-rules}
@@ -142,24 +142,24 @@ Moreover, IL and SIL share the possibility to drop disjuncts, one of the leading
 		\(
 		\begin{array}{cc}
 			\infer[\silrule{atom}]
-			{\angletriple{\bwsem{\regc}Q}{\regc}{Q}}
+			{\siltriple{\bwsem{\regc}Q}{\regc}{Q}}
 			{}
 			\quad                        &
 			\infer[\silrule{cons}]
-			{\angletriple{P}{\regr}{Q}}
-			{P \subseteq P'              & \angletriple{P'}{\regr}{Q'}    & Q' \subseteq Q}
+			{\siltriple{P}{\regr}{Q}}
+			{P \subseteq P'              & \siltriple{P'}{\regr}{Q'}    & Q' \subseteq Q}
 			\\[7.5pt]
 			\infer[\silrule{seq}]
-			{\angletriple{P}{\regr_1;\regr_2}{Q}}
-			{\angletriple{P}{\regr_1}{R} & \angletriple{R}{\regr_2}{Q}}
+			{\siltriple{P}{\regr_1;\regr_2}{Q}}
+			{\siltriple{P}{\regr_1}{R}   & \siltriple{R}{\regr_2}{Q}}
 			\qquad                       &
 			\infer[\silrule{choice}]
-			{\angletriple{P_1 \cup P_2}{\regr_1 \regplus \regr_2}{Q}}
-			{\forall i \in \{ 1, 2 \}    & \angletriple{P_i}{\regr_i}{Q}}
+			{\siltriple{P_1 \cup P_2}{\regr_1 \regplus \regr_2}{Q}}
+			{\siltriple{P_1}{\regr_1}{Q} & \siltriple{P_2}{\regr_2}{Q}}
 			\\[7.5pt]
 			\infer[\silrule{iter}]
-			{\angletriple{\bigcup\limits_{n \ge 0} Q_n}{\regr^\kstar}{Q_0}}
-			{\forall n \ge 0 \sdot \angletriple{Q_{n+1}}{\regr}{Q_n}}
+			{\siltriple{\bigcup\limits_{n \ge 0} Q_n}{\regr^\kstar}{Q_0}}
+			{\forall n \ge 0 \sdot \siltriple{Q_{n+1}}{\regr}{Q_n}}
 		\end{array}
 		\)\\
 		\vspace{0.3em}
@@ -172,20 +172,20 @@ Moreover, IL and SIL share the possibility to drop disjuncts, one of the leading
 		\(
 		\begin{array}{cc}
 			\infer[\silrule{empty}]
-			{\angletriple{\emptyset}{\regr}{Q}}
+			{\siltriple{\emptyset}{\regr}{Q}}
 			{}
-			\qquad                         &
+			\qquad                       &
 			\infer[\silrule{iter0}]
-			{\angletriple{Q}{\regr^\kstar}{Q}}
+			{\siltriple{Q}{\regr^\kstar}{Q}}
 			{}
 			\\[7.5pt]
 			\infer[\silrule{unroll}]
-			{\angletriple{P}{\regr^\kstar}{Q}}
-			{\angletriple{P}{\regr^\kstar; \regr}{Q}}
-			\qquad                         &
+			{\siltriple{P}{\regr^\kstar}{Q}}
+			{\siltriple{P}{\regr^\kstar; \regr}{Q}}
+			\qquad                       &
 			\infer[\silrule{disj}]
-			{\angletriple{P_1 \cup P_2}{\regr}{Q_1 \cup Q_2}}
-			{\angletriple{P_1}{\regr}{Q_1} & \angletriple{P_2}{\regr}{Q_2} }
+			{\siltriple{P_1 \cup P_2}{\regr}{Q_1 \cup Q_2}}
+			{\siltriple{P_1}{\regr}{Q_1} & \siltriple{P_2}{\regr}{Q_2} }
 		\end{array}
 		\)
 	\end{framed}
@@ -199,23 +199,23 @@ Rule \silrule{choice} is reminiscent of the equation for conditionals in the cal
 For iteration, for each $n \ge 0$ we find inductively the precondition $Q_n$ of executing $\regr$ exactly $n$ times. The precondition of the whole $\regr^{\kstar}$ is then the union of all the $Q_n$, as formalized by rule \silrule{iter}, which first appeared in \cite[\S 5]{MOH21}.
 The consequence rule \silrule{cons} enables the under-approximation of the precondition and it follows from the validity condition. If all the states in $P'$ have an execution leading to a state in $Q'$, then any subset $P$ of $P'$ will lead to $Q'$ as well. Similarly, every superset $Q$ of $Q'$ is reachable by executions starting in $P$.
 
-The SIL proof system is both correct and complete. Correctness can be proved by induction on the derivation tree of a triple. Intuitively, if the premises of a rule are valid, then its consequence is valid as well, as we briefly observed in the previous section. To prove completeness, we rely on the fact that rules other than \silrule{cons} are exact, that is, if their premises satisfy the equality $\bwsem{\regr} Q = P$, their conclusion does as well. Using this, we prove the triple $\angletriple{\bwsem{\regr}Q}{\regr}{Q}$ for any $\regr$ and $Q$. Then we conclude using \silrule{cons} to get a proof of $\angletriple{P}{\regr}{Q}$ for any $P \subseteq \bwsem{\regr}Q$.
+The SIL proof system is both correct and complete. Correctness can be proved by induction on the derivation tree of a triple. Intuitively, if the premises of a rule are valid, then its consequence is valid as well, as we briefly observed in the previous section. To prove completeness, we rely on the fact that rules other than \silrule{cons} are exact, that is, if their premises satisfy the equality $\bwsem{\regr} Q = P$, their conclusion does as well. Using this, we prove the triple $\siltriple{\bwsem{\regr}Q}{\regr}{Q}$ for any $\regr$ and $Q$. Then we conclude using \silrule{cons} to get a proof of $\siltriple{P}{\regr}{Q}$ for any $P \subseteq \bwsem{\regr}Q$.
 
 \begin{theorem}[SIL is sound and complete]\label{thm:sil:sil-sound-complete}
 	A SIL triple is provable if and only if it is valid:
 	\[
-	\vdash\angletriple{P}{\regr}{Q} \iff \vDash\angletriple{P}{\regr}{Q}
+	\vdash\siltriple{P}{\regr}{Q} \iff \vDash\siltriple{P}{\regr}{Q}
 	\]
 \end{theorem}
 
 \paragraph*{Additional Rules for Program Analysis}
 The above set of five rules is deliberately minimal: if we remove any rule, SIL is no longer complete. However, there are other valid rules, not derivable from those five, that can be useful in practice. Some of them are at the bottom of Figure~\ref{fig:sil:sil-rules}.
 
-Rule \silrule{empty} is used to drop paths backward, just like IL can drop them forward (an analogous axiom $\undertriple{P}{\regr}{\emptyset}$ is valid for IL). Particularly, this allows to ignore one of the branches of \silrule{choice}, or to stop the backward iteration of \silrule{iter} without covering all the iterations. An example of such an application is the derived rule \silrule{iter0}, which corresponds to not entering the iteration at all. It can be proved from rules \silrule{iter} and \silrule{empty} by taking $Q_0 = Q$ and $Q_n = \emptyset$ for $n \ge 1$. It subsumes HL's rule \hlrule{iter}, which is based on loop invariants: those are a correct but not complete reasoning tool for under\hyp{}approximation~\cite{OHearn20}.
+Rule \silrule{empty} is used to drop paths backward, just like IL can drop them forward (an analogous axiom $\iltriple{P}{\regr}{\emptyset}$ is valid for IL). Particularly, this allows to ignore one of the branches of \silrule{choice}, or to stop the backward iteration of \silrule{iter} without covering all the iterations. An example of such an application is the derived rule \silrule{iter0}, which corresponds to not entering the iteration at all. It can be proved from rules \silrule{iter} and \silrule{empty} by taking $Q_0 = Q$ and $Q_n = \emptyset$ for $n \ge 1$. It subsumes HL's rule \hlrule{iter}, which is based on loop invariants: those are a correct but not complete reasoning tool for under\hyp{}approximation~\cite{OHearn20}.
 Rule \silrule{unroll} allows to unroll a loop once. Subsequent applications of this rule allow to simulate (backward) a finite number of iterations, and then rule \silrule{iter0} can be used to ignore the remaining ones. This is on par with IL ability to unroll a loop a finite number of times to find some post, for which analogous rules are valid~\cite{OHearn20,MOH21}.
 Rule \silrule{disj} allows to split the analysis and join the results, just like HL and IL. However, while a corresponding rule \hlrule{conj} which perform intersection is sound for HL, it is unsound for both IL and SIL (see Example~\ref{ex:sil:under-approx-no-strongest}).
 
-\begin{example}\label{ex:sil-derivation-2}
+\begin{example}\label{ex:sil:derivation}
 	Let us consider the program ``loop0'' from~\cite[\S 6.1]{OHearn20}:
 
 	\begin{minted}{C}
@@ -242,50 +242,50 @@ while(n > 0) {
 		\infer[]
 		{(*)}
 		{
-			\infer[\silrule{seq}]{\angletriple{T_{2M}}{\regr_w^{\kstar}; \code{(n <= 0)?}}{Q_{2M}}}{
-				\infer[\silrule{unroll}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{R_{2M}}}{
-					\infer[\silrule{seq}]{\angletriple{T_{2M}}{\regr_w^{\kstar}; \regr_w}{R_{2M}}}{
-						\infer[\silrule{iter0}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{T_{2M}}}{}
+			\infer[\silrule{seq}]{\siltriple{T_{2M}}{\regr_w^{\kstar}; \code{(n <= 0)?}}{Q_{2M}}}{
+				\infer[\silrule{unroll}]{\siltriple{T_{2M}}{\regr_w^{\kstar}}{R_{2M}}}{
+					\infer[\silrule{seq}]{\siltriple{T_{2M}}{\regr_w^{\kstar}; \regr_w}{R_{2M}}}{
+						\infer[\silrule{iter0}]{\siltriple{T_{2M}}{\regr_w^{\kstar}}{T_{2M}}}{}
 						&
-						\infer{\angletriple{T_{2M}}{\regr_w}{R_{2M}}}{\vdots}
+						\infer{\siltriple{T_{2M}}{\regr_w}{R_{2M}}}{\vdots}
 					}
 				}
 				&
-				\infer[\silrule{atom}]{\angletriple{R_{2M}}{\code{(n <= 0)?}}{Q_{2M}}}{}
+				\infer[\silrule{atom}]{\siltriple{R_{2M}}{\code{(n <= 0)?}}{Q_{2M}}}{}
 			}
 		}
 		\]
 
 		\[
 		\infer[\silrule{seq}]
-		{\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}}
+		{\siltriple{\true}{\mathsf{rloop0}}{Q_{2M}}}
 		{
-			\infer[\silrule{seq}]{\angletriple{\true}{\code{x := 0; n := nondet()}}{T_{2M}}}{
-				\infer[\silrule{atom}]{\angletriple{\true}{\code{x := 0}}{x \le 2000000}}{}
+			\infer[\silrule{seq}]{\siltriple{\true}{\code{x := 0; n := nondet()}}{T_{2M}}}{
+				\infer[\silrule{atom}]{\siltriple{\true}{\code{x := 0}}{x \le 2000000}}{}
 				&
-				\infer[\silrule{atom}]{\angletriple{x \le 2000000}{\code{n := nondet()}}{T_{2M}}}{}
+				\infer[\silrule{atom}]{\siltriple{x \le 2000000}{\code{n := nondet()}}{T_{2M}}}{}
 			}
 			&
 			(*)
 		}
 		\]
-		\caption{Derivation of the SIL triple $\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ for Example~\ref{ex:sil-derivation-2}.}
-		\label{fig:sil:example-derivation-2}
+		\caption{Derivation of the SIL triple $\siltriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ for Example~\ref{ex:sil:derivation}.}
+		\label{fig:sil:example-derivation}
 	\end{figure}
 
 	To prove a triple for $\mathsf{rloop0}$, we have to perform at least one iteration, and we do so using \silrule{unroll}.
-	We let $R_{2M} \eqdef (x = 2000000 \land n \le 0)$ and $T_{2M} \eqdef (x + n = 2000000 \land n > 0)$. It is straightforward to prove $\angletriple{T_{2M}}{\regr_w}{R_{2M}}$ via \silrule{seq} and \silrule{atom}. Given this triple, we can unroll the loop once and prove the same triple for $\regr_w^{\kstar}$:
+	We let $R_{2M} \eqdef (x = 2000000 \land n \le 0)$ and $T_{2M} \eqdef (x + n = 2000000 \land n > 0)$. It is straightforward to prove $\siltriple{T_{2M}}{\regr_w}{R_{2M}}$ via \silrule{seq} and \silrule{atom}. Given this triple, we can unroll the loop once and prove the same triple for $\regr_w^{\kstar}$:
 	\[
-	\infer[\silrule{unroll}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{R_{2M}}}{
-		\infer[\silrule{seq}]{\angletriple{T_{2M}}{\regr_w^{\kstar}; \regr_w}{R_{2M}}}{
-			\infer[\silrule{iter0}]{\angletriple{T_{2M}}{\regr_w^{\kstar}}{T_{2M}}}{}
+	\infer[\silrule{unroll}]{\siltriple{T_{2M}}{\regr_w^{\kstar}}{R_{2M}}}{
+		\infer[\silrule{seq}]{\siltriple{T_{2M}}{\regr_w^{\kstar}; \regr_w}{R_{2M}}}{
+			\infer[\silrule{iter0}]{\siltriple{T_{2M}}{\regr_w^{\kstar}}{T_{2M}}}{}
 			&
-			\infer{\angletriple{T_{2M}}{\regr_w}{R_{2M}}}{\cdots}
+			\infer{\siltriple{T_{2M}}{\regr_w}{R_{2M}}}{\cdots}
 		}
 	}
 	\]
 	This is a property of under-approximation: a non-deterministic number of iterations can be under-approximated by a single iteration \cite[\S 6.1]{OHearn20}.
-	With this triple for the loop, we can prove for the whole program the triple $\angletriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ using \silrule{seq} and \silrule{atom}. The full derivation is in Figure~\ref{fig:sil:example-derivation-2}.
+	With this triple for the loop, we can prove for the whole program the triple $\siltriple{\true}{\mathsf{rloop0}}{Q_{2M}}$ using \silrule{seq} and \silrule{atom}. The full derivation is in Figure~\ref{fig:sil:example-derivation}.
 
 	Differently than IL, this triple highlights that any initial state can lead to an error: instead of reporting the presence of a true bug, we can report an initial state which causes the bug.
 \end{example}
@@ -299,10 +299,10 @@ Following the two-dimensional taxonomy in Figure~\ref{fig:sil:taxonomy}, we carr
 
 	\smallskip
 	\begin{tabular}{lclr}
-		\textbf{HL triples:}  & $\overtriple{P}{\regr}{Q}$  & is valid if & $\fwsem{\regr} P \subseteq Q$; \\
-		\textbf{IL triples:}  & $\undertriple{P}{\regr}{Q}$ & is valid if & $\fwsem{\regr} P \supseteq Q$; \\
-		\textbf{NC triples:}  & $\necctriple{P}{\regr}{Q}$  & is valid if & $\bwsem{\regr} Q \subseteq P$; \\
-		\textbf{SIL triples:} & $\angletriple{P}{\regr}{Q}$ & is valid if & $\bwsem{\regr} Q \supseteq P$.
+		\textbf{HL triples:}  & $\hltriple{P}{\regr}{Q}$  & is valid if & $\fwsem{\regr} P \subseteq Q$; \\
+		\textbf{IL triples:}  & $\iltriple{P}{\regr}{Q}$  & is valid if & $\fwsem{\regr} P \supseteq Q$; \\
+		\textbf{NC triples:}  & $\nctriple{P}{\regr}{Q}$  & is valid if & $\bwsem{\regr} Q \subseteq P$; \\
+		\textbf{SIL triples:} & $\siltriple{P}{\regr}{Q}$ & is valid if & $\bwsem{\regr} Q \supseteq P$.
 	\end{tabular}
 \end{definition}
 
@@ -311,18 +311,18 @@ Dually, the validity condition for NC and SIL triples, $\bwsem{\regr} Q \subsete
 
 \subsection{Pairwise Comparison}
 \subsubsection{NC and IL}
-Sufficient preconditions are properties that imply Dijkstra's weakest liberal precondition~\cite{Dijkstra75}: $\overline{P}$ is sufficient for a postcondition $Q$ if and only if $\overline{P} \Rightarrow \wlp[\regr](Q)$, which in turn is equivalent to validity of the HL triple $\overtriple{\overline{P}}{\regr}{Q}$. Necessary and sufficient preconditions are dual, and so are IL and HL. Moreover, NC and IL enjoy the same consequence rule: both can strengthen the post and weaken the pre. While this suggests that there could be a relation between NC and IL, the following example shows this is not the case.
+Sufficient preconditions are properties that imply Dijkstra's weakest liberal precondition~\cite{Dijkstra75}: $\overline{P}$ is sufficient for a postcondition $Q$ if and only if $\overline{P} \Rightarrow \wlp[\regr](Q)$, which in turn is equivalent to validity of the HL triple $\hltriple{\overline{P}}{\regr}{Q}$. Necessary and sufficient preconditions are dual, and so are IL and HL. Moreover, NC and IL enjoy the same consequence rule: both can strengthen the post and weaken the pre. While this suggests that there could be a relation between NC and IL, the following example shows this is not the case.
 
 \begin{example}
 	Let us consider the deterministic program $\regr 42$ of Example~\ref{ex:sil:sil-vs-il}, with $Q_{42} \eqdef (z=42)$.
-	Let $Q'_{42} \eqdef (Q_{42} \wedge \text{odd}(y) \wedge \text{even}(x))$ and $P_{11} \eqdef (z = 11)$. We know from the previous example that $\undertriple{P_{11}}{\regr 42}{Q'_{42}}$ is a valid IL triple.
-	However, we observe that the NC triple $\necctriple{P_{11}}{\regr 42}{Q'_{42}}$ is not valid because the state $\sigma$ such that $\sigma(x) = 0$, $\sigma(y) = 1$, $\sigma(z) = 10$ has an execution leading to $Q'_{42}$ but is not in $P_{11}$.
-	Moreover, take for instance $\underline{P} = (\text{odd}(y) \land \text{even}(x))$, which makes the NC triple $\necctriple{\underline{P}}{\regr 42}{Q'_{42}}$ valid (any state \emph{not} satisfying $\underline{P}$ has either an even $y$ or an odd $x$, and those variables are not changed by the program). Then it is clear that $P_{11} \notimplies \underline{P}$. This shows that not only IL triples do not yield NC triples, but also that in general there are NC preconditions which are not implied by IL preconditions.
+	Let $Q'_{42} \eqdef (Q_{42} \wedge \text{odd}(y) \wedge \text{even}(x))$ and $P_{11} \eqdef (z = 11)$. We know from the previous example that $\iltriple{P_{11}}{\regr 42}{Q'_{42}}$ is a valid IL triple.
+	However, we observe that the NC triple $\nctriple{P_{11}}{\regr 42}{Q'_{42}}$ is not valid because the state $\sigma$ such that $\sigma(x) = 0$, $\sigma(y) = 1$, $\sigma(z) = 10$ has an execution leading to $Q'_{42}$ but is not in $P_{11}$.
+	Moreover, take for instance $\underline{P} = (\text{odd}(y) \land \text{even}(x))$, which makes the NC triple $\nctriple{\underline{P}}{\regr 42}{Q'_{42}}$ valid (any state \emph{not} satisfying $\underline{P}$ has either an even $y$ or an odd $x$, and those variables are not changed by the program). Then it is clear that $P_{11} \notimplies \underline{P}$. This shows that not only IL triples do not yield NC triples, but also that in general there are NC preconditions which are not implied by IL preconditions.
 
-	Conversely, consider $\neg Q_{42} = (z \neq 42)$. While the NC triple $\necctriple{\true}{\regr 42}{\neg Q_{42}}$ is valid, the IL triple $\undertriple{\true}{\regr 42}{\neg Q_{42}}$ is not: for instance, the final state $\sigma'$ such that $\sigma'(x) = \sigma'(y) = \sigma'(z) = 11$ is not reachable from any initial state. It follows that the IL triple $\undertriple{P}{\regr 42}{\neg Q_{42}}$ is not valid for any $P$.
+	Conversely, consider $\neg Q_{42} = (z \neq 42)$. While the NC triple $\nctriple{\true}{\regr 42}{\neg Q_{42}}$ is valid, the IL triple $\iltriple{\true}{\regr 42}{\neg Q_{42}}$ is not: for instance, the final state $\sigma'$ such that $\sigma'(x) = \sigma'(y) = \sigma'(z) = 11$ is not reachable from any initial state. It follows that the IL triple $\iltriple{P}{\regr 42}{\neg Q_{42}}$ is not valid for any $P$.
 \end{example}
 
-Given a valid NC triple $\necctriple{\underline{P}}{\regr}{Q}$ and a valid IL triple $\undertriple{P}{\regr}{Q}$, there are states satisfying both $P$ and $\underline{P}$, i.e., $P \cap \underline{P} \neq \emptyset$. However, in general neither $P \subseteq \underline{P}$ nor $\underline{P} \subseteq P$ hold. The difference between NC and IL is striking when we spell out their validity conditions using quantifiers: initial states are universally quantified in (NC$^{\forall}$)---\emph{all} initial states with a good run must satisfy the precondition---but they are existentially quantified in (IL$^{\exists}$).
+Given a valid NC triple $\nctriple{\underline{P}}{\regr}{Q}$ and a valid IL triple $\iltriple{P}{\regr}{Q}$, there are states satisfying both $P$ and $\underline{P}$, i.e., $P \cap \underline{P} \neq \emptyset$. However, in general neither $P \subseteq \underline{P}$ nor $\underline{P} \subseteq P$ hold. The difference between NC and IL is striking when we spell out their validity conditions using quantifiers: initial states are universally quantified in (NC$^{\forall}$)---\emph{all} initial states with a good run must satisfy the precondition---but they are existentially quantified in (IL$^{\exists}$).
 \begin{align*}
 	\forall \sigma' \in Q \sdot \forall \sigma\in \bwsem{\regr}\sigma' \sdot\sigma\in P
 	\tag{NC$^{\forall}$} \\
@@ -381,7 +381,7 @@ Proposition~\ref{prop:sil:fw-inclusion-negation-bw} highlights an isomorphism be
 	\mathsf{r1} \eqdef x := 1
 	\]
 	and the two sets of states $P_{\geq 0} \eqdef (x \geq 0)$ and $Q_{1} \eqdef (x = 1)$.
-	Both the SIL triple $\angletriple{P_{\geq 0}}{\mathsf{r1}}{Q_{1}}$ and the IL triple $\undertriple{P_{\geq 0}}{\mathsf{r1}}{Q_{1}}$ are valid. However, neither $\undertriple{\lnot P_{\geq 0}}{\mathsf{r1}}{\lnot Q_{1}}$ nor $\angletriple{\lnot P_{\geq 0}}{\mathsf{r1}}{\lnot Q_{1}}$ are valid. So neither (IL) implies negated (SIL) nor the other way around.
+	Both the SIL triple $\siltriple{P_{\geq 0}}{\mathsf{r1}}{Q_{1}}$ and the IL triple $\iltriple{P_{\geq 0}}{\mathsf{r1}}{Q_{1}}$ are valid. However, neither $\iltriple{\lnot P_{\geq 0}}{\mathsf{r1}}{\lnot Q_{1}}$ nor $\siltriple{\lnot P_{\geq 0}}{\mathsf{r1}}{\lnot Q_{1}}$ are valid. So neither (IL) implies negated (SIL) nor the other way around.
 \end{example}
 
 To gain some insights on why (SIL) and (IL) are not equivalent, we introduce the following concepts.
@@ -465,28 +465,28 @@ However, it turns out that having a best condition on the ``source'' property is
 The reason why strongest conditions may not exist for IL and SIL is that collecting semantics (both forward and backward) are additive but not co-additive. In other words, rule \hlrule{disj} is sound for all triples, while a dual rule for conjunction such as
 \[
 \infer[\hlrule{conj}]
-{\overtriple{P_1 \cap P_2}{\regr}{Q_1 \cap Q_2}}
-{\overtriple{P_1}{\regr}{Q_1} & \overtriple{P_2}{\regr}{Q_2} }
+{\hltriple{P_1 \cap P_2}{\regr}{Q_1 \cap Q_2}}
+{\hltriple{P_1}{\regr}{Q_1} & \hltriple{P_2}{\regr}{Q_2} }
 \]
 is valid for HL and NC but neither for IL nor SIL.
 Since left adjoints are additive while right adjoints are co-additive~\cite{DP02}, this observation readily yields the existence of weakest conditions for over-approximation (i.e., weakest pre for HL and weakest post for NC) because these weakest conditions are right adjoints of the reference semantics. Conversely, strongest pre/post for IL/SIL cannot exists because they would be left adjoints of the reference semantics, which cannot be right adjoints because they are not co-additive.
 
-For instance, given two HL preconditions $P_1$ and $P_2$ for the same post $Q$ (i.e., $\overtriple{P_1}{\regr}{Q}$ and $\overtriple{P_2}{\regr}{Q}$) also their union is a pre for $Q$, i.e., $\overtriple{P_1 \cup P_2}{\regr}{Q}$ using \hlrule{disj}. However, given two IL triples $\undertriple{P_1}{\regr}{Q}$ and $\undertriple{P_2}{\regr}{Q}$, in general $\fwsem{\regr} (P_1 \cap P_2) \nsupseteq Q$ and $\undertriple{P_1 \cap P_2}{\regr}{Q}$ is not valid, as shown in the following example.
+For instance, given two HL preconditions $P_1$ and $P_2$ for the same post $Q$ (i.e., $\hltriple{P_1}{\regr}{Q}$ and $\hltriple{P_2}{\regr}{Q}$) also their union is a pre for $Q$, i.e., $\hltriple{P_1 \cup P_2}{\regr}{Q}$ using \hlrule{disj}. However, given two IL triples $\iltriple{P_1}{\regr}{Q}$ and $\iltriple{P_2}{\regr}{Q}$, in general $\fwsem{\regr} (P_1 \cap P_2) \nsupseteq Q$ and $\iltriple{P_1 \cap P_2}{\regr}{Q}$ is not valid, as shown in the following example.
 
 \begin{example}\label{ex:sil:il-no-strongest-pre}
 	Consider the program $\mathsf{r1} \eqdef x := 1$ of Example~\ref{ex:sil:il-sil-incomparable}.
-	We can prove the two IL triples $\undertriple{x = 0}{\mathsf{r1}}{x = 1}$ and $\undertriple{x = 10}{\mathsf{r1}}{x = 1}$, but their intersection is $\undertriple{\emptyset}{\mathsf{r1}}{x = 1}$, which is not a valid IL triple.
+	We can prove the two IL triples $\iltriple{x = 0}{\mathsf{r1}}{x = 1}$ and $\iltriple{x = 10}{\mathsf{r1}}{x = 1}$, but their intersection is $\iltriple{\emptyset}{\mathsf{r1}}{x = 1}$, which is not a valid IL triple.
 
-	For SIL, consider the program $\mathsf{rnd} \eqdef \code{x := nondet()}$. For precondition $P_1 \eqdef (x = 1)$ we can prove both $\angletriple{P_1}{\mathsf{rnd}}{x = 0}$ and $\angletriple{P_1}{\mathsf{rnd}}{x = 10}$, that are incomparable, and again are both minimal because $\emptyset$ is not a valid postcondition.
+	For SIL, consider the program $\mathsf{rnd} \eqdef \code{x := nondet()}$. For precondition $P_1 \eqdef (x = 1)$ we can prove both $\siltriple{P_1}{\mathsf{rnd}}{x = 0}$ and $\siltriple{P_1}{\mathsf{rnd}}{x = 10}$, that are incomparable, and again are both minimal because $\emptyset$ is not a valid postcondition.
 \end{example}
 
 \subsection{Termination and Reachability}
 Termination and reachability are two sides of the same coin when switching from forward to backward semantics, and over and under-approximation behave differently with respect to these notions.
 
-For HL we can only distinguish a precondition which always causes divergence: if $\overtriple{P}{\regr}{\emptyset}$, all states in the precondition $P$ will always diverge. However, if just one state in $P$ has one terminating computation, its final state must be in $Q\neq \emptyset$, so we cannot say whether states in $P$ diverge or not. Moreover, because of the over-approximation, a non empty $Q$ does not mean there truly are finite executions, as those may be introduced by the approximation.
+For HL we can only distinguish a precondition which always causes divergence: if $\hltriple{P}{\regr}{\emptyset}$, all states in the precondition $P$ will always diverge. However, if just one state in $P$ has one terminating computation, its final state must be in $Q\neq \emptyset$, so we cannot say whether states in $P$ diverge or not. Moreover, because of the over-approximation, a non empty $Q$ does not mean there truly are finite executions, as those may be introduced by the approximation.
 Dually, NC cannot say much about reachability of $Q$ unless $P$ is empty, in which case $Q$ is unreachable.
 
-On the contrary, under-approximation offers much stronger guarantees on termination/reachability. Any IL triple $\undertriple{P}{\regr}{Q}$ ensures that all states in $Q$ are reachable (in particular, from states in $P$). Dually, a SIL triple $\angletriple{P}{\regr}{Q}$ means that all states in $P$ have a convergent computation that ends in some state in $Q$. This observation motivates the design of a forward iteration rule in IL (resp. backward in SIL): a backward (resp. forward) rule would need to prove reachability of all points in the post (resp. pre). Instead, the forward rule of IL (resp. backward rule of SIL) ensures reachability (resp. termination) by construction, as it builds $Q$ (resp. $P$) only with points known to be reachable (resp. terminating).
+On the contrary, under-approximation offers much stronger guarantees on termination/reachability. Any IL triple $\iltriple{P}{\regr}{Q}$ ensures that all states in $Q$ are reachable (in particular, from states in $P$). Dually, a SIL triple $\siltriple{P}{\regr}{Q}$ means that all states in $P$ have a convergent computation that ends in some state in $Q$. This observation motivates the design of a forward iteration rule in IL (resp. backward in SIL): a backward (resp. forward) rule would need to prove reachability of all points in the post (resp. pre). Instead, the forward rule of IL (resp. backward rule of SIL) ensures reachability (resp. termination) by construction, as it builds $Q$ (resp. $P$) only with points known to be reachable (resp. terminating).
 
 \section{Separation Sufficient Incorrectness Logic}
 We instantiate SIL to handle pointers and dynamic memory allocation, introducing Separation SIL. The goal of Separation SIL is to identify the causes of memory errors: it takes the backward under-approximation principles of SIL and combines it with the ability to deal with pointers from Separation Logic (SL)~\cite{Reynolds02,ORY01}
@@ -534,75 +534,75 @@ Given a formula $p \in \Asl$, we call $\fv(p) \subseteq \Var$ the set of its fre
 		\(
 		\begin{array}{cc}
 			\infer[\silrule{skip}]
-			{\angletriple{\emp}{\code{skip}}{\emp}}
+			{\siltriple{\emp}{\code{skip}}{\emp}}
 			{}
-			\;                             &
+			\;                           &
 			\infer[\silrule{assign}]
-			{\angletriple{q[a / x]}{\code{x := a}}{q}}
+			{\siltriple{q[a / x]}{\code{x := a}}{q}}
 			{}
 			\\[7.5pt]
 			\infer[\silrule{assume}]
-			{\angletriple{q \land b}{\code{b?}}{q}}
+			{\siltriple{q \land b}{\code{b?}}{q}}
 			{}
-			\;                             &
+			\;                           &
 			\infer[\silrule{alloc}]
-			{\angletriple{\emp}{\code{x := alloc()}}{x \mapsto v}}
+			{\siltriple{\emp}{\code{x := alloc()}}{x \mapsto v}}
 			{}
 			\\[7.5pt]
 			\infer[\silrule{free}]
-			{\angletriple{x \mapsto -}{\code{free(x)}}{x \dealloc}}
+			{\siltriple{x \mapsto -}{\code{free(x)}}{x \dealloc}}
 			{}
-			\;                             &
+			\;                           &
 			\infer[\silrule{load}]
-			{\angletriple{y \mapsto a \andsep q[a / x]}{\code{x := [y]}}{y \mapsto a \andsep q}}
+			{\siltriple{y \mapsto a \andsep q[a / x]}{\code{x := [y]}}{y \mapsto a \andsep q}}
 			{x \notin \fv(a)}
 			\\[7.5pt]
 			\infer[\silrule{store}]
-			{\angletriple{x \mapsto -}{\code{[x] := y}}{x \mapsto y}}
+			{\siltriple{x \mapsto -}{\code{[x] := y}}{x \mapsto y}}
 			{}
 			\\[7.5pt]
-			\hline\hline                   &                                                               \\[-2pt]
+			\hline\hline                 &                                                               \\[-2pt]
 			\infer[\silrule{exists}]
-			{\angletriple{\exists x. p}{\regr}{\exists x. q}}
-			{\angletriple{p}{\regr}{q}     & x \notin \fv(\regr)}
-			\;                             &
+			{\siltriple{\exists x. p}{\regr}{\exists x. q}}
+			{\siltriple{p}{\regr}{q}     & x \notin \fv(\regr)}
+			\;                           &
 			\infer[\silrule{frame}]
-			{\angletriple{p \andsep t}{\regr}{q \andsep t}}
-			{\angletriple{p}{\regr}{q}     & \fv(t) \cap \modified(\regr) = \emptyset}
+			{\siltriple{p \andsep t}{\regr}{q \andsep t}}
+			{\siltriple{p}{\regr}{q}     & \fv(t) \cap \modified(\regr) = \emptyset}
 			\\[7.5pt]
-			\hline\hline                   &                                                               \\[-2pt]
+			\hline\hline                 &                                                               \\[-2pt]
 			\infer[\silrule{cons}]
-			{\angletriple{p}{\regr}{q}}
-			{p \Rightarrow p'              & \angletriple{p'}{\regr}{q'}               & q' \Rightarrow q}
-			\;                             &
+			{\siltriple{p}{\regr}{q}}
+			{p \Rightarrow p'            & \siltriple{p'}{\regr}{q'}                 & q' \Rightarrow q}
+			\;                           &
 			\infer[\silrule{seq}]
-			{\angletriple{p}{\regr_1; \regr_2}{q}}
-			{\angletriple{p}{\regr_1}{t}   & \angletriple{t}{\regr_2}{q}}
+			{\siltriple{p}{\regr_1; \regr_2}{q}}
+			{\siltriple{p}{\regr_1}{t}   & \siltriple{t}{\regr_2}{q}}
 			\\[7.5pt]
 			\infer[\silrule{choice}]
-			{\angletriple{p_1 \lor p_2}{\regr_1 \regplus \regr_2}{q}}
-			{\angletriple{p_1}{\regr_1}{q} & \angletriple{p_2}{\regr_2}{q}}
-			\;                             &
+			{\siltriple{p_1 \lor p_2}{\regr_1 \regplus \regr_2}{q}}
+			{\siltriple{p_1}{\regr_1}{q} & \siltriple{p_2}{\regr_2}{q}}
+			\;                           &
 			\infer[\silrule{iter}]
-			{\angletriple{\exists n. q(n)}{\regr^\kstar}{q(0)}}
-			{\forall n \ge 0 \;\; \angletriple{q(n+1)}{\regr}{q(n)}}
+			{\siltriple{\exists n. q(n)}{\regr^\kstar}{q(0)}}
+			{\forall n \ge 0 \;\; \siltriple{q(n+1)}{\regr}{q(n)}}
 			\\[7.5pt]
-			\hline\hline                   &                                                               \\[-2pt]
+			\hline\hline                 &                                                               \\[-2pt]
 			\infer[\silrule{empty}]
-			{\angletriple{\false}{\regr}{q}}
+			{\siltriple{\false}{\regr}{q}}
 			{}
-			\;                             &
+			\;                           &
 			\infer[\silrule{disj}]
-			{\angletriple{p_1 \lor p_2}{\regr}{q_1 \lor q_2}}
-			{\angletriple{p_1}{\regr}{q_1} & \angletriple{p_2}{\regr}{q_2}}
+			{\siltriple{p_1 \lor p_2}{\regr}{q_1 \lor q_2}}
+			{\siltriple{p_1}{\regr}{q_1} & \siltriple{p_2}{\regr}{q_2}}
 			\\[7.5pt]
 			\infer[\silrule{iter0}]
-			{\angletriple{q}{\regr^{\kstar}}{q}}
+			{\siltriple{q}{\regr^{\kstar}}{q}}
 			{}
-			\;                             &
+			\;                           &
 			\infer[\silrule{unroll}]
-			{\angletriple{p}{\regr^{\kstar}}{q}}
-			{\angletriple{p}{\regr^{\kstar}; \regr}{q}}
+			{\siltriple{p}{\regr^{\kstar}}{q}}
+			{\siltriple{p}{\regr^{\kstar}; \regr}{q}}
 		\end{array}
 		\)
 	\end{framed}
@@ -643,7 +643,7 @@ In the fourth group, we instantiated the additional rules of Figure~\ref{fig:sil
 			\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
 				                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
 				                                             \emptyset                         & otherwise
-			                                             \end{cases*}  \\
+			                                             \end{cases*}    \\
 			\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}(l)\right\rbrace \\
 			\edenot{\code{free(x)}} (s, h)      & \eqdef
 			\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                       \\
@@ -685,12 +685,12 @@ We define the forward collecting semantics of heap commands $\fwsem{\cdot}: \Reg
 
 The semantics $\asldenot{\cdot}$ of a formula $p \in \Asl$ is a set of states in $\Sigma$. The full definition of $\asldenot{\cdot}$ is given in Figure~\ref{fig:sil:ssil-model-assertions}.
 
-Just like SIL, we say a Separation SIL triple $\angletriple{p}{\regr}{q}$ is valid if $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$.
+Just like SIL, we say a Separation SIL triple $\siltriple{p}{\regr}{q}$ is valid if $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$.
 To prove soundness of Separation SIL, we rely on a stronger lemma, whose proof is by induction on the derivation tree.
 Then, by taking $t = \emp$ and using $p \andsep \emp \equiv p$, we get the soundness of the proof system.
 
 \begin{lemma}\label{lmm:sil:separation-sil-stronger-sound}
-	Let $p, q, t \in \Asl$ and $\regr \in \Regh$. If $\vdash \angletriple{p}{\regr}{q}$ and $\fv(t) \cap \modified(\regr) = \emptyset$,
+	Let $p, q, t \in \Asl$ and $\regr \in \Regh$. If $\vdash \siltriple{p}{\regr}{q}$ and $\fv(t) \cap \modified(\regr) = \emptyset$,
 	\[
 	\bwsem{\regr} \asldenot{q \andsep t} \supseteq \asldenot{p \andsep t}
 	\]
@@ -699,7 +699,7 @@ Then, by taking $t = \emp$ and using $p \andsep \emp \equiv p$, we get the sound
 \begin{corollary}[Separation SIL is sound]\label{th:sil:separation-sil-sound}
 	Any provable Separation SIL triple is valid:
 	\[
-	\vdash \angletriple{p}{\regr}{q} \implies \vDash \angletriple{p}{\regr}{q}
+	\vdash \siltriple{p}{\regr}{q} \implies \vDash \siltriple{p}{\regr}{q}
 	\]
 \end{corollary}
 
@@ -708,29 +708,29 @@ We now discuss in full detail the use-after-lifetime example in~\cite{RBDDOV20} 
 
 \begin{figure}[t]
 	\begin{align*}
-		 & \angleexact{p: v \mapsto z \andsep z \mapsto - \andsep \true}                                                                            \\
-		 & \quad x := [v]                                                                                                                           \\
-		 & \angleexact{(\underline{v \mapsto z \andsep (x = z \lor x \dealloc)} \andsep z \mapsto - \andsep \true) \lor (x \dealloc \andsep \true)} \\
+		 & \silexact{p: v \mapsto z \andsep z \mapsto - \andsep \true}                                                                            \\
+		 & \quad x := [v]                                                                                                                         \\
+		 & \silexact{(\underline{v \mapsto z \andsep (x = z \lor x \dealloc)} \andsep z \mapsto - \andsep \true) \lor (x \dealloc \andsep \true)} \\
 		 & \left(
 		\begin{array}{l}
-				\angleexact{\true \andsep v \mapsto z \andsep z \mapsto - \andsep (x = z \lor x \dealloc)}               \\
-				\quad y := [v];                                                                                          \\
-				{\angleexact{\true \andsep \underline{v \mapsto z \andsep y \mapsto - \andsep (x = y \lor x \dealloc)}}} \\
-				\quad \text{free}(y);                                                                                    \\
-				{\angleexact{\true \andsep v \mapsto - \andsep \underline{y \dealloc} \andsep (x = y \lor x \dealloc)}}  \\
-				\quad y := \text{alloc}();                                                                               \\
-				{\angleexact{x \dealloc \andsep v \mapsto - \andsep \underline{y \mapsto -} \andsep \true}}              \\
-				\quad [v] := y                                                                                           \\
-				{\angleexact{x \dealloc \andsep \underline{v \mapsto y} \andsep \true}}
+				\silexact{\true \andsep v \mapsto z \andsep z \mapsto - \andsep (x = z \lor x \dealloc)}               \\
+				\quad y := [v];                                                                                        \\
+				{\silexact{\true \andsep \underline{v \mapsto z \andsep y \mapsto - \andsep (x = y \lor x \dealloc)}}} \\
+				\quad \text{free}(y);                                                                                  \\
+				{\silexact{\true \andsep v \mapsto - \andsep \underline{y \dealloc} \andsep (x = y \lor x \dealloc)}}  \\
+				\quad y := \text{alloc}();                                                                             \\
+				{\silexact{x \dealloc \andsep v \mapsto - \andsep \underline{y \mapsto -} \andsep \true}}              \\
+				\quad [v] := y                                                                                         \\
+				{\silexact{x \dealloc \andsep \underline{v \mapsto y} \andsep \true}}
 			\end{array}
 		\right) \regplus \begin{array}{l}
-			                 \angleexact{x \dealloc \andsep \true} \\
-			                 \quad \code{skip}                     \\
-			                 \angleexact{x \dealloc \andsep \true}
+			                 \silexact{x \dealloc \andsep \true} \\
+			                 \quad \code{skip}                   \\
+			                 \silexact{x \dealloc \andsep \true}
 		                 \end{array}                                                                                      \\
-		 & \angleexact{q: x \dealloc \andsep \true}
+		 & \silexact{q: x \dealloc \andsep \true}
 	\end{align*}
-	\caption{The proof sketch of $\angletriple{(v \mapsto z \andsep z \mapsto - \andsep \true)}{\mathsf{rclient}}{x \dealloc \andsep \true}$ (best read bottom-up). We write only the strengthened conditions obtained using \silrule{cons}, and \underline{underline} the post of the rule for the current atomic command. Everything else is shared between pre and post using \silrule{frame}.}
+	\caption{The proof sketch of $\siltriple{(v \mapsto z \andsep z \mapsto - \andsep \true)}{\mathsf{rclient}}{x \dealloc \andsep \true}$ (best read bottom-up). We write only the strengthened conditions obtained using \silrule{cons}, and \underline{underline} the post of the rule for the current atomic command. Everything else is shared between pre and post using \silrule{frame}.}
 	\label{fig:sil:ssil-derivation}
 \end{figure}
 
@@ -779,7 +779,7 @@ In the example, we use as error postcondition $x \dealloc \andsep \true$. It is 
 
 For the same program, the ISL triple in~\cite{RBDDOV20} is
 \[
-\undertriple{v \mapsto z \andsep z \mapsto -}{\mathsf{rclient}}{v \mapsto y \andsep y \mapsto - \andsep x \dealloc} \text{.}
+\iltriple{v \mapsto z \andsep z \mapsto -}{\mathsf{rclient}}{v \mapsto y \andsep y \mapsto - \andsep x \dealloc} \text{.}
 \]
 This proves the existence of a faulty execution, but tells nothing about which input states actually lead to the error. On the other hand, the Separation SIL triple has a more succinct post capturing the error and provides a stronger guarantee: \emph{every} state in the precondition reaches the error, thus giving (many) actual witnesses for testing and debugging.
 
@@ -790,20 +790,20 @@ OL reasoning is forward oriented, as witnessed by the implication that concludes
 Separation SIL is complete for all atomic commands but \code{alloc}, because it misses the ability to refer the specific memory location that gets allocated.
 However, the naive solution to add $x = \alpha$ in the post of \silrule{alloc} would make the frame rule unsound: it would allow to prove, for instance, the invalid triple
 \[
-\angletriple{\emp \andsep \alpha \mapsto -}{\code{x := alloc()}}{(x \mapsto - \land x = \alpha) \andsep \alpha \mapsto -} \text{.}
+\siltriple{\emp \andsep \alpha \mapsto -}{\code{x := alloc()}}{(x \mapsto - \land x = \alpha) \andsep \alpha \mapsto -} \text{.}
 \]
 Just like ISL needs the deallocated assertion in the post~\cite[\S 3]{RBDDOV20}, Separation SIL needs a ``will be allocated'' assertion in the pre. To this end, we use the $\dealloc$ assertion, and change the semantic model to only allocate a memory location that is explicitly $\delta$. We formalize this by letting $\mathit{avail}(l) \eqdef h(l) = \delta$ in Figure~\ref{fig:sil:ssil-model-commands} and replacing the axiom \silrule{alloc} with
 
 \[
 \infer[\silrule{alloc}]
-{\angletriple{\beta \dealloc{}}{\code{x := alloc()}}{x = \beta \land x \mapsto v}}
+{\siltriple{\beta \dealloc{}}{\code{x := alloc()}}{x = \beta \land x \mapsto v}}
 {}
 \]
 
 The proof system is still sound for this different semantics  model. Moreover, we can prove relative completeness~\cite[\S 4.3]{AO19} for loop-free programs:
 
 \begin{theorem}[Relative completeness for loop-free programs]\label{th:sil:separation-sil-sequential-complete}
-	Suppose to have an oracle to prove implications between formulas in $\Asl$. Let $\regr \in \Regh$ be a regular command without $\kstar$ and $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. Then the triple $\angletriple{p}{\regr}{q}$ is provable.
+	Suppose to have an oracle to prove implications between formulas in $\Asl$. Let $\regr \in \Regh$ be a regular command without $\kstar$ and $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. Then the triple $\siltriple{p}{\regr}{q}$ is provable.
 \end{theorem}
 
 The proof relies on an algorithmic rewriting of the postcondition that makes constraints on a single memory location explicit. This is given by the following lemma, whose proof is constructive (see the proof in Appendix~\ref{ch:app:sil}):
@@ -816,7 +816,7 @@ The proof relies on an algorithmic rewriting of the postcondition that makes con
 	\end{enumerate}
 \end{lemma}
 
-Using this, for any atomic command $\regc \in \Cmdh$ we compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regc} \asldenot{q}$, and prove the triple $\angletriple{t}{\regc}{q}$. Then, we extend this result to any program not containing $\kstar$, and conclude using the oracle and \silrule{cons} to prove the triple for any $p$ that implies $t$.
+Using this, for any atomic command $\regc \in \Cmdh$ we compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regc} \asldenot{q}$, and prove the triple $\siltriple{t}{\regc}{q}$. Then, we extend this result to any program not containing $\kstar$, and conclude using the oracle and \silrule{cons} to prove the triple for any $p$ that implies $t$.
 We conclude remarking that this is a result of completeness \emph{in the sense of Cook}~\cite{Cook78} since it means we can prove a triple whenever the pre for any loop is expressible.
 
 \section{Conclusions}

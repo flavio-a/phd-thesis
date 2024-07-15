@@ -1,7 +1,7 @@
 % !TEX root = ../phd-thesis.tex
 
 \chapter{Local Completeness Logic}\label{ch:lcla}
-In this chapter, we extend $\LCLA$ with new capabilities. We investigate the possibility of relaxing point (3) of Theorem~\ref{th:sota:lcl-soundness} to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$ to achieve extensional soundness, i.e., to untie the set of properties that can be proved about the function computed by the program from the way the program is written . To do so, we follow the idea introduced in~\cite[§8]{BGGR23} of \emph{changing the abstract domain} during the analysis, possibly in different ways for different portions of the code.
+In this chapter, we extend $\LCLA$ with new capabilities. We investigate the possibility of relaxing point (3) of Theorem~\ref{th:sota:lcl-soundness} to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$ to achieve extensional soundness, i.e., to untie the set of properties that can be proved about the function computed by the program from the way the program is written. To do so, we follow the idea introduced in~\cite[§8]{BGGR23} of \emph{changing the abstract domain} during the analysis, possibly in different ways for different portions of the code.
 While~\cite{BGGR23} proposes a single rule for domain refinement, we study here both \emph{refinement} and \emph{simplification} rules for $\LCLA$.
 Moreover, we study here how to weaken the hypothesis of Galois connection: the whole theory of completeness is based on the existence of a best approximation for concrete points, but this is not always available in practical instances~\cite{CC92}.
 
@@ -122,7 +122,7 @@ Theorem~\ref{th:sota:lcl-soundness} involves $\denot{\regr}^{\sharp}_A$, an \emp
 Accordingly, for the rest of this chapter we use the name \emph{intensional soundness} for the former and \emph{extensional soundness} for the latter.
 Again, we say a triple is \emph{extensionally valid} if it satisfies point (1--3) of Theorem~\ref{th:lcla:soundness-ext} above, and intensionally valid for the former notion introduced in Section~\ref{sec:sota:lcl}. We shall write $\lclvalid{A}{P}{\regr}{Q}$ for both, but we will make sure to disambiguate the notation when not clear from the context.
 
-\section{Locally Complete Refinement}
+\section{Locally complete refinement}
 \begin{figure*}[t]
 	\begin{framed}
 		\[
@@ -522,7 +522,7 @@ Second, local completeness shell \cite{BGGR22} were proposed as an analogous of 
 
 Another related approach, which shares some common ground with CEGAR, is Lazy (Predicate) Abstraction \cite{HJMS02,McMillan06}. Both ours and this approach exploits different abstract domains for different parts of the proof, refining it as needed. The key difference is that Lazy Abstraction unwinds the control flow graph (CFG) of the program (with techniques to handle loops) while we work inductively on the syntax. This means that, when Lazy Abstraction refines a domain, it must use it from that point onward (unless it finds a loop invariant). On the other hand, our method can change abstract domain even for different parts of sequential code. However, the technique used in Lazy Abstraction (basically to trace a counterexample back with a theorem prover until it is either found to be spurious or proved to be true) could be applicable to $\LCLA$: a failed local completeness proof obligation in \lclrule{transfer} can be traced back with a theorem prover and the failed proof can be used to understand how to refine the abstract domain.
 
-\section{Locally Complete Simplification}
+\section{Locally complete simplification}
 \begin{figure*}[t]
 	\begin{framed}
 		\[
@@ -651,7 +651,7 @@ A dual of \lclrule{refine\mbox{-}ext} for simplification should involve $\denot{
 %Lastly, if we consider $\denot{\regr}^{A}$, if its input is $\alpha A'(P)$ we know, by Example~\ref{ex:bound-A'-not-A}, that $\denot{\regr}^{A} \alpha(P)$ could be arbitrarily smaller than $\denot{\regr}^{A} \alpha A'(P)$, so conditions on the latter can't ensure soundness. If its input is $\alpha(P)$, so that the condition is analogous to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$, the rule would be sound because we're forcing the soundness condition in the hypotheses of the rule.
 Based on this argument, we don't expect a weaker condition (that is, a more general rule) for simplification to exist.
 
-\section{Exploiting Convexity}
+\section{Exploiting convexity}
 $\LCLA$ requires the existence of a best correct abstraction $\alpha : C \rightarrow A$, but there are domains for which only the concretisation map $\gamma$ is defined (e.g., for polyhedra). If this is the case, $\LCLA$ is not applicable because we cannot even write the (local) completeness equation $A f(P) = A f A(P)$.
 However, local completeness enjoys abstract convexity (Lemma~\ref{lmm:sota:abstract-convexity}). This suggests that, even if a concrete point $X$ cannot be abstracted, we can use a different point $P$ that can be abstracted such that $P \le X \le A(P)$. Intuitively, if $f$ is locally complete on $P$, abstract convexity implies that $f$ is locally complete on $x$, too. This idea is the basis of the development in this section.
 
@@ -763,6 +763,8 @@ We also summarises the properties $\LCLA$ enjoys when extended with different ru
 The only simplification rule \lclrule{simplify} is theoretically slightly stronger than plain $\LCLA$, given its intrinsic incompleteness, but it can prove triples which are not provable using \lclrule{refine\mbox{-}pre}, and it may be useful in practice.
 
 \begin{table}[t]
+	\caption{Comparison of the proof systems}
+	\label{tab:lcla:rules-comparison-table}
 	\centering
 	\renewcommand{\arraystretch}{1.5}
 	\setlength{\tabcolsep}{0.6em}
@@ -774,9 +776,6 @@ The only simplification rule \lclrule{simplify} is theoretically slightly strong
 		$\LCLA$ + \lclrule{refine\mbox{-}pre} & \checkmark  & \ding{55}            \\ \hline
 		$\LCLA$ + \lclrule{simplify}          & \ding{55}   & \ding{55}            \\
 	\end{tabular}
-	\vspace{1em}
-	\caption{Comparison of the proof systems}
-	\label{tab:lcla:rules-comparison-table}
 \end{table}
 
 \subsection{Future work}

@@ -829,8 +829,6 @@
 	number = {POPL},
 	OPTurl = {https://doi.org/10.1145/3158143},
 	doi = {10.1145/3158143},
-	abstract = {Numerical abstract domains such as Polyhedra, Octahedron, Octagon, Interval, and others are an essential component of static program analysis. The choice of domain offers a performance/precision tradeoff ranging from cheap and imprecise (Interval) to expensive and precise (Polyhedra). Recently, significant speedups were achieved for Octagon and Polyhedra by manually decomposing their transformers to work with the Cartesian product of projections associated with partitions of the variable set. While practically useful, this manual process is time consuming, error-prone, and has to be applied from scratch for every domain.  In this paper, we present a generic approach for decomposing the transformers of sub-polyhedra domains along with conditions for checking whether the decomposed transformers lose precision with respect to the original transformers. These conditions are satisfied by most practical transformers, thus our approach is suitable for increasing the performance of these transformers without compromising their precision. Furthermore, our approach is ``black box:'' it does not require changes to the internals of the original non-decomposed transformers or additional manual effort per domain.  We implemented our approach and applied it to the domains of Zones, Octagon, and Polyhedra. We then compared the performance of the decomposed transformers obtained with our generic method versus the state of the art: the (non-decomposed) PPL for Polyhedra and the much faster ELINA (which uses manual decomposition) for Polyhedra and Octagon. Against ELINA we demonstrate finer partitions and an associated speedup of about 2x on average. Our results indicate that the general construction presented in this work is a viable method for improving the performance of sub-polyhedra domains. It enables designers of abstract domains to benefit from decomposition without re-writing all of their transformers from scratch as required by prior work.},
-	journal = {Proc. ACM Program. Lang.},
 	month = {12},
 	articleno = {55},
 	numpages = {28},
@@ -1020,4 +1018,18 @@
 	timestamp    = {Mon, 09 May 2022 16:20:13 +0200},
 	biburl       = {https://dblp.org/rec/journals/fac/AptO19.bib},
 	bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{ABG24,
+	author = {Ascari, Flavio and Bruni, Roberto and Gori, Roberta},
+	title = {Limits and Difficulties in the Design of Under-Approximation Abstract Domains},
+	year = {2024},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	issn = {0164-0925},
+	OPTurl = {https://doi.org/10.1145/3666014},
+	doi = {10.1145/3666014},
+	note = {Just Accepted},
+	journal = {ACM Trans. Program. Lang. Syst.},
+	month = {6},
 }

@@ -75,15 +75,14 @@
 	\mathclose{\copy\@brx\mkern2mu\kern-1\wd\@brx\usebox{\@brx}}}
 \makeatother
 
-\newcommand{\underexact}[1]{\ensuremath{[#1]}}
-\newcommand{\overexact}[1]{\ensuremath{\{#1\}}}
-\newcommand{\necessaryexact}[1]{\ensuremath{(#1)}}
-\newcommand{\angleexact}[1]{\ensuremath{\llangle #1 \rrangle}}
-%\newcommand{\angleexact}[1]{\ensuremath{\langle\!| #1 |\!\rangle}}
-\newcommand{\undertriple}[3]{\underexact{#1}~#2~\underexact{#3}}
-\newcommand{\overtriple}[3]{\overexact{#1}~#2~\overexact{#3}}
-\newcommand{\necctriple}[3]{\necessaryexact{#1}~#2~\necessaryexact{#3}}
-\newcommand{\angletriple}[3]{\angleexact{#1}~#2~\angleexact{#3}}
+\newcommand{\ilexact}[1]{\ensuremath{[#1]}}
+\newcommand{\hlexact}[1]{\ensuremath{\{#1\}}}
+\newcommand{\ncexact}[1]{\ensuremath{(#1)}}
+\newcommand{\silexact}[1]{\ensuremath{\llangle #1 \rrangle}}
+\newcommand{\iltriple}[3]{\ilexact{#1}~#2~\ilexact{#3}}
+\newcommand{\hltriple}[3]{\hlexact{#1}~#2~\hlexact{#3}}
+\newcommand{\nctriple}[3]{\ncexact{#1}~#2~\ncexact{#3}}
+\newcommand{\siltriple}[3]{\silexact{#1}~#2~\silexact{#3}}
 \newcommand{\oltriple}[3]{\langle {#1}\rangle~#2~\langle{#3}\rangle}
 \newcommand{\silrule}[1]{\ensuremath{\llangle\mathsf{#1}\rrangle}}
 \newcommand{\ilrule}[1]{[{\ensuremath{\mathsf{#1}}}]}
@@ -92,8 +91,8 @@
 \newcommand{\bdiamond}[1]{\langle #1 \vert}
 \newcommand{\spost}{\textbf{sp}}
 \newcommand{\test}{\text{test}}
-\newcommand{\lcl}[4]{\vdash_{#1}\nobreak\undertriple{#2}{#3}{#4}}
-\newcommand{\lclvalid}[4]{\vDash_{#1}\nobreak\undertriple{#2}{#3}{#4}}
+\newcommand{\lcl}[4]{\vdash_{#1}\nobreak\iltriple{#2}{#3}{#4}}
+\newcommand{\lclvalid}[4]{\vDash_{#1}\nobreak\iltriple{#2}{#3}{#4}}
 \newcommand{\lclrule}[1]{(\ensuremath{\mathsf{#1}})}
 \newcommand{\LCLA}{\text{LCL}_A}
 

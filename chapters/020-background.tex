@@ -84,17 +84,17 @@ It is now easy to check that the semantics of $\code{if}$ and $\code{while}$ is 
 \section{Hoare logic}\label{sec:bg:hl}
 Hoare logic (HL for short) \cite{Hoare69} is a triple-based logic that prove properties about programs. Given two assertions $P$, $Q$ and a regular command $\regr$,\footnote{The original formulation uses the while-language. However, since regular commands are the primary syntax used in this thesis, we focus on them instead.} the HL triple
 \[
-\overtriple{P}{\regr}{Q}
+\hltriple{P}{\regr}{Q}
 \]
 means that whenever the computation starts from a state satisfying $P$ and executes $\regr$, it ends in a state satisfying $Q$.
-When $Q$ is a correctness specification, any HL triple $\overtriple{P}{\regr}{Q}$ provides a \emph{sufficient} condition $P$ for the so called partial correctness of the program $\regr$.
+When $Q$ is a correctness specification, any HL triple $\hltriple{P}{\regr}{Q}$ provides a \emph{sufficient} condition $P$ for the so called partial correctness of the program $\regr$.
 Formally, given the semantics $\denot{\cdot}$ of regular commands and abusing notation by writing $P$ instead of the set of states satisfying that formula, the validity of an HL triple is given by over-approximation property of postconditions
 \[
 \fwsem{\regr} P \subseteq Q \tag{HL}\label{eq:bg:hl-validity}.
 \]
 
 \noindent
-An HL triple $\overtriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \overtriple{P}{\regr}{Q}$, if the condition \eqref{eq:bg:hl-validity} holds.
+An HL triple $\hltriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \hltriple{P}{\regr}{Q}$, if the condition \eqref{eq:bg:hl-validity} holds.
 
 \begin{figure}[t]
 	\centering
@@ -102,24 +102,24 @@ An HL triple $\overtriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \overtr
 		\(
 		\begin{array}{cc}
 			\infer[\hlrule{atom}]
-			{\overtriple{P}{\expe}{\denot{\expe}P}}
+			{\hltriple{P}{\expe}{\denot{\expe}P}}
 			{}
-			\quad                       &
+			\quad                     &
 			\infer[\hlrule{cons}]
-			{\overtriple{P}{\regr}{Q}}
-			{P \Rightarrow P'           & \overtriple{P'}{\regr}{Q'}  & Q' \Rightarrow Q}
+			{\hltriple{P}{\regr}{Q}}
+			{P \Rightarrow P'         & \hltriple{P'}{\regr}{Q'}  & Q' \Rightarrow Q}
 			\\[7.5pt]
 			\infer[\hlrule{seq}]
-			{\overtriple{P}{\regr_1;\regr_2}{Q}}
-			{\overtriple{P}{\regr_1}{R} & \overtriple{R}{\regr_2}{Q}}
-			\qquad                      &
+			{\hltriple{P}{\regr_1;\regr_2}{Q}}
+			{\hltriple{P}{\regr_1}{R} & \hltriple{R}{\regr_2}{Q}}
+			\qquad                    &
 			\infer[\hlrule{choice}]
-			{\overtriple{P}{\regr_1 \regplus \regr_2}{Q}}
-			{\overtriple{P}{\regr_1}{Q} & \overtriple{P}{\regr_2}{Q}}
+			{\hltriple{P}{\regr_1 \regplus \regr_2}{Q}}
+			{\hltriple{P}{\regr_1}{Q} & \hltriple{P}{\regr_2}{Q}}
 			\\[7.5pt]
 			\infer[\hlrule{iter}]
-			{\overtriple{P}{\regr^\kstar}{P}}
-			{\overtriple{P}{\regr}{P}}
+			{\hltriple{P}{\regr^\kstar}{P}}
+			{\hltriple{P}{\regr}{P}}
 		\end{array}
 		\)
 	\end{framed}
@@ -129,13 +129,13 @@ An HL triple $\overtriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \overtr
 In its original formulation, HL was proposed for a deterministic while-language and assuming $P$ and $Q$ were formulas in first-order logic.
 Subsequent work generalized it to many other settings, such as nondeterminism~\cite{Apt84} and regular commands~\cite{MOH21}, resulting in the rules in Figure~\ref{fig:bg:hl}.
 That is a minimal set of correct rules for HL, but we remark that there are many other valid rules other than those in the figure. We also point out that rule \hlrule{iter} is based on \emph{invariants}, properties whose validity is kept by the loop body. From this, if an invariant is true at the beginning, it is true also after any number of iterations. Invariants are a simple, yet sound and complete proof technique for loop over-approximation.
-We use the standard notation $\vdash \overtriple{P}{\regr}{Q}$ to express that a triple is \emph{provable} in the HL proof system.
+We use the standard notation $\vdash \hltriple{P}{\regr}{Q}$ to express that a triple is \emph{provable} in the HL proof system.
 Thus, we can state soundness of HL:
 
 \begin{theorem}[HL is sound~\cite{HL74}]
 	All provable triples in HL are valid:
 	\[
-	\vdash \overtriple{P}{\regr}{Q} \implies \vDash \overtriple{P}{\regr}{Q}
+	\vdash \hltriple{P}{\regr}{Q} \implies \vDash \hltriple{P}{\regr}{Q}
 	\]
 \end{theorem}
 
@@ -149,7 +149,7 @@ When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:h
 \begin{theorem}[HL is complete~\cite{MOH21}]
 	All valid triples in HL are provable:
 	\[
-	\vDash \overtriple{P}{\regr}{Q} \implies \vdash \overtriple{P}{\regr}{Q}
+	\vDash \hltriple{P}{\regr}{Q} \implies \vdash \hltriple{P}{\regr}{Q}
 	\]
 \end{theorem}
 
@@ -161,43 +161,40 @@ When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:h
 		\(
 		\begin{array}{cc}
 			\infer[\ilrule{atom}]
-			{\undertriple{P}{\expe}{\denot{\expe}P}}
+			{\iltriple{P}{\expe}{\denot{\expe}P}}
 			{}
-			\quad                          &
+			\quad                       &
 			\infer[\ilrule{cons}]
-			{\undertriple{P}{\regr}{Q}}
-			{P \supseteq P'                & \undertriple{P'}{\regr}{Q'}    & Q' \supseteq Q}
+			{\iltriple{P}{\regr}{Q}}
+			{P \supseteq P'             & \iltriple{P'}{\regr}{Q'}    & Q' \supseteq Q}
 			\\[7.5pt]
 			\infer[\ilrule{seq}]
-			{\undertriple{P}{\regr_1;\regr_2}{Q}}
-			{\undertriple{P}{\regr_1}{R}   & \undertriple{R}{\regr_2}{Q}}
-			\qquad                         &
+			{\iltriple{P}{\regr_1;\regr_2}{Q}}
+			{\iltriple{P}{\regr_1}{R}   & \iltriple{R}{\regr_2}{Q}}
+			\qquad                      &
 			\infer[\ilrule{choice}]
-			{\undertriple{P}{\regr_1 \regplus \regr_2}{Q_1 \cup Q_2}}
-			{\undertriple{P}{\regr_1}{Q_1} & \undertriple{P}{\regr_2}{Q_2}}
+			{\iltriple{P}{\regr_1 \regplus \regr_2}{Q_1 \cup Q_2}}
+			{\iltriple{P}{\regr_1}{Q_1} & \iltriple{P}{\regr_2}{Q_2}}
 			\\[7.5pt]
 			\infer[\ilrule{iter}]
-			{\undertriple{P_0}{\regr^\kstar}{\bigcup\limits_{n \ge 0} P_n}}
-			{\forall n \ge 0 \sdot \undertriple{P_n}{\regr}{P_{n+1}}}
-			                               &
-			% \infer[\ilrule{disj}]
-			% {\undertriple{P_1 \lor P_2}{\regr}{Q_1 \lor Q_2}}
-			% {\undertriple{P_1}{\regr}{Q_1} & \undertriple{P_2}{\regr}{Q_2} }
+			{\iltriple{P_0}{\regr^\kstar}{\bigcup\limits_{n \ge 0} P_n}}
+			{\forall n \ge 0 \sdot \iltriple{P_n}{\regr}{P_{n+1}}}
 		\end{array}
 		\)
 	\end{framed}
 	\vspace{-1ex}
-	\caption{Simplified Incorrectness Logic, adapted from~\cite{MOH21}}\label{fig:bg:il}
+	\caption{Simplified Incorrectness Logic, adapted from~\cite{MOH21}.}
+	\label{fig:bg:il}
 \end{figure}
 
-An HL triple $\overtriple{P}{\regc}{Q}$ is valid if $\fwsem{\regr} P \subseteq Q$, so that $Q$ is an over-approximation of the semantics of command $\regr$ applied to the precondition $P$. However, in his recent work, O'Hearn pushed forward the idea of using an under-approximation to detect defects in the code: he thus presents Incorrectness Logic (IL)~\cite{OHearn20}.
+An HL triple $\hltriple{P}{\regc}{Q}$ is valid if $\fwsem{\regr} P \subseteq Q$, so that $Q$ is an over-approximation of the semantics of command $\regr$ applied to the precondition $P$. However, in his recent work, O'Hearn pushed forward the idea of using an under-approximation to detect defects in the code: he thus presents Incorrectness Logic (IL)~\cite{OHearn20}.
 The goal of IL is to highlight actual bugs in programs, so that its semantics distinguish between normal and ``erroneous" exit conditions. However, the goal of this thesis is to combine over- and under-approximation techniques from a theoretical perspective, so we simplify the presentation by considering only correct executions. This is similar to the work of de Vries and Koutavas~\cite{VK11}, which present a proof system analogous to IL, but for a different goal -- the study randomized algorithm rather than the bug detection.
 
 The validity of an IL triple is given by the under-approximation condition
 \[
 \fwsem{\regr} P \supseteq Q \tag{IL}\label{eq:bg:il-validity}
 \]
-In other words, a valid IL triple $\vDash \undertriple{P}{\regr}{Q}$ means that all states in $Q$ are reachable when executing $\regr$ starting from states in $P$. This can be better seen from the equivalent first-order formula
+In other words, a valid IL triple $\vDash \iltriple{P}{\regr}{Q}$ means that all states in $Q$ are reachable when executing $\regr$ starting from states in $P$. This can be better seen from the equivalent first-order formula
 \[
 \forall \sigma' \in Q \sdot \exists \sigma \in P \sdot \sigma' \in \fwsem{\regr} \sigma \tag{IL$_{\text{FOL}}$}\label{eq:bg:il-fol}
 \]
@@ -212,7 +209,7 @@ Just like HL, this set of rule is sound and complete for IL:
 \begin{theorem}[IL is sound and complete~\cite{OHearn20}]
 	An IL triple is provable if and only if it is valid:
 	\[
-	\vdash\undertriple{P}{\regr}{Q} \iff \vDash\undertriple{P}{\regr}{Q}
+	\vdash\iltriple{P}{\regr}{Q} \iff \vDash\iltriple{P}{\regr}{Q}
 	\]
 \end{theorem}
 
@@ -233,26 +230,26 @@ if (x is even) {
 	We let $Q \eqdef (z = 42)$ denote the set of erroneous states, i.e., the incorrectness specification.
 	The valid HL triple
 	\[
-	\overtriple{ \text{odd}(y) \land \text{even}(x)}{\regr}{Q}
+	\hltriple{ \text{odd}(y) \land \text{even}(x)}{\regr}{Q}
 	\]
 
 	\noindent
 	identifies input states that will surely end up in an  error state, while the triple
 	\[
-	\overtriple{ \neg Q \land (\text{odd}(x) \lor \text{even}(y))}{\regr}{\neg Q}
+	\hltriple{ \neg Q \land (\text{odd}(x) \lor \text{even}(y))}{\regr}{\neg Q}
 	\]
 
 	\noindent
 	characterize input states that will not produce any error.
 	On the other hand, the valid IL triple
 	\[
-	\undertriple{\true}{\regr}{Q \wedge \text{odd}(y) \wedge \text{even}(x) }
+	\iltriple{\true}{\regr}{Q \wedge \text{odd}(y) \wedge \text{even}(x) }
 	\]
 
 	\noindent
 	expresses the fact that error states in $Q$ are reachable by some initial state. Similarly, also the IL triple
 	\[
-	\undertriple{\true}{\regr}{\neg Q \wedge(\text{odd}(x)\vee \text{even}(y)) }
+	\iltriple{\true}{\regr}{\neg Q \wedge(\text{odd}(x)\vee \text{even}(y)) }
 	\]
 
 	\noindent
@@ -310,33 +307,32 @@ Since we can describe programs in KATs, it is natural to ask ourselves whether w
 		\(
 		\begin{array}{cc}
 			\infer[\hlrule{zero}]
-			{\overtriple{p}{0}{1}}
+			{\hltriple{p}{0}{1}}
 			{}
-			\quad                     &
+			\quad                 &
 			\infer[\hlrule{one}]
-			{\overtriple{p}{1}{p}}
+			{\hltriple{p}{1}{p}}
 			{}
 			\\[7.5pt]
 			\infer[\hlrule{atom}]
-			{\overtriple{p}{a}{q}}
+			{\hltriple{p}{a}{q}}
 			{p \cdot a = p \cdot a \cdot q}
-			\quad                     &
+			\quad                 &
 			\infer[\hlrule{cons}]
-			{\overtriple{p}{a}{q}}
-			{p \leq p'                & \overtriple{p'}{a}{q'}  & q' \leq q}
+			{\hltriple{p}{a}{q}}
+			{p \leq p'            & \hltriple{p'}{a}{q'}  & q' \leq q}
 			\\[7.5pt]
 			\infer[\hlrule{seq}]
-			{\overtriple{p}{a \cdot b}{q}}
-			{\overtriple{p}{a}{r}     &
-				\overtriple{r}{b}{q}}
-			\qquad                    &
+			{\hltriple{p}{a \cdot b}{q}}
+			{\hltriple{p}{a}{r}   & \hltriple{r}{b}{q}}
+			\qquad                &
 			\infer[\hlrule{choice}]
-			{\overtriple{p}{a_1 + a_2}{q}}
-			{\forall i \in \{ 1, 2 \} & \overtriple{p}{a_i}{q}}
+			{\hltriple{p}{a_1 + a_2}{q}}
+			{\hltriple{p}{a_1}{q} & \hltriple{p}{a_2}{q}}
 			\\[7.5pt]
 			\infer[\hlrule{iter}]
-			{\overtriple{p}{a^\kstar}{p}}
-			{\overtriple{p}{a}{p}}
+			{\hltriple{p}{a^\kstar}{p}}
+			{\hltriple{p}{a}{p}}
 		\end{array}
 		\)
 		%		}
@@ -345,7 +341,7 @@ Since we can describe programs in KATs, it is natural to ask ourselves whether w
 	\caption{KAT encoding of Hoare logic}\label{fig:bg:hl-kat}
 	%	\vspace{-4ex}
 \end{figure}
-The HL proof system embedded in KATs is shown in Figure~\ref{fig:bg:hl-kat}. It handles triples of shape $\overtriple{p}{a}{q}$, with $p, q \in \test(A)$ and $a \in A$. It is very similar to Figure~\ref{fig:bg:hl} thanks to regular commands and KATs being syntactically very close. The first two rules are subsumed by \hlrule{atom}, but we prefer to show them explicitly since $0$ and $1$ are part of the syntax of KATs. Rule \hlrule{atom} is analogous to the homonymous HL rule. It requires explicitly to check the validity condition since there is no equivalent of the semantics in a KAT. All the remaining rules are the same as HL, just using the syntax of KAT instead of regular commands.
+The HL proof system embedded in KATs is shown in Figure~\ref{fig:bg:hl-kat}. It handles triples of shape $\hltriple{p}{a}{q}$, with $p, q \in \test(A)$ and $a \in A$. It is very similar to Figure~\ref{fig:bg:hl} thanks to regular commands and KATs being syntactically very close. The first two rules are subsumed by \hlrule{atom}, but we prefer to show them explicitly since $0$ and $1$ are part of the syntax of KATs. Rule \hlrule{atom} is analogous to the homonymous HL rule. It requires explicitly to check the validity condition since there is no equivalent of the semantics in a KAT. All the remaining rules are the same as HL, just using the syntax of KAT instead of regular commands.
 
 \section{Abstract interpretation}\label{sec:bg:absint}
 \subsection{Abstract Domains}

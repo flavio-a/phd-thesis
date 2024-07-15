@@ -28,37 +28,36 @@ Intuitively, $\bdiamond{a} p$ is the strongest postcondition of $a$ on input $p$
 		\(
 		\begin{array}{cc}
 			\infer[\ilrule{divergence}]
-			{\undertriple{p}{0}{0}}
+			{\iltriple{p}{0}{0}}
 			{}
-			\quad                      &
+			\quad                     &
 			\infer[\ilrule{skip}]
-			{\undertriple{p}{1}{p}}
+			{\iltriple{p}{1}{p}}
 			{}
 			\\[7.5pt]
 			\infer[\ilrule{atom}]
-			{\undertriple{p}{a}{\bdiamond{a}p}}
+			{\iltriple{p}{a}{\bdiamond{a}p}}
 			{}
-			\quad                      &
+			\quad                     &
 			\infer[\ilrule{cons}]
-			{\undertriple{p}{a}{q}}
-			{p \geq p'                 & \undertriple{p'}{a}{q'}     & q' \geq q}
+			{\iltriple{p}{a}{q}}
+			{p \geq p'                & \iltriple{p'}{a}{q'}     & q' \geq q}
 			\\[7.5pt]
 			\infer[\ilrule{seq}]
-			{\undertriple{p}{a \cdot b}{q}}
-			{\undertriple{p}{a}{r}     &
-				\undertriple{r}{b}{q}}
-			\qquad                     &
+			{\iltriple{p}{a \cdot b}{q}}
+			{\iltriple{p}{a}{r}       & \iltriple{r}{b}{q}}
+			\qquad                    &
 			\infer[\ilrule{choice}]
-			{\undertriple{p}{a_1 + a_2}{q}}
-			{\exists i \in \{ 1, 2 \}  & \undertriple{p}{a_i}{q}}
+			{\iltriple{p}{a_1 + a_2}{q}}
+			{\exists i \in \{ 1, 2 \} & \iltriple{p}{a_i}{q}}
 			\\[7.5pt]
 			\infer[\ilrule{disj}]
-			{\undertriple{p_1 \lor p_2}{a}{q_1 \lor q_2}}
-			{\undertriple{p_1}{a}{q_1} & \undertriple{p_2}{a}{q_2} }
-			\qquad                     &
+			{\iltriple{p_1 \lor p_2}{a}{q_1 \lor q_2}}
+			{\iltriple{p_1}{a}{q_1}   & \iltriple{p_2}{a}{q_2} }
+			\qquad                    &
 			\infer[\ilrule{iter}]
-			{\undertriple{p_0}{a^\kstar}{\bigvee\limits_{n \ge 0} p_n}}
-			{\forall n \ge 0 \sdot \undertriple{p_n}{a}{p_{n+1}}}
+			{\iltriple{p_0}{a^\kstar}{\bigvee\limits_{n \ge 0} p_n}}
+			{\forall n \ge 0 \sdot \iltriple{p_n}{a}{p_{n+1}}}
 		\end{array}
 		\)
 		%		}
@@ -88,10 +87,10 @@ In CTC modal KAT the authors are also able to formally prove an intuitive connec
 \begin{theorem}[cf. \cite{MOH21}]
 	In any CTC modal KAT
 	\[
-	\nvDash \overtriple{p}{a}{q} \iff \exists p', q' \sdot p' \le p, q' \nleq q, \vDash \undertriple{p'}{a}{q'}
+	\nvDash \hltriple{p}{a}{q} \iff \exists p', q' \sdot p' \le p, q' \nleq q, \vDash \iltriple{p'}{a}{q'}
 	\]
 \end{theorem}
-On the one hand, this theorem means that whenever a specification (ie. an Hoare triple) is not met there is a valid incorrectness triple showing a violation of that specification. In the theorem, $q'$ is the violation since $q' \nleq q$, and is in the post of $p$ because we can prove $\undertriple{p'}{a}{q'}$ with $p' \le p$.
+On the one hand, this theorem means that whenever a specification (ie. an Hoare triple) is not met there is a valid incorrectness triple showing a violation of that specification. In the theorem, $q'$ is the violation since $q' \nleq q$, and is in the post of $p$ because we can prove $\iltriple{p'}{a}{q'}$ with $p' \le p$.
 On the other hand, when the specification is true, we don't need incorrectness reasoning since we already know all valid triples (hence all those we can prove) starting from $p' \le p$ are bound to have a postcondition $q'$ satisfying the specification $q$ (ie. $q' \le q$).
 %We remark that the statement involves valid triples, but since both HL and IL are complete in CTC modal KATs this is the same as considering provable triples.
 This theorem states a connection between over- and under-approximation that is obvious in the concrete interpretation with programs and states, but that it is not in a general algebraic model. Being able to prove it means the encoding meets the desired intuition, rising confidence in its correctness. Moreover, this theorem is a first (trivial) example of how over- and under-approximation can positively interact.
@@ -156,8 +155,7 @@ Point (2) means that, given a specification \textit{Spec} expressible in $A$, an
 				\qquad %&
 				\infer[\lclrule{join}]
 				{\lcl{A}{P}{\regr_1 \regplus \regr_2}{Q_1\vee Q_2}}
-				{ \lcl{A}{P}{\regr_1}{Q_1} &
-					\lcl{A}{P}{\regr_2}{Q_2}}
+				{ \lcl{A}{P}{\regr_1}{Q_1} & \lcl{A}{P}{\regr_2}{Q_2}}
 				\\[7.5pt]
 				\infer[\lclrule{rec}]
 				{\lcl{A}{P}{\regr^\kstar}{Q}}
