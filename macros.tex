@@ -22,6 +22,7 @@
 \declaretheorem[title=Proposition,sibling=theorem]{prop}
 \declaretheorem[style=definition,sibling=theorem]{definition}
 \declaretheorem[style=remark,sibling=theorem,qed=$\blacksquare$]{example}
+\declaretheorem[style=remark,sibling=theorem]{remark}
 
 %%%%%%%%%%%%%%%%%%%% MATH SYMBOLS
 %\newcommand{\setN}{\mathbb{N}}
@@ -98,6 +99,9 @@
 \newcommand{\clcltriple}[4]{\vdash_{#1}\nobreak\siltriple{#2}{#3}{#4}}
 \newcommand{\clclrule}[1]{\lclrule{#1}}
 
+\newcommand{\oktext}[1]{\textcolor{teal}{#1}}
+\newcommand{\ertext}[1]{\textcolor{red}{#1}}
+
 %%%%%%%%%%%%%%%%%%%% SL
 \newcommand{\Regh}{\mathsf{HRCmd}}
 \newcommand{\Cmdh}{\mathsf{HACmd}}
@@ -119,7 +123,6 @@
 
 %%%%%%%%%%%%%%%%%%%% Semantics
 \newcommand{\fwsem}[1]{\denot{#1}}
-%\newcommand{\bwsem}[1]{\denot{^{\leftarrow}#1}}
 \newcommand{\bwsem}[1]{\denot{\overleftarrow{#1}}}
 \newcommand{\barsigma}{\bar{\sigma}}
 \newcommand{\AExp}{\mathsf{AExp}}

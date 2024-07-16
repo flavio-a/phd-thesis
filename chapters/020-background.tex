@@ -46,13 +46,13 @@ The command $\regr; \regr$ represent the usual sequential composition. $\regr \r
 We write $\regr^n$ to denote sequential composition of $\regr$ with itself $n$ times, analogously to how we use $f^n$ for function composition.
 
 For the generic semantics of regular commands, we assume a concrete set of values $C$ that is a complete join-semilattice. We also assume the semantics $\edenot{\cdot} : \Exp \rightarrow C \rightarrow C$ to be given -- in general, it depends on the instantiation.
-The semantics of regular commands $\denot{\cdot} : \Reg \rightarrow C \rightarrow C$ is defined inductively in Figure~\ref{fig:bg:regcom-sem}.
+The semantics of regular commands $\fwsem{\cdot} : \Reg \rightarrow C \rightarrow C$ is defined inductively in Figure~\ref{fig:bg:regcom-sem}. Intuitively, this defines the collecting semantics of a program: if $C$ is the powerset of the set of states, $\fwsem{\regr} c$ is the set of output states reachable from the set of input states $c$.
 \begin{figure}[t]
 	\begin{align*}
-		\denot{\expe}                      & \eqdef \edenot{\expe} c                         \\
-		\denot{\regr_1 ; \regr_2 } c       & \eqdef \denot{\regr_2}\denot{\regr_1} (c)       \\
-		\denot{\regr_1 \regplus \regr_2} c & \eqdef \denot{\regr_1}c \vee_C \denot{\regr_2}c \\
-		\denot{\regr^\kstar}c              & \eqdef \bigvee_{n \ge 0} \denot{\regr}^n c
+		\fwsem{\expe}                      & \eqdef \edenot{\expe} c                       \\
+		\fwsem{\regr_1 ; \regr_2 } c       & \eqdef \fwsem{\regr_2}\fwsem{\regr_1} (c)     \\
+		\fwsem{\regr_1 \regplus \regr_2} c & \eqdef \fwsem{\regr_1}c \vee \fwsem{\regr_2}c \\
+		\fwsem{\regr^\kstar}c              & \eqdef \bigvee_{n \ge 0} \fwsem{\regr}^n c
 	\end{align*}
 	\caption{Generic semantics of regular commands.}
 	\label{fig:bg:regcom-sem}
@@ -70,25 +70,27 @@ We can define \code{if} and \code{while} statements as syntactic sugar:
 	\code{while (b) do c}                                   & \ \eqdef\  (\code{b?; c})^\kstar; (\lnot \code{b})\code{?}
 \end{align*}
 
-For the semantics of these basic expressions, we consider a finite set of variables $\Var$, then the set of stores $\Sigma = \Var \rightarrow \setZ$ that are (total) functions $\sigma$ from $\Var$ to integers. The complete lattice $C$ is defined as $\pow(\Sigma)$ with the usual order structure given by set inclusion. Given a store $\sigma \in \Sigma$, $\sigma[ x \mapsto v ]$ denotes function update as usual for $x \in \Var$ and $v \in \setZ$. We consider standard, inductively defined semantics $\edenot{\cdot}$ for arithmetic and boolean expressions $\code{a} \in \text{AExp}$ and $\code{b} \in \text{BExp}$. The semantics of expressions $\expe \in \Exp$ is then defined as
+For the semantics of these basic expressions, we consider a finite set of variables $\Var$, then the set of stores $\Sigma \eqdef \Var \rightarrow \setZ$ that are (total) functions $\sigma$ from $\Var$ to integers. The complete lattice $C$ is defined as $\pow(\Sigma)$ with the usual order structure given by set inclusion. Given a store $\sigma \in \Sigma$, $\sigma[ x \mapsto v ]$ denotes function update as usual for $x \in \Var$ and $v \in \setZ$. We consider standard, inductively defined semantics $\edenot{\cdot}$ for arithmetic and boolean expressions $\code{a} \in \text{AExp}$ and $\code{b} \in \text{BExp}$. The semantics of expressions $\expe \in \Exp$ is then defined as
 \begin{align*}
 	\edenot{\code{skip}} S   & \eqdef S                                                                                         \\
 	\edenot{\code{x := a}} S & \eqdef \left\lbrace \sigma[x \mapsto \edenot{\code{a}} \sigma] \svert \sigma \in S \right\rbrace \\
 	\edenot{\code{b?}} S     & \eqdef \left\lbrace \sigma \in S \svert \edenot{\code{b}} \sigma = \code{tt} \right\rbrace
 \end{align*}
-It is now easy to check that the semantics of $\code{if}$ and $\code{while}$ is the standard one for while-language. We also remark that this semantics $\edenot{\cdot}$ is both monotone and additive, and these properties are lifted to the semantics of regular commands $\denot{\cdot}$:
-\begin{prop}
-	If $\edenot{\cdot}$ is monotone (resp. additive), then the semantics $\denot{\cdot}$ defined as in Figure~\ref{fig:bg:regcom-sem} is monotone (resp. additive) as well.
+This defines the collecting denotational semantics of programs. In fact, it is easy to check that the semantics of $\code{if}$ and $\code{while}$ is the standard one for while-language. We also remark that this semantics $\edenot{\cdot}$ is both monotone and additive, and these properties are lifted to the semantics of regular commands $\fwsem{\cdot}$:
+\begin{prop}\label{prop:bg:fwsem-monotone}
+	If $\edenot{\cdot}$ is monotone (resp. additive), then the semantics $\fwsem{\cdot}$ defined as in Figure~\ref{fig:bg:regcom-sem} is monotone (resp. additive) as well.
 \end{prop}
 
+As notation, we will write $\fwsem{\regr}\sigma$ instead of $\fwsem{\regr}\{\sigma\}$.
+
 \section{Hoare logic}\label{sec:bg:hl}
-Hoare logic (HL for short) \cite{Hoare69} is a triple-based logic that prove properties about programs. Given two assertions $P$, $Q$ and a regular command $\regr$,\footnote{The original formulation uses the while-language. However, since regular commands are the primary syntax used in this thesis, we focus on them instead.} the HL triple
+Hoare logic (HL for short) \cite{Hoare69} is a triple-based logic that proves properties about programs. Given two assertions $P$, $Q$ and a regular command $\regr$,\footnote{The original formulation uses the while-language. However, since regular commands are the primary syntax used in this thesis, we focus on them instead.} the HL triple
 \[
 \hltriple{P}{\regr}{Q}
 \]
-means that whenever the computation starts from a state satisfying $P$ and executes $\regr$, it ends in a state satisfying $Q$.
+means that, whenever the execution of $\regr$ begins in a state $\sigma$ satisfying $P$ and it ends in a state $\sigma'$, then $\sigma'$ satisfies $Q$.
 When $Q$ is a correctness specification, any HL triple $\hltriple{P}{\regr}{Q}$ provides a \emph{sufficient} condition $P$ for the so called partial correctness of the program $\regr$.
-Formally, given the semantics $\denot{\cdot}$ of regular commands and abusing notation by writing $P$ instead of the set of states satisfying that formula, the validity of an HL triple is given by over-approximation property of postconditions
+Formally, given the semantics $\fwsem{\cdot}$ of regular commands and abusing notation by writing $P$ instead of the set of states satisfying that formula, the validity of an HL triple is given by over-approximation property of postconditions
 \[
 \fwsem{\regr} P \subseteq Q \tag{HL}\label{eq:bg:hl-validity}.
 \]
@@ -126,11 +128,11 @@ An HL triple $\hltriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \hltriple
 	\vspace{-1ex}
 	\caption{Hoare logic for regular commands}\label{fig:bg:hl}
 \end{figure}
-In its original formulation, HL was proposed for a deterministic while-language and assuming $P$ and $Q$ were formulas in first-order logic.
+
+In its original formulation, HL was proposed for a deterministic while-language and assuming $P$ and $Q$ were first-order logic formulae.
 Subsequent work generalized it to many other settings, such as nondeterminism~\cite{Apt84} and regular commands~\cite{MOH21}, resulting in the rules in Figure~\ref{fig:bg:hl}.
-That is a minimal set of correct rules for HL, but we remark that there are many other valid rules other than those in the figure. We also point out that rule \hlrule{iter} is based on \emph{invariants}, properties whose validity is kept by the loop body. From this, if an invariant is true at the beginning, it is true also after any number of iterations. Invariants are a simple, yet sound and complete proof technique for loop over-approximation.
+That is a minimal set of correct rules for HL, but we remark that there are many other valid rules other than those in the figure. We also point out that rule \hlrule{iter} is based on \emph{invariants}, properties whose validity is preserved by the loop body. From this, if an invariant is true at the beginning, it is true also after any number of iterations. Invariants are a simple, yet sound and complete proof technique for loop over-approximation.
 We use the standard notation $\vdash \hltriple{P}{\regr}{Q}$ to express that a triple is \emph{provable} in the HL proof system.
-Thus, we can state soundness of HL:
 
 \begin{theorem}[HL is sound~\cite{HL74}]
 	All provable triples in HL are valid:
@@ -139,7 +141,7 @@ Thus, we can state soundness of HL:
 	\]
 \end{theorem}
 
-The reverse implication is called \emph{completeness} of the logic,\footnote{For the sake of readability, we must warn the reader that this thesis deals with three different notions of completeness. (Logical) completeness, used here, refers to the ability of a proof system to derive all valid triples. The terms global and local completeness are instead properties of abstract interpretation, that will be defined later. We will make sure to disambiguate the term whenever it is not clear from the context.} and in general it doesn't hold for HL because program analysis is undecidable. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}.
+The reverse implication is called \emph{completeness} of the logic,\footnote{For the sake of readability, we must warn the reader that this thesis deals with three different notions of completeness. (Logical) completeness, used here, refers to the ability of a proof system to derive all valid triples. Global and local completeness are instead properties of abstract interpretation, that will be defined later. We will make sure to disambiguate the term whenever it is not clear from the context.} and in general it does not hold for HL because program analysis is undecidable. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}.
 Cook~\cite{Cook78} overcame these limitations for the first time by adding an oracle to decide implications and requiring that all strongest post (including loop-invariants) are expressible in the assertion language, proving the first completeness result for HL.\footnote{This was later called completeness \emph{in the sense of Cook}~\cite[§2.8]{Apt81}.}
 Another approach (see, e.g., \cite{CCLB12,OHearn20}) is to assume $P$ and $Q$ to be \emph{set} of states instead of formulae in some assertion language. This allows us to dodge at once both the issue of expressibility of the assertion language (since we can write any subset) and of decidability of the implication (since it reduces to subset inclusion).
 In this thesis, we will always consider this latter setting where $P$ and $Q$ are sets of states, with the only exception of Separation SIL (Section~\ref{sec:sil:separation-sil}). Therefore, we will write $\sigma \in P$ to mean that state $\sigma$ satisfies the assertion $P$, and use standard set-theoretic symbols such as $\subseteq$ and $\cup$ instead of the logical $\implies$ and $\lor$.
@@ -152,6 +154,8 @@ When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:h
 	\vDash \hltriple{P}{\regr}{Q} \implies \vdash \hltriple{P}{\regr}{Q}
 	\]
 \end{theorem}
+
+\todo[inline]{Talk about Dijkstra's wlp}
 
 \section{Incorrectness Logic}\label{sec:bg:il}
 
@@ -187,21 +191,23 @@ When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:h
 	\label{fig:bg:il}
 \end{figure}
 
-An HL triple $\hltriple{P}{\regc}{Q}$ is valid if $\fwsem{\regr} P \subseteq Q$, so that $Q$ is an over-approximation of the semantics of command $\regr$ applied to the precondition $P$. However, in his recent work, O'Hearn pushed forward the idea of using an under-approximation to detect defects in the code: he thus presents Incorrectness Logic (IL)~\cite{OHearn20}.
-The goal of IL is to highlight actual bugs in programs, so that its semantics distinguish between normal and ``erroneous" exit conditions. However, the goal of this thesis is to combine over- and under-approximation techniques from a theoretical perspective, so we simplify the presentation by considering only correct executions. This is similar to the work of de Vries and Koutavas~\cite{VK11}, which present a proof system analogous to IL, but for a different goal -- the study randomized algorithm rather than the bug detection.
-
-The validity of an IL triple is given by the under-approximation condition
+Incorrectness Logic (IL)~\cite{OHearn20} was introduced as a formalism for under-approximation with the idea of finding true bugs in the code. The IL triple
 \[
-\fwsem{\regr} P \supseteq Q \tag{IL}\label{eq:bg:il-validity}
+\iltriple{P}{\regr}{Q}
 \]
-In other words, a valid IL triple $\vDash \iltriple{P}{\regr}{Q}$ means that all states in $Q$ are reachable when executing $\regr$ starting from states in $P$. This can be better seen from the equivalent first-order formula
+means that all the states in $Q$ are reachable from states in $P$. Therefore, any error state in $Q$ is a true error of the program and the analysis can report it safely to developers.
+Formally, validity of an IL triple is given by the following formula
 \[
 \forall \sigma' \in Q \sdot \exists \sigma \in P \sdot \sigma' \in \fwsem{\regr} \sigma \tag{IL$_{\text{FOL}}$}\label{eq:bg:il-fol}
 \]
+which can be compactly rewritten as the under-approximation condition
+\[
+\fwsem{\regr} P \supseteq Q \tag{IL}\label{eq:bg:il-validity}
+\]
 This property ensures that any error in $Q$ reported by the analysis is in fact a true error of the program, reachable in some concrete execution.
 
-We consider the proof system for IL in Figure~\ref{fig:bg:il}, adapting the one in~\cite{MOH21}.
-Rule \ilrule{cons} looks similar, but uses reversed implication: in IL we can grow the precondition ($P' \subseteq P$) and shrink the post ($Q \subseteq Q'$), while in HL we do the opposite (cf. \hlrule{cons} in Figure~\ref{fig:bg:hl}). This fits the the under/over-approximation duality: if we know $Q'$ is an under-approximation of the result, also $Q \subseteq Q'$ is such, and dually in HL.
+We consider the proof system for IL in Figure~\ref{fig:bg:il}, adapting the one in~\cite{MOH21} and inspired by previous work on reverse Hoare logic~\cite{VK11}, simplified to not separate correct and erroneous termination states.
+Rule \ilrule{cons} looks similar, but uses reversed implication: in IL we can grow the precondition ($P' \subseteq P$) and shrink the post ($Q \subseteq Q'$), while in HL we do the opposite (cf. \hlrule{cons} in Figure~\ref{fig:bg:hl}). This fits the under/over-approximation duality: if we know $Q'$ is an under-approximation of the result, also $Q \subseteq Q'$ is such, and dually in HL.
 Another important difference is in rule \ilrule{iter} for Kleene iteration. HL rule \hlrule{iter} is based on loop invariants, but while these are sound in under-approximation, they are not complete because they don't account for invariants that are reached after a number of iterations~\cite[§4]{OHearn20}.
 
 Just like HL, this set of rule is sound and complete for IL:
@@ -218,11 +224,10 @@ The following example compares HL and IL on a simple program to give an intuitio
 \begin{example}\label{ex:bg:il-hl-comparison}
 	HL and IL aim at addressing different properties. To show their differences, we use the simple, deterministic, terminating program
 	\begin{minted}{C}
-x := nondet();
 if (x is even) {
-	if (y is odd) {
-		z := 42;
-	}
+    if (y is odd) {
+        z := 42;
+    }
 }
 // assert(z != 42)
 	\end{minted}
@@ -256,8 +261,56 @@ if (x is even) {
 	is valid since the postcondition $\neg Q$ can be reached only when the path conditions to reach the assignment are not satisfied.
 \end{example}
 
+\begin{remark}[ok/er flags]\label{rem:bg:ok-er-flags}
+	One distinguishing feature of proof systems for incorrectness (e.g.,~\cite{OHearn20,RBDDOV20,RBDO22,RVBO23}) is to tag postconditions, but not preconditions, with either the flag $\oktext{ok}$ or $\ertext{er}$ to separate successful computations from those leading to errors.
+	An immediate consequence is that the number of proof rules is increased by the necessity to deal with such tags and that the definition of the semantics becomes longer and more complex.
+	Striving for simplicity, in this thesis we mostly follow the alternative from~\cite{BGGR23}, where the whole concrete domain is extended with such flags, e.g., we use $C = \pow(\{\oktext{ok},\ertext{er}\}\times \Sigma)$ instead of $\pow(\Sigma)$, and it is also tacitly assumed that error states are preserved by all transfer functions, i.e., that $\fwsem{\regr} (\ertext{er:\sigma}) = \ertext{er:\sigma}$, for any $\regr\in\Reg$ and $\sigma\in\Sigma$.
+	This way, we accommodate for both pre and post that are tagged, but the treatment of tags is transparent to the rules of the logic. Therefore, in this extended setting, when we write $P$ and $Q$ we leave implicit that they may contain both kinds of tagged states. The distinction between successful and erroneous outputs will be explicitated in the analysis presented in Section~\ref{sec:sil:separation-sil-error}.
+\end{remark}
+
 \section{Necessary Conditions}\label{sec:bg:nc}
-\todo[inline]{Write this (salvage the SIL paper)}
+The notion of Necessary Conditions (NC) was introduced in \cite{CCL11,CCFL13} for contract inference.
+The goal was to relax the burden on programmers: while sufficient conditions require the caller of a function to supply parameters that will never cause an error, NC only prevents the invocation of the function with arguments that will inevitably cause an error.
+Intuitively, given a correctness specification $Q$, the NC triple
+\[
+\nctriple{P}{\regr}{Q}
+\]
+means that any state $\sigma$ that admits at least one non-erroneous execution of the program $\regr$ is in $P$.
+%Recently, the same concept has been applied to the context of security \cite{DBLP:journals/pacmpl/MackayEND22}.
+
+Following the original formulation~\cite{CCFL13}, we can partition the traces of a nondeterministic execution starting from a memory $\sigma$ in three different sets: $\mathcal{T}(\sigma)$, those without errors, $\mathcal{E}(\sigma)$, those with an error, and $\mathcal{I}(\sigma)$, those which do not terminate.
+A sufficient precondition $\overline{P}$ is such that $(\sigma \in \overline{P}) \implies (\mathcal{E}(\sigma) = \emptyset)$, that is, $\overline{P}$ excludes all error traces.
+Instead, a necessary precondition $\underline{P}$ is a formula such that $(\mathcal{T}(\sigma) \neq \emptyset \lor \mathcal{I}(\sigma) \neq \emptyset) \implies (\sigma \in \underline{P})$, which is equivalent to
+\[
+(\sigma \notin \underline{P}) \implies (\mathcal{T}(\sigma) = \mathcal{I}(\sigma) = \emptyset) .
+\]
+In other words, a necessary precondition \emph{rules out no good run}: when it is violated by the input state, the program has only erroneous executions.
+Note that we consider infinite traces as good traces. We do this by analogy with sufficient preconditions, where bad traces are only those which end in a bad state.
+
+\begin{example}\label{ex:nc-running}
+	Consider a variation of the program in Example~\ref{ex:bg:il-hl-comparison} that introduces nondeterminism:
+	\begin{minted}{C}
+x := nondet();
+if (x is even) {
+    if (y is odd) {
+        z := 42;
+    }
+}
+// assert(z != 42)
+	\end{minted}
+	%	We call this program $\mathsf{r42nd}$.
+	As in the previous example, error states are those satisfying $(z = 42)$. Therefore, we consider the \emph{correctness} specification $(z \neq 42)$. Then
+	\begin{center}
+		\begin{tabular}{c|ccc}
+			                      & $z = 42$         & $z \neq 42$      & $z \neq 42 \land \text{even}(y)$ \\
+			\hline
+			$\mathcal{T}(\sigma)$ & $\emptyset$      & $\neq \emptyset$ & $\neq \emptyset$                 \\
+			$\mathcal{E}(\sigma)$ & $\neq \emptyset$ & $\neq \emptyset$ & $\emptyset$                      \\
+		\end{tabular}
+	\end{center}
+	The weakest sufficient precondition for this program is $\overline{P} = (z\neq 42 \wedge \text{even}(y))$ because no input state $\sigma$ that violates $\overline{P}$ is such that $\mathcal{E}(\sigma) = \emptyset$.
+	On the contrary, we have, e.g., that $\underline{P}= (z\neq 42)$ is a necessary precondition, while $(z > 42)$ is not, because it excludes some good runs.
+\end{example}
 
 \section{Kleene Algebras}\label{sec:bg:algebra}
 In this Section, we present Kleene algebras as an algebraic formulation that is able to describe programs.
@@ -271,8 +324,11 @@ In this Section, we present Kleene algebras as an algebraic formulation that is 
 		\item $0$ is an annihilator for sum, that is $a \cdot 0 = 0 \cdot a = 0$
 	\end{itemize}
 \end{definition}
-In any idempotent semiring we define the natural partial order $a \le b$ as $a + b = b$. With this definition, $+$ defines the lub of two elements: $a \vee b = a + b$. Moreover, sum and product are monotone in both arguments, and $0$ is the bottom element.
-Intuitively, elements of the idempotent semiring are programs, and the operations are way to compose them. $+$ is nondeterministic choice, $\cdot$ is sequential composition, $1$ is a no-op, $0$ is divergence. To get a Kleene algebra, we need to add the Kleene star operator, which models iteration:
+Intuitively, elements of the idempotent semiring are programs, and the operations are way to compose them: $+$ is nondeterministic choice ($\regplus$ in the syntax of regular commands), $\cdot$ is sequential composition ($;$), $1$ is a no-op (\code{skip}) and $0$ is divergence (the test $\false ?$).
+
+In any idempotent semiring we define the natural partial order $a \le b$ iff $a + b = b$. With this definition, $+$ defines the lub of two elements: $a \lor b = a + b$. Moreover, sum and product are monotone in both arguments, and $0$ is the bottom element.
+
+To get a Kleene algebra, we need to add the Kleene star operator to model iteration:
 \begin{definition}[Kleene algebra]\label{def:bg:kleene-algebra}
 	A Kleene algebra is an idempotent semiring with an additional operator $\kstar$ satisfying the following axiom:
 	\begin{align*}
@@ -280,7 +336,7 @@ Intuitively, elements of the idempotent semiring are programs, and the operation
 		 & b + a \cdot c \le c \implies a^\kstar \cdot b \le c &  & b + c \cdot a \le c \implies b \cdot a^\kstar \le c & (\textit{Star induction})
 	\end{align*}
 \end{definition}
-\textit{(Star unfold)} axioms describes that $\kstar$ behaves as nondeterministic iteration. \textit{(Star induction)} axioms are the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the `increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $c$ and the inductive step $a \cdot b$ are below (ie. satisfies) the inductive thesis $b$ (since we prove their lub, that is their sum, is below $b$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
+\textit{(Star unfold)} axioms describes that $\kstar$ behaves as nondeterministic iteration, given it satisfies the same recursive equation. \textit{(Star induction)} axioms are the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the `increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $c$ and the inductive step $a \cdot b$ are below (ie. satisfy) the inductive thesis $b$ (since we prove their lub, that is their sum, is below $b$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
 
 Kleene algebras are a versatile formalism that has been applied as is. However, the main algebraic structure we consider is that of Kleene algebra with tests (KAT for short), since this addition allows to encode programs \cite{Kozen97}.
 \begin{definition}[Test]
@@ -294,7 +350,7 @@ An interesting example of KAT are so-called ``relational KAT".
 	\[
 	a \cdot b = \{ (x, z) \svert \exists y \sdot (x, y) \in a, (y, z) \in b \}
 	\]
-	$0$ is the empty relation, $1$ is the identity relation, $\kstar$ is reflexive and transitive closure. A test in this KAT is a subset of $1$, that is for any subset $P \subseteq C$ we have the test $\{ (x, x) \svert x \in P \}$. Intuitively, this test represent the property $P$. Nonetheless, when interpreted as an element of the KAT (ie. a command) it behaves as an ``assume($P$)" statement, which ``filters" states satisfying $P$ and diverges on all other.
+	$0$ is the empty relation, $1$ is the identity relation, $\kstar$ is reflexive and transitive closure. A test in this KAT is a subset of $1$, that is for any subset $P \subseteq C$ we have the test $\{ (x, x) \svert x \in P \}$. Intuitively, this test represent the property $P$. Nonetheless, when interpreted as an element of the KAT (ie. a command) it behaves as an ``assume($P$)'' statement, or $P ?$, which ``filters" states satisfying $P$ and diverges on all other.
 \end{example}
 If $C$ is the set of program states, the corresponding relational KAT can encode programs just like regular commands. Basic expressions are elements of (a subset of) $\pow(C \times C)$. Encoding of imperative constructs such as \code{if} and \code{while} are just as for regular commands.
 
