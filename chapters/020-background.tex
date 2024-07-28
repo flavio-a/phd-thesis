@@ -544,7 +544,7 @@ Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. Whil
 \end{figure}
 This formulation tells a constructive way to compute an abstract semantics of any regular command $\regr$ provided that the analyser knows the bca of all expression $\expe \in \Exp$ (or at least those appearing in $\regr$). This condition could be further relaxed replacing $\denot{\expe}^{A}$ with any sound abstraction $\denot{\expe}^{\sharp}$ of $\denot{\expe}$, but for the sake of simplicity we assume the analyser is able to compute all bcas of basic expressions. All other rules are completely analogous to those of the concrete semantics but for the use of the abstract interpreter of syntactic components instead of the concrete semantics.
 A straightforward proof by structural induction shows that this semantics is monotone and sound:
-\begin{prop}
+\begin{prop}\label{prop:bg:regcom-abs-sem-sound}
 	The abstract interpreter of Figure~\ref{fig:bg:regcom-abs-sem} is monotone and sound w.r.t. the concrete semantics of Figure~\ref{fig:bg:regcom-sem}; namely for all $\regr \in \Reg$
 	\[
 	\alpha \denot{\regr} \le \denot{\regr}^{\sharp}_A \alpha

@@ -2,3 +2,217 @@
 
 \chapter{Logics comparison supplementary materials}\label{ch:app:sil}
 This appendix contains technical details of proofs and examples for Chapter~\ref{ch:sil}.
+
+\begin{proof}[Proof of Lemma~\ref{lmm:sil:bwsem-calculus}]
+	In the proof, we assume $Q$ to be any set of states, and $\sigma' \in Q$ to be any of its elements.
+
+	\proofcase{$\bwsem{\regr_1; \regr_2}$}
+	By~\eqref{eq:sil:bwsem-sigma-sigma'}, $\sigma \in \bwsem{\regr_1; \regr_2} \sigma'$ if and only if $\sigma' \in \fwsem{\regr_1; \regr_2} \sigma$.
+	\[
+	\fwsem{\regr_1; \regr_2} \sigma = \fwsem{\regr_2} (\fwsem{\regr_1} \sigma) = \bigcup\limits_{\sigma'' \in \fwsem{\regr_1} \sigma} \fwsem{\regr_2} \sigma''
+	\]
+	so $\sigma' \in \fwsem{\regr_1; \regr_2} \sigma$ if and only if there exists a $\sigma'' \in \fwsem{\regr_1} \sigma$ such that $\sigma' \in \fwsem{\regr_2} \sigma''$. Again by~\eqref{eq:sil:bwsem-sigma-sigma'}, these are equivalent to $\sigma \in \bwsem{\regr_1} \sigma''$ and $\sigma'' \in \bwsem{\regr_2} \sigma'$, respectively. Hence
+	\[
+	\sigma' \in \fwsem{\regr_1; \regr_2} \sigma \iff \exists \sigma'' \in \bwsem{\regr_2} \sigma' \sdot \sigma \in \bwsem{\regr_1} \sigma''
+	\]
+	Since $\bwsem{\cdot}$ is defined on sets by union
+	\[
+	\bwsem{\regr_1} (\bwsem{\regr_2} \sigma') = \bigcup\limits_{\sigma'' \in \bwsem{\regr_2} \sigma'} \bwsem{\regr_1} \sigma''
+	\]
+	which means $\exists \sigma'' \in \bwsem{\regr_2} \sigma' \sdot \sigma \in \bwsem{\regr_1} \sigma''$ if and only if $\sigma \in \bwsem{\regr_1} (\bwsem{\regr_2} \sigma')$.
+	Putting everything together, we get $\sigma \in \bwsem{\regr_1; \regr_2} \sigma'$ if and only if $\sigma \in \bwsem{\regr_1} (\bwsem{\regr_2} \sigma')$, so the two are the same set. The thesis follows easily lifting the equality by union on $\sigma' \in Q$ and by the arbitrariness of $Q$.
+
+	\proofcase{$\bwsem{\regr_1 \regplus \regr_2}$}
+	By~\eqref{eq:sil:bwsem-sigma-sigma'}, $\sigma \in \bwsem{\regr_1 \regplus \regr_2} \sigma'$ if and only if $\sigma' \in \fwsem{\regr_1 \regplus \regr_2} \sigma$.
+	\[
+	\fwsem{\regr_1 \regplus \regr_2} \sigma = \fwsem{\regr_1} \sigma \cup \fwsem{\regr_2} \sigma
+	\]
+	so $\sigma' \in \fwsem{\regr_1 \regplus \regr_2} \sigma$ if and only if $\exists i \in \{ 1, 2 \}$ such that $\sigma' \in \fwsem{\regr_i} \sigma$. This is again equivalent to $\sigma \in \bwsem{\regr_i} \sigma'$, and
+	\[
+	\exists i \in \{ 1, 2 \} \sdot \sigma \in \bwsem{\regr_i} \sigma' \iff \sigma \in \bwsem{\regr_1} \sigma' \cup \bwsem{\regr_2} \sigma'
+	\]
+	Putting everything together, we get $\sigma \in \bwsem{\regr_1 \regplus \regr_2} \sigma'$ if and only if $\sigma \in \bwsem{\regr_1} \sigma' \cup \bwsem{\regr_2} \sigma'$, which implies the thesis as in point 1.
+
+	\proofcase{$\bwsem{{\regr^\kstar}}$}
+	To prove this last equality, we define $\regr^n$ inductively as the sequential composition of $\regr$ with itself n times: $\regr^1 = \regr$ and $\regr^{n+1} = \regr^n; \regr$. Clearly $\fwsem{\regr^n} =\fwsem{\regr}^n$. For simplicity, we also define $\fwsem{\regr^0} = \bwsem{\regr^0} = \fwsem{\regr}^0$. We prove by induction on $n$ that $\bwsem{\regr^n} = \bwsem{\regr}^n$.
+	For $n = 1$ we have $\bwsem{\regr^1} = \bwsem{\regr}^1$. If we assume it holds for $n$ we have
+
+	\begin{align*}
+		\bwsem{\regr^{n+1}} & = \bwsem{\regr^n; \regr}              & [\text{def. of }\regr^n]     \\
+		                    & = \bwsem{\regr^n} \circ \bwsem{\regr} & [\text{pt. 1 of this lemma}] \\
+		                    & = \bwsem{\regr}^n \circ \bwsem{\regr} & [\text{inductive hp}]        \\
+		                    & = \bwsem{\regr}^{n+1}
+	\end{align*}
+
+	We then observe that
+	\begin{align*}
+		\bwsem{\regr^\kstar} \sigma' & = \{ \sigma \svert \sigma' \in \fwsem{\regr^\kstar} \sigma \}                     & [\text{def. of } \bwsem{\cdot}]        \\
+		                             & = \{ \sigma \svert \sigma' \in \bigcup\limits_{n \ge 0} \fwsem{\regr}^n \sigma \} & [\text{def. of } \fwsem{\regr^\kstar}] \\
+		                             & = \bigcup\limits_{n \ge 0} \{ \sigma \svert \sigma' \in \fwsem{\regr}^n \sigma \} &                                        \\
+		                             & = \bigcup\limits_{n \ge 0} \{ \sigma \svert \sigma' \in \fwsem{\regr^n} \sigma \} & [\text{observed above}]                \\
+		                             & = \bigcup\limits_{n \ge 0} \{ \sigma \svert \sigma \in \bwsem{\regr^n} \sigma' \} & [\eqref{eq:sil:bwsem-sigma-sigma'}]    \\
+		                             & = \bigcup\limits_{n \ge 0} \bwsem{\regr^n} \sigma'                                                                         \\
+		                             & = \bigcup\limits_{n \ge 0} \bwsem{\regr}^n \sigma'                                & [\text{shown above}]
+	\end{align*}
+
+	As in the cases above, the thesis follows.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:sil:sil-validity-characterization}]
+	By definition of $\bwsem{\cdot}$ we have
+	\[
+	\bwsem{\regr} Q = \bigcup_{\sigma' \in Q} \{ \sigma \svert \sigma \in \bwsem{\regr} \sigma' \} = \{ \sigma \svert \exists \sigma' \in Q \sdot \sigma' \in \fwsem{\regr} \sigma \}
+	\]
+
+	\noindent Using this,
+	\[
+	P \subseteq \bwsem{\regr} Q \iff \forall \sigma \in P \sdot \sigma \in \{ \sigma \svert \exists \sigma' \in Q \sdot \sigma' \in \fwsem{\regr} \sigma \} \iff \forall \sigma \in P \sdot \exists \sigma' \in Q \sdot \sigma' \in \fwsem{\regr} \sigma
+	\]
+\end{proof}
+
+We split the proof between soundness and completeness.
+\begin{prop}[SIL is sound]\label{prop:app:sil-correct}
+	Any provable SIL triple is valid.
+\end{prop}
+\begin{proof}
+	The proof is by structural induction on the derivation tree.
+
+	\proofcase{\silrule{atom}}
+	This case is trivial since $\bwsem{\regc} Q \subseteq \bwsem{\regc} Q$.
+
+	\proofcase{\silrule{cons}}
+	We have that
+	\[
+	P  \subseteq P' \subseteq \bwsem{\regr} Q' \subseteq \bwsem{\regr} Q
+	\]
+	The inequalities above are justified, in order, by the hypothesis of the rule, by the inductive hypothesis on $\siltriple{P'}{\regr}{Q'}$, by monotonicity of $\bwsem{\regr}$ and the hypothesis of the rule.
+
+	\proofcase{\silrule{seq}}
+	We have that
+	\[
+	P \subseteq \bwsem{\regr_1} R \subseteq \bwsem{\regr_1} \bwsem{\regr_2} Q = \bwsem{\regr_1; \regr_2} Q
+	\]
+	The inequalities above are justified, in order, by the inductive hypothesis on $\siltriple{P}{\regr_1}{R}$, by the inductive hypothesis on $\siltriple{R}{\regr_2}{Q}$, by Lemma~\ref{lmm:sil:bwsem-calculus}.
+
+	\proofcase{\silrule{choice}}
+	We have that
+	\[
+	P_1 \cup P_2 \subseteq \bwsem{\regr_1} Q \cup \bwsem{\regr_2} Q = \bwsem{\regr_1 \regplus \regr_2} Q
+	\]
+	The (in)equalities above are justified, in order, by the two inductive hypotheses, by Lemma~\ref{lmm:sil:bwsem-calculus}.
+
+	\proofcase{\silrule{iter}}
+	We first prove by induction on $n$ that $Q_{n} \subseteq \bwsem{\regr}^n Q_0$. The base case $n = 0$ is trivial because $Q_0 \subseteq \bwsem{\regr}^0 Q_0$. For the inductive case, we have
+	\[
+	Q_{n+1} \subseteq \bwsem{\regr} Q_n \subseteq \bwsem{\regr} \bwsem{\regr}^n Q_0 = \bwsem{\regr}^{n+1} Q_0
+	\]
+	The (in)equalities above are justified, in order, by inductive hypothesis on $\siltriple{Q_{n+1}}{\regr}{Q_n}$, the inductive hypothesis for $n$ and monotonicity of $\bwsem{\regr}$, by definition of $\bwsem{\regr}^{n+1}$.
+
+	With this, we prove
+	\[
+	\bigcup\limits_{n \ge 0} Q_n \subseteq \bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q_0 = \bwsem{\regr}^{\kstar} Q_0
+	\]
+	The (in)equalities above are justified, in order, by the proof above and by Lemma~\ref{lmm:sil:bwsem-calculus}.
+\end{proof}
+
+\begin{prop}[SIL is complete]\label{prop:app:sil-complete}
+	Any valid SIL triple is provable.
+\end{prop}
+\begin{proof}
+	First we show that, for any $Q$, the triple $\siltriple{\bwsem{\regr}Q}{\regr}{Q}$ is provable by induction on the structure of $\regr$.
+
+	\proofcase{$\regr = \regc$}
+	We can prove $\siltriple{\bwsem{\regc}Q}{\regc}{Q}$ using \silrule{atom}.
+
+	\proofcase{$\regr = \regr_1; \regr_2$}
+	We can prove $\siltriple{\bwsem{\regr}Q}{\regr_1; \regr_2}{Q}$ with
+	\[
+	\infer[\silrule{seq}]
+	{\siltriple{\bwsem{\regr_1}\bwsem{\regr_2}Q}{\regr_1; \regr_2}{Q}}
+	{\siltriple{\bwsem{\regr_1}\bwsem{\regr_2}Q}{\regr_1}{\bwsem{\regr_2}Q} & \siltriple{\bwsem{\regr_2}Q}{\regr_2}{Q}}
+	\]
+	where the two premises can be proved by inductive hypothesis, and $\bwsem{\regr_1; \regr_2}Q = \bwsem{\regr_1}\bwsem{\regr_2}Q$ by Lemma~\ref{lmm:sil:bwsem-calculus}.
+
+	\proofcase{$\regr = \regr_1 \regplus \regr_2$}
+	We can prove $\siltriple{\bwsem{\regr}Q}{\regr_1 \regplus \regr_2}{Q}$ with
+	\[
+	\infer[\silrule{choice}]
+	{\siltriple{\bwsem{\regr_1} Q \cup \bwsem{\regr_2}Q}{\regr_1 \regplus \regr_2}{Q}}
+	{\forall i \in \{ 1, 2 \} & \siltriple{\bwsem{\regr_i}Q}{\regr_i}{Q}}
+	\]
+	where the two premises can be proved by inductive hypothesis, and $\bwsem{\regr_1 \regplus \regr_2} Q = \bwsem{\regr_1} Q \cup \bwsem{\regr_2}Q$ by Lemma~\ref{lmm:sil:bwsem-calculus}.
+
+	\proofcase{$\regr = \regr^\kstar$}
+	We can prove $\siltriple{\bwsem{\regr^\kstar}Q}{\regr^\kstar}{Q}$ with
+	\[
+	\infer[\silrule{iter}]
+	{\siltriple{\bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q}{\regr}{Q}}
+	{\forall n \ge 0 \sdot \siltriple{\bwsem{\regr}^{n+1} Q}{\regr}{\bwsem{\regr}^{n} Q}}
+	\]
+	where the premises can be proved by inductive hypothesis since $\bwsem{\regr}^{n+1} Q = \bwsem{\regr} \bwsem{\regr}^{n} Q$, and $\bwsem{\regr^{\kstar}}Q = \bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q$ by Lemma~\ref{lmm:sil:bwsem-calculus}.
+
+	To conclude the proof, take a triple $\siltriple{P}{\regr}{Q}$ such that $\bwsem{\regr} Q \supseteq P$. Then we can first prove the triple $\siltriple{\bwsem{\regr}Q}{\regr}{Q}$, and then using rule \silrule{cons} we derive $\siltriple{P}{\regr}{Q}$.
+\end{proof}
+
+The proof of Theorem~\ref{thm:sil:sil-sound-complete} is a corollary of Proposition~\ref{prop:app:sil-correct}--\ref{prop:app:sil-complete}.
+
+\begin{proof}[Proof of Proposition~\ref{prop:sil:sil-additional-soundness}]
+	The proof is by structural induction on the derivation tree and extends that of Proposition~\ref{prop:app:sil-correct} with inductive cases for the new rules.
+
+	\proofcase{\silrule{empty}}
+	Clearly $\emptyset \subseteq \bwsem{\regr} Q$.
+
+	\proofcase{\silrule{disj}}
+	We have that
+	\[
+	P_1 \cup P_2 \subseteq \bwsem{\regr} Q_1 \cup \bwsem{\regr} Q_2 = \bwsem{\regr} (Q_1 \cup Q_2)
+	\]
+	The (in)equalities above are justified, in order, by inductive hypotheses on $\siltriple{P_1}{\regr}{Q_1}$ and $\siltriple{P_2}{\regr}{Q_2}$, by additivity of $\bwsem{\regr}$.
+
+	\proofcase{\silrule{iter0}}
+	We have that
+	\[
+	Q = \bwsem{\regr}^0 Q \subseteq \bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q = \bwsem{\regr^{\kstar}} Q
+	\]
+	The last equality above is justified by Lemma~\ref{lmm:sil:bwsem-calculus}.
+
+	\proofcase{\silrule{unroll}}
+	We have that
+	\[
+	P \subseteq \bwsem{\regr^{\kstar}; \regr} Q = \bwsem{\regr^{\kstar}} \bwsem{\regr} Q = \bigcup\limits_{n \ge 0} \bwsem{\regr}^n (\bwsem{\regr} Q) = \bigcup\limits_{n \ge 0} \bwsem{\regr}^{n+1} Q \subseteq \bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q = \bwsem{\regr^{\kstar}} Q
+	\]
+	The first inequality is justified by the inductive hypothesis on $\siltriple{P}{\regr^{\kstar}; \regr}{Q}$, other equalities are justified by Lemma~\ref{lmm:sil:bwsem-calculus}.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:sil:fw-inclusion-negation-bw}]
+	We prove the left-to-right implication, so assume $\fwsem{\regr}P \subseteq Q$.
+	Take a state $\sigma' \in \lnot Q$. This means $\sigma' \notin Q$, that implies $\sigma' \notin \fwsem{\regr} P$. So, for any state $\sigma \in P$, we have $\sigma' \notin \fwsem{\regr} \sigma$, which is equivalent to $\sigma \notin \bwsem{\regr} \sigma'$ by~\eqref{eq:sil:bwsem-sigma-sigma'}. This being true for all $\sigma \in P$ means $P \cap \bwsem{\regr} \sigma' = \emptyset$, that is equivalent to $\bwsem{\regr} \sigma' \subseteq \lnot P$.
+	Since this holds for all states $\sigma' \in \lnot Q$, we have $\bwsem{\regr} (\lnot Q) \subseteq \lnot P$.
+
+	The other implication is analogous.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:sil:sil-hl-deterministic-terminating}]
+	To prove the first point, assume $\bwsem{\regr} Q \supseteq P$ and take $\sigma' \in \fwsem{\regr} P$. Then there exists $\sigma \in P$ such that $\sigma' \in \fwsem{\regr} \sigma$. Since $\regr$ is deterministic, $\fwsem{\regr} \sigma$ can contain at most one element, hence $\fwsem{\regr} \sigma = \{ \sigma' \}$. Moreover, since $\sigma \in P \subseteq \bwsem{\regr} Q$ there must exists a $\sigma'' \in Q$ such that $\sigma'' \in \fwsem{\regr} \sigma = \{ \sigma' \}$, which means $\sigma' \in Q$. Again, by arbitrariness of $\sigma' \in \fwsem{\regr} P$, this implies $\fwsem{\regr} P \subseteq Q$.
+
+	To prove the second point, assume $\fwsem{\regr} P \subseteq Q$ and take a state $\sigma \in P$. Since $\regr$ is terminating, $\fwsem{\regr} \sigma$ is not empty, hence we can take $\sigma' \in \fwsem{\regr} \sigma$. The hypothesis $\fwsem{\regr} P \subseteq Q$ implies that $\sigma' \in Q$. Then, by~\eqref{eq:sil:bwsem-sigma-sigma'}, $\sigma \in \bwsem{\regr} \sigma' \subseteq \bwsem{\regr} Q$. By arbitrariness of $\sigma \in P$, this implies $P \subseteq \bwsem{\regr} Q$.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lmm:sil:CC-1-monotone}]
+	We first prove that $\bwsem{\regr} \fwsem{\regr} P \supseteq P \setminus D_{\regr}$.
+	Take a $\sigma \in P \setminus D_{\regr}$. Because $\sigma \notin D_{\regr}$, $\fwsem{\regr} \sigma \neq \emptyset$, so take $\sigma' \in \fwsem{\regr} \sigma$. Since $\sigma \in P$ we have $\sigma' \in \fwsem{\regr} P$. Moreover, by~\eqref{eq:sil:bwsem-sigma-sigma'}, we get $\sigma \in \bwsem{\regr} \sigma' \subseteq \fwsem{\regr} P$. By arbitrariness of $\sigma \in P \setminus D_{\regr}$ we have the thesis.
+
+	The proof for $\fwsem{\regr} \bwsem{\regr} Q \supseteq Q \setminus U_{\regr}$ is analogous.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:sil:weakest-pre-existence1}]
+	By definition, $\fwsem{\regr}$ is additive, that is $\fwsem{\regr}(P_1 \cup P_2) = \fwsem{\regr} P_1 \cup \fwsem{\regr} P_2$. Take all $P$ such that $\fwsem{\regr} P \subseteq Q$. By additivity of $\fwsem{\regr}$, their union satisfies the same inequality, hence it is the weakest such $P$.
+
+	By definition, $\bwsem{\regr}$ is additive. Analogously, take all $Q$ such that $\bwsem{\regr} Q \subseteq P$. By additivity of $\bwsem{\regr}$, their union is the weakest $Q$ satisfying that inequality.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:weakest-pre-existence2}]
+	The proof is given by the counterexamples in Example~\ref{ex:il-no-strongest-pre}.
+	For IL, the example shows that for $Q_{91} \wedge x = 0$ there is no strongest $P$ such that $\fwsem{\mathsf{r}} P \supseteq (Q_{91} \wedge x = 0)$: $y = 93$ and $y = 94$ are incomparable and are both minimal, as $\emptyset$ is not a valid precondition.
+	The argument for SIL is analogous with precondition $y = 93$.
+\end{proof}

@@ -1,7 +1,7 @@
 % !TEX root = ../phd-thesis.tex
 
 \chapter{Local Completeness Logic}\label{ch:lcla}
-In this chapter, we extend $\LCLA$ with new capabilities. We investigate the possibility of relaxing point (3) of Theorem~\ref{th:sota:lcl-soundness} to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$ to achieve extensional soundness, i.e., to untie the set of properties that can be proved about the function computed by the program from the way the program is written. To do so, we follow the idea introduced in~\cite[§8]{BGGR23} of \emph{changing the abstract domain} during the analysis, possibly in different ways for different portions of the code.
+In this chapter, we extend $\LCLA$ with new capabilities\todo{Mention that LCL is oa+ua}. First, we investigate the possibility of relaxing point (3) of Theorem~\ref{th:sota:lcl-soundness} to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$ to achieve extensional soundness, i.e., to untie the set of properties that can be proved about the function computed by the program from the way the program is written. To do so, we follow the idea introduced in~\cite[§8]{BGGR23} of \emph{changing the abstract domain} during the analysis, possibly in different ways for different portions of the code.
 While~\cite{BGGR23} proposes a single rule for domain refinement, we study here both \emph{refinement} and \emph{simplification} rules for $\LCLA$.
 Moreover, we study here how to weaken the hypothesis of Galois connection: the whole theory of completeness is based on the existence of a best approximation for concrete points, but this is not always available in practical instances~\cite{CC92}.
 Lastly, we study further the possibility of using $\LCLA$ for backward analysis, as briefly outlined in~\cite[\S 5.3]{BGGR23}.
@@ -733,6 +733,9 @@ Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr
 
 \section{Backward analysis}
 
+In principle, the theory of Abstract Interpretation does not rely on the analysis being forward. This suggests that LCL can be used for backward analysis, as discussed in~\cite[\S 5.3]{BGGR23}. However, they explored the use of \wlp{} as the reference backwards semantics, requiring the use of under\hyp{}approximation abstract domains, that are hard to exploit in practice (see Chapter~\ref{ch:limits-underapprox-domains}).
+Instead, our key insight is that by using $\bwsem{\cdot}$ (defined in the previous chapter, equation \eqref{eq:sil:bwsem-definition}) the proof system can be turned over by duality for backward inference \emph{using classical, over-approximation abstract domains}.
+
 \begin{figure*}
 	\begin{align*}
 		\bwsem{\expe}^{\sharp}_{A} a                    & \eqdef \bwsem{\expe}^{A} a = \alpha \bwsem{\expe} \gamma (a)                \\
@@ -743,6 +746,8 @@ Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr
 	\caption{Backward abstract semantics of regular commands.}
 	\label{fig:lcla:regcom-abs-sem-bw}
 \end{figure*}
+
+We define inductively in Figure~\ref{fig:lcla:regcom-abs-sem-bw} the backward abstract semantics or regular commands. This definition is analogous to the forward one (Figure~\ref{fig:bg:regcom-abs-sem}). Thanks to Lemma~\ref{lmm:sil:bwsem-calculus} giving $\bwsem{\cdot}$ the same inductive definition as the forward semantics $\fwsem{\cdot}$, we can straightforwardly adapt Proposition~\ref{prop:bg:regcom-abs-sem-sound} to obtain that $\bwsem{\cdot}^{\sharp}_{A}$ is a sound abstraction of $\bwsem{\cdot}$.
 
 \begin{figure*}[t]
 	\centering
@@ -783,10 +788,7 @@ Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr
 	\label{fig:lcla:clcl-rules}
 \end{figure*}
 
-In principle, the theory of Abstract Interpretation does not rely on the analysis being forward. This suggests that LCL can be used for backward analysis, as discussed in~\cite[\S 5.3]{BGGR23}. However, they explored the use of \wlp{} as the reference backwards semantics, requiring the use of under\hyp{}approximation abstract domains, that are hard to exploit in practice (see Section~\ref{sec:sota:limits-underapprox-domains}).
-\todo[inline]{talk about Figure~\ref{fig:lcla:regcom-abs-sem-bw}}
-Instead, our key insight is that by using $\bwsem{\cdot}$ the proof system can be turned over by duality for backward inference \emph{using classical, over-approximation abstract domains}. We therefore define the proof system for Converse Local Completeness Logic~(CLCL) in Figure~\ref{fig:lcla:clcl-rules} by just swapping the roles of pre and post in the LCL rules~\cite[Figure~4]{BGGR23}. The resulting proof system is sound.
-
+We can then define the proof system for Converse Local Completeness Logic~(CLCL) in Figure~\ref{fig:lcla:clcl-rules} by just swapping the roles of pre and post in the LCL rules.% The resulting proof system is sound.
 \begin{theorem}[CLCL is sound]\label{th:lcla:clcl-sound-int}
 	If the CLCL triple $\clcltriple{A}{P}{\regr}{Q}$ is provable, then
 	\begin{enumerate}
@@ -801,18 +803,18 @@ Just like regular LCL, any provable CLCL triple ensures that $\bwsem{\regr} Q$ i
 \begin{example}
 	Expanding on Example~\ref{ex:sil:derivation}, we observe that SIL can also prove the triple $\siltriple{R_{2M}}{\regr_w^{\kstar}}{R_{2M}}$ via \silrule{iter0}. However, this would produce the triple $\siltriple{\false}{\mathsf{rloop0}}{Q_{2M}}$ for the whole program because it finds the post $x = 2000000$ for \code{x := 0}, that has $\false$ as the only valid precondition.
 
-	To rule out such derivations, we can use CLCL with the Octagon domain~\cite{Mine06}: the triple $\clcltriple{\Oct}{R_{2M}}{\regr_w^{\kstar}}{R_{2M}}$ is not valid because $\Oct(R_{2M}) \neq \Oct(\bwsem{\regr_w^{\kstar}} R_{2M})$. This way, CLCL forces the analysis to unroll the loop twice, proving the triple
+	To rule out such derivations, we can use CLCL with the octagons domain $\Oct$~\cite{Mine06}: the triple $\clcltriple{\Oct}{R_{2M}}{\regr_w^{\kstar}}{R_{2M}}$ is not valid because $\Oct(R_{2M}) \neq \Oct(\bwsem{\regr_w^{\kstar}} R_{2M})$. This way, CLCL forces the analysis to unroll the loop twice, proving the triple
 	\[
 	\clcltriple{\Oct}{(n > 0 \land x + n \le 2000000) \lor R_{2M}}{\regr_w^{\kstar}}{R_{2M}}
 	\]
 	whose full derivation is in Appendix~\ref{ch:app:lcla}, Figure~\ref{fig:app:clcl-derivation}.
-	Using this triple, we conclude as in Example~\ref{ex:sil:derivation}: both applications of \silrule{atom} in Figure~\ref{fig:sil:example-derivation} can be replaced by \clclrule{transfer} since the backward semantics of both assignments is locally complete. Thus, we obtain the triple $\clcltriple{\Oct}{\true}{\mathsf{rloop0}}{Q_{2M}}$ for the full program, which exposes a manifest error.
+	Using this triple, we conclude as in Example~\ref{ex:sil:derivation}: both applications of \silrule{atom} in Figure~\ref{fig:sil:example-derivation} can be replaced by \clclrule{transfer} since the backward semantics of both assignments is locally complete. Thus, we prove the triple $\clcltriple{\Oct}{\true}{\mathsf{rloop0}}{Q_{2M}}$ for the full program, which exposes a manifest error.
 \end{example}
 
-We conclude\todo{I should do this in the thesis} by remarking that this is just a proof-of-concept that shows how to exploit the duality between IL and SIL proof systems. We believe all properties (logical (in)completeness~\cite[\S 5.2]{BGGR23}) and extensions (while loops~\cite[\S 7]{BGGR23}, refinement rules~\cite{ABG23}) of the original LCL can be seamlessly adapted to CLCL.
+We\todo{Either do (better solution) or rewrite (worse)} conclude by remarking that this is just a proof-of-concept that shows how to exploit the duality between IL and SIL proof systems. We believe all properties (logical (in)completeness~\cite[\S 5.2]{BGGR23}) and extensions (while loops~\cite[\S 7]{BGGR23}, refinement rules~\cite{ABG23}) of the original LCL can be seamlessly adapted to CLCL.
 
 \section{Conclusions}
-In this Chapter, we started from $\LCLA$~\cite{BGGR21} to propose a logical framework to prove both correctness and incorrectness of a program exploiting locally complete abstractions. The original work was \emph{intensionally} sound, based on Galois connection and more suitable for forward analysis. We tried to relax those constraints.
+In this Chapter, we started from $\LCLA$~\cite{BGGR21} to propose a logical framework to prove both correctness and incorrectness of a program combining over and under-approximation in the form of (locally complete) abstractions and Incorrectness Logic. The original work was \emph{intensionally} sound, based on Galois connection and more suitable for forward analysis. We tried to relax those constraints.
 
 For the first, we followed the idea of~\cite{BGGR23} to exploit different abstract domains to analyse different portions of the whole program. We propose new rules that can be added independently to the proof system. Three of them are based on domain \emph{refinement}, with different complexity-precision trade-off, and the last is based on domain \emph{simplification}. With any of this rule, we are able to prove many triples that the original $\LCLA$ could not because of how the program is written.
 For the second, in the absence of $\alpha$ we investigated the possibility to introduce an intermediate domain $L$ between $C$ and $A$. Under the hypothesis of local forward completeness, we showed that this is enough to recover the properties of $\LCLA$.
