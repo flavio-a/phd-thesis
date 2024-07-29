@@ -205,13 +205,13 @@ The proof of Theorem~\ref{thm:sil:sil-sound-complete} is a corollary of Proposit
 	The proof for $\fwsem{\regr} \bwsem{\regr} Q \supseteq Q \setminus U_{\regr}$ is analogous.
 \end{proof}
 
-\begin{proof}[Proof of Proposition~\ref{prop:sil:weakest-pre-existence1}]
+\begin{proof}[Proof of Proposition~\ref{prop:sil:weakest-cond-existence}]
 	By definition, $\fwsem{\regr}$ is additive, that is $\fwsem{\regr}(P_1 \cup P_2) = \fwsem{\regr} P_1 \cup \fwsem{\regr} P_2$. Take all $P$ such that $\fwsem{\regr} P \subseteq Q$. By additivity of $\fwsem{\regr}$, their union satisfies the same inequality, hence it is the weakest such $P$.
 
 	By definition, $\bwsem{\regr}$ is additive. Analogously, take all $Q$ such that $\bwsem{\regr} Q \subseteq P$. By additivity of $\bwsem{\regr}$, their union is the weakest $Q$ satisfying that inequality.
 \end{proof}
 
-\begin{proof}[Proof of Proposition~\ref{prop:weakest-pre-existence2}]
+\begin{proof}[Proof of Proposition~\ref{prop:sil:strongest-cond-non-existence}]
 	The proof is given by the counterexamples in Example~\ref{ex:il-no-strongest-pre}.
 	For IL, the example shows that for $Q_{91} \wedge x = 0$ there is no strongest $P$ such that $\fwsem{\mathsf{r}} P \supseteq (Q_{91} \wedge x = 0)$: $y = 93$ and $y = 94$ are incomparable and are both minimal, as $\emptyset$ is not a valid precondition.
 	The argument for SIL is analogous with precondition $y = 93$.
