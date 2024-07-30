@@ -1,7 +1,7 @@
 % !TEX root = ../phd-thesis.tex
 
 \chapter{A comparison of program logics}\label{ch:sil}
-In this chapter\todo{Take from popl25 for some parts of the presentation (I still like the current general flow of the chapter more)}, we consider three known triple-based program logics, namely Hoare Logic (HL), Incorrectness Logic (IL) and Necessary Conditions (NC). We characterize their validity conditions in term of over or under-approximation of forward and backward semantics. First, this allows us to identify the absence of one combination, and thus to define a new program logic, called Sufficient Incorrectness Logic (SIL), for it. Second, this guides a thorough comparison of the four validity conditions, highlighting analogies and differences between over and under-approximation approaches.
+In this chapter, we consider three known triple-based program logics, namely Hoare Logic (HL), Incorrectness Logic (IL) and Necessary Conditions (NC). We characterize their validity conditions in term of over or under-approximation of forward and backward semantics. First, this allows us to identify the absence of one combination, and thus to define a new program logic, called Sufficient Incorrectness Logic (SIL), for it. Second, this guides a thorough comparison of the four validity conditions, highlighting analogies and differences between over and under-approximation approaches.
 
 The content of this chapter is based on~\cite{ABGL24}.
 
@@ -9,11 +9,11 @@ The content of this chapter is based on~\cite{ABGL24}.
 \begin{figure}[t]
 	\centering
 
-	\begin{tabular}{@{\quad}c@{\quad}|@{\quad}rlcrl@{\quad}}
-		       & \multicolumn{2}{c}{Forward} &                               & \multicolumn{2}{c}{Backward}                                                                                           \\[3pt]
-		\hline &                             &                               &                                        &                           &                                                   \\[-5pt]
-		Over   & HL:                         & $\fwsem{\regr} P \subseteq Q$ & $\xleftrightarrow{\qquad\simeq\qquad}$ & NC:                       & $\bwsem{\regr}Q \subseteq P$                      \\[5pt]
-		Under  & IL:                         & $\fwsem{\regr}P \supseteq Q$  &                                        & \textcolor{ACMBlue}{SIL:} & \textcolor{ACMBlue}{$\bwsem{\regr}Q \supseteq P$}
+	\begin{tabular}{@{\quad}c@{\quad}|@{\quad}rcr@{\quad}}
+		       & \multicolumn{1}{c}{Forward}             &                                        & \multicolumn{1}{c}{Backward}                                 \\[3pt]
+		\hline &                                         &                                        &                                                              \\[-5pt]
+		Over   & HL: \quad $\fwsem{\regr} P \subseteq Q$ & $\xleftrightarrow{\qquad\simeq\qquad}$ & NC: \quad $\bwsem{\regr}Q \subseteq P$                       \\[5pt]
+		Under  & IL: \quad $\fwsem{\regr}P \supseteq Q$  &                                        & \textcolor{ACMBlue}{SIL: \quad $\bwsem{\regr}Q \supseteq P$}
 	\end{tabular}
 	\caption{The taxonomy of validity conditions. Columns indicate if validity is based on forward or backward semantics and rows the verse of approximation. HL and NC are equivalent ($\simeq$). SIL is our new logic.}
 	\label{fig:sil:taxonomy}
@@ -121,23 +121,6 @@ However, the two definition are equivalent:
 
 A convenient way to exploit SIL is to assume that the analysis takes as input the incorrectness specification $Q$, i.e., the set of erroneous final states. Then, any valid SIL triple $\siltriple{P}{\regr}{Q}$ yields a precondition which surely captures erroneous executions. In this sense, $P$ gives a sufficient condition for incorrectness and motivates the name of SIL. This is dual to the interpretation of IL where, for a given precondition $P$, any IL triple $\iltriple{P}{\regr}{Q}$ yields a set $Q$ of final states which are for sure reachable, so that any error state in $Q$ is a true bug reachable from some input in $P$.
 
-We show that SIL and IL triples differ via a simple example.\todo{Move this example away}
-
-\begin{example}\label{ex:sil:sil-vs-il}
-	Let us consider the simple deterministic program $\regr 42$, already used in~\cite{OHearn20} to show the essence of IL triples:
-	\begin{minted}{C}
-if (x is even) {
-	if (y is odd) {
-		z := 42;
-	}
-}
-// assert(z != 42)
-	\end{minted}
-	We assume that $Q_{42} \eqdef (z = 42)$ denotes the set of erroneous states.
-	Any SIL triple provides a sufficient condition for the input state that causes the error. For instance, in SIL (but not with IL) we can prove the triple $\siltriple{\text{odd}(y) \wedge \text{even}(x)}{\regr 42}{Q_{42}}$ stating that any state where $x$ is even and $y$ is odd will lead to the error (i.e., $z=42$).
-	In IL, but \emph{not} in SIL, one can prove that some errors can be reached even when we start in a safe state. For instance, $\iltriple{z=11}{\regr 42}{Q_{42} \wedge \text{odd}(y) \wedge \text{even}(x)}$ is a valid IL but not in SIL. In fact, it is not true that for any state where $z=11$ the program $\regr 42$ will reach an error, e.g., when we start with $z \mapsto 11, x \mapsto 0, y \mapsto 0$.
-\end{example}
-
 \subsection{Proof system}\label{sec:sil:sil-rules}
 
 \begin{figure*}[t]
@@ -234,8 +217,8 @@ All four these additional rules are sound:
 x := 0;
 n := nondet();
 while(n > 0) {
-	x := x + n;
-	n := nondet();
+    x := x + n;
+    n := nondet();
 }
 // assert(x != 2000000)
 	\end{minted}
@@ -303,24 +286,22 @@ We first carry out a comparison of the logics two by two. We skip the pair HL an
 \subsubsection{NC and IL}
 Sufficient preconditions are properties that imply Dijkstra's weakest liberal precondition~\cite{Dijkstra75}: $\overline{P}$ is sufficient for a postcondition $Q$ if and only if $\overline{P} \subseteq \wlp[\regr](Q)$, which in turn is equivalent to validity of the HL triple $\hltriple{\overline{P}}{\regr}{Q}$. Necessary and sufficient preconditions are dual, and so are IL and HL. Moreover, NC and IL enjoy the same consequence rule: both can strengthen the post and weaken the pre. This double duality suggests a relation between NC and IL. However, the following example shows this is not the case.
 
-\begin{example}
-	Let\todo{Fix the running example} us consider the deterministic program $\regr 42$ of Example~\ref{ex:sil:sil-vs-il}, with $Q_{42} \eqdef (z=42)$.
-	Let $Q'_{42} \eqdef (Q_{42} \wedge \text{odd}(y) \wedge \text{even}(x))$ and $P_{11} \eqdef (z = 11)$. We know from the previous example that $\iltriple{P_{11}}{\regr 42}{Q'_{42}}$ is a valid IL triple.
-	However, we observe that the NC triple $\nctriple{P_{11}}{\regr 42}{Q'_{42}}$ is not valid because the state $\sigma$ such that $\sigma(x) = 0$, $\sigma(y) = 1$, $\sigma(z) = 10$ has an execution leading to $Q'_{42}$ but is not in $P_{11}$.
-	Moreover, take for instance $\underline{P} = (\text{odd}(y) \land \text{even}(x))$, which makes the NC triple $\nctriple{\underline{P}}{\regr 42}{Q'_{42}}$ valid (any state \emph{not} satisfying $\underline{P}$ has either an even $y$ or an odd $x$, and those variables are not changed by the program). Then it is clear that $P_{11} \notimplies \underline{P}$. This shows that not only IL triples do not yield NC triples, but also that in general there are NC preconditions which are not implied by IL preconditions.
+\begin{example}\label{ex:sil:nc-and-il}
+	Consider the nondeterministic program $\regr 42$ from Example~\ref{ex:bg:il-hl-comparison}, where $Q_{42} \eqdef (z = 42)$. For brevity, we let $Q'_{42} \eqdef (Q_{42} \land \text{odd}(y) \land \text{even}(x))$.
+	From that Example we know that $\iltriple{z = 11}{\regr 42}{Q'_{42}}$ is valid in IL. However, we observe that the NC triple $\nctriple{z = 11}{\regr 42}{Q'_{42}}$ is not valid because, e.g., the state $[y \mapsto 1, z \mapsto 10]$ has an execution leading to $Q'_{42}$ but doesn't satisfy $z = 11$.
+	Moreover, take for instance $\underline{P} \eqdef \text{odd}(y)$, which makes the NC triple $\nctriple{\underline{P}}{\regr 42}{Q'_{42}}$ valid (in any state \emph{not} satisfying $\underline{P}$ $y$ is even, is not changed by $\regr 42$ and should be odd to satisfy $Q'_{42}$). Then it is clear that $(z = 11) \notimplies \underline{P}$. This shows that not only IL triples do not yield NC triples, but also that in general there are NC preconditions which are not implied by IL preconditions.
 
-	Conversely, consider $\neg Q_{42} = (z \neq 42)$. While the NC triple $\nctriple{\true}{\regr 42}{\neg Q_{42}}$ is valid, the IL triple $\iltriple{\true}{\regr 42}{\neg Q_{42}}$ is not: for instance, the final state $\sigma'$ such that $\sigma'(x) = \sigma'(y) = \sigma'(z) = 11$ is not reachable from any initial state. It follows that the IL triple $\iltriple{P}{\regr 42}{\neg Q_{42}}$ is not valid for any $P$.
+	Conversely, consider $\lnot Q_{42} = (z \neq 42)$. While the NC triple $\nctriple{\true}{\regr 42}{\lnot Q_{42}}$ is valid, the IL triple $\iltriple{\true}{\regr 42}{\lnot Q_{42}}$ is not: for instance, the final state $[x \mapsto 11, y \mapsto 11, z \mapsto 11]$ is not reachable from any initial state. It follows that the IL triple $\iltriple{P}{\regr 42}{\lnot Q_{42}}$ is not valid for any $P$.
 \end{example}
 
-Given a valid NC triple $\nctriple{\underline{P}}{\regr}{Q}$ and a valid IL triple $\iltriple{P}{\regr}{Q}$, there always are states satisfying both $P$ and $\underline{P}$, i.e., $P \cap \underline{P} \neq \emptyset$. However, in general neither $P \subseteq \underline{P}$ nor $\underline{P} \subseteq P$ hold. The difference between NC and IL is striking when we spell out their validity conditions using quantifiers: initial states are universally quantified in (NC$^{\forall}$)---\emph{all} initial states with a good run must satisfy the precondition---but they are existentially quantified in (IL$^{\exists}$).
+Given $\vDash \nctriple{\underline{P}}{\regr}{Q}$ and $\vDash \iltriple{P}{\regr}{Q}$, there always are states satisfying both $P$ and $\underline{P}$, i.e., $P \cap \underline{P} \neq \emptyset$. However, in general neither $P \subseteq \underline{P}$ nor $\underline{P} \subseteq P$. The difference between NC and IL becomes apparent when we spell out their validity conditions using quantifiers:
 \begin{align*}
 	\forall \sigma' \in Q \sdot \forall \sigma\in \bwsem{\regr}\sigma' \sdot\sigma\in P
 	\tag{NC$^{\forall}$} \\
 	\forall \sigma' \in Q \sdot \exists \sigma\in \bwsem{\regr}\sigma' \sdot \sigma \in P
 	\tag{IL$^{\exists}$}
 \end{align*}
-
-We observe that, whenever $\regr$ is reversible (i.e., $\fwsem{\regr}$ is injective) any valid IL triple is also a valid NC triple.
+Initial states are universally quantified in (NC$^{\forall}$)---\emph{all} initial states with a good run must satisfy the precondition---but they are existentially quantified in (IL$^{\exists}$). We also note that, when $\regr$ is reversible (i.e., $\fwsem{\regr}$ is injective) any valid IL triple is also a valid NC triple.
 
 \subsubsection{NC and HL}
 It turns out that NC is strongly connected to weakest liberal preconditions and thus to HL.
@@ -328,21 +309,8 @@ Let $Q$ be a correctness postcondition: a finite trace is in $\mathcal{T}(\sigma
 This means that $\mathcal{T}(\sigma) = \emptyset$ iff $\sigma \in \wlp[\regr](\lnot Q)$, from which we derive $\lnot \underline{P} \subseteq \wlp[\regr](\lnot Q)$ or, equivalently, $\lnot \wlp[\regr](\lnot Q) \subseteq \underline{P}$.
 
 \begin{example}
-	We consider again the same program $\regr$ from Example~\ref{ex:bg:il-hl-comparison}:\todo{fix running example}
-
-	\begin{minted}{C}
-x := nondet();
-if (x is even) {
-	if (y is odd) {
-		z := 42;
-	}
-}
-// assert(z != 42)
-	\end{minted}
-
-	\noindent
-	and the correctness specification $\neg Q_{42} = (z\neq 42)$. We have that $\wlp[\mathsf{r42nd}](\lnot \lnot Q_{42}) = Q_{42}$, because if initially $z \neq 42$ then it is possible that $x$ is assigned an odd value and $z$ is not updated.
-	Hence, a condition $P$ is implied by $\lnot \wlp[\regr](\lnot\lnot Q_{42}) = \lnot Q_{42}$ if and only if it is necessary, e.g., $(z\neq 42 \vee \text{odd}(y))$ is necessary but $(z > 42)$ is not.
+	Consider again program $\regr 42$ from Example~\ref{ex:bg:il-hl-comparison} and the correctness specification $\lnot Q_{42} = (z\neq 42)$. We have that $\wlp[\regr 42](\lnot \lnot Q_{42}) = Q_{42}$, because if initially $z \neq 42$ then it is possible that $x$ is assigned an odd value and $z$ is not updated.
+	Hence, a condition $P$ is implied by $\lnot \wlp[\regr](\lnot\lnot Q_{42}) = \lnot Q_{42}$ if and only if it is necessary. For instance, $(z \neq 42 \lor \text{odd}(y))$ is necessary but $(z > 42)$ is not.
 \end{example}
 
 The next bijection establishes the connection between (NC) and (HL): a necessary precondition is just the negation of a sufficient precondition for the negated post. This was also observed using weakest (liberal) preconditions in \cite[Theorem~5.4]{ZK22}.
@@ -358,12 +326,9 @@ The next bijection establishes the connection between (NC) and (HL): a necessary
 Proposition~\ref{prop:sil:fw-inclusion-negation-bw} highlights an isomorphism between (HL) and (NC). By duality, this naturally sparks the question whether a similar connections between (IL) and (SIL) exists. The next example shows this is not the case.
 
 \begin{example}\label{ex:sil:il-sil-incomparable}
-	Since IL and SIL enjoy different consequence rules, neither of the two can imply the other with the same $P$ and $Q$. For negated $P$ and $Q$, consider the program
-	\[
-	\mathsf{r1} \eqdef x := 1
-	\]
-	and the two sets of states $P_{\geq 0} \eqdef (x \geq 0)$ and $Q_{1} \eqdef (x = 1)$.
-	Both the SIL triple $\siltriple{P_{\geq 0}}{\mathsf{r1}}{Q_{1}}$ and the IL triple $\iltriple{P_{\geq 0}}{\mathsf{r1}}{Q_{1}}$ are valid. However, neither $\iltriple{\lnot P_{\geq 0}}{\mathsf{r1}}{\lnot Q_{1}}$ nor $\siltriple{\lnot P_{\geq 0}}{\mathsf{r1}}{\lnot Q_{1}}$ are valid. So neither (IL) implies negated (SIL) nor the other way around.
+	Since IL and SIL enjoy different consequence rules, neither of the two can imply the other with the same $P$ and $Q$. If we take negation into account, consider the program $\regr 1 \eqdef \code{x := 1}$.
+	Both the SIL triple $\siltriple{x \ge 0}{\regr 1}{x = 1}$ and the IL triple $\iltriple{x \ge 0}{\regr 1}{x = 1}$ are valid. However, neither $\iltriple{x < 0}{\regr 1}{x \neq 1}$ nor $\siltriple{x < 0}{\regr 1}{x \neq 1}$ are valid.
+	So neither (IL) implies negated (SIL) nor the other way around.
 \end{example}
 
 To gain some insights on why (SIL) and (IL) are not equivalent, we introduce the following concepts.
@@ -404,7 +369,7 @@ In general, HL and SIL are different, but they coincide whenever the program $\r
 \end{prop}
 
 \begin{example}
-	\todo[inline]{Write, copy, but first decide what to do with the running example}
+	From Example~\ref{ex:bg:il-hl-comparison}, we know $\hltriple{\text{odd}(y)}{\regr 42}{Q_{42}}$ is a valid HL triple. Moreover, $\regr 42$ always terminates, so according to Proposition~\ref{prop:sil:sil-hl-deterministic-terminating} $\siltriple{\text{odd}(y)}{\regr 42}{Q_{42}}$ is valid. Indeed, whenever $y$ is odd in the initial state, $x$ can be assigned nondeterministically an even value so that execution enters the if statement and $z$ is assigned $42$.
 \end{example}
 
 \subsection{Inference rules}\label{sec:sil:rules-comparison}
@@ -439,7 +404,6 @@ In general, HL and SIL are different, but they coincide whenever the program $\r
 			       & \infer[]{\hltriple{P}{\regr^\kstar}{P}}{\hltriple{P}{\regr}{P}}
 			       & \infer[]{\iltriple{P_0}{\regr^\kstar}{\bigcup\limits_{n \ge 0} P_n}}{\forall n \ge 0 \sdot \iltriple{P_n}{\regr}{P_{n+1}}}
 			\\[1.5em]
-			\hline &                                                                                                                              &                                 &                       \\
 			$\mathsf{empty}$
 			       & \textcolor{ACMPurple}{\infer[]{\siltriple{\emptyset}{\regr}{Q}}{}}
 			       & \textcolor{ACMPurple}{\infer[]{\hltriple{\emptyset}{\regr}{Q}}{}}
@@ -466,7 +430,7 @@ In general, HL and SIL are different, but they coincide whenever the program $\r
 			       & unsound
 		\end{tabular}
 	}
-	\caption{Comparison of SIL, HL and IL rules. HL/IL rules have been adapted from \cite{MOH21}. Identical rules are highlighted in \textcolor{ACMPurple}{purple}. Minimal sound and complete sets of rules are in the top quadrant. Other valid rules are in the bottom quadrant.}
+	\caption{Comparison of SIL, HL and IL rules. Identical rules are highlighted in \textcolor{ACMPurple}{purple}.}
 	\label{fig:sil:rules-comparison}
 \end{figure}
 
@@ -519,10 +483,10 @@ The reason why strongest conditions may not exist for IL and SIL is that collect
 This means that given two IL triples $\iltriple{P_1}{\regr}{Q}$ and $\iltriple{P_2}{\regr}{Q}$, in general $\fwsem{\regr} (P_1 \cap P_2) \nsupseteq Q$ in which case $\iltriple{P_1 \cap P_2}{\regr}{Q}$ is not valid, as shown in the following example.
 
 \begin{example}\label{ex:sil:il-no-strongest-pre}
-	Consider the program $\mathsf{r1} \eqdef x := 1$ of Example~\ref{ex:sil:il-sil-incomparable}.
-	We can prove the two IL triples $\iltriple{x = 0}{\mathsf{r1}}{x = 1}$ and $\iltriple{x = 10}{\mathsf{r1}}{x = 1}$, but their intersection is $\iltriple{\emptyset}{\mathsf{r1}}{x = 1}$, which is not a valid IL triple.
+	Consider the program $\mathsf{r1} \eqdef x := 1$.
+	The two IL triples $\iltriple{x = 0}{\mathsf{r1}}{x = 1}$ and $\iltriple{x = 10}{\mathsf{r1}}{x = 1}$ are valid, but their intersection is $\iltriple{\emptyset}{\mathsf{r1}}{x = 1}$, which is not valid.
 
-	For SIL, consider the program $\mathsf{rnd} \eqdef \code{x := nondet()}$. For precondition $P_1 \eqdef (x = 1)$ we can prove both $\siltriple{P_1}{\mathsf{rnd}}{x = 0}$ and $\siltriple{P_1}{\mathsf{rnd}}{x = 10}$, that are incomparable, and again are both minimal because $\emptyset$ is not a valid postcondition.
+	For SIL, consider the program $\mathsf{rnd} \eqdef \code{x := nondet()}$. Both triples $\siltriple{x = 1}{\mathsf{rnd}}{x = 0}$ and $\siltriple{x = 1}{\mathsf{rnd}}{x = 10}$ are valid, but also incomparable and minimal because $\emptyset$ is not a valid postcondition.
 \end{example}
 
 This can also be observed using the theory of adjunction. It is well known that left adjoints are additive while right adjoints are co-additive~\cite{DP02}.
@@ -564,7 +528,7 @@ Given a heap command $\regr \in \Regh$, we let $\fv(\regr) \subseteq \Var$ be th
 \end{figure}
 
 \subsection{Assertion Language}
-Our assertion language is derived from both SL and Incorrectness Separation Logic (ISL)~\cite{RBDDOV20}:
+Our assertion language is derived from SL and Incorrectness Separation Logic (ISL)~\cite{RBDDOV20}:
 \begin{align*}
 	\Asl \ni p, q ::= & \; \false \mid \true \mid p \land q \mid p \lor q \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid x \dealloc \mid p \andsep q
 \end{align*}
@@ -673,7 +637,6 @@ Rule \silrule{load} is similar to \silrule{assign}, with the addition of the (di
 Rule \silrule{store} requires that $x$ is allocated, and updates the value it points to.
 All these rules are local: thanks to \silrule{frame}, they can specify only pre and post for the modified part of the heap.
 
-\fromhere
 Rule \silrule{exists} allows to ``hide" local variables.
 Rule \silrule{frame} is typical of separation logics~\cite{Reynolds02,RBDDOV20}: it allows to add a frame around a derivation through the separating conjunction $\andsep$, plugging the proof for a small portion of a program inside a larger heap.
 In the third group, we instantiated the SIL rules from Figure~\ref{fig:sil:sil-rules} for logical formulae, by replacing set theoretical symbols (such as $\subseteq$ and $\emptyset$) with the corresponding logical symbols (such as $\Rightarrow$ and $\false$, respectively). The only notable difference is in rule \silrule{iter}, where Separation SIL uses a predicate $q(n)$ parametrized by the natural number $n \in \mathbb{N}$ and the precondition $\exists n. q(n)$ in the conclusion of the rule. This is a logical replacement for the infinite union used in SIL rule.

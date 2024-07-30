@@ -222,43 +222,18 @@ Just like HL, this set of rule is sound and complete for IL:
 The following example compares HL and IL on a simple program to give an intuition on how they work and differs.
 
 \begin{example}\label{ex:bg:il-hl-comparison}
-	HL and IL aim at addressing different properties. To show their differences, we use the simple, deterministic, terminating program
+	HL and IL aim at addressing different properties. To show their differences, we use the simple, nondeterministic, terminating program $\regr{}42$:
 	\begin{minted}{C}
-if (x is even) {
-    if (y is odd) {
-        z := 42;
-    }
+x := nondet();
+if (even(x) && odd(y)) {
+    z := 42;
 }
 // assert(z != 42)
 	\end{minted}
-	We call this program $\regr$ for this example.
-	We let $Q \eqdef (z = 42)$ denote the set of erroneous states, i.e., the incorrectness specification.
-	The valid HL triple
-	\[
-	\hltriple{ \text{odd}(y) \land \text{even}(x)}{\regr}{Q}
-	\]
+	where we assume that $Q_{42} \eqdef (z = 42)$ denotes the set of erroneous states, i.e., the incorrectness specification.
+	The valid HL triple $\hltriple{ \text{odd}(y) }{\regr}{Q_{42}}$ identifies input states that will surely end up in an  error state, while the triple $\hltriple{ \lnot Q_{42} \land \lnot \text{odd}(y)}{\regr}{\lnot Q_{42}}$ characterize input states that will not produce any error.
 
-	\noindent
-	identifies input states that will surely end up in an  error state, while the triple
-	\[
-	\hltriple{ \neg Q \land (\text{odd}(x) \lor \text{even}(y))}{\regr}{\neg Q}
-	\]
-
-	\noindent
-	characterize input states that will not produce any error.
-	On the other hand, the valid IL triple
-	\[
-	\iltriple{\true}{\regr}{Q \wedge \text{odd}(y) \wedge \text{even}(x) }
-	\]
-
-	\noindent
-	expresses the fact that error states in $Q$ are reachable by some initial state. Similarly, also the IL triple
-	\[
-	\iltriple{\true}{\regr}{\neg Q \wedge(\text{odd}(x)\vee \text{even}(y)) }
-	\]
-
-	\noindent
-	is valid since the postcondition $\neg Q$ can be reached only when the path conditions to reach the assignment are not satisfied.
+	On the other hand, the valid IL triple $\iltriple{z = 11}{\regr}{Q_{42} \land \text{odd}(y) \land \text{even}(x) }$ expresses the fact that error states in $Q_{42}$ are reachable by safe initial state. Similarly, also the IL triple $\iltriple{\true}{\regr}{\lnot Q_{42} \land \lnot (\text{even}(x) \land \text{odd}(y)) }$ is valid since the postcondition $\lnot Q_{42}$ can be reached only when the path conditions to reach the assignment are not satisfied.
 \end{example}
 
 \begin{remark}[ok/er flags]\label{rem:bg:ok-er-flags}
