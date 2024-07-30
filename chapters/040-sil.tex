@@ -873,7 +873,7 @@ OL reasoning is forward oriented, as witnessed by the implication that concludes
 \subsection{Exit conditions in Separation SIL}\label{sec:sil:separation-sil-error}
 We now briefly show how to adapt Separation SIL to handle different exit conditions. For this example, following~\cite{OHearn20}, we will consider \oktext{ok} and \ertext{er}, denoting correct and erroneous termination respectively. As discussed in Remark~\ref{rem:bg:ok-er-flags}, this correspond to use $\{ \oktext{ok}, \ertext{er} \} \times \Sigma$ as set of states instead of $\Sigma_e$. The denotational semantics of regular commands then acts as described for normal states (returning the error version of the current correct state instead of the generic $\errstate$) and as the identity on error states.
 
-The proof system changes accordingly: all the current rules are still valid with the \oktext{ok} flag in both pre and postconditions. Rules introducing error flags are added for atoms. As an example, we write below the error rule for store:
+The proof system changes accordingly: all the current rules are still valid with the \oktext{ok} flag (for atoms) or a generic flag $\epsilon$ (for structural rules) in both pre and postconditions. Rules introducing error flags are added for atoms. As an example, we write below the error rule for store.
 \[
 \infer[\silrule{store\mbox{-}er}]
 {\siltriple{\oktext{ok: x \dealloc}}{\code{[x] := y}}{\ertext{er: x \dealloc}}}
@@ -884,7 +884,7 @@ Moreover, the proof system is augmented with a rule for error propagation, that 
 \infer[\silrule{er\mbox{-}id}]{\siltriple{\ertext{er: q}}{\regr}{\ertext{er: q}}}{}
 \]
 
-The modified proof system is sound with respect to the modified semantics:\todo{write proof (at least a sketch)}
+The modified proof system is sound with respect to the modified semantics:
 \begin{theorem}\label{th:sil:ssil-errors-sound}
 	Any provable triple is valid:
 	\[
@@ -932,15 +932,14 @@ The modified proof system is sound with respect to the modified semantics:\todo{
 		\label{fig:sil:separation-sil-derivation-errors}
 	\end{figure}
 
-	To analyze this program, we use the error postcondition $\silexact{\ertext{er: \true}}$. For space constraints, we only consider the code path that goes through the then-branches of both if statements. The proof, linearized, is in Figure~\ref{fig:sil:separation-sil-derivation-errors}. The omitted part is analogous to the derivation in Figure~\ref{fig:sil:ssil-derivation:sub2}.
+	To analyse this program, we use the error postcondition $\silexact{\ertext{er: \true}}$. For space constraints, we only consider the code path that goes through the then-branches of both if statements. The proof, linearized, is in Figure~\ref{fig:sil:separation-sil-derivation-errors}. The omitted part is analogous to the derivation in Figure~\ref{fig:sil:ssil-derivation:sub2}.
 
 	We highlight the use of rule \silrule{store\mbox{-}er} to infer the precondition $\oktext{ok: x \dealloc \andsep \true}$ from the error postcondition $\ertext{er: \true}$ and \silrule{assume} to conjoin the boolean conditions in the preconditions of the guards. Moreover, the backward substitution of $\code{len} := \code{len} + 1$ performed by \silrule{assign} naturally propagates backward the constraint $\code{len} > 8$ to the value preceding the assignment, obtaining $\code{len} + 1 > 8$. This way, in the precondition of the whole command we explicitly find the constraints $\code{len} \ge \code{cap} \land \code{len} > 7$ on the initial values of \code{len} and \code{cap} that lead to the error.
 \end{example}
 
 \subsection{Relative Completeness of Separation SIL}
-\fromhere
-Separation SIL is complete for all atomic commands but \code{alloc}, because it misses the ability to refer the specific memory location that gets allocated.
-However, the naive solution to add $x = \alpha$ in the post of \silrule{alloc} would make the frame rule unsound: it would allow to prove, for instance, the invalid triple
+The proof system in Figure~\ref{fig:sil:separation-sil} is complete for all atomic commands but \code{alloc}, because it misses the ability to refer the specific memory location that gets allocated.
+The naive solution to add $x = \alpha$ in the post of \silrule{alloc} would make the frame rule unsound: it would allow to prove, for instance, the invalid triple
 \[
 \siltriple{\emp \andsep \alpha \mapsto -}{\code{x := alloc()}}{(x \mapsto - \land x = \alpha) \andsep \alpha \mapsto -} \text{.}
 \]
@@ -952,10 +951,10 @@ Just like ISL needs the deallocated assertion in the post~\cite[\S 3]{RBDDOV20},
 {}
 \]
 
-The proof system is still sound for this different semantics  model. Moreover, we can prove relative completeness~\cite[\S 4.3]{AO19} for loop-free programs:
+The modified proof system is sound for this different semantics. Moreover, we can prove relative completeness~\cite[\S 4.3]{AO19} for loop-free programs:
 
 \begin{theorem}[Relative completeness for loop-free programs]\label{th:sil:separation-sil-sequential-complete}
-	Suppose to have an oracle to prove implications between formulas in $\Asl$. Let $\regr \in \Regh$ be a regular command without $\kstar$ and $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. Then the triple $\siltriple{p}{\regr}{q}$ is provable.
+	Suppose to have an oracle to prove implications between formulae in $\Asl$. Let $\regr \in \Regh$ be a regular command without $\kstar$ and $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. Then the triple $\siltriple{p}{\regr}{q}$ is provable.
 \end{theorem}
 
 The proof relies on an algorithmic rewriting of the postcondition that makes constraints on a single memory location explicit. This is given by the following lemma, whose proof is constructive (see the proof in Appendix~\ref{ch:app:sil}):
@@ -968,10 +967,31 @@ The proof relies on an algorithmic rewriting of the postcondition that makes con
 	\end{enumerate}
 \end{lemma}
 
-Using this, for any atomic command $\regc \in \Cmdh$ we compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regc} \asldenot{q}$, and prove the triple $\siltriple{t}{\regc}{q}$. Then, we extend this result to any program not containing $\kstar$, and conclude using the oracle and \silrule{cons} to prove the triple for any $p$ that implies $t$.
-We conclude remarking that this is a result of completeness \emph{in the sense of Cook}~\cite{Cook78} since it means we can prove a triple whenever the pre for any loop is expressible.
+Using this, we compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regr} \asldenot{q}$ and prove the triple $\siltriple{t}{\regr}{q}$. Then, using the oracle and \silrule{cons}, the theorem follows for any $p$ that implies $t$.
+Notably, this theorem shows that the weakest (possible) precondition $\bwsem{\regr} \asldenot{q}$ of loop-free programs is always expressible as an assertion $t \in \Asl$, namely $\asldenot{t} = \bwsem{\regr} \asldenot{q}$, and that it can be computed algorithmically. This is result is far from trivial, as it depends on the expressiveness of the assertion language: for instance, if we add negation, the same result does not hold anymore because, even if more preconditions can be expressed, we can also introduce some new posts for which the precondition is not in the assertion language.
+
+To extend the result to loops, we can focus on single states. Note that the following result does not need the oracle: it is always possible to craft a $p$ whose proof only needs decidable implications.
+
+\begin{theorem}[State-wise completeness]\label{th:sil:separation-sil-complete-single-state}
+	Given a heap program $\regr\in \Regh$ and two states $\sigma$, $\sigma'$ such that $\sigma \in \bwsem{\regr} \sigma'$, for every assertion $q$ such that $\sigma' \in \asldenot{q}$ there exists an assertion $p$ such that $\sigma \in \asldenot{p}$ and $\siltriple{p}{\regr}{q}$ is provable in Separation SIL.
+\end{theorem}
 
 \subsection{Implementations}
+The ideas that lead to SIL represent \emph{a posteriori} formalization and theoretical justification of the parallel, modular, and compositional static analysis implemented in industrial grade static analyzers for security developed and used at Meta, such as Zoncolan~\cite{DFLO19}, Mariana Trench~\cite{MarianaTrench}, and Pysa~\cite{Pysa}.
+Those tools automatically find more than $50$\% of the security bugs in the Meta family of apps and many SEVs ("severe bugs" in the Meta jargon)~\cite[Figure~5]{DFLO19}.
+
+In order to scale up to hundreds of millions of lines of code, static analyses need to be parallelizable and henceforth modular and compositional. Modularity implies that the analysis can infer \emph{meaningful} information without full knowledge of the global program. Compositionality means that the~\emph{results} of analyzing modules are good enough that one does not lose information in using the inferred triple instead of inlining the code.
+
+The analysis implemented in the aforementioned tools is a modular backward analysis that determines which input states for a function will lead to a security error, likewise the SIL rules described in Figure~\ref{fig:sil:sil-rules}.
+In particular, the analysis infers sufficient incorrectness preconditions (modularity) for callees that can be used by the callers (compositionality) to generate their incorrectness preconditions.
+When the propagation of the inferred sufficient precondition reaches an attacker\hyp{}controlled input, the analysers check if that input is included in the propagated error condition.
+If it is the case, then it emits an error.
+The function analyses are parallelized and a strategy similar to the iteration rule of Figure~\ref{fig:sil:sil-rules} is used to compute the fixpoint in presence of mutually recursive functions.
+
+Moreover, we have a proof-of-concept implementation of Separation SIL in OCaml. The prototype is open source and available on GitHub.\footnote{\url{https://github.com/Alex23087/Failure-SSIL-Analyser}} While the prototype is not meant to scale up to real programs, it can derive all the examples in this section and helped us gain confidence in the correctness of our results. The code exploits a routine that follows closely the relative completeness Theorem~\ref{th:sil:separation-sil-sequential-complete} by implementing Lemma~\ref{lmm:sil:separation-assertion-rewrite}.
+For this implementation, we thank the students of the Laboratory for Innovative Software 2024 course: Yuri Andriaccio, Samuele Bonini, Andrea Castagna, Marco Antonio Corallo, Andrea Simone Costa, Fabio Federico, Elvis Rossi, Alessandro Scala, Matteo Simone.
 
 \section{Conclusions}
-\todo[inline]{Write this}
+In this chapter, we considered known program logics for over and under-approximation and tried to formalize the relations among them in order to asses their respective strengths and weaknesses. This led to the introduction of the novel proof system for Lisbon triples, that we dubbed Sufficient Incorrectness Logic, and to compare the four logics along several dimensions.
+We also instantiated the new SIL proof system to handle pointers and memory allocation. The resulting Separation SIL is able to identify the causes of memory errors. We presented a first, simpler version of Separation SIL for which we provide a prototype implementation. We also showed how to manage explicit errors via ok/er flags, and how to modify the logic to become complete.
+Comparing the logics, we recovered some known results as well as finding new connections and highlighting insights that shed a little more light on the asymmetries between over/under-approximation an forward/backward analysis. The shortest summary of our findings is that there is no silver bullet: each logic has its own strengths and use cases.

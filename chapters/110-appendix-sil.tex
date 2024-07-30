@@ -216,3 +216,438 @@ The proof of Theorem~\ref{thm:sil:sil-sound-complete} is a corollary of Proposit
 	For IL, the example shows that for $Q_{91} \wedge x = 0$ there is no strongest $P$ such that $\fwsem{\mathsf{r}} P \supseteq (Q_{91} \wedge x = 0)$: $y = 93$ and $y = 94$ are incomparable and are both minimal, as $\emptyset$ is not a valid precondition.
 	The argument for SIL is analogous with precondition $y = 93$.
 \end{proof}
+
+\section{Proofs about Separation SIL}
+Given two stores $s, s' \in \Stores$ and a heap command $\regr \in \Regh$, we use the notation $s \dotsim_{\regr} s'$ to indicate that they coincide on all variables not modified by $\regr$: $\forall x \notin \modified(\regr) \sdot s(x) = s'(x)$. Please note that $\dotsim_{\regr}$ is an equivalence relation.
+
+\begin{lemma}\label{lmm:app:store-only-change-mod}
+	Let $(s, h) \in \Sigma$, $\regr \in \Regh$. If $(s', h') \in \fwsem{\regr}(s, h)$ then $s \dotsim_{\regr} s'$.
+\end{lemma}
+\begin{proof}
+	The proof is by induction on the syntax of $\regr$. We prove here only some relevant cases.
+
+	\proofcase{\code{x := a}}
+	$(s', h') \in \fwsem{\code{x := a}}(s, h)$ means that $s' = s[x \mapsto \edenot{\code{a}} s]$. Particularly, this means that for all variables $y \neq x$, $s'(y) = s(y)$, which is the thesis because $\modified(\code{x := a}) = \{ x \}$.
+
+	\proofcase{\code{free(x)}}
+	$(s', h') \in \fwsem{\code{free(x)}}(s, h)$ means that $s' = s$, which is the thesis because $\modified(\code{free(x)}) = \emptyset$.
+
+	\proofcase{$\regr_1; \regr_2$}
+	$(s', h') \in \fwsem{\regr_1; \regr_2}(s, h)$ means that there exists $(s'', h'') \in \fwsem{\regr_1} (s, h)$ such that $(s', h') \in \fwsem{\regr_2}(s'', h'')$. By inductive hypothesis, since $\modified(\regr_1) \subseteq \modified(\regr_1; \regr_2)$, we have $s'' \dotsim_{\regr_1; \regr_2} s$. Analogously, $\modified(\regr_2) \subseteq \modified(\regr_1; \regr_2)$ implies $s' \dotsim_{\regr_1; \regr_2} s''$. From these, we get $s' \dotsim_{\regr_1; \regr_2} s$.
+\end{proof}
+
+The next technical proposition states some semantic properties of the assertion language to be exploited in the proof of Lemma~\ref{lmm:sil:separation-sil-stronger-sound}.
+
+\begin{prop}\label{prop:app:sl-sat}
+	Let $p \in \Asl$, $s, s' \in \Stores$, $h \in \Heaps$ and $a \in \text{AExp}$.
+	\begin{enumerate}
+		\item If $\forall x \in \fv(p) \sdot s(x) = s'(x)$ and $(s, h) \in \asldenot{p}$ then $(s', h) \in \asldenot{p}$.
+		\item If $(s, h) \in \asldenot{p[a / x]}$ then $(s[x \mapsto \edenot{a} s], h) \in \asldenot{p}$.
+	\end{enumerate}
+\end{prop}
+\begin{proof}
+	By structural induction on the syntax of assertions.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lmm:sil:separation-sil-stronger-sound}]
+	First, we observe that Proposition~\ref{prop:sil:sil-validity-characterization} does not depend on the specific definition of $\fwsem{\cdot}$, thus it holds for separation SIL as well. Thanks to this, we prove the thesis through the equivalent condition
+	\[
+	\forall (s, h) \in \asldenot{p \andsep t} \sdot \exists (s', h') \in \asldenot{q \andsep t} \sdot (s', h') \in \fwsem{\regr} (s, h)
+	\]
+
+	The proof is by induction on the derivation tree of the provable triple $\siltriple{p}{\regr}{q}$. We prove here only some relevant cases.
+
+	\proofcase{\silrule{assign}}
+	Take $(s, h) \in \asldenot{q[a / x] \andsep t}$. Then we can split $h = h_p \bullet h_t$ such that $(s, h_p) \in \asldenot{q[a / x]}$ and $(s, h_t) \in \asldenot{t}$. Let $s' = s[x \mapsto \edenot{\code{a}} s]$, so that $(s', h) \in \fwsem{\code{x := a}} \asldenot{q[a / x] \andsep t}$. Since $\fv(t) \cap \modified(\regr) = \emptyset$, $x \notin \fv(t)$. Thus, by Proposition~\ref{prop:sl-sat}.1, $(s', h_t) \in \asldenot{t}$.
+	Moreover, $(s', h_p) \in \asldenot{q}$ by Proposition~\ref{prop:app:sl-sat}.2.
+	Hence, $(s', h_p \bullet h_t) = (s', h) \in \asldenot{q \andsep t}$.
+
+	\proofcase{\silrule{alloc}}
+	Take $(s, h) \in \asldenot{\emp \andsep t} = \asldenot{t}$. Take a location $l \notin \dom(h)$, and let $s' = s[x \mapsto l]$, $h' = h[l \mapsto s(v)]$, so that $(s', h') \in \fwsem{\code{x := alloc()}} (s, h)$.
+	We can split $h' = [l \mapsto s(v)] \bullet h$ because $l \notin \dom(h)$. Since $\fv(t) \cap \modified(\regr) = \emptyset$, $x \notin \fv(t)$. Thus, by Proposition~\ref{prop:app:sl-sat}.1, $(s', h) \in \asldenot{t}$.
+	Moreover, $(s', [l \mapsto s(v)]) = (s', [s'(x) \mapsto s'(v)])$, which satisfies $(s', [s'(x) \mapsto s'(v)]) \in \asldenot{x \mapsto v}$.
+	Hence $(s', h') \in \asldenot{x \mapsto v \andsep t}$.
+
+	\proofcase{\silrule{load}}
+	Take $(s, h) \in \asldenot{y \mapsto a \andsep q[a /x] \andsep t}$. Then we know $x \notin \fv(t)$ and $h = [s(y) \mapsto \edenot{a} s] \bullet h_p \bullet h_t$, $(s, h_p) \in \asldenot{q[a / x]}$, $(s, h_t) \in \asldenot{t}$.
+	Let $s' = s[x \mapsto h(s(y))] = s[x \mapsto \edenot{a} s]$.
+	By Proposition~\ref{prop:app:sl-sat}.1, $(s', h_t) \in \asldenot{t}$.
+	By Proposition~\ref{prop:app:sl-sat}.2, $(s', h_p) \in \asldenot{q}$.
+	Lastly, since $x \notin \fv(a)$, $\edenot{a} s' = \edenot{a} s$ and $s'(y) = s(y)$, so we have $(s', [s'(y) \mapsto \edenot{a} s']) \in \asldenot{y \mapsto a}$.
+	Combining these, $(s', h) = (s', [s(y) \mapsto \edenot{a} s] \bullet h_p \bullet h_t) \in \asldenot{y \mapsto a \andsep q \andsep t}$.
+	The thesis follows observing that $(s', h) \in \fwsem{\code{x := [y]}} (s, h)$.
+
+	\proofcase{\silrule{store}}
+	Take $(s, h) \in \asldenot{x \mapsto - \andsep t}$. Then $x \notin \fv(t)$ and exists $v \in \Val$ such that $h = [s(x) \mapsto v] \bullet h_t$, $(s, h_t) \in \asldenot{t}$.
+	Let $h' = h[s(x) \mapsto s(y)]$. Clearly $h' = [s(x) \mapsto s(y)] \bullet h_t$ and $(s, [s(x) \mapsto s(y)]) \in \asldenot{x \mapsto y}$.
+	Hence $(s, h') \in \asldenot{x \mapsto y \andsep t}$ and $(s, h') \in \fwsem{[x] := y} (s, h)$, which is the thesis.
+
+	\proofcase{\silrule{exists}}
+	Take $(s, h) \in \asldenot{(\exists x . p) \andsep t}$. Then there exists a value $v \in \Val$ and decomposition $h = h_p \bullet h_t$ such that $(s[x \mapsto v], h_p) \in \asldenot{p}$ and $(s, h_t) \in \asldenot{t}$. Without loss of generality, we can assume $x \notin \fv(t)$; otherwise, we just rename it using a fresh name neither in $t$ nor in $\regr$. Hence, by Proposition~\ref{prop:app:sl-sat}.1, $(s[x \mapsto v], h_t) \in \asldenot{t}$. So $(s[x \mapsto v], h) \in \asldenot{p \andsep t}$.
+	By inductive hypothesis on the provable triple $\siltriple{p}{\regr}{q}$ and formula $t$, there is $(s', h') \in \asldenot{q \andsep t}$ such that $(s', h') \in \fwsem{\regr} (s[x \mapsto v], h)$. Because $x \notin \fv(\regr)$, we also have $(s', h') \in \fwsem{\regr} (s, h)$, and clearly $(s', h') \in \asldenot{(\exists x . q) \andsep t}$, that is the thesis.
+
+	\proofcase{\silrule{frame}}
+	Take $(s, h) \in \asldenot{p \andsep t' \andsep t}$. By hypothesis, $(\fv(t' \andsep t)) \cap \modified(\regr) = (\fv(t') \cup \fv(t)) \cap \modified(\regr) = \emptyset$. Then, applying the inductive hypothesis on the provable triple $\siltriple{p}{\regr}{q}$ and the formula $t' \andsep t$ (which satisfies the hypothesis of the theorem) we get exactly the thesis.
+
+	\proofcase{\silrule{seq}}
+	Because of name clashes, here we assume the hypotheses of rule \silrule{seq} to be $\siltriple{p}{\regr_1}{p'}$ and $\siltriple{p'}{\regr_2}{q}$.
+	Since $\modified(r_1) \cup \modified(r_2) = \modified(r_1; r_2)$, we know that $\fv(t) \cap \modified(r_1) = \fv(t) \cap \modified(r_2) = \emptyset$.
+	Take $(s, h) \in \asldenot{p \andsep t}$. By inductive hypothesis on provable triple $\siltriple{p}{\regr_1}{p'}$ and formula $t$ we get that there exists $(s'', h'') \in \asldenot{p' \andsep t}$ such that $(s'', h'') \in \fwsem{\regr_1} (s, h)$. Then, by inductive hypothesis on the provable triple $\siltriple{p'}{\regr_2}{q}$ and formula $t$ again, we get $(s', h') \in \asldenot{q \andsep t}$ such that $(s', h') \in \fwsem{\regr_2} (s'', h'')$.
+	The thesis follows since $(s', h') \in \fwsem{\regr_2} (s'', h'') \subseteq \fwsem{\regr_2} (\fwsem{\regr_1} (s, h)) = \fwsem{\regr_1; \regr_2} (s, h)$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:sil:ssil-errors-sound}]
+	\todo[inline]{Write (at least a sketch)}
+\end{proof}
+
+Some of the following equivalences are standard, but we collect them all here for convenience.
+\begin{lemma}\label{lmm:app:asl-equivalences}
+	For all assertions $p_1, p_2, q$, variables $x, x' \in \Var$ and arithmetic expressions $a_1, a_2 \in \AExp$, the following equivalences hold:
+	\begin{enumerate}
+		\item $(p_1 \lor p_2) \land q \equiv (p_1 \land q) \lor (p_2 \land q)$
+		\item $(p_1 \lor p_2) \andsep q \equiv (p_1 \andsep q) \lor (p_2 \andsep q)$
+		\item $\exists x. (p \lor q) \equiv (\exists x. p) \lor (\exists x. q)$
+		\item $\exists x. (p \land q) \equiv (\exists x. p) \land q$ \quad if $x \notin \fv(q)$
+		\item $\exists x. (p \andsep q) \equiv (\exists x. p) \andsep q$ \quad if $x \notin \fv(q)$
+		\item $a_1 \asymp a_2 \land (p_1 \andsep p_2) \equiv (a_1 \asymp a_2 \land p_1) \andsep p_2$
+		\item $(p_1 \andsep x \mapsto x') \land (p_2 \andsep x \mapsto x') \equiv (p_1 \land p_2) \andsep x \mapsto x'$
+		\item $(p_1 \andsep x \dealloc) \land (p_2 \andsep x \dealloc) \equiv (p_1 \land p_2) \andsep x \dealloc$
+	\end{enumerate}
+\end{lemma}
+\begin{proof}
+	Point (1), (3) and (4) are standard in first-order logic. Point (2), (5) and (6) are standard in separation logic~\cite{Reynolds02}.
+
+	For point (7) we observe
+	\begin{align*}
+		 & \asldenot{(p_1 \andsep x \mapsto x') \land (p_2 \andsep x \mapsto x')}                                                                                             \\
+		 & =\{ (s, h) \svert (s, h) \in \asldenot{p_1 \andsep x \mapsto x'}, (s, h) \in \asldenot{p_2 \andsep x \mapsto x'} \}                                                \\
+		 & =\lbrace (s, h) \svert h = h_1 \bullet [s(x) \mapsto s(x')], (s, h_1) \in \asldenot{p_1} h = h_2 \bullet [s(x) \mapsto s(x')], (s, h_2) \in \asldenot{p_2} \rbrace \\
+		 & =\{ (s, h) \svert h = h' \bullet [s(x) \mapsto s(x')], (s, h') \in \asldenot{p_1}, (s, h') \in \asldenot{p_2}  \}                                                  \\
+		 & =\asldenot{x \mapsto x' \andsep (p_1 \land p_2)}
+	\end{align*}
+
+	Point (8) is analogous.
+\end{proof}
+
+\begin{lemma}\label{lmm:app:semantics-fresh-substitution}
+	Let $\regc \in \Cmdh$, $z \notin \fv(\regc)$ be a fresh variable, and $(s, h), (s', h') \in \Sigma$ be two states such that $(s, h) \in \bwsem{\regc} (s', h')$. Then, for any value $v \in \Val$,
+	\[
+	(s[z \mapsto v], h) \in \bwsem{\regc} (s'[z \mapsto v], h')
+	\]
+\end{lemma}
+\begin{proof}
+	By definition of $\bwsem{\regc}$, we know that $(s', h') \in \edenot{\regc} (s, h)$ and that the thesis is equivalent to $(s'[z \mapsto v], h') \in \edenot{\regc} (s[z \mapsto v], h)$.
+	The proof is by cases on $\regc$.
+
+	\proofcase{\code{skip}}
+	Since $\edenot{\code{skip}}$ is the identity, $(s, h) = (s', h')$. Therefore, $(s'[z \mapsto v], h') \in \edenot{\code{skip}} (s[z \mapsto v], h)$.
+
+	\proofcase{\code{x := a}}
+	By definition of $\edenot{\code{x := a}}$, $s' = s[x \mapsto \edenot{a} s]$ and $h' = h$. Since $z \notin \fv(\code{x := a})$, $z \neq x$ and $z \notin \fv(a)$, therefore
+	\[
+	s[z \mapsto v][x \mapsto \edenot{a}(s[z \mapsto v])] = s[z \mapsto v][x \mapsto \edenot{a} s] = s[x \mapsto \edenot{a} s][z \mapsto v] = s'[z \mapsto v]
+	\]
+	With this, we have $(s'[z \mapsto v], h') \in \edenot{\code{x := a}}(s[z \mapsto v], h)$.
+
+	\proofcase{\code{free(x)}}
+	By definition of $\edenot{\code{free(x)}}$, $s' = s$, $h' = h[s(x) \mapsto \delta]$. Since $z \notin \fv(\code{free(x)})$ then $z \neq x$. With this, we have $(s'[z \mapsto v], h') \in \edenot{\code{free(x)}} (s[z \mapsto v], h)$.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lmm:sil:separation-assertion-rewrite}]
+	The proof is by induction on the structure of $q$.
+
+	\proofcase{$q = \false$}
+	Take $p = \false$.
+
+	\proofcase{$q = \true$}
+	Take $p = \true$.
+
+	\proofcase{$q = q_1 \land q_2$}
+	We consider point (1) first. By inductive hypothesis, there exists $p_1$ and $p_2$ such that
+	\begin{align*}
+		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_1 \\
+		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_2
+	\end{align*}
+	so that
+	\begin{align*}
+		q \land (x \mapsto x' \andsep \true) & \equiv q_1 \land q_2 \land (x \mapsto x' \andsep \true)                                    \\
+		                                     & \equiv q_1 \land (x \mapsto x' \andsep \true) \land q_2 \land (x \mapsto x' \andsep \true) \\
+		                                     & \equiv (x \mapsto x' \andsep p_1) \land (x \mapsto x' \andsep p_2)                         \\
+		                                     & \equiv x \mapsto x' \andsep (p_1 \land p_2)
+	\end{align*}
+	where we used Lemma~\ref{lmm:app:asl-equivalences}.7 for the last equivalence.
+	The case for point (2) is analogous using Lemma~\ref{lmm:app:asl-equivalences}.8 instead.
+
+	\proofcase{$q = q_1 \lor q_2$}
+	We consider point (1) first. By inductive hypothesis, there exists $p_1$ and $p_2$ such that
+	\begin{align*}
+		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_1 \\
+		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_2
+	\end{align*}
+	so that
+	\begin{align*}
+		q \land (x \mapsto x' \andsep \true) & \equiv (q_1 \lor q_2) \land (x \mapsto x' \andsep \true)                                      \\
+		                                     & \equiv (q_1 \land (x \mapsto x' \andsep \true)) \lor (q_2 \land (x \mapsto x' \andsep \true)) \\
+		                                     & \equiv (x \mapsto x' \andsep p_1) \lor (x \mapsto x' \andsep p_2)                             \\
+		                                     & \equiv x \mapsto x' \andsep (p_1 \lor p_2)
+	\end{align*}
+	where we used Lemma~\ref{lmm:app:asl-equivalences}.1 for the second equivalence and Lemma~\ref{lmm:app:asl-equivalences}.2 for the last one.
+	The case for point (2) is analogous.
+
+	\proofcase{$q = a_1 \asymp a_2$}
+	Both points follow from Lemma~\ref{lmm:app:asl-equivalences}.6 by taking $p_1 = \true$ and $p_2 = x \mapsto x'$ (resp. $p_2 = x \dealloc$).
+
+	\proofcase{$q = \emp$}
+	Both formulae $\emp \land (x \mapsto x' \andsep \true)$ and $\emp \land (x \dealloc \andsep \true)$ are not satisfiable. Therefore we get the thesis with $p = \false$.
+
+	\proofcase{$q = z \mapsto z'$}
+	For point (1):
+	\begin{align*}
+		 & \asldenot{z \mapsto z' \land (x \mapsto x' \andsep \true)}                                                \\
+		 & =\{ (s, h) \svert (s, h) \in \asldenot{z \mapsto z'}, (s, h) \in \asldenot{x \mapsto x' \andsep \true} \} \\
+		 & =\{ (s, h) \svert h = [s(z) \mapsto s(z')], h = [s(x) \mapsto s(x')] \bullet h_t \}                       \\
+		 & =\{ (s, h) \svert h = [s(x) \mapsto s(x')], s(z) = s(x), s(z') = s(x') \}                                 \\
+		 & =\asldenot{z' = x' \land z = x \land x \mapsto x'}
+	\end{align*}
+
+	For point (2), we observe that $z \mapsto z' \land (x \dealloc \andsep \true)$ is not satisfiable, so we get the thesis with $p = \false$.
+
+	\proofcase{$q = z \dealloc$}
+	For point (1), we observe that $z \dealloc{} \land (x \mapsto x' \andsep \true)$ is not satisfiable, so we get the thesis with $p = \false$.
+
+	For point (2):
+	\begin{align*}
+		 & \asldenot{z \dealloc \land (x \dealloc \andsep \true)}                                                \\
+		 & =\{ (s, h) \svert (s, h) \in \asldenot{z \dealloc}, (s, h) \in \asldenot{x \dealloc \andsep \true} \} \\
+		 & =\{ (s, h) \svert h = [s(z) \mapsto \delta], h = [s(x) \mapsto \delta] \bullet h_t \}                 \\
+		 & =\{ (s, h) \svert h = [s(x) \mapsto \delta], s(z) = s(x) \}                                           \\
+		 & =\asldenot{z = x \land x \dealloc}
+	\end{align*}
+
+	\proofcase{$q = q_1 \andsep q_2$}
+	We consider point (1) first. By inductive hypothesis, there exists $p_1$ and $p_2$ such that
+	\begin{align*}
+		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_1 \\
+		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_2
+	\end{align*}
+	Take $p = p_1 \andsep q_2 \lor q_1 \andsep p_2$. We have
+	\begin{align*}
+		\asldenot{x \mapsto x' \andsep p} = \asldenot{x \mapsto x' \andsep p_1 \andsep q_2} \cup \asldenot{x \mapsto x' \andsep q_1 \andsep p_2}
+	\end{align*}
+	Now consider
+	\begin{align*}
+		 & \asldenot{q \land (x \mapsto x' \andsep \true)}                                                                                                                \\
+		 & =\asldenot{(q_1 \andsep q_2) \land (x \mapsto x' \andsep \true)}                                                                                               \\
+		 & =\lbrace (s, h) \svert (s, h) \in \asldenot{x \mapsto x' \andsep \true}, h = h_1 \bullet h_2, (s, h_1) \in \asldenot{q_1}, (s, h_2) \in \asldenot{q_2} \rbrace \\
+		 & =\lbrace (s, h) \svert h(s(x)) = s(x'), h = h_1 \bullet h_2, (s, h_1) \in \asldenot{q_1}, (s, h_2) \in \asldenot{q_2} \rbrace
+	\end{align*}
+	For every state $(s, h)$ in this set, either $s(x) \in \dom(h_1)$ or $s(x) \in \dom(h_2)$: it can't be in neither because $h(s(x)) = s(x')$. Consider the former case: then $(s, h_1) \in \asldenot{x \mapsto x' \andsep \true}$, so that $(s, h_1) \in \asldenot{q_1 \land (x \mapsto x' \andsep \true)} = \asldenot{x \mapsto x' \andsep p_1}$, so that $(s, h_1 \bullet h_2) \in \asldenot{x \mapsto x' \andsep p_1 \andsep q_2}$. Analogously, in the latter case $(s, h_1 \bullet h_2) \in \asldenot{x \mapsto x' \andsep q_1 \andsep p_2}$.
+	Therefore, $\asldenot{q \land (x \mapsto x' \andsep \true)} \subseteq \asldenot{x \mapsto x' \andsep p}$.
+
+	For the other inclusion, consider
+	\begin{align*}
+		 & \asldenot{x \mapsto x' \andsep p_1 \andsep q_2}                                                                                                  \\
+		 & = \lbrace (s, h) \svert h = h_1 \bullet h_2, (s, h_1) \in \asldenot{x \mapsto x' \andsep p_1}, (s, h_2) \in \asldenot{q_2} \rbrace               \\
+		 & = \lbrace (s, h) \svert h = h_1 \bullet h_2, (s, h_1) \in \asldenot{q_1 \land (x \mapsto x' \andsep \true)}, (s, h_2) \in \asldenot{q_2} \rbrace \\
+		 & = \lbrace (s, h) \svert h = h_1 \bullet h_2, h_1(s(x)) = s(x'), (s, h_1) \in \asldenot{q_1}, (s, h_2) \in \asldenot{q_2} \rbrace                 \\
+		 & \subseteq \lbrace (s, h) \svert h = h_1 \bullet h_2, h(s(x)) = s(x'), (s, h_1) \in \asldenot{q_1}, (s, h_2) \in \asldenot{q_2} \rbrace           \\
+		 & = \asldenot{q \land (x \mapsto x' \andsep \true)}
+	\end{align*}
+	and analogously for $\asldenot{x \mapsto x' \andsep q_1 \andsep p_2} \subseteq \asldenot{q \land (x \mapsto x' \andsep \true)}$.
+
+	The case for point (2) is analogous.
+\end{proof}
+
+\begin{lemma}\label{lmm:app:separation-sil-atom-base-completeness}
+	Let $q \in \Asl$ be an assertion without $\lor$ and $\exists$, and let $\regc \in \Cmdh$. Then there exists $p \in \Asl$ such that $\asldenot{p} = \bwsem{\regc} \asldenot{q}$, and $\siltriple{p}{\regc}{q}$ is provable.
+\end{lemma}
+\begin{proof}
+	We recall that
+	\[
+	\bwsem{\regc} \asldenot{q} = \{ (s, h) \svert \edenot{\regc} (s, h) \cap \asldenot{q} \neq \emptyset \}
+	\]
+	and that $\errstate \notin \asldenot{q}$ for any $q$.
+	In the proof below, we will use the following equivalence: given a state $(s, h)$ such that $s(h(x)) \in \Val$, $(s, h) \in \asldenot{x \mapsto - \andsep \true}$. Therefore, $(s, h) \in \asldenot{q}$ if and only if $(s, h) \in \asldenot{q \land (x \mapsto - \andsep \true)}$. Using Lemma~\ref{lmm:sil:separation-assertion-rewrite}.1, there exists a $q'$ (which depends on $q$ and $x$ but not on $(s, h)$) such that this is true if and only if $(s, h) \in \asldenot{\exists x'. (x \mapsto x' \andsep q')}$.
+	Analogously (using Lemma~\ref{lmm:sil:separation-assertion-rewrite}.2), if $s(h(x)) = \delta$, $(s, h) \in \asldenot{q}$ if and only if $(s, h) \in \asldenot{x \dealloc \andsep q'}$ for some $q'$.
+
+	We now proceed by cases on the heap atomic command $\regc$.
+
+	\proofcase{\code{skip}}
+	We have
+	\begin{align*}
+		\bwsem{\regc} \asldenot{q} = \{ (s, h) \svert \edenot{\code{skip}} (s, h) \cap \asldenot{q} \neq \emptyset \} = \{ (s, h) \svert (s, h) \in \asldenot{q} \}
+	\end{align*}
+	So we have the thesis taking $p = q$, and we prove it by using \silrule{skip} and \silrule{frame}.
+
+	\proofcase{\code{x := a}}
+	We have
+	\begin{align*}
+		\bwsem{\regc} \asldenot{q} & = \{ (s, h) \svert \edenot{\code{x := a}} (s, h) \cap \asldenot{q} \neq \emptyset \} \\
+		                           & = \{ (s, h) \svert (s[x \mapsto \edenot{\code{a}} s], h) \in \asldenot{q} \}         \\
+		                           & = \{ (s, h) \svert (s, h) \in \asldenot{q[a / x]} \}
+	\end{align*}
+	So we have the thesis taking $p = q[a / x]$, and we prove it by using \silrule{assign}.
+
+	\proofcase{\code{b?}}
+	We have
+	\begin{align*}
+		\bwsem{\regc} \asldenot{q} & = \{ (s, h) \svert \edenot{\code{b?}} (s, h) \cap \asldenot{q} \neq \emptyset \} \\
+		                           & = \{ (s, h) \svert \edenot{\code{b}} s = \code{tt}, (s, h) \in \asldenot{q} \}   \\
+		                           & = \asldenot{q \land b}
+	\end{align*}
+	So we have the thesis taking $p = q \land b$, and we prove it by using \silrule{assume}.
+
+	\proofcase{\code{x := alloc()}}
+	We have
+	\begin{align*}
+		\bwsem{\regc} \asldenot{q} & = \{ (s, h) \svert \edenot{\code{x := alloc()}} (s, h) \cap \asldenot{q} \neq \emptyset \}                                                                      \\
+		                           & = \{ (s, h) \svert \exists l, v. h(l) = \delta, (s[x \mapsto l], h[l \mapsto v]) \in \asldenot{q} \}                                                            \\
+		                           & = \lbrace (s, h) \svert \exists l, v. h(l) = \delta, (s[x \mapsto l], h[l \mapsto v]) \in \asldenot{\exists x'. x \mapsto x' \andsep q'} \rbrace                \\
+		                           & = \lbrace (s, h) \svert \exists l, v. h(l) = \delta, \exists v'. (s[x \mapsto l][x' \mapsto v'], h[l \mapsto v]) \in \asldenot{x \mapsto x' \andsep q'} \rbrace \\
+		                           & = \lbrace (s, h) \svert \exists l, v. h = [l \mapsto \delta] \bullet h_q, \exists v'.                                                                           \\
+		                           & \rlap{$ \qquad\qquad\quad (s[x \mapsto l][x' \mapsto v'], [l \mapsto v]) \in \asldenot{x \mapsto x'}, $}                                                        \\
+		                           & \rlap{$ \qquad\qquad\quad (s[x \mapsto l][x' \mapsto v'], h_q) \in \asldenot{q'} \rbrace$}                                                                      \\
+		                           & = \lbrace (s, h) \svert \exists l, v. h = [l \mapsto \delta] \bullet h_q, (s[x \mapsto l][x' \mapsto v], h_q) \in \asldenot{q'} \rbrace                         \\
+		                           & = \asldenot{\exists i. \exists x'. i \dealloc \andsep q'[i / x]}
+	\end{align*}
+	for fresh variables $i$. So we have the thesis taking $p = \exists i. \exists x'. i \dealloc \andsep q'[i / x]$. To prove the triple $\siltriple{p}{\code{x := alloc()}}{q}$ we first observe the following chain of implications:
+	\begin{align*}
+		q & \impliedby \exists x'. x \mapsto x' \andsep q'                                 & [\text{Lemma~\ref{lmm:sil:separation-assertion-rewrite}.1}] \\
+		  & \quad\,\equiv\; \exists i. \exists x'. x \mapsto x' \andsep q'                 & [i \text{ fresh}]                                           \\
+		  & \impliedby \exists i. \exists x'. x = i \land (x \mapsto x' \andsep q')        &                                                             \\
+		  & \impliedby \exists i. \exists x'. x = i \land (x \mapsto x' \andsep q'[i / x]) & [\text{replacing } i = x]                                   \\
+		  & \impliedby \exists i. \exists x'. (x = i \land x \mapsto x') \andsep q'[i / x] & [\text{Lemma~\ref{lmm:app:asl-equivalences}.6}]
+	\end{align*}
+	Then we prove the triple with the following derivation tree:
+	\[
+	\infer[\silrule{cons}]{\siltriple{p}{\regc}{q}}{
+	\infer[\silrule{exists} \text{ x2}]{\siltriple{p}{\regc}{\exists i. \exists x'. (x = i \land x \mapsto x') \andsep q'[i / x]}}{
+	\infer[\silrule{frame}]{\siltriple{i \dealloc \andsep q'[i / x]}{\regc}{(x = i \land x \mapsto x') \andsep q'[i / x]}}{
+	x \notin \fv(q'[i / x])
+	&\infer[\silrule{alloc}]{ \siltriple{i \dealloc}{\regc}{x = i \land x \mapsto x'} }{}
+	}
+	}
+	}
+	\]
+	%	by using \silrule{free} and \silrule{frame} with frame $q'$ (this is always possible because $\modified(\code{free(x)}) = \emptyset$).
+
+	\proofcase{\code{free(x)}}
+	We have
+	\begin{align*}
+		\bwsem{\regc} \asldenot{q} & = \{ (s, h) \svert \edenot{\code{free(x)}} (s, h) \cap \asldenot{q} \neq \emptyset \}                                \\
+		                           & = \{ (s, h) \svert h(s(x)) \in \Val, (s, h[s(x) \mapsto \delta]) \in \asldenot{q} \}                                 \\
+		                           & = \{ (s, h) \svert h(s(x)) \in \Val, (s, h[s(x) \mapsto \delta]) \in \asldenot{x \dealloc \andsep q'} \}             \\
+		                           & = \lbrace (s, h) \svert h(s(x)) \in \Val, h = [s(x) \mapsto h(s(x))] \bullet h_q, (s, h_q) \in \asldenot{q'} \rbrace \\
+		                           & = \asldenot{x \mapsto - \andsep q'}
+	\end{align*}
+	So we have the thesis taking $p = x \mapsto - \andsep q'$, and we prove it by using \silrule{free} and \silrule{frame} with frame $q'$ (this is always possible because $\modified(\code{free(x)}) = \emptyset$).
+
+	\proofcase{\code{x := [y]}}
+	We have
+	\begin{align*}
+		\bwsem{\regc} \asldenot{q} & = \{ (s, h) \svert \edenot{\code{x := [y]}} (s, h) \cap \asldenot{q} \neq \emptyset \}                                                  \\
+		                           & = \{ (s, h) \svert h(s(y)) \in \Val, (s[x \mapsto h(s(y))], h) \in \asldenot{q} \}                                                      \\
+		                           & = \lbrace (s, h) \svert h(s(y)) \in \Val, (s[x \mapsto h(s(y))], h) \in \asldenot{\exists y'. y \mapsto y' \andsep q'} \rbrace          \\
+		                           & = \lbrace (s, h) \svert h(s(y)) \in \Val, h = [s(y) \mapsto h(s(y))] \bullet h_q, (s[x \mapsto h(s(y))], h_q) \in \asldenot{q'} \rbrace \\
+		                           & = \asldenot{\exists y'. (y \mapsto y' \andsep q'[y' / x])}
+	\end{align*}
+	So we have the thesis taking $p = \exists y'. (y \mapsto y' \andsep q'[y' / x])$, and we prove it by using \silrule{load} with $a = y'$ and \silrule{exists} because $y'$ is fresh.
+
+	\proofcase{\code{[x] := y}} We have
+	\begin{align*}
+		\bwsem{\regc} \asldenot{q} & = \{ (s, h) \svert \edenot{\code{[x] := y}} (s, h) \cap \asldenot{q} \neq \emptyset \}                                         \\
+		                           & = \{ (s, h) \svert h(s(x)) \in \Val, (s, h[s(x) \mapsto s(y)]) \in \asldenot{q} \}                                             \\
+		                           & = \lbrace (s, h) \svert h(s(x)) \in \Val, (s, h[s(x) \mapsto s(y)]) \in \asldenot{\exists x'. x \mapsto x' \andsep q'} \rbrace \\
+		                           & = \lbrace (s, h) \svert h(s(x)) \in \Val, h = [s(x) \mapsto h(s(x))] \bullet h_q, (s, h_q) \in \asldenot{q'} \rbrace           \\
+		                           & = \asldenot{x \mapsto - \andsep q'}
+	\end{align*}
+	So we have the thesis taking $p = x \mapsto - \andsep q'$. To prove the triple $\siltriple{p}{\code{[x] := y}}{q}$, we first prove $\siltriple{p}{\code{[x] := y}}{x \mapsto y \andsep q'}$ by using \silrule{store} and \silrule{frame} with frame $q'$ (this is always possible because $\modified(\code{[x] := y}) = \emptyset$). Then we observe that $x \mapsto y \implies \exists x'. x \mapsto x'$, so that we get $\siltriple{p}{\code{[x] := y}}{q}$ by using \silrule{cons}.
+\end{proof}
+
+\begin{lemma}\label{lmm:app:separation-sil-exist-wp}
+	Let $p, q \in \Asl$ be two assertions and $\regc \in \Cmdh$ such that $\asldenot{p} = \bwsem{\regc} \asldenot{q}$. Then, for $z \in \Var$ fresh, $\asldenot{\exists z . p} = \bwsem{\regc} \asldenot{\exists z . q}$
+\end{lemma}
+\begin{proof}
+	In this proof, we use the following notation: given a state $(s, h) = \sigma \in \Sigma$ and a value $v \in \Val$, we denote with $\sigma_v$ the state $(s[z \mapsto v], h)$, where we performed in the store $s$ the substitution of value $v$ for the variable $z$ of the statement of the lemma.
+	We prove the two inclusions separately.
+
+	To show that $\asldenot{\exists z . p} \supseteq \bwsem{\regc} \asldenot{\exists z . q}$, take $\sigma \in \bwsem{\regc} \asldenot{\exists z . q}$. Then, by definition of $\bwsem{\regc}$, there exist $\sigma' \in \asldenot{\exists z . q}$ such that $\sigma \in \bwsem{\regc} \sigma'$. By definition of $\asldenot{\exists z . q}$, there exists a value $v \in \Val$ such that $\sigma'_v \in \asldenot{q}$. Then, since $z$ is fresh, by Lemma~\ref{lmm:app:semantics-fresh-substitution} $\sigma_v \in \bwsem{\regc} \sigma'_v \subseteq \bwsem{\regc} \asldenot{q}$.
+	Since by hypothesis $\asldenot{p} = \bwsem{\regc} \asldenot{q}$ we have $\sigma_v \in \asldenot{p}$, and thus $\sigma \in \asldenot{\exists z . p}$.
+
+	To show that $\asldenot{\exists z . p} \subseteq \bwsem{\regc} \asldenot{\exists z . q}$, take $(s, h) = \sigma \in \asldenot{\exists z . p}$. By definition of $\asldenot{\exists z . p}$, there exists a value $v$ such that $\sigma_v \in \asldenot{p}$, and $\asldenot{p} = \bwsem{\regc} \asldenot{q}$ by hypothesis. By definition of $\bwsem{\regc}$, there exist $\sigma' \in \asldenot{q}$ such that $\sigma_v \in \bwsem{\regc} \sigma'$. Let $w = s(z)$: clearly $\sigma = (\sigma_v)_w$. Moreover, $\sigma_v \in \bwsem{\regc} \sigma'$ and $z$ is fresh, so by Lemma~\ref{lmm:app:semantics-fresh-substitution} we have $\sigma = (\sigma_v)_w \in \bwsem{\regc} \sigma'_w$. Lastly, since $\sigma' \in \asldenot{q}$ we have $\sigma'_w \in \asldenot{\exists z . q}$, thus $\sigma \in \bwsem{\regc} \asldenot{\exists z . q}$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:sil:separation-sil-sequential-complete}]
+	First we fix $q$ and prove, by induction on the structure of $\regr$, that there exists $p \in \Asl$ such that $\asldenot{p} = \bwsem{\regr} \asldenot{q}$, and $\siltriple{p}{\regr}{q}$ is provable.
+
+	\proofcase{$\regr = \regc$}
+	First, we transform $q$ in a normal form: we rename all quantified variables to fresh names, and use Lemma~\ref{lmm:app:asl-equivalences} (points 1-5) to lift disjunctions to the top, then existential quantifiers. Thus, without loss of generality, we can assume that $q$ is a disjunction of existentially quantified formulae that don't contain $\lor$ and $\exists$. Moreover, if we have a proof for each one of these formulae without $\lor$ and $\exists$, we can combine them using rules \silrule{disj} and \silrule{exists} to get a proof for the original $q$, and by Lemma~\ref{lmm:app:separation-sil-exist-wp} and additivity of $\bwsem{\regc}$ that is the weakest precondition for $q$. Therefore, again without loss of generality, we can consider only the case in which $q$ does not contain $\lor$ and $\exists$.
+	This case is exactly Lemma~\ref{lmm:app:separation-sil-atom-base-completeness}, so we conclude the inductive step.
+
+	\proofcase{$\regr = \regr_1; \regr_2$}
+	By inductive hypothesis on $\regr_2$, we know that there exists an assertion $t \in \Asl$ such that $\asldenot{t} = \bwsem{\regr_2} \asldenot{q}$ and $\siltriple{t}{\regr_2}{q}$ is provable. By inductive hypothesis on $\regr_1$, we know that there exists an assertion $p \in \Asl$ such that $\asldenot{p} = \bwsem{\regr_1} \asldenot{t}$ and $\siltriple{p}{\regr_1}{t}$ is provable. Now $\asldenot{p} = \bwsem{\regr_1} \asldenot{t} = \bwsem{\regr_1} \bwsem{\regr_2} \asldenot{q} = \bwsem{\regr_1; \regr_2} \asldenot{q}$ and we can prove $\siltriple{p}{\regr_1; \regr_2}{q}$ using \silrule{seq} and the two proofs given by the inductive hypothesis.
+
+	\proofcase{$\regr = \regr_1 \regplus \regr_2$}
+	For $i= 1, 2$, by inductive hypothesis on $\regr_i$ we know that there exists an assertion $p_i \in \Asl$ such that $\asldenot{p_i} = \bwsem{\regr_i} \asldenot{q}$ and $\siltriple{p_i}{\regr_i}{q}$ is provable. Therefore $\asldenot{p_1 \lor p_2} = \asldenot{p_1} \cup \asldenot{p_2} = \bwsem{\regr_1} \asldenot{q} \cup \bwsem{\regr_2} \asldenot{q} = \bwsem{\regr_1 \regplus \regr_2} \asldenot{q}$ and we can prove $\siltriple{p_1 \lor p_2}{\regr_1 \regplus \regr_2}{q}$ using \silrule{choice} and the two proofs given by the inductive hypothesis.
+
+	Now take any $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. By the proof above we know that there exists $p'$ such that $\bwsem{\regr} \asldenot{q} = \asldenot{p'}$ and $\siltriple{p'}{\regr}{q}$ is provable. Since $\asldenot{p} \subseteq \asldenot{p'}$, the implication $p \implies p'$ holds. Using the oracle for this implication we can prove the triple $\siltriple{p}{\regr}{q}$ using \silrule{cons} and the proof of $\siltriple{p'}{\regr}{q}$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:sil:separation-sil-complete-single-state}]
+	The proof is by induction on the structure of $\regr$.
+
+	\proofcase{$\regr = \regc$}
+	This is a special case of completeness for loop-free programs (Theorem~\ref{th:sil:separation-sil-sequential-complete}).
+
+	\proofcase{$\regr = \regr_1; \regr_2$}
+	By inductive hypothesis, given any $\sigma''$ such that $\sigma'' \in \bwsem{\regr_2} \sigma'$ there exists an assertion $t$ such that $\siltriple{t}{\regr_2}{q}$ is provable and $\sigma'' \in \asldenot{t}$. Particularly, we can take a $\sigma''$ such that $\sigma \in \bwsem{\regr_1} \sigma''$: this exists because $\sigma \in \bwsem{\regr_1; \regr_2} \sigma' = \bwsem{\regr_1} \bwsem{\regr_2} \sigma'$ (by Lemma~\ref{lmm:sil:bwsem-calculus}). Then, again by inductive hypothesis, we get the assertion $p$ such that $\sigma \in \asldenot{p}$ and $\siltriple{p}{\regr_1}{t}$ is provable. We conclude the inductive case by proving $\siltriple{p}{\regr_1; \regr_2}{q}$ via rule \silrule{seq}.
+
+	\proofcase{$\regr = \regr_1 \regplus \regr_2$}
+	Since $\sigma \in \bwsem{\regr_1 \regplus \regr_2} \sigma' = \bwsem{\regr_1} \sigma' \cup \bwsem{\regr_2} \sigma'$ (by Lemma~\ref{lmm:sil:bwsem-calculus}), there must exist an $i \in \{ 1, 2 \}$ such that $\sigma \in \bwsem{\regr_i} \sigma'$. Without loss of generality, we assume $i = 1$. By inductive hypothesis, we get an assertion $p$ such that $\sigma \in \asldenot{p}$ and $\siltriple{p}{\regr_1}{q}$ is provable. We conclude the inductive case with the proof
+	\[
+	\infer[\silrule{choice}]
+	{\siltriple{p}{\regr_1 \regplus \regr_2}{q}}
+	{
+		\infer{\siltriple{p}{\regr_1}{q}}{\text{(induction)}}
+		&
+		\infer[\silrule{empty}]{\siltriple{\false}{\regr_2}{q}}{}
+	}
+	\]
+
+	\proofcase{$\regr = \regr^{\kstar}$}
+	Since $\sigma \in \bwsem{\regr^{\kstar}} \sigma' = \bigcup\limits_{n \ge 0} \bwsem{\regr}^n \sigma'$ (by Lemma~\ref{lmm:sil:bwsem-calculus}), there must exist an $m \ge 0$ such that $\sigma \in \bwsem{\regr}^m \sigma'$. Therefore, there must exist a sequence of states $\{ \sigma_i \}_{0 \le i \le m}$ such that $\sigma_0 = \sigma'$, $\sigma_m = \sigma$ and $\sigma_{i+1} \in \bwsem{\regr} \sigma_{i}$ for all $0 \le i < m$. By inductive hypothesis, fixed $q_0 = q$, there exists a corresponding sequence of assertions $\{ q_i \}_{0 \le i \le m}$ such that $\sigma_i \in \asldenot{q_i}$ and $\siltriple{q_{i+1}}{\regr}{q_i}$ is provable for all $0 \le i < m$. We take $p = q_m$ and conclude the inductive case with the proof
+
+	\[
+	\infer[\silrule{unroll}]
+	{\siltriple{q_m}{\regr^{\kstar}}{q_0}}
+	{
+		\infer[\silrule{seq}]
+		{\siltriple{q_m}{\regr^{\kstar}; \regr}{q_0}}
+		{
+			\infer[\silrule{unroll}]
+			{\siltriple{q_m}{\regr^{\kstar}}{q_1}}
+			{
+				\infer[\silrule{seq}]
+				{\siltriple{q_m}{\regr^{\kstar}; \regr}{q_1}}
+				{
+					\infer[\silrule{unroll}]
+					{\siltriple{q_m}{\regr^{\kstar}}{q_2}}
+					{
+						\infer
+						{\vdots}
+						{
+							\infer[\silrule{iter0}]
+							{\siltriple{q_m}{\regr^{\kstar}}{q_m}}
+							{}
+						}
+					}
+					&
+					\infer{\siltriple{q_2}{\regr}{q_1}}{\text{(induction)}}
+				}
+			}
+			&
+			\infer{\siltriple{q_1}{\regr}{q_0}}{\text{(induction)}}
+		}
+	}
+	\]
+\end{proof}
