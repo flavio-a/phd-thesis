@@ -652,7 +652,7 @@ In the third group, we instantiated the SIL rules from Figure~\ref{fig:sil:sil-r
 			\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
 				                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
 				                                             \emptyset                         & otherwise
-			                                             \end{cases*}  \\
+			                                             \end{cases*}    \\
 			\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}(l)\right\rbrace \\
 			\edenot{\code{free(x)}} (s, h)      & \eqdef
 			\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                       \\
