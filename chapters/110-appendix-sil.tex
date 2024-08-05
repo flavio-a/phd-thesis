@@ -258,7 +258,7 @@ The next technical proposition states some semantic properties of the assertion 
 	The proof is by induction on the derivation tree of the provable triple $\siltriple{p}{\regr}{q}$. We prove here only some relevant cases.
 
 	\proofcase{\silrule{assign}}
-	Take $(s, h) \in \asldenot{q[a / x] \andsep t}$. Then we can split $h = h_p \bullet h_t$ such that $(s, h_p) \in \asldenot{q[a / x]}$ and $(s, h_t) \in \asldenot{t}$. Let $s' = s[x \mapsto \edenot{\code{a}} s]$, so that $(s', h) \in \fwsem{\code{x := a}} \asldenot{q[a / x] \andsep t}$. Since $\fv(t) \cap \modified(\regr) = \emptyset$, $x \notin \fv(t)$. Thus, by Proposition~\ref{prop:sl-sat}.1, $(s', h_t) \in \asldenot{t}$.
+	Take $(s, h) \in \asldenot{q[a / x] \andsep t}$. Then we can split $h = h_p \bullet h_t$ such that $(s, h_p) \in \asldenot{q[a / x]}$ and $(s, h_t) \in \asldenot{t}$. Let $s' = s[x \mapsto \edenot{\code{a}} s]$, so that $(s', h) \in \fwsem{\code{x := a}} \asldenot{q[a / x] \andsep t}$. Since $\fv(t) \cap \modified(\regr) = \emptyset$, $x \notin \fv(t)$. Thus, by Proposition~\ref{prop:app:sl-sat}.1, $(s', h_t) \in \asldenot{t}$.
 	Moreover, $(s', h_p) \in \asldenot{q}$ by Proposition~\ref{prop:app:sl-sat}.2.
 	Hence, $(s', h_p \bullet h_t) = (s', h) \in \asldenot{q \andsep t}$.
 
@@ -287,7 +287,7 @@ The next technical proposition states some semantic properties of the assertion 
 	By inductive hypothesis on the provable triple $\siltriple{p}{\regr}{q}$ and formula $t$, there is $(s', h') \in \asldenot{q \andsep t}$ such that $(s', h') \in \fwsem{\regr} (s[x \mapsto v], h)$. Because $x \notin \fv(\regr)$, we also have $(s', h') \in \fwsem{\regr} (s, h)$, and clearly $(s', h') \in \asldenot{(\exists x . q) \andsep t}$, that is the thesis.
 
 	\proofcase{\silrule{frame}}
-	Take $(s, h) \in \asldenot{p \andsep t' \andsep t}$. By hypothesis, $(\fv(t' \andsep t)) \cap \modified(\regr) = (\fv(t') \cup \fv(t)) \cap \modified(\regr) = \emptyset$. Then, applying the inductive hypothesis on the provable triple $\siltriple{p}{\regr}{q}$ and the formula $t' \andsep t$ (which satisfies the hypothesis of the theorem) we get exactly the thesis.
+	By hypothesis, $(\fv(t' \andsep t)) \cap \modified(\regr) = (\fv(t') \cup \fv(t)) \cap \modified(\regr) = \emptyset$. Then, applying the inductive hypothesis on the provable triple $\siltriple{p}{\regr}{q}$ and the formula $t' \andsep t$ (which satisfies the hypothesis of the theorem) we get exactly the thesis.
 
 	\proofcase{\silrule{seq}}
 	Because of name clashes, here we assume the hypotheses of rule \silrule{seq} to be $\siltriple{p}{\regr_1}{p'}$ and $\siltriple{p'}{\regr_2}{q}$.
@@ -297,7 +297,31 @@ The next technical proposition states some semantic properties of the assertion 
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{th:sil:ssil-errors-sound}]
-	\todo[inline]{Write (at least a sketch)}
+	The proof follows the same line as the soundness proof of ``plain'' Separation SIL. For notation, we write $(\epsilon, s, h)$ for state $(\epsilon, (s, h))$ from domain $\{ \oktext{ok}, \ertext{er} \} \times \Sigma$, where $\epsilon$ is the flag.
+	Following the proof of Lemma~\ref{lmm:sil:separation-sil-stronger-sound}, we prove by induction on the derivation tree of $\siltriple{\epsilon: p}{\regr}{\epsilon: q}$ the condition
+	\[
+	\forall (\epsilon, s, h) \in \asldenot{\epsilon: p \andsep t} \sdot \exists (\epsilon', s', h') \in \asldenot{\epsilon': q \andsep t} \sdot (\epsilon', s', h') \in \fwsem{\regr} (\epsilon, s, h)
+	\]
+	We prove here only some relevant cases.
+
+	\proofcase{\silrule{assign}}
+	Rule \silrule{assign} requires both flags $\epsilon$ and $\epsilon'$ to be $\okflag$.
+	Take $(\okflag, s, h) \in \asldenot{\oktext{ok: p \andsep t}}$. Since the semantics of assignments $\edenot{\code{x := a}}$ never fails, on $\okflag$ states it behaves exactly as in the Separation SIL model without flags. Therefore, the proof concludes as in Lemma~\ref{lmm:sil:separation-sil-stronger-sound}.
+
+	\proofcase{\silrule{frame}}
+	By hypothesis, $(\fv(t' \andsep t)) \cap \modified(\regr) = (\fv(t') \cup \fv(t)) \cap \modified(\regr) = \emptyset$. Then, applying the inductive hypothesis on the provable triple $\siltriple{\epsilon: p}{\regr}{\epsilon': q}$ and the formula $t' \andsep t$ (which satisfies the hypothesis of the theorem) we get exactly the thesis.
+
+	\proofcase{\silrule{seq}}
+	Because of name clashes, we let the hypotheses of rule \silrule{seq} be $\siltriple{\epsilon: p}{\regr_1}{\epsilon': p'}$ and $\siltriple{\epsilon': p'}{\regr_2}{\epsilon'': q}$.
+	Since $\modified(r_1) \cup \modified(r_2) = \modified(r_1; r_2)$, we know that $\fv(t) \cap \modified(r_1) = \fv(t) \cap \modified(r_2) = \emptyset$.
+	Take $(\epsilon, s, h) \in \asldenot{\epsilon: p \andsep t}$. By inductive hypothesis on provable triple $\siltriple{\epsilon: p}{\regr_1}{\epsilon': p'}$ and formula $t$ we get that there exists $(\epsilon', s', h') \in \asldenot{\epsilon': p' \andsep t}$ such that $(\epsilon', s', h') \in \fwsem{\regr_1} (\epsilon, s, h)$. Then, by inductive hypothesis on the provable triple $\siltriple{\epsilon': p'}{\regr_2}{\epsilon'': q}$ and formula $t$ again, we get $(\epsilon'', s'', h'') \in \asldenot{\epsilon'': q \andsep t}$ such that $(\epsilon'', s'', h'') \in \fwsem{\regr_2} (\epsilon', s', h')$.
+	The thesis follows since $(\epsilon'', s'', h'') \in \fwsem{\regr_2} (\epsilon', s', h') \subseteq \fwsem{\regr_2} (\fwsem{\regr_1} (\epsilon, s, h)) = \fwsem{\regr_1; \regr_2} (\epsilon, s, h)$.
+
+	\proofcase{\silrule{store\mbox{-}er}}
+	Take $(\okflag, s, h) \in \asldenot{\oktext{ok: x \dealloc{} \andsep t}}$. $h(s(x)) = \delta \notin \Val$, so that $(\erflag, s, h) \in \fwsem{[x] := y} (\okflag, s, h)$. Moreover, since $(s, h) \in \asldenot{x \dealloc{} \andsep t}$, we have $(\erflag, s, h) \in \asldenot{\ertext{er: x \dealloc{} \andsep t}}$, which is the thesis.
+
+	\proofcase{\silrule{er\mbox{-}id}}
+	Take $(\erflag, s, h) \in \asldenot{\ertext{er: q}}$. Since $\fwsem{\cdot}$ always acts as the identity on $\erflag$ states, we have $(\erflag, s, h) \in \fwsem{\regr} (\erflag, s, h)$ and $(\erflag, s, h) \in \asldenot{\ertext{er: q}}$.
 \end{proof}
 
 Some of the following equivalences are standard, but we collect them all here for convenience.

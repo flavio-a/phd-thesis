@@ -1,7 +1,7 @@
 % !TEX root = ../phd-thesis.tex
 
 \chapter{Local Completeness Logic}\label{ch:lcla}
-In this chapter, we extend $\LCLA$ with new capabilities\todo{Mention that LCL is oa+ua}. First, we investigate the possibility of relaxing point (3) of Theorem~\ref{th:sota:lcl-soundness} to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$ to achieve extensional soundness, i.e., to untie the set of properties that can be proved about the function computed by the program from the way the program is written. To do so, we follow the idea introduced in~\cite[§8]{BGGR23} of \emph{changing the abstract domain} during the analysis, possibly in different ways for different portions of the code.
+In this chapter, we extend $\LCLA$ (see Section~\ref{sec:sota:lcl}) with new capabilities. First, we investigate the possibility of relaxing point (3) of Theorem~\ref{th:sota:lcl-soundness} to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$ to achieve extensional soundness, i.e., to untie the set of properties that can be proved about the function computed by the program from the way the program is written. To do so, we follow the idea introduced in~\cite[§8]{BGGR23} of \emph{changing the abstract domain} during the analysis, possibly in different ways for different portions of the code.
 While~\cite{BGGR23} proposes a single rule for domain refinement, we study here both \emph{refinement} and \emph{simplification} rules for $\LCLA$.
 Moreover, we study here how to weaken the hypothesis of Galois connection: the whole theory of completeness is based on the existence of a best approximation for concrete points, but this is not always available in practical instances~\cite{CC92}.
 Lastly, we study further the possibility of using $\LCLA$ for backward analysis, as briefly outlined in~\cite[\S 5.3]{BGGR23}.
@@ -734,7 +734,7 @@ Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr
 \section{Backward analysis}
 
 In principle, the theory of Abstract Interpretation does not rely on the analysis being forward. This suggests that LCL can be used for backward analysis, as discussed in~\cite[\S 5.3]{BGGR23}. However, they explored the use of \wlp{} as the reference backwards semantics, requiring the use of under\hyp{}approximation abstract domains, that are hard to exploit in practice (see Chapter~\ref{ch:limits-underapprox-domains}).
-Instead, our key insight is that by using $\bwsem{\cdot}$ (defined in the previous chapter, equation \eqref{eq:sil:bwsem-definition}) the proof system can be turned over by duality for backward inference \emph{using classical, over-approximation abstract domains}.
+Instead, our key insight is that by using $\bwsem{\cdot}$ (see equation~\eqref{eq:sil:bwsem-definition}) the proof system can be turned over by duality for backward inference \emph{using classical, over-approximation abstract domains}.
 
 \begin{figure*}
 	\begin{align*}

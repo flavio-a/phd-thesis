@@ -284,7 +284,7 @@ We named columns of Figure~\ref{fig:sil:taxonomy} based on which semantics (forw
 We first carry out a comparison of the logics two by two. We skip the pair HL and IL since it was already discussed when IL was introduced in \cite{OHearn20}.
 
 \subsubsection{NC and IL}
-Sufficient preconditions are properties that imply Dijkstra's weakest liberal precondition~\cite{Dijkstra75}: $\overline{P}$ is sufficient for a postcondition $Q$ if and only if $\overline{P} \subseteq \wlp[\regr](Q)$, which in turn is equivalent to validity of the HL triple $\hltriple{\overline{P}}{\regr}{Q}$. Necessary and sufficient preconditions are dual, and so are IL and HL. Moreover, NC and IL enjoy the same consequence rule: both can strengthen the post and weaken the pre. This double duality suggests a relation between NC and IL. However, the following example shows this is not the case.
+Sufficient preconditions are properties that imply Dijkstra's $\wlp$: $\overline{P}$ is sufficient for a postcondition $Q$ if and only if $\overline{P} \subseteq \wlp[\regr](Q)$, which in turn is equivalent to validity of the HL triple $\hltriple{\overline{P}}{\regr}{Q}$. Necessary and sufficient preconditions are dual, and so are IL and HL. Moreover, NC and IL enjoy the same consequence rule: both can strengthen the post and weaken the pre. This double duality suggests a relation between NC and IL. However, the following example shows this is not the case.
 
 \begin{example}\label{ex:sil:nc-and-il}
 	Consider the nondeterministic program $\regr 42$ from Example~\ref{ex:bg:il-hl-comparison}, where $Q_{42} \eqdef (z = 42)$. For brevity, we let $Q'_{42} \eqdef (Q_{42} \land \text{odd}(y) \land \text{even}(x))$.
@@ -297,11 +297,11 @@ Sufficient preconditions are properties that imply Dijkstra's weakest liberal pr
 Given $\vDash \nctriple{\underline{P}}{\regr}{Q}$ and $\vDash \iltriple{P}{\regr}{Q}$, there always are states satisfying both $P$ and $\underline{P}$, i.e., $P \cap \underline{P} \neq \emptyset$. However, in general neither $P \subseteq \underline{P}$ nor $\underline{P} \subseteq P$. The difference between NC and IL becomes apparent when we spell out their validity conditions using quantifiers:
 \begin{align*}
 	\forall \sigma' \in Q \sdot \forall \sigma\in \bwsem{\regr}\sigma' \sdot\sigma\in P
-	\tag{NC$^{\forall}$} \\
+	\tag{NC$_{\text{FOL}}$} \\
 	\forall \sigma' \in Q \sdot \exists \sigma\in \bwsem{\regr}\sigma' \sdot \sigma \in P
-	\tag{IL$^{\exists}$}
+	\tag{\ref{eq:bg:il-fol}}
 \end{align*}
-Initial states are universally quantified in (NC$^{\forall}$)---\emph{all} initial states with a good run must satisfy the precondition---but they are existentially quantified in (IL$^{\exists}$). We also note that, when $\regr$ is reversible (i.e., $\fwsem{\regr}$ is injective) any valid IL triple is also a valid NC triple.
+Initial states are universally quantified in (NC$_{\text{FOL}}$)---\emph{all} initial states with a good run must satisfy the precondition---but they are existentially quantified in (IL$_{\text{FOL}}$). We also note that, when $\regr$ is reversible (i.e., $\fwsem{\regr}$ is injective) any valid IL triple is also a valid NC triple.
 
 \subsubsection{NC and HL}
 It turns out that NC is strongly connected to weakest liberal preconditions and thus to HL.
@@ -457,7 +457,7 @@ While our presentation of SIL rules uses sets of states, we use Hoare's backward
 
 \subsection{Weakest/strongest conditions}\label{sec:sil:extremal-conditions}
 Depending on the way in which program analysis is conducted, it can be interesting to derive either the most general or most specific hypotheses for the given property.
-For instance, given a correctness specification $Q$, one is typically interested in finding the minimal constraint on the input that guarantees program correctness. This correspond to computing Dijkstra's \wlp{} (see Remark~\ref{rem:bg:hl-forward}).
+For instance, given a correctness specification $Q$, one is typically interested in finding the minimal constraint on the input that guarantees program correctness (this correspond to computing Dijkstra's \wlp{}).
 Conversely, to infer necessary conditions we can be interested in devising the strongest hypotheses under which some correct run is possible.
 
 To investigate the existence of weakest/strongest pre and post, we find convenient to focus on the validity of the four kinds of triples as shown in Figure~\ref{fig:sil:taxonomy}.
@@ -629,7 +629,7 @@ For the sake of presentation, we present rules without explicit error management
 We split the rules in three groups. The first group gives the rules for atomic commands $\regc \in \Cmdh$, i.e., all instances of the SIL rule \silrule{atom}. The second one includes rules borrowed from SL, the third one from SIL.
 
 Rule \silrule{skip} is straightforward: whatever is true before and after the \code{skip} can be added with \silrule{frame}.
-Rule \silrule{assign} is Hoare's backward assignment rule~\cite{Hoare69}. While also Floyd's forward axiom~\cite{Floyd67} is sound for SIL (see Section~\ref{sec:sil:rules-comparison}), we opt for Hoare's rule because it fits better with the backward analysis of SIL.
+Rule \silrule{assign} is Hoare's backward assignment rule~\cite{Hoare69}. Floyd's forward axiom~\cite{Floyd67} is also valid for SIL (see Section~\ref{sec:sil:rules-comparison}), but we opt for Hoare's rule because it fits better with the backward analysis of SIL.
 Rule \silrule{assume} conjoins the assertion \code{b} to the postcondition: only states satisfying the Boolean guard can reach the post.
 Rule \silrule{alloc} allocates a new memory location for $x$. The premise is empty: if the previous content of $x$ is needed, $x = z$ can be introduced in the premise with \silrule{cons}.
 Rule \silrule{free} requires $x$ to be allocated before freeing it.
@@ -652,7 +652,7 @@ In the third group, we instantiated the SIL rules from Figure~\ref{fig:sil:sil-r
 			\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
 				                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
 				                                             \emptyset                         & otherwise
-			                                             \end{cases*}    \\
+			                                             \end{cases*}  \\
 			\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}(l)\right\rbrace \\
 			\edenot{\code{free(x)}} (s, h)      & \eqdef
 			\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                       \\

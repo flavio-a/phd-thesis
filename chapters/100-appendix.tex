@@ -5,5 +5,17 @@
 This appendix contains technical details of proofs and examples for Chapters~\ref{ch:background} and \ref{ch:sota}.
 
 \begin{proof}[Proof of Proposition~\ref{prop:bg:fwsem-monotone}]
-	\todo[inline]{Write}
+	The proof is by induction on the structure of $\regr$.
+
+	\proofcase{$\expe$}
+	The thesis is exactly the hypothesis that $\edenot{\cdot}$ is monotone (resp. additive).
+
+	\proofcase{$\regr_1; \regr_2$}
+	By inductive hypothesis, both $\fwsem{\regr_1}$ and $\fwsem{\regr_2}$ are monotone (resp. additive). The thesis follows since composition of monotone (resp. additive) functions is monotone (resp. additive).
+
+	\proofcase{$\regr_1 \regplus \regr_2$}
+	By inductive hypothesis, both $\fwsem{\regr_1}$ and $\fwsem{\regr_2}$ are monotone (resp. additive). The thesis follows since join of monotone (resp. additive) functions is monotone (resp. additive).
+
+	\proofcase{$\regr^{\kstar}$}
+	By inductive hypothesis, $\fwsem{\regr}$ is monotone (resp. additive). Since composition of monotone (resp. additive) functions is monotone (resp. additive), also $\fwsem{\regr}^n$ is monotone (resp. additive). Therefore, $\fwsem{\regr^{\kstar}}$ is monotone (resp. additive) because it's a lub of monotone (resp. additive) functions.
 \end{proof}
