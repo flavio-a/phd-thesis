@@ -534,14 +534,14 @@ that is caused by the fact the abstract interpreter operates on abstract propert
 
 \subsection{Under-approximation Abstract Domains}
 The definition of Galois connection is not symmetric, in the sense that it puts $\gamma$ above and $\alpha$ below. This favours over-approximation. A way to see this is the fact that $A$ is an \emph{upper} closure operator, that is $c \le_C A(c)$. For this reason, to talk about under-approximation domains, we consider ``reversed" Galois connections:
-\begin{definition}[Under-approximation Galois connection]
+\begin{definition}[Under-approximation Galois connection]\label{def:bg:under-gc}
 	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define an under-approximation Galois connection when
 	\[
 	\forall c \in C, a \in A.\quad a \le_A \alpha(c) \iff \gamma(a) \le_C c
 	\]
 \end{definition}
-It is important to remark that an under-approximation Galois connection is not a really new notion. In fact, it is just a standard Galois connection between the opposite posets $C^{\op}$ and $A^{\op}$. Alternatively, it is a Galois connection between $A$ and $C$ in the reversed order: for this reason, we denote it with $\gc{A}{\gamma}{\alpha}{C}$, where we write $A$ on the left and $C$ on the right. The first point of view allows us to reuse all the machinery for Galois connection, just dualizing results: $A = \gamma \alpha : C \rightarrow C$ is a \emph{lower} closure operator (that is monotone, idempotent and reductive, ie. $A(c) \le_C c$), $\alpha$ is co-additive and $\gamma$ is additive, the image of $A$ is a dual Moore family (that is a family of sets containing $\bot_C$ and closed under join).
-Again, we only consider under-approximation Galois insertions, that are Galois connections in which $\alpha \gamma = \id_A$. We write $A_{\alpha, \gamma} \in \Abs^{\op}(C)$ to say that $A$ is an under-approximation abstract domain on $C$ with adjoints $\alpha$ and $\gamma$, possibly omitting these if superfluous.
+It is important to remark that an under-approximation Galois connection is not a really new notion. In fact, it is just a standard Galois connection between the opposite posets $C^{\op}$ and $A^{\op}$. Alternatively, it is a Galois connection between $A$ and $C$ in the reversed order: for this reason, we denote it with $\ugc{A}{\gamma}{\alpha}{C}$, where we write $A$ on the left and $C$ on the right. The first point of view allows us to reuse all the machinery for Galois connection, just dualizing results: $A = \gamma \alpha : C \rightarrow C$ is a \emph{lower} closure operator (that is monotone, idempotent and reductive, ie. $A(c) \le_C c$), $\alpha$ is co-additive and $\gamma$ is additive, the image of $A$ is a dual Moore family (that is a family of sets containing $\bot_C$ and closed under join).
+Again, we only consider under-approximation Galois insertions (UGI), that are Galois connections in which $\alpha \gamma = \id_A$. We write $A_{\alpha, \gamma} \in \Abs^{\op}(C)$ to say that $A$ is an under-approximation abstract domain on $C$ with adjoints $\alpha$ and $\gamma$, possibly omitting these if superfluous.
 
 As an example of under-approximation abstract domain, we propose the following variation of intervals:
 \begin{example}\label{ex:bg:intervals0}

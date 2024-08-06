@@ -54,8 +54,8 @@
 
 %%%%%%%%%%%%%%%%%%%% ABSINT
 \newcommand{\Abs}{\text{\normalfont Abs}}
-\newcommand{\gc}[4]{\langle #1, (#2, #3), #4 \rangle}
-%\newcommand{\gi}[3]{\langle #1, (#2, \id_{#3}), #3 \rangle}
+\newcommand{\gc}[4]{\langle #1 \mathrel{\substack{#3 \\ \leftrightarrows \\ #2}} #4\rangle}
+\newcommand{\gi}[3]{\gc{#1}{#2}{\phantom{\gamma}}{#3}}
 \newcommand{\complete}[3]{\mathbb{C}^{#1}_{#2}(#3)}
 \newcommand{\Sign}{\mathsf{Sign}}
 \newcommand{\Int}{\text{Int}}
@@ -68,6 +68,9 @@
 %\newcommand{\concat}{\text{concat}}
 %\newcommand{\macheps}{\textbf{u}}
 %\newcommand{\fp}{\text{fp}}
+%\newcommand{\gi}[3]{\langle #1, (#2, \id_{#3}), #3 \rangle}
+\newcommand{\ugc}[4]{\gc{#1}{#3}{#2}{#4}}
+\newcommand{\ugi}[3]{\ugc{#1}{#2}{\phantom{\gamma}}{#3}}
 
 %%%%%%%%%%%%%%%%%%%% Logics (HL, IL, LCL, NC, SIL)
 \makeatletter

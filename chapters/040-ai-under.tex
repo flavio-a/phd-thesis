@@ -1,17 +1,187 @@
 % !TEX root = ../phd-thesis.tex
 
-\chapter{Under-Approximation Abstract Domains}\label{ch:limits-underapprox-domains}
+\chapter{Under-Approximation Abstract Domains}\label{ch:uai}
 In this chapter, we try to use Abstract Interpretation as a basis for under-approximation analysis. In principle, the over-approximation theory could be dualized in an order-theoretic sense to obtain results for under-approximation. However, in this chapter we show that it's not so simple. Particularly, \emph{basic transfer functions} (the semantics of basic constructs of the language) are not dualized: therefore, the dual of an abstract domain that "behaves well" with respect to basic transfer functions may not enjoy the same property.
 
 We first point out some intuitive reasons that break the symmetry between over and under-approximation. Then, building on these observations, we formally derive some negative results showing that it is not possible to define Galois connection-based under-approximation abstract domains in a large class of instances. More in details, we assume that (i)~abstract analyses should return non-trivial results for large classes of programs and (ii)~to justify the convenience of the abstract analysis, the abstract domain should be significantly “smaller” than the concrete powerset. Under these assumptions, we prove that there is no under-approximation abstract domain able to analyse programs encoding certain classes of basic transfer functions.
 
 The content of this chapter is based on~\cite{ABG22,ABG24}.
 
-\fromhere
 \section{Overview}
-A shortened version of the introduction, with related work, the general idea and the examples.
+%A shortened version of the introduction, with related work, the general idea and the examples.
+
+In their first work on Abstract Interpretation~\cite{CC77}, Patrick and Radhia Cousot introduced the formal theory that could be used to study both over and under-approximations.
+However, while the former has been extensively studied, there are only sparse studies on under-approximation abstract domain.
+For instance, Lev-Ami et al.~\cite{LSRG07} proposed to use complements of over-approximation domains to infer sufficient preconditions for program correctness. However, such an approach is severely limited in proving incorrectness, as we show in Example~\ref{ex:uai:complement-domain}.
+For the same goal, Miné~\cite{Mine14} used directly over-approximation domains, giving up the best abstraction and handling the choice of a maximal one with heuristics.
+To infer necessary preconditions, Cousot et al.~\cite{CCL11,CCFL13} use Abstract Interpretation techniques but on boolean formulas, hence bypassing the issue of defining an under-approximation abstract domain.
+Schmidt~\cite{Schmidt07} uses higher-order domains, defining abstract states with the meaning ``there exists a value satisfying this over-approximation property'', hence giving rise to an under-approximation of over-approximations.
+All the above approaches design under-approximation domains starting from over-approximation ones, and, to the extent of our knowledge, there are no abstract domains thought from the ground up for under-approximation.
+
+We consider the problem of defining meaningful under-approximation abstract domains for program analysis over powerset concrete domains under the hypotheses (i) and (ii) above.
+%\begin{figure}[t]
+%	\centering
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		{
+%			\selectfont
+%			\def\svgwidth{.8\textwidth}
+%			\input{images/gc-intervals.pdf_tex}
+%		}
+%		\caption{Over-approximation intervals domain.}
+%		\label{fig:uai:gc-intervals}
+%	\end{subfigure}%
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		{
+%			\selectfont
+%			\def\svgwidth{.8\textwidth}
+%			\input{images/ugc-intervals.pdf_tex}
+%		}
+%		\caption{Under-approximation, complemented interval domain.}
+%		\label{fig:uai:ugc-intervals}
+%	\end{subfigure}
+%	\caption{Example of complemented domain, using intervals.}
+%	\label{fig:uai:gc-ugc-intervals}
+%\end{figure}
+From a purely mathematical point of view, this seems a trivial task because the theories of over and under-approximation are dual.
+For instance, as done by Lev-Ami et al.~\cite{LSRG07}, we can transform any over-approximation domain into an under-approximation by reversing the order of its elements and complementing their interpretation. We call this construction \emph{complement domain}.
+As an example, consider the (over-approximation) interval domain, where, e.g., the interval $[-1,1]$ is a correct abstraction for any subset of $\{ -1, 0, 1 \}$ and is the best abstraction of $\{ -1, 1 \}$ and $\{ -1, 0, 1 \}$. Instead, in the complement domain, the interval $[-1,1]$ is a correct abstraction of any set containing all values strictly smaller than $-1$ and all values strictly greater than $1$ and is the best abstraction of $\{ \dots, -3, -2, 0, 2, 3, \dots \}$ and $\{ \dots, -3, -2, 2, 3, \dots \}$. Note that, being an under-approximation, $[-1, 1]$ represents correctly any set \emph{larger} than its concretization $\{ \dots, -3, -2, 2, 3, \dots \}$.
+However, we argue that complement domains are not useful for incorrectness analysis: initializations such as \code{i := 0} or \code{i := 1000} are abstracted to the interval $[-\infty,\infty]$, which is the best abstraction of any finite set but loses any information about the initial value of \code{i}. We give more details on complement domains in Example~\ref{ex:uai:complement-domain}.
+
+Another important asymmetry we point out is the handling of divergence.
+In both over and under-approximation, divergence is represented by the bottom element $\bot$ of the abstract domain. However, $\bot$ as an under-approximation also represents the absence of information; dually, in over-approximation this is described by $\top$. This is a problem since many concrete functions are strict, that is, when applied to a non-terminating expression, they also fail to terminate (they return $\bot$ if one argument is $\bot$), and, to be a correct under-approximation, also the corresponding abstract function needs to be strict:
+\[
+f^{\flat}(\bot) = f^{\flat}(\alpha(\emptyset)) \preceq \alpha(f(\emptyset)) = \alpha(\emptyset) = \bot
+\]
+This implies that whenever the analysis cannot determine any meaningful information at some program point, it has to propagate the absence of information along all program paths, at least until a join in the control flow is found.
+So ``recovery'' from $\bot$, that is, producing a result different from $\bot$, once we start with it, is very hard in an under-approximation. On the contrary, ``recovery'' from $\top$ in over-approximation is easier: for example, this can happen whenever the code contains a constant assignment.
+
+A last asymmetry we remark is that over-approximation abstract domains are closed under intersection, while under\hyp{}approximation abstract domains are closed under union. In the case of assignments this asymmetry has serious consequences. While the result of an assignment can be over-approximated by any larger set of values, with different degrees of precision, the only admissible under-approximations are either the singleton or the empty set. If not enough singletons are represented, then the under-approximation analysis is likely to give a trivial result. Conversely, if too many singletons are represented, closure under union will make the size of the under-approximation abstract domain grow exponentially, violating assumption (ii).
+
+We further strengthen the asymmetry by using the concept of under-approximation Galois insertion (Definition~\ref{def:bg:under-gc}) to show how straightforward adaptations of some known over-approximation techniques don't work for under-approximation.
+Then, we establish some negative results. The general theme is to fix some reasonable hypotheses over the common functions encoded by program fragments and then show that any under-approximate abstract domain with size not exponentially larger than the set of values (i.e., satisfying assumption (i)) will return no useful information for such program fragments.
+Since the analysis is unable to recover from this lack of information, the result of the analysis of the entire program will be trivial (i.e., violating assumption (ii)).
+Therefore, while any abstract domain for under-approximate reasoning may be effective for some carefully crafted programs, it will return trivial results on the majority of programs.
+
+Formally, we first introduce the new definition of \emph{non-emptying function} (Definition~\ref{def:uai:non-emptying}), describing functions that do not tamper the analysis. Roughly speaking, a function on the concrete domain is non-emptying if it admits an under-approximation whose consecutive applications would not waste the analysis result by returning $\bot$.
+Our first result proves that no abstract domain for integers can be constructed that makes all increments non-emptying. In other words, we prove that an analysis based on under-approximation domains would often report trivial information for programs that involve repeated increments. We do so both for the infinite domain $\pow(\setZ)$ and a finite integer domain $\pow([-N, N])$ for large $N$.
+
+\begin{figure}[t]
+	\begin{subfigure}{\textwidth}
+		\centering
+		\begin{tabular}{c|ccc}
+			Result                                            & Concrete domain & Tight hypotheses  & Generalizes                                       \\
+			\hline
+			Proposition~\ref{th:uai:ne-sum-nonexsistence-inf} & $\pow(\setZ)$   & --                & --                                                \\
+			Theorem~\ref{th:uai:non-empt-res-local}           & $\pow(C)$       & High surjectivity & Proposition~\ref{th:uai:ne-sum-nonexsistence-inf} \\
+			Theorem~\ref{th:uai:non-empt-res-global}          & $\pow(C)$       & High surjectivity & Proposition~\ref{th:uai:ne-sum-nonexsistence-inf} \\
+		\end{tabular}
+		\caption{Tabular comparison of our results for infinite domains.}
+		\label{fig:uai:tab-summary-infinite}
+		\vspace{1ex}
+	\end{subfigure}
+	\begin{subfigure}{\textwidth}
+		\centering
+		\begin{tabular}{c|cccc}
+			Result                                            & Concrete domain & Tight hypotheses & Generalizes                                       & Inspired by                              \\
+			\hline
+			Proposition~\ref{th:uai:ne-sum-nonexsistence-fin} & $\pow([-N, N])$ & --               & --                                                & --                                       \\
+			Theorem~\ref{th:uai:non-empt-res-finite-global}   & $\pow(C)$       & None             & Proposition~\ref{th:uai:ne-sum-nonexsistence-fin} & Theorem~\ref{th:uai:non-empt-res-global} \\
+		\end{tabular}
+		\caption{Tabular comparison of our results for finite domains.}
+		\label{fig:uai:tab-summary-finite}
+	\end{subfigure}
+	\caption{Summary of our results showing that, under certain hypotheses, there exists no under-approximation abstract domain making all functions in a given family non-emptying. The tables show which concrete domain they are applicable to, which of the hypotheses are (known to be) tight, and the relations between the results, giving a quick reference for comparison.}
+\end{figure}
+
+We then study how we can generalize these results to different concrete domains and function families.
+We first focus on the case where the concrete domain is the powerset of an \emph{infinite} set of values, and we prove two results, one local and one global, for infinite concrete domains. To do so, we introduce the notion of \emph{highly surjective function family} (Definition~\ref{def:uai:highly-onto-func-family}), of which sums are an instance. The local condition applies to each function in the family, while the global condition is a property of the whole family. Contrary to the definition of non-emptying functions, the notion of highly surjective function family is independent of the abstract domain. Once again the main consequence of our results is that abstract analyses of programs involving the application of functions in the family will often report trivial information. Note that, as in the case of increments, highly surjective function families are commonly coded in programs.
+Finally, we show that the hypothesis of high surjectivity is tight by presenting mathematical constructions of abstract domains making all functions in a family non-emptying.
+Our results for infinite domains are summarized in Table~\ref{fig:uai:tab-summary-infinite}: both results for an arbitrary infinite set $C$ generalize the result for integers. The hypothesis of high surjectivity is tight, but we do not know about all the others.
+
+Lastly, we focus on the powerset of a \emph{finite} set of values. We discuss why a straightforward adaptation of the two results for the infinite case to the finite one was not possible, most notably a difference with the very definition of highly surjective function family. We then propose a single general result for this case, inspired by the global condition for the infinite case, but whose details are different.
+Our results for finite domains are summarized in Table~\ref{fig:uai:tab-summary-finite}: our single result generalizes again the result for integers, but we were not able to prove any of our hypotheses tight.
+
+\section{Comparison with over-approximation}\label{sec:uai:examples}
+We revisit some known over-approximation analyses and techniques, showing how specific characteristics of under-approximation makes this a challenging task.
+
+\subsection*{Complement domain}
+The first attempt, already briefly discussed in the introduction, is the use of the complement of an over-approximation abstract domain. This is an application of the order theoretic duality, but it turns out the resulting domains are not useful for analysis.
+
+\begin{example}[Complement domain]\label{ex:uai:complement-domain}
+	Whenever the concrete domain is a powerset $\pow(C)$, we can exploit the complement $\lnot : \pow(C) \rightarrow \pow(C)$ to define a UGC from any given GC by taking complements of the concretization. Formally, given a GC $\gc{\pow(C)}{\alpha}{\gamma}{A}$, then $\ugc{\pow(C)}{\alpha \circ \lnot}{\lnot \circ \gamma}{A^{\op}}$ is a UGC (this stems from $\lnot : \pow(C) \rightarrow \pow(C)^{\op}$ being an isomorphism of posets).
+	For instance, given the interval domain, we can define its complement by
+	\[
+	\gamma_{\lnot}([n, m]) = \lnot \gamma([n, m]) = \setZ \setminus \{ x \in  \setZ \svert n \le x \le m \} = \{ x \in \setZ \svert x < n \lor m < x \}
+	\]
+	The set of abstract elements is the same as $\Int$, but the ordering is reversed, so we call this domain $\Int^{\op}$. The (under-approximation) Galois Connection with $\pow(\setZ)$ is given by $\gamma_{\lnot} = \lnot \circ \gamma$ and $\alpha_{\lnot} = \alpha \circ \lnot$. Note that, thanks to the ordering in $\Int^{\op}$ being the opposite, both $\alpha_{\lnot}$ and $\gamma_{\lnot}$ are monotone.
+
+	While $\Int^{\op}$ is a sound under-approximation abstract domain, we argue that it is not useful for incorrectness analysis. Consider a command as simple as the initialization \code{i := 0} that may happen at the beginning of a loop. This requires the analysis to abstract the concrete element $\{ 0 \}$, the set of values \code{i} may assume at the beginning of the loop. According to the above definition, we have
+	\[
+	\alpha_{\lnot}(\{ 0 \}) = \alpha(\lnot \{ 0 \}) = \alpha(\setZ \setminus \{ 0 \}) = [-\infty, +\infty]
+	\]
+	that is the bottom element of $\Int^{\op}$ since the ordering is reversed. We can better understand the reason for getting bottom by recalling that the meaning of an interval in $\Int^{\op}$ is the set of elements that are \emph{not} in the interval:
+	\[
+	\gamma_{\lnot}([-\infty, +\infty]) = \lnot \gamma([-\infty, +\infty]) = \lnot \setZ = \emptyset
+	\]
+	Other than the intuition that we lost all the information about the initialization, since $[-\infty, +\infty]$ is $\bot$ the analysis incurs in the issue described in the Introduction about ``recover'' from $\bot$, effectively making the analysis unable to infer anything.
+
+	This line of reasoning can be generalized to any finite concrete set $X$: $\setZ \setminus X$ is not bounded, as it contains all integers greater than $\max(X)$ and smaller than $\min(X)$ (which are both finite), so its abstraction through $\alpha$ is $[-\infty, +\infty]$.
+\end{example}
+
+\subsection*{Compositionality}
+An important property of Abstract Interpretation analysis is compositionality. However, citing O'Hearn~\cite[§8]{OHearn20}, ``for incorrectness reasoning, you must remember information as you go along a path [...]''. This means that a compositional under-approximation analysis must be precise enough to have locally all the informations which should be carried over to the next piece of code. Over-approximation instead is way less restricting in this sense, since ``for correctness reasoning, you get to forget information as you go along a path'' (O'Hearn~\cite[§8]{OHearn20}). As an example, we present dependency analysis, which is compositional for over-approximation but it is not for under-approximation.
+
+\begin{example}[Dependency analysis]
+	A dependency analysis (e.g.,~\cite[\S 6]{ANSTT17}) aims to compute, for each variable at every program point, the set of values it depends on. They are used for instance to check security properties such as information flow constraints.
+
+	The result of the analysis is usually expressed with a collection of atomic dependencies $x \rightsquigarrow y$, meaning that the \emph{current} value of $y$ depends on the \emph{initial} value of $x$.
+	For instance, consider the code
+	\[
+	\code{if (x == pwd) \{ y = y + 100 \}; x:= 0}
+	\]
+	The analysis of this fragment returns the dependencies $x \rightsquigarrow y$, $y \rightsquigarrow y$, as the final value of $y$ depends on the initial values of both $x$ and $y$. Note that the analysis does not compute any dependency with $x$ on the right as the final value of $x$ is always $0$, hence it carries no dependency.
+
+	Over-approximation dependency analysis heavily exploits \emph{transitivity} (as it enables compositional reasoning): if $C_1$ exhibit the dependency $x \rightsquigarrow y$ and $C_2$ exhibits $y \rightsquigarrow w$, then $C_1 \code{;} C_2$ \emph{may} induce $x \rightsquigarrow w$. As a trivial example, $\code{y := x; w := y}$ yields the dependency $x \rightsquigarrow w$.
+	However, transitivity is not well-behaved for under-approximation, whose goal is to find true dependencies only. The issue is that dependencies may cancel each other when composed. As a simple example, consider the code
+	\begin{align*}
+		C_1 & = \code{y := x; z := -x} \\
+		C_2 & = \code{w := y + z}
+	\end{align*}
+	An under-approximation dependency analysis for $C_1$ may return $x \rightsquigarrow y$ and $x \rightsquigarrow z$ because they are true dependencies. Similarly, for $C_2$ it could deduce $y \rightsquigarrow w$. However, for the composition $C_1 \code{;} C_2$ the transitive inference $x \rightsquigarrow y \rightsquigarrow w$ isn't sound because $w$ is always $0$, so it doesn't depend on anything.
+\end{example}
+
+\subsection*{Closure under union}
+Lastly, we consider non-relational analyses. Intuitively, a non-relational analysis cannot capture relationships between different variables. However, under-approximation cannot forget information along a path, including relations between variables. This means that non-relational domains cannot be used for under-approximation.
+% Note that the complement of a non-relational abstract domain, constructed as in Example~\ref{ex:uai:complement-domain}, is relational.
+
+\begin{example}[Non-relational domain]
+	Informally, a non-relational abstract domain is a tuple of elements, one for each variable $x$, and describes the set of concrete states where each variable belongs to the values in its abstract coordinate. The abstraction is performed on each variable independently, projecting all states in $S$ on that variable and then abstracting the resulting set. The concretization is performed on each variable independently, and then the results are combined in all possible ways to get concrete values.
+
+	As an example, consider the product of one interval domains for each variable. For instance, take the code
+	\[
+	\code{y := 5 - x; z := x + y}
+	\]
+	and assume at the beginning the variable \code{x} assumes values in the interval $[0, 3]$. An interval analysis on this fragment would find that \code{y} takes values in the interval $5 - [0, 3] = [2, 5]$, and then \code{z} is in the result of $[0, 3] + [2, 5] = [2, 8]$. However at the end of the program \code{z} is always $5$, so this is a sound over-approximation but is not as precise as it can be.
+	The issue here is that the values of \code{x} and \code{y} are not independent, so an operation between these two variables cannot actually receive all possible inputs with \code{x} in $[0, 3]$ and \code{y} in $[2, 5]$, but just those that also satisfy the \textit{relationship} \code{y = 5 - x}. However, the interval domain knows nothing about this relationship since it abstracts each variable independently. More precisely, the possible pair of values for $x, y$ are $\{ (0, 5), (1, 4), (2, 3), (3, 2) \}$, but the abstraction is computed projecting on one variable (for instance $x$) and then computing the interval over-approximating that set (so that the abstraction for $x$ is $[0, 3]$). Then, the concretization contains all the pairs in the product $[0, 3] \times [2, 5]$, which are much more.
+
+	\begin{figure}[t]
+		\centering
+		{
+			\fontsize{11pt}{13pt}\selectfont
+			\def\svgwidth{3in}
+			\input{images/non-rel-proof.pdf_tex}
+		}
+		\caption{Non-relational domains are not closed under union}
+		%		\Description{The figure shows two rectangles in the Cartesian plane, corresponding to the concretization of two different abstract points in a non-relational domain. In the example, the union of the rectangles is not a rectangle, therefore it cannot be the concretization of a third abstract point.}
+		\label{fig:uai:rel-domain}
+	\end{figure}
+	In general, this projection is not sound for under-approximation: the concretization is not able to recover which of the original pairs were in the concrete set and which were not. On a more abstract level, such a domain is not closed under union: elements of the abstract domain are ``rectangles'' in the Cartesian plane with variables on the axes (since they are concretized to the Cartesian product of the abstractions for each variable) and the union of rectangles is not a rectangle. This is shown in Figure~\ref{fig:uai:rel-domain}: the union of the light and dark rectangles is not a rectangle as it misses the top-left ``corner''.
+\end{example}
 
 \section{Non-emptying functions}
+\fromhere
 
 \section{Integer domains}
 
