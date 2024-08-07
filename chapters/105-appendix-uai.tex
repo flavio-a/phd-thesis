@@ -1,0 +1,307 @@
+% !TEX root = ../phd-thesis.tex
+
+\chapter{Under-approximation abstract domains supplementary materials}\label{ch:app:uai}
+This appendix contains technical details of proofs and examples for Chapter~\ref{ch:uai}.
+
+\begin{proof}[Proof of Lemma~\ref{lmm:uai:f-non-repr-pair}]
+	By hypothesis $c$ is representable but the pair $\{ c, \tilde{c} \}$ is not representable.
+	Since $\alpha$ is monotone and $c$ is representable we have $\alpha(\{ c, \tilde{c} \}) \supseteq \alpha(\{ c \}) = \{ c \}$.
+	Since by correctness $\{ c, \tilde{c} \} \supseteq \alpha(\{ c, \tilde{c} \})$ and $\alpha(\{ c, \tilde{c} \}) \neq \{ c, \tilde{c} \}$ because this pair is not representable and hence not in the image of $\alpha$, it must be the case that $\alpha(\{ c, \tilde{c} \}) = \{ c \}$.
+
+	Now
+	\begin{equation*}
+		\alpha(f(\{ c, \tilde{c} \})) = \alpha(\{ f(c), f(\tilde{c}) \}) \supseteq \alpha(\{ f(\tilde{c}) \}) = \{ f(\tilde{c}) \}
+	\end{equation*}
+	where the last equality follows by the hypothesis that $f(\tilde{c}) \in R$.
+	This in particular means that $\alpha(f(\{ c, \bar{c} \})) \neq \emptyset$, and together with the fact that $\alpha(\{ c, \bar{c} \}) = \{ c \} \neq \emptyset$, we get that $f^{A}(\alpha(\{ c, \bar{c} \})) \neq \emptyset$, because $f$ is non-emptying.
+
+	From this it follows:
+	\begin{align*}
+		\emptyset & \subset f^{A}(\alpha(\{ c, \tilde{c} \})) & [\text{shown above}]                   \\
+		          & = f^{A}(\{ c \})                          & [\alpha(\{ c, \tilde{c} \}) = \{ c \}] \\
+		          & = \alpha(f(\{ c \}))                      & [\text{definition of } f^{A}]          \\
+		          & = \alpha(\{ f(c) \})                      & [\text{additivity of } f]              \\
+		          & \subseteq \{ f(c)\}                       & [\text{correctness}]                   \\
+	\end{align*}
+	Since $\alpha(\{ f(c) \})$ cannot be empty it must be exactly $\alpha(\{ f(c) \}) = \{ f(c) \}$, that is $f(c) \in R$.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lmm:uai:R-S-bound-integer-inf}]
+	By union closure of the abstract domain, any set $S \cup T$ for $T \subseteq R(S)$ is representable too, since it can be expressed as the union of representable sets:
+	\begin{equation*}
+		S \cup T = \bigcup\limits_{x \in T} (S \cup \{ x \})
+	\end{equation*}
+	and each $S \cup \{ x \}$ is representable because $x \in T \subseteq R(S)$.
+	The number of those sets is given by the cardinality of $\pow(R(S))$. If $R(S)$ were infinite, it would be at least countable, so its powerset $\pow(R(S))$ would have a greater cardinality. However, this would conflict with the Assumption~\ref{assump:uai:size-A-infinite-integers} saying that $A$ is at most countable. Therefore, $R(S)$ must be finite.
+\end{proof}
+\begin{proof}[Proof of Lemma~\ref{lmm:uai:R-S-bound-integer-fin}]
+	For any $N \ge N_0$, as in the proof of Lemma~\ref{lmm:uai:R-S-bound-integer-inf}, by union closure any set $S \cup T$ for $T \subseteq R_{N}(S)$ is representable in $A_N$. Hence we have
+	\begin{equation*}
+		\text{poly}(N) = \abs{A_N} \ge \abs{\pow(R_{N}(S))} = 2^{\abs{R_{N}(S)}}
+	\end{equation*}
+	so, taking log at both sides, $\abs{R_{N}(S)} = O(\log(N))$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:uai:non-empt-res-local}]
+	Assume by contradiction that $A$ is non-emptying for all $f \in F$. By hypothesis, $R$ is not empty and thus we can take a $c_0 \in R$. We then define recursively a sequence of representable elements $c_n$.
+
+	Given an element $c \in C$, let
+	\begin{equation*}
+		NR(c) = C \setminus R(c) = \{ \tilde{c} \in C \svert \{ c, \tilde{c} \} \text{ is not representable} \}
+	\end{equation*}
+	be the set of elements that are \textit{not} representable with $c$.
+	To ease presentation, we define here $E_n$, a set of elements of $C$ that depends on the sequence $c_n$ that we construct along the proof. Note that the definition of $E_n$ only depends on elements of the sequence up to $c_n$.
+	\begin{align*}
+		E_n = \{\tilde{c} \in C \svert & \forall\ 0 \le i \le n \ .\ \tilde{c} \in NR(c_i),                \\
+		                               & f_{\tilde{c}}(\tilde{c}) = c_0,                                   \\
+		                               & \forall\ 0 \le i \le n - 1 \ .\ f_{\tilde{c}}(c_i) = c_{i + 1} \}
+	\end{align*}
+	To improve readability, the conditions on $\tilde{c}$ are separated on three different lines. The first line is needed to make Lemma~\ref{lmm:uai:f-non-repr-pair} applicable to the pair $\{ c_i, \tilde{c} \}$ and conclude that $f_{\tilde{c}}(c_i) = c_{i+1}$ is representable. The second line means just that $\tilde{c}$ represents $f_{\tilde{c}}$, and the last line expresses the requirement that $f_{\tilde{c}}$ coincides on the prefix of the sequence up to $c_n$.
+
+	We observe that the sequence $E_n$ can also be defined inductively by
+	\begin{align*}
+		E_0 & = \{ \tilde{c} \in C \svert \tilde{c} \in NR(c_0), f_{\tilde{c}}(\tilde{c}) = c_0 \} \\
+		    & = NR(c_0) \cap P_F(c_0)
+	\end{align*}
+	\begin{align*}
+		E_{n+1} & = \{\ \tilde{c} \in E_n \svert \tilde{c} \in NR(c_{n+1}), f_{\tilde{c}}(c_n) = c_{n+1} \}                                                               \\
+		        & = NR(c_{n+1}) \cap \{\ \tilde{c} \in E_n \svert f_{\tilde{c}}(c_n) = c_{n+1} \} \addtocounter{equation}{1}\tag{\theequation} \label{eq:uai:En-relation}
+	\end{align*}
+	$E_0$ is the intersection of $NR(c_0)$ and the set of $\tilde{c}$ for which there exists $f_{\tilde{c}}$. Using Lemma~\ref{lmm:uai:R-S-bound-integer-inf} to say $R(c_0)$ is finite and recalling that $P_F(c_0)$ is infinite by high surjectivity, we observe that
+	\begin{align*}
+		E_0 = P_F(c_0) \cap NR(c_0) = P_F(c_0) \setminus (C \setminus NR(c_0)) = P_F(c_0) \setminus R(c_0)
+	\end{align*}
+	is infinite too.
+
+	We then prove by induction on $n$ the following three statements:
+	\begin{enumerate}
+		\item $c_n$ is representable, i.e., $c_n \in R$;
+		\item $E_n$ is infinite;
+		\item $c_n$ is different from all $c_i$ for $0 \le i \le n - 1$.
+	\end{enumerate}
+	We have already proved the base case for $n = 0$: $c_0$ is representable by hypothesis, $E_0$ is infinite as shown above and the third condition is vacuous since there are no $0 \le i \le -1$.
+
+	For the inductive step, assume the three hypothesis hold for $n$ and let us prove them for $n + 1$.
+	Consider the set
+	\begin{equation*}
+		S = \{ f_{\tilde{c}}(c_n) \svert \tilde{c} \in E_n \}
+	\end{equation*}
+	of possible candidates for the role of $c_{n+1}$.
+	Since $c_n \in R$, $\tilde{c} \in E_n \subseteq NR(c_n)$ and $f_{\tilde{c}}(\tilde{c}) = c_0 \in R$ (by inductive hypotheses) we can apply Lemma~\ref{lmm:uai:f-non-repr-pair} to get $f_{\tilde{c}}(c_n) \in R$ too, hence $S$ is a subset of $R$.
+	Since $R$ is finite also $S$ must be, and by inductive hypothesis we know $E_n$ is infinite, so there must be an element $c_{n+1}$ in $S$ such that an infinite amount of $\tilde{c} \in E_n$ satisfies $f_{\tilde{c}}(c_n) = c_{n+1}$. We observe that, as shown above, $c_{n+1} \in R$. Moreover we chose $c_{n+1}$ such that
+	\begin{equation*}
+		\{\ \tilde{c} \in E_n \svert f_{\tilde{c}}(c_n) = c_{n+1} \}
+	\end{equation*}
+	is infinite, so we get
+	\begin{equation*}
+		\{\ \tilde{c} \in E_n \svert f_{\tilde{c}}(c_n) = c_{n+1} \} \cap NR(c_{n+1}) = \{\ \tilde{c} \in E_n \svert f_{\tilde{c}}(c_n) = c_{n+1} \} \setminus R(c_{n+1})
+	\end{equation*}
+	is infinite too because $R(c_{n+1})$ is finite. But this, by Equation~\eqref{eq:uai:En-relation} above, is exactly $E_{n+1}$.
+
+	We only have to show that $c_{n+1} \neq c_i$ for all $0 \le i \le n$. Assume by contradiction that this is not the case, so that for some $0 \le j \le n$ it holds $c_{n+1} = c_j$. If $f_{\tilde{c}}$ is acyclic this is a contradiction because it would create the cycle $f_{\tilde{c}}^{n+2-j}(c_j) = f_{\tilde{c}}(c_{n+1}) = c_j$. If $f_{\tilde{c}}$ is injective, let us distinguish two cases. If $j = 0$ we get $f_{\tilde{c}}(c_n) = c_{n+1} = c_0 = f_{\tilde{c}}(\tilde{c})$, that would imply $c_n = \tilde{c}$: this is not possible, because the former is representable and the latter is not. If otherwise $j > 0$ we get $f_{\tilde{c}}(c_n) = c_{n+1} = c_j = f_{\tilde{c}}(c_{j-1})$, that would imply $c_n = c_{j-1}$, that is not the case by inductive hypothesis. So $c_{n+1} \neq c_j$, and this concludes the inductive proof.
+
+	By the above induction we conclude that all the infinitely many $c_n$ are elements of $R$ and are all distinct. This yields the desired contradiction because $R$ is finite by Lemma~\ref{lmm:uai:R-S-bound-integer-inf}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:uai:non-empt-res-global}]
+	Towards a contradiction, let us assume that $A$ is non-emptying for all $f \in F$. By hypothesis, $R$ is not empty and thus we can take a $c_0 \in R$.
+
+	Since $F$ is a highly surjective family, $P_F(c_0)$ is infinite. By Lemma~\ref{lmm:uai:R-S-bound-integer-inf} we know that $R(c_0)$ is finite. Therefore we get that the set
+	\begin{align*}
+		E & = \{ \tilde{c} \in C \svert \tilde{c} \notin R(c_0), \exists f_{\tilde{c}} \in F\ .\ f_{\tilde{c}}(\tilde{c}) = c_0 \} \\
+		  & = P_F(c_0) \setminus R(c_0)
+	\end{align*}
+	is infinite. By Lemma~\ref{lmm:uai:f-non-repr-pair}, for all $\tilde{c} \in E$ we have $f_{\tilde{c}}(c_0)$ is representable.
+
+	Now fix a function $f \in F$, and let $J(f)$ be the set of $\tilde{c}$ for which $f$ can play the role of $f_{\tilde{c}}$:
+	\begin{equation*}
+		J(f) = \{ \tilde{c} \in C \setminus R(c_0) \svert f(\tilde{c})=c_0 \}
+	\end{equation*}
+	By hypothesis (2), the set $J(f)$ is finite.
+
+	Now let $G$ be the set of functions in $F$ that can play the role of $f_{\tilde{c}}$ for some $\tilde{c} \in E$:
+	\begin{equation*}
+		G = \{ f \in F \svert \exists \tilde{c}\in E.~f(\tilde{c})=c_0 \}
+	\end{equation*}
+	Clearly
+	\begin{equation*}
+		E = \bigcup\limits_{f \in G} J(f)
+	\end{equation*}
+	Since $E$ is infinite while each $J(f)$ is finite, the set $G$ must be infinite too.
+
+	The above observation about $f_{\tilde{c}}(c_0)$ being representable can be equivalently restated by saying that for all $f \in G$, $f(c_0)$ is representable.
+	So consider the set $I$ of all possible images of $c_0$ through functions in $G$:
+	\begin{equation*}
+		I = \{ f(c_0) \svert f \in G \}
+	\end{equation*}
+	This set is a subset of $R$ because all its elements are representable.
+
+	Clearly
+	\begin{equation*}
+		G = \bigcup\limits_{d \in I} \{ f \in G \svert f(c_0) = d \}
+	\end{equation*}
+	Now observe that for any $d \in C$, by hypothesis (1) the set
+	\begin{equation*}
+		\{ f \in F \svert f(c_0) = d \}
+	\end{equation*}
+	is finite, and this is a superset of $\{ f \in G \svert f(c_0) = d \}$, which must be finite too. Since we know that $G$ is infinite, the set $I$ must be infinite too.
+
+	This leads to the desired contradiction: $R$ is finite by Lemma~\ref{lmm:uai:R-S-bound-integer-inf} but we found that $I$ is an infinite set of representable elements.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:uai:existence-base}]
+	Since $F$ is not highly surjective, there exists $c_0 \in C$ such that $P_F(c_0)$ is finite. We then define $A_F$ as follows.
+	The only element of $C$ representable on its own is $c_0$ itself, ie. $R = \{ c_0 \}$.
+	A pair of elements of $C$ is representable if and only if one of its elements is $c_0$ and the other is in $P_F(c_0)$. This also means that $R(c_0) = P_F(c_0)$.
+	Subsets of $C$ with at least three elements are representable if and only if they are unions of representable pairs.
+	The complete definition of $A_F$ is then
+	\begin{equation*}
+		A_F = \{ \emptyset \} \cup \{ \{ c_0 \} \cup T \svert T \subseteq P_F(c_0) \}
+	\end{equation*}
+	$A_F$ is an opposite Moore family with respect to $\pow(C)$: it contains the minimal element, that is $\emptyset$, and is closed by union, that are lubs. Hence $A_F$ is an under-approximation abstract domain.
+	Moreover, since $R(c_0) = P_F(c_0)$ is finite, we get that $A_F$ is finite too:
+	\begin{equation*}
+		\abs{A_F} = 1 + 2^{\abs{P_F(c_0)}} .
+	\end{equation*}
+
+	Now we want to show that an arbitrary $f$ in $F$ is non-emptying in $A_F$.
+	We first observe that a subset $S \subseteq C$ is such that $\alpha(S) \neq \emptyset$ if and only if $c_0 \in S$. Suppose that $c_0 \in S$, then
+	\begin{equation*}
+		\alpha(S) \supseteq \alpha(\{ c_0 \}) = \{ c_0 \} \supset \emptyset .
+	\end{equation*}
+	Conversely, suppose that $\alpha(S) \neq \emptyset$. Since all elements of $A_F$ but the empty set contains $c_0$, by correctness we have
+	\begin{equation*}
+		c_0 \in \alpha(S) \subseteq S .
+	\end{equation*}
+
+	So fix now $S \subseteq C$ an element of the concrete domain, and assume that both $\alpha(S) \neq \emptyset$ and $\alpha(f(S)) \neq \emptyset$.
+	These two assumptions are equivalent to the conditions $c_0 \in S$ and $c_0 \in f(S)$, respectively, and the second can be rewritten as $\exists d \in S\ .\ f(d) = c_0$. By definition of $A_F$ we know this is equivalent to $d \in P_F(c_0) = R(c_0)$.
+	Hence
+	\begin{align*}
+		         & S \supseteq \{ c_0, d \}                                                        &  &                \\
+		\implies & \alpha(S) \supseteq \alpha(\{ c_0, d \}) = \{ c_0, d \}                         &  & [d \in R(c_0)] \\
+		\implies & f(\alpha(S)) \supseteq f(\{ c_0, d \}) \supseteq \{ f(d) \} = \{ c_0 \}         &  & [f(d) = c_0]   \\
+		\implies & f^{A}(\alpha(S)) = \alpha(f(\alpha(S))) \supseteq \alpha(\{ c_0 \}) = \{ c_0 \} &  & [c_0 \in R]
+	\end{align*}
+	where in the second line $d \in R(c_0)$ entails $\alpha(\{ c_0, d \}) = \{ c_0, d \}$.
+	The last line implies $f^{A}(\alpha(S)) \neq \emptyset$, so $f$ is non-emptying in $A_F$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:uai:existence-finite-backward}]
+	Since the proof is very similar to that of Proposition~\ref{prop:uai:existence-base} above, we gloss over some details.
+
+	First, we define a \textit{basis} for the abstract domain as
+	\begin{equation*}
+		B_F = \{ S_0 \} \cup \{ S_0 \cup S \svert S \in P_F(S_0) \}
+	\end{equation*}
+	and then consider its  closure under union
+	\begin{equation*}
+		A_F = \left\lbrace \bigcup\limits_{T \in \Gamma} T \svert \Gamma \subseteq B_F \right\rbrace .
+	\end{equation*}
+	This is an opposite Moore family and hence is an under-approximation abstract domain for $\pow(C)$, and is finite because
+	\begin{equation*}
+		\abs{A_F} \le \abs{\pow(B_F)}
+	\end{equation*}
+	and
+	\begin{equation*}
+		\abs{B_F} \le 1 + \abs{\pow(P_F(S_0))}
+	\end{equation*}
+	with $P_F(S_0)$ finite by hypothesis.
+
+	Again we observe that a subset $T \subseteq C$ is such that $\alpha(T) \neq \emptyset$ if and only if $S_0 \subseteq T$ because all elements of the abstract domain but the empty set contains $S_0$. Then the proof proceeds as above: fix $f \in F$ and $T \subseteq C$ such that $\alpha(T) \neq \emptyset$ and $\alpha(f(T)) \neq \emptyset$, that in turn are equivalent to $S_0 \subseteq T$ and $\exists S \subseteq T. f(S) = S_0$. Then by definition of $A_F$ this means $S_0 \cup S \in A_F$, so
+	\begin{align*}
+		         & T \supseteq S_0 \cup S                                              &  &                      \\
+		\implies & \alpha(T) \supseteq \alpha(S_0 \cup S) = S_0 \cup S                 &  & [S_0 \cup S \in A_F] \\
+		\implies & f(\alpha(T)) \supseteq f(S_0 \cup S) \supseteq f(S) = S_0           &  & [f(S) = S_0]         \\
+		\implies & f^{A}(\alpha(T)) = \alpha(f(\alpha(T))) \supseteq \alpha(S_0) = S_0 &  & [S_0 \in A_F]
+	\end{align*}
+	that is $f$ is non-emptying.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:uai:existence-finite-forward}]
+	Define a \textit{basis} for the abstract domain
+	\begin{equation*}
+		B_F = \{ S_0 \} \cup \{ S_0 \cup S \svert S \in I_F(S_0) \}
+	\end{equation*}
+	and consider its closure under union
+	\begin{equation*}
+		A_F = \left\lbrace \bigcup\limits_{T \in \Gamma} T \svert \Gamma \subseteq B_F \right\rbrace .
+	\end{equation*}
+	Again this is a correct finite under-approximation abstract domain for $\pow(C)$ satisfying that $\alpha(T) \neq \emptyset$ if and only if $S_0 \subseteq T$ (this can be shown in the very same way as in the proof of Proposition~\ref{prop:uai:existence-finite-backward}).
+
+	Taken an arbitrary $f \in F$, let us show that it is non-emptying. Fix a set $T \subseteq C$ such that $\alpha(T) \neq \emptyset$. This equivalently means that $S_0 \subseteq T$, so
+	\begin{align*}
+		         & \alpha(T) \supseteq \alpha(S_0) = S_0                            \\
+		\implies & f(\alpha(T)) \supseteq f(S_0)                                    \\
+		\implies & f^{A}(\alpha(T)) = \alpha(f(\alpha(T))) \supseteq \alpha(f(S_0))
+	\end{align*}
+	But $f(S_0) \in B_F$, so $\alpha(f(S_0)) = f(S_0) \neq \emptyset$ by the hypothesis that $f$ is total, and so $f^{A}(\alpha(T)) \neq \emptyset$, from which we conclude that $f$ is non-emptying.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:uai:non-empt-res-finite-global}]
+	Fix an $N$ such that all $f \in F_N$ are non-emptying in $A_N$.
+
+	Define
+	\begin{align*}
+		E & = \{ \tilde{c} \in C_N \svert \tilde{c} \notin R_N(c_0), \exists f_{\tilde{c}} \in F_N\ .\ f_{\tilde{c}}(\tilde{c}) = c_0 \} \\
+		  & = P_{F_N}(c_0) \setminus R_N(c_0) .
+	\end{align*}
+
+	Now fix a function $f \in F_N$, and let $J(f)$ be the set of $\tilde{c}$ for which $f$ can play the role of $f_{\tilde{c}}$, namely
+	\[
+	J(f) = \{ \tilde{c} \in C_N \setminus R_N(c_0) \svert f(\tilde{c}) = c_0 \} .
+	\]
+	By hypothesis (2), $\abs{J(f)} \le k_2(N)$.
+
+	Now let $G$ be the set of functions in $F_N$ that can play the role of $f_{\tilde{c}}$ for some $\tilde{c} \in E$:
+	\[
+	G = \{ f \in F_N \svert \exists \tilde{c} \in E\ .\ f(\tilde{c}) = c_0 \} .
+	\]
+	Clearly
+	\[
+	E = \bigcup\limits_{f \in G} J(f) .
+	\]
+	But we know that $\abs{J(f)} \le k_2(N)$ for all $f$, so
+	\[
+	\abs{E} \le \sum\limits_{f \in G} \abs{J(f)} \le \abs{G} \cdot k_2(N) .
+	\]
+
+	By Lemma \ref{lmm:uai:f-non-repr-pair}, for all $\tilde{c} \in E$ we have $f_{\tilde{c}}(c_0)$ is representable. This can be equivalently restated saying that for all $f \in G$, $f(c_0)$ is representable.
+	So consider the set $I$ of all possible images of $c_0$ through functions in $G$:
+	\[
+	I = \{ f(c_0) \svert f \in G \} .
+	\]
+	This set is a subset of $R_N$ because all its elements are representable.
+
+	Clearly,
+	\[
+	G = \bigcup\limits_{d \in I} \{ f \in G \svert f(c_0) = d \} .
+	\]
+	Now observe that, for any $d \in C$, by hypothesis (1) we have
+	\[
+	\abs{\{ f \in G \svert f(c_0) = d \}} \le k_1(N)
+	\]
+	so
+	\[
+	\abs{G} \le \sum\limits_{d \in I} \abs{\{ f \in G \svert f(c_0) = d \}} \le \abs{I} \cdot k_1(N)
+	\]
+	that in turn implies
+	\[
+	\abs{E} \le \abs{G} \cdot k_2(N) \le \abs{I} \cdot k_1(N) \cdot k_2(N) .
+	\]
+	Since $I$ is a subset of $R_N$, we get
+	\[
+	\abs{E} \le \abs{I} \cdot k_1(N) \cdot k_2(N) \le \abs{R_N} \cdot k_1(N) \cdot k_2(N) .
+	\]
+	Lastly, we recall that $E = P_{F_N}(c_0) \setminus R_N(c_0)$. Therefore, if all $f \in F_N$ are non-emptying in $A_N$, then
+	\[
+	\abs{P_{F_N}(c_0)} \le \abs{E} \le \abs{R_N} \cdot k_1(N) \cdot k_2(N) .
+	\]
+
+	The last hypothesis of the theorem states that $\abs{P_{F_N}(c_0)} = \omega(\log(N) \cdot k_1(N) \cdot k_2(N))$. Lemma~\ref{lmm:uai:R-S-bound-integer-fin} states that $\abs{R_N} = O(\log(N))$.
+	Therefore, there exists an $N_0$ such that the inequality
+	\[
+	\omega(\log(N) \cdot k_1(N) \cdot k_2(N)) = \abs{P_{F_N}(c_0)} \le \abs{R_N} \cdot k_1(N) \cdot k_2(N) = O(\log(N) \cdot k_1(N) \cdot k_2(N))
+	\]
+	does not hold for any $N > N_0$. This in turn implies that for all $N > N_0$ it is not possible that all the functions $f \in F_N$ are non-emptying in $A_N$.
+\end{proof}

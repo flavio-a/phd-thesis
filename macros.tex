@@ -23,11 +23,12 @@
 \declaretheorem[sibling=theorem]{lemma}
 \declaretheorem[title=Proposition,sibling=theorem]{prop}
 \declaretheorem[style=definition,sibling=theorem]{definition}
+\declaretheorem[title=Assumption,style=definition,sibling=theorem]{assump}
 \declaretheorem[style=remark,sibling=theorem,qed=$\blacksquare$]{example}
 \declaretheorem[style=remark,sibling=theorem]{remark}
 
 %%%%%%%%%%%%%%%%%%%% MATH SYMBOLS
-%\newcommand{\setN}{\mathbb{N}}
+\newcommand{\setN}{\mathbb{N}}
 \newcommand{\setZ}{\mathbb{Z}}
 \newcommand{\katR}{\mathcal{R}}
 \newcommand{\svert}{\,\vert\,}
@@ -44,6 +45,7 @@
 \newcommand{\regplus}{\oplus}
 \newcommand{\kstar}{\star}
 \newcommand{\eqdef}{\triangleq}
+\newcommand{\macheps}{\textbf{u}}
 
 %%%%%%%%%%%%%%%%%%%% ORDER-THEORETIC SYMBOLS
 \newcommand{\fix}{\text{fix}}
@@ -64,13 +66,12 @@
 \newcommand{\Moore}{\mathcal{M}}
 \newcommand{\Div}{\mathsf{Div}}
 %\newcommand{\poly}{\text{poly}}
-%\newcommand{\drop}{\text{drop}}
-%\newcommand{\concat}{\text{concat}}
 %\newcommand{\macheps}{\textbf{u}}
 %\newcommand{\fp}{\text{fp}}
-%\newcommand{\gi}[3]{\langle #1, (#2, \id_{#3}), #3 \rangle}
 \newcommand{\ugc}[4]{\gc{#1}{#3}{#2}{#4}}
 \newcommand{\ugi}[3]{\ugc{#1}{#2}{\phantom{\gamma}}{#3}}
+\newcommand{\concat}{\text{concat}}
+\newcommand{\dropp}{\text{drop}}
 
 %%%%%%%%%%%%%%%%%%%% Logics (HL, IL, LCL, NC, SIL)
 \makeatletter
