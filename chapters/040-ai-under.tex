@@ -13,7 +13,7 @@ The content of this chapter is based on~\cite{ABG22,ABG24}.
 In their first work on Abstract Interpretation~\cite{CC77}, Patrick and Radhia Cousot introduced the formal theory that could be used to study both over and under-approximations.
 However, while the former has been extensively studied, there are only sparse studies on under-approximation abstract domain.
 For instance, Lev-Ami et al.~\cite{LSRG07} proposed to use complements of over-approximation domains to infer sufficient preconditions for program correctness. However, such an approach is severely limited in proving incorrectness, as we show in Example~\ref{ex:uai:complement-domain}.
-For the same goal, Miné~\cite{Mine14} used directly over-approximation domains, giving up the best abstraction and handling the choice of a maximal one with heuristics.
+For the same goal, Miné~\cite{Mine14} uses directly over-approximation domains, giving up the best abstraction and handling the choice of a maximal one with heuristics.
 To infer necessary preconditions, Cousot et al.~\cite{CCL11,CCFL13} use Abstract Interpretation techniques but on boolean formulas, hence bypassing the issue of defining an under-approximation abstract domain.
 Schmidt~\cite{Schmidt07} uses higher-order domains, defining abstract states with the meaning ``there exists a value satisfying this over-approximation property'', hence giving rise to an under-approximation of over-approximations.
 All the above approaches design under-approximation domains starting from over-approximation ones, and, to the extent of our knowledge, there are no abstract domains thought from the ground up for under-approximation.
@@ -70,37 +70,42 @@ Our first result proves that no abstract domain for integers can be constructed 
 \begin{figure}[t]
 	\begin{subfigure}{\textwidth}
 		\centering
-		\begin{tabular}{c|ccc}
-			Result                                            & Concrete domain & Tight hypotheses  & Generalizes                                       \\
-			\hline
-			Proposition~\ref{th:uai:ne-sum-nonexsistence-inf} & $\pow(\setZ)$   & --                & --                                                \\
-			Theorem~\ref{th:uai:non-empt-res-local}           & $\pow(C)$       & High surjectivity & Proposition~\ref{th:uai:ne-sum-nonexsistence-inf} \\
-			Theorem~\ref{th:uai:non-empt-res-global}          & $\pow(C)$       & High surjectivity & Proposition~\ref{th:uai:ne-sum-nonexsistence-inf} \\
-		\end{tabular}
+		\scalebox{0.93}{
+			\begin{tabular}{c|ccc}
+				Result                                              & Concrete domain & Tight hypotheses  & Generalizes                                         \\
+				\hline
+				Proposition~\ref{prop:uai:ne-sum-nonexsistence-inf} & $\pow(\setZ)$   & --                & --                                                  \\
+				Theorem~\ref{th:uai:non-empt-res-local}             & $\pow(C)$       & High surjectivity & Proposition~\ref{prop:uai:ne-sum-nonexsistence-inf} \\
+				Theorem~\ref{th:uai:non-empt-res-global}            & $\pow(C)$       & High surjectivity & Proposition~\ref{prop:uai:ne-sum-nonexsistence-inf} \\
+			\end{tabular}
+		}
 		\caption{Tabular comparison of our results for infinite domains.}
 		\label{fig:uai:tab-summary-infinite}
 		\vspace{1ex}
 	\end{subfigure}
 	\begin{subfigure}{\textwidth}
 		\centering
-		\begin{tabular}{c|cccc}
-			Result                                            & Concrete domain & Tight hypotheses & Generalizes                                       & Inspired by                              \\
-			\hline
-			Proposition~\ref{th:uai:ne-sum-nonexsistence-fin} & $\pow([-N, N])$ & --               & --                                                & --                                       \\
-			Theorem~\ref{th:uai:non-empt-res-finite-global}   & $\pow(C)$       & None             & Proposition~\ref{th:uai:ne-sum-nonexsistence-fin} & Theorem~\ref{th:uai:non-empt-res-global} \\
-		\end{tabular}
+		\vspace*{0.5ex}
+		\scalebox{0.93}{
+			\begin{tabular}{c|cccc}
+				Result                                              & Concrete domain & Tight hypotheses & Generalizes                                         & Inspired by                              \\
+				\hline
+				Proposition~\ref{prop:uai:ne-sum-nonexsistence-fin} & $\pow([-N, N])$ & --               & --                                                  & --                                       \\
+				Theorem~\ref{th:uai:non-empt-res-finite-global}     & $\pow(C)$       & None             & Proposition~\ref{prop:uai:ne-sum-nonexsistence-fin} & Theorem~\ref{th:uai:non-empt-res-global} \\
+			\end{tabular}
+		}
 		\caption{Tabular comparison of our results for finite domains.}
 		\label{fig:uai:tab-summary-finite}
 	\end{subfigure}
-	\caption{Summary of our results showing that, under certain hypotheses, there exists no under-approximation abstract domain making all functions in a given family non-emptying. The tables show which concrete domain they are applicable to, which of the hypotheses are (known to be) tight, and the relations between the results, giving a quick reference for comparison.}
+	\caption{Summary of the results in this chapter. The tables acts as a quick reference, showing which concrete domain they are applicable to, which of the hypotheses are (known to be) tight, and the relations between the results.}
 \end{figure}
 
 We then study how we can generalize these results to different concrete domains and function families.
-We first focus on the case where the concrete domain is the powerset of an \emph{infinite} set of values, and we prove two results, one local and one global, for infinite concrete domains. To do so, we introduce the notion of \emph{highly surjective function family} (Definition~\ref{def:uai:highly-onto-func-family}), of which sums are an instance. The local condition applies to each function in the family, while the global condition is a property of the whole family. Contrary to the definition of non-emptying functions, the notion of highly surjective function family is independent of the abstract domain. Once again the main consequence of our results is that abstract analyses of programs involving the application of functions in the family will often report trivial information. Note that, as in the case of increments, highly surjective function families are commonly coded in programs.
+We first focus on the case where the concrete domain is the powerset of an \emph{infinite} set of values, and we prove two results, one local and one global, for infinite concrete domains. To do so, we introduce the notion of \emph{highly surjective function family} (Definition~\ref{def:uai:highly-onto-func-family}), of which sums are an instance. The local condition applies to each function in the family, while the global condition is a property of the whole family. Contrary to the definition of non-emptying functions, the notion of highly surjective function family is independent of the abstract domain. Once again the main consequence of our results is that abstract analyses of programs involving the application of functions in the family will often report trivial information. As in the case of increments, highly surjective function families are commonly coded in programs.
 Finally, we show that the hypothesis of high surjectivity is tight by presenting mathematical constructions of abstract domains making all functions in a family non-emptying.
 Our results for infinite domains are summarized in Table~\ref{fig:uai:tab-summary-infinite}: both results for an arbitrary infinite set $C$ generalize the result for integers. The hypothesis of high surjectivity is tight, but we do not know about all the others.
 
-Lastly, we focus on the powerset of a \emph{finite} set of values. We discuss why a straightforward adaptation of the two results for the infinite case to the finite one was not possible, most notably a difference with the very definition of highly surjective function family. We then propose a single general result for this case, inspired by the global condition for the infinite case, but whose details are different.
+Lastly, we focus on the powerset of a \emph{finite} set of values. We discuss why a straightforward adaptation of the two results for the infinite case to the finite one was not possible, most notably a difference with the very definition of highly surjective function family. We then propose a general result for this case, inspired by the global condition for the infinite case, but whose details are different.
 Our results for finite domains are summarized in Table~\ref{fig:uai:tab-summary-finite}: our single result generalizes again the result for integers, but we were not able to prove any of our hypotheses tight.
 
 \section{Comparison with over-approximation}\label{sec:uai:examples}

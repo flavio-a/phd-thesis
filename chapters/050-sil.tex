@@ -504,7 +504,7 @@ On the contrary, under-approximation offers much stronger guarantees on terminat
 \section{Separation Sufficient Incorrectness Logic}\label{sec:sil:separation-sil}
 We instantiate SIL to handle pointers and dynamic memory allocation, introducing Separation SIL. The goal of Separation SIL is to identify the causes of memory errors: it takes the backward under-approximation principles of SIL and combines it with the ability to deal with pointers from Separation Logic (SL)~\cite{Reynolds02,ORY01}
 
-\subsection{Heap Regular Commands}
+\subsection{Heap regular commands}
 We denote by $\Regh$ the set of heap regular commands obtained by plugging the following definition of heap atomic commands in~\eqref{eq:bg:regr-def} (in \textcolor{ACMBlue}{blue} new primitives):
 \begin{align*}
 	\Cmdh \ni \regc ::= \; & \code{skip} \mid \code{x := a} \mid \code{b?} \mid	\textcolor{ACMBlue}{\code{x := alloc()} \mid \code{free(x)} \mid \code{x := [y]} \mid \code{[x] := y}}
@@ -527,7 +527,7 @@ Given a heap command $\regr \in \Regh$, we let $\fv(\regr) \subseteq \Var$ be th
 	\label{fig:sil:regh-mod-def}
 \end{figure}
 
-\subsection{Assertion Language}
+\subsection{Assertion language}
 Our assertion language is derived from SL and Incorrectness Separation Logic (ISL)~\cite{RBDDOV20}:
 \begin{align*}
 	\Asl \ni p, q ::= & \; \false \mid \true \mid p \land q \mid p \lor q \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid x \dealloc \mid p \andsep q
@@ -538,7 +538,7 @@ The separating conjunction $p \andsep q$ is a key feature of Separation Logics a
 We let $x \mapsto - \eqdef \exists v. x \mapsto v$ describe that $x$ is allocated without tracking its exact value.
 Given a formula $p \in \Asl$, we call $\fv(p) \subseteq \Var$ the set of its free variables.
 
-\subsection{Proof System}\label{sec:sil:sepsil-proof-system}
+\subsection{Proof system}\label{sec:sil:sepsil-proof-system}
 
 \begin{figure}[t]
 	\centering
@@ -900,7 +900,7 @@ The modified proof system is sound with respect to the modified semantics:
 	We highlight the use of rule \silrule{store\mbox{-}er} to infer the precondition $\oktext{ok: x \dealloc \andsep \true}$ from the error postcondition $\ertext{er: \true}$ and \silrule{assume} to conjoin the boolean conditions in the preconditions of the guards. Moreover, the backward substitution of $\code{len} := \code{len} + 1$ performed by \silrule{assign} naturally propagates backward the constraint $\code{len} > 8$ to the value preceding the assignment, obtaining $\code{len} + 1 > 8$. This way, in the precondition of the whole command we explicitly find the constraints $\code{len} \ge \code{cap} \land \code{len} > 7$ on the initial values of \code{len} and \code{cap} that lead to the error.
 \end{example}
 
-\subsection{Relative Completeness of Separation SIL}
+\subsection{Relative completeness of Separation SIL}
 The proof system in Figure~\ref{fig:sil:separation-sil} is complete for all atomic commands but \code{alloc}, because it misses the ability to refer the specific memory location that gets allocated.
 The naive solution to add $x = \alpha$ in the post of \silrule{alloc} would make the frame rule unsound: it would allow to prove, for instance, the invalid triple
 \[

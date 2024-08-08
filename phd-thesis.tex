@@ -36,10 +36,18 @@
 
 %%%%%%%%%%%%%%%%%%%%%%% bibliography
 \usepackage[style=alphabetic,sorting=ynt]{biblatex}
+%\DeclareLabelalphaTemplate{
+%	\labelelement{
+%		\field[final]{shorthand}
+%		\field{label}
+%		\field[strwidth=3,strside=left,ifnames=1]{labelname}
+%		\field[strwidth=1,strside=left,names=4,noalphaothers=true]{labelname}
+%	}
+%	\labelelement{
+%		\field[strwidth=2,strside=right]{year}
+%	}
+%}
 \addbibresource{bibfile.bib}
-%\usepackage[square]{natbib}
-%\bibliographystyle{plainnat}
-
 \usepackage{todonotes}
 
 \raggedbottom
@@ -68,6 +76,7 @@
 \begin{document}
 \input{front/front}
 
+\setcounter{tocdepth}{1}
 \tableofcontents
 
 \pagenumbering{arabic}
@@ -97,7 +106,7 @@
 \input{chapters/105-appendix-uai}
 \input{chapters/110-appendix-sil}
 \input{chapters/120-appendix-lcla}
-\input{chapters/130-appendix-pdf}
+\input{chapters/130-appendix-pdr}
 
 \listoftodos
 \todototoc

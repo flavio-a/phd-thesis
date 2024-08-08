@@ -288,7 +288,7 @@ if (x is even) {
 	On the contrary, we have, e.g., that $\underline{P}= (z\neq 42)$ is a necessary precondition, while $(z > 42)$ is not, because it excludes some good runs.
 \end{example}
 
-\section{Kleene Algebras}\label{sec:bg:algebra}
+\section{Kleene algebras}\label{sec:bg:algebra}
 In this Section, we present Kleene algebras as an algebraic formulation that is able to describe programs.
 
 \begin{definition}[Idempotent semiring]\label{def:bg:i-semiring}
@@ -376,7 +376,7 @@ Since we can describe programs in KATs, it is natural to ask ourselves whether w
 The HL proof system embedded in KATs is shown in Figure~\ref{fig:bg:hl-kat}. It handles triples of shape $\hltriple{p}{a}{q}$, with $p, q \in \test(A)$ and $a \in A$. It is very similar to Figure~\ref{fig:bg:hl} thanks to regular commands and KATs being syntactically very close. The first two rules are subsumed by \hlrule{atom}, but we prefer to show them explicitly since $0$ and $1$ are part of the syntax of KATs. Rule \hlrule{atom} is analogous to the homonymous HL rule. It requires explicitly to check the validity condition since there is no equivalent of the semantics in a KAT. All the remaining rules are the same as HL, just using the syntax of KAT instead of regular commands.
 
 \section{Abstract interpretation}\label{sec:bg:absint}
-\subsection{Abstract Domains}
+\subsection{Abstract domains}
 Abstract interpretation \cite{CC77,CC79} is a general framework to define static analyses sound by construction, with the main idea of approximating the program semantics on some abstract domain $A$ instead of working on the concrete domain $C$. The main tool used to study abstract interpretation are Galois connections.
 \begin{definition}[Galois connection]
 	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define a Galois connection when
@@ -471,7 +471,7 @@ A_z(c) = \begin{cases*}
 \end{cases*}
 \]
 
-\subsection{Abstracting Functions}
+\subsection{Abstracting functions}
 Since the main object of our study are program semantics, viz. functions, it is important to have the notion of abstraction of a function.
 \begin{definition}
 	Given a monotone function $f : C \rightarrow C$ and an abstract domain $A_{\alpha, \gamma} \in \Abs(C)$, a function $f^{\sharp} : A \rightarrow A$ is a \emph{sound approximation} (or abstraction) of $f$ if
@@ -506,7 +506,7 @@ Intuitively, completeness means that the abstract function $f^{\sharp}$ is as pr
 \complete{A}{}{f} \iff A f = A f A .
 \]
 
-\subsection{Abstract Semantics of Regular Commands}
+\subsection{Abstract semantics of regular commands}
 Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. While any command $\regr$ has a bca $\denot{\regr}^{A}$, in general an analyser doesn't know it. Instead, it works inductively on the syntax of $\regr$ to define a sound abstraction of the concrete semantics $\denot{\regr}$. This (compositional) abstract semantics is given in Figure~\ref{fig:bg:regcom-abs-sem}, and defines the \emph{abstract interpreter} $\denot{\cdot}^{\sharp}_{A} : \Reg \rightarrow A \rightarrow A$.
 \begin{figure}[t]
 	\begin{align*}
@@ -532,7 +532,7 @@ Even though the abstract interpreter is sound, in general $\denot{\regr}^{\sharp
 \]
 that is caused by the fact the abstract interpreter operates on abstract properties only (hence the need for the abstraction between $\regr_1$ and $\regr_2$).
 
-\subsection{Under-approximation Abstract Domains}
+\subsection{Under-approximation abstract domains}
 The definition of Galois connection is not symmetric, in the sense that it puts $\gamma$ above and $\alpha$ below. This favours over-approximation. A way to see this is the fact that $A$ is an \emph{upper} closure operator, that is $c \le_C A(c)$. For this reason, to talk about under-approximation domains, we consider ``reversed" Galois connections:
 \begin{definition}[Under-approximation Galois connection]\label{def:bg:under-gc}
 	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define an under-approximation Galois connection when

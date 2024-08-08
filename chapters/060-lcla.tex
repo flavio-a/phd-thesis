@@ -171,7 +171,7 @@ We remark that a rule like \lclrule{refine\mbox{-}ext}, that allows to carry on 
 	This means that a refinement rule without any additional condition is unsound because it would allow to prove triples which are not locally complete.
 \end{example}
 
-\subsection{Logical Completeness}\label{sec:logical-completeness}
+\subsection{Logical completeness}\label{sec:logical-completeness}
 Among all the possible conditions that make a refinement rule valid, we believe ours to be very general since the \lclrule{refine\mbox{-}ext} allows us to derive logical completeness, i.e., the ability to prove \emph{any} triple satisfying the soundness properties guaranteed by the proof system. Note that this was not the case for the original $\LCLA$ proof system~\cite[§5.2]{BGGR21}.
 
 %In Section~5.2 of \cite{BGGR21}, the authors discuss logical completeness of $\LCLA$. Here the adjective ``logical" is used to disambiguate the term with respect to Abstract interpretation completeness.
@@ -228,7 +228,7 @@ hence all three conditions of Theorem~\ref{th:lcla:soundness-ext} are satisfied.
 An interesting consequence of this result is the existence of a refinement $A'$ in which it is possible to carry out the proof. In principle, such a refinement could be the concrete domain $C$ (as shown in the proof), that is not computable. However, it is worth nothing that for a sequential fragment (a portion of code without loops) the concrete domain can be actually used (for instance via first-order logic). This opens up the possibility, for instance, to infer a loop invariant on the body using $C$, and then prove it using an abstract domain.
 In Section~\ref{sec:lcla:choose-refinement} we discuss this issue further.
 
-\subsection{Derived Refinement Rules}\label{sec:lcla:derived-rules}
+\subsection{Derived refinement rules}\label{sec:lcla:derived-rules}
 
 The hypothesis $A \denot{\regr}^{A'} A(P) = A(Q)$ is added to rule \lclrule{refine\mbox{-}ext} in order to guarantee soundness: in general, the ability to prove a triple such as $\lcl{}{P}{\regr}{Q}$ in a refined domain $A'$ only gives information on $A \denot{\regr}^{A'} A'(P)$ but not on $A \denot{\regr}^{A'} A(P)$. In fact, the example below shows that $A \denot{\regr}^{A'} A'(P) $ and $A \denot{\regr}^{A'} A(P)$ can be different.
 
@@ -509,8 +509,7 @@ We now present an example to illustrate that there are situations in which \lclr
 	In this example, rule \lclrule{refine\mbox{-}pre} can be applied to prove the triple, but it requires to have relational information from the assignment \code{x := y} in $\regr_1$, hence forcing the use of a relational domain (e.g. the reduced product~\cite{CC79} of $\Oct$ and $\Int_{\neq 0}$) for the whole $\regr$, making the analysis more expensive.
 \end{example}
 
-\subsection{Choosing The Refinement}\label{sec:lcla:choose-refinement}
-%\todo{Espandere? Mettere un esempio in cui la scelta sembri naturale? BDD domains?}
+\subsection{Choosing the refinement}\label{sec:lcla:choose-refinement}
 Thanks to the three new rules \lclrule{refine\mbox{-}ext}, \lclrule{refine\mbox{-}int} and \lclrule{refine\mbox{-}pre} we can now combine different domains in the same derivation.
 However, in order to obtain an algorithm that automatises the search of a provable $\LCLA$ triple we are left with the problem of the selection of the right refinement to use each time. A crucial point to the applicability of refine rules is a strategy to find the most convenient refined abstract domain. While we have not addressed this problem yet, we believe there are some interesting starting points in the literature.
 
@@ -862,7 +861,7 @@ The only simplification rule \lclrule{simplify} is theoretically slightly strong
 	\end{tabular}
 \end{table}
 
-\subsection{Future work}
+\subsection{Future works}
 While the new rules we introduced are relevant from both a theoretical and practical point of view, they do not define an algorithm because of their nondeterminism:
 % In principle, they may be applied to prove every triple moving to any refinement of the abstract domain, so
 we need techniques to determine \emph{when} a change of abstract domain is needed and \emph{how} to choose the most convenient new domain.
