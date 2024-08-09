@@ -143,3 +143,71 @@
 \newcommand{\true}{\textbf{true}}
 \newcommand{\false}{\textbf{false}}
 \newcommand{\timplies}{\Rightarrow}
+
+\def\APDR{\texorpdfstring{\textnormal{\texttt{AdjointPDR}}}{AdjointPDR}}
+\def\ADPDR{\texorpdfstring{{\textnormal{\texttt{AdjointPDR}}$^\downarrow$}}{AdjointPDR↓}}
+\def\APDRAI{\texorpdfstring{{\textnormal{\texttt{AdjointPDR}}$^\texttt{AI}$}}{AdjointPDR(AI)}}
+\newcommand{\Li}{L_{i \uparrow}}
+
+\newcommand{\rloop}[2][-]{\save \POS!R(.7) \ar@(ru,rd)^#1{#2} \restore}
+\newcommand{\lloop}[2][-]{\save \POS!L(.7) \ar@(lu,ld)_#1{#2} \restore}
+\newcommand{\uloop}[2][-]{\save \POS!U(.7) \ar@(lu,ru)^(.8){#2} \restore}
+
+\definecolor{dkblue}{rgb}{0,0.1,0.6}
+\definecolor{dkgreen}{rgb}{0,0.35,0}
+\definecolor{dkviolet}{rgb}{0.3,0,0.5}
+\definecolor{dkred}{rgb}{0.5,0,0}
+\lstdefinelanguage{NT}{
+% Anything betweeen $ becomes LaTeX math mode
+mathescape=true,
+% Comments may or not include Latex commands
+texcl=false,
+%
+morekeywords=[1]{while, do, if, then, else, for, all},
+%
+morekeywords=[2]{return, continue, goto},
+% Comments delimiters
+morecomment=[s]{/*}{*/},
+% Spaces are not displayed as a special character
+showstringspaces=false,
+% String delimiters
+morestring=[b]",
+morestring=[d],
+% Size of tabulations
+tabsize=3,
+% Enables ASCII chars 128 to 255
+extendedchars=false,
+% Case sensitivity
+sensitive=true,
+% Automatic breaking of long lines
+breaklines=false,
+% Default style fors listings
+%basicstyle=\ttfamily\scriptsize,
+basicstyle=\ttfamily,
+% Position of captions is bottom
+captionpos=b,
+% fixed columns
+columns=[l]fixed,
+% Style for (listings') identifiers
+identifierstyle={\color{black}},
+% Style for keywords
+keywordstyle=[1]{\color{dkviolet}},
+keywordstyle=[2]{\color{dkred}},
+% Style for strings
+stringstyle=\ttfamily,
+% Style for comments
+commentstyle={\ttfamily\color{dkblue}},
+%moredelim=**[is][\ttfamily\color{red}]{/&}{&/},
+literate=
+	{true}{{{\color{dkgreen}$true$}}}3
+{false}{{{\color{dkgreen}$false$}}}4
+{choose}{{{\color{dkred}choose}}}6
+{st}{{{\color{dkred}such that}}}{9}
+{And}{{{\color{dkgreen}$and$}}}4
+{case}{{{\color{dkviolet}case}}}4
+{of}{{{\color{dkviolet}of}}}3
+{endcase}{{{\color{dkviolet}endcase}}}3
+% {<-}{{$\leftarrow\;$}}1
+% {=>}{{$\Rightarrow\;$}}1
+}[keywords,comments,strings]
+\lstnewenvironment{codeNT}{\lstset{language=NT}}{}

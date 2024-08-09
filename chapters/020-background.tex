@@ -4,7 +4,7 @@
 
 In this chapter, we lay the background for the thesis. We fix the notation and recall known notions on different aspects of theoretical computer science.
 
-\section{Order structures}
+\section{Order structures}\label{sec:bg:posets}
 We write $\pow(S)$ for the powerset of $S$ and $\id_S: S \rightarrow S$ for the identity function on a set $S$. We omit subscripts when obvious from the context. If $f : S \rightarrow T$ is a function, we overload the symbol $f$ to denote also its lifting $f: \pow(S) \rightarrow \pow(T)$ defined as $f(X) = \{ f(x) \svert x \in X \}$ for any $X \subseteq S$.
 Given two functions $f: S \rightarrow T$ and $g: T \rightarrow V$ we denote their composition as $g \circ f$ or simply $gf$.
 For a function $f : S \rightarrow S$, we denote $f^n: S \rightarrow S$ the composition of $f$ with itself $n$ times, i.e., $f^{0} = \id_S$ and $f^{n+1} = f \circ f^{n}$.
@@ -15,13 +15,13 @@ If $C$ is a poset, we denote by $C^{\op}$ the poset with the same carrier set bu
 Given a poset $T$ and two functions $f, g: S \rightarrow T$, the notation $f \le g$ means that, for all $s \in S$, $f(s) \le_T g(s)$.
 A function $f$ between complete lattices is additive (resp. co-additive) whenever it preserves arbitrary lubs (resp. glbs).
 Given a function $f : C \rightarrow C$ on a poset $C$, we call a point $x \in C$ a fixed point (or fixpoint) if $f(x) = x$, and write both $\lfp(f)$ and $\mu(f)$ to denote its least fixpoint, if it exists. We recall two standard results guaranteeing the existence of (least) fixpoints (see, e.g., \cite{DP02}):
-\begin{theorem}[Knaster-Tarski]
+\begin{theorem}[Knaster-Tarski]\label{th:bg:knaster-tarski}
 	Let $L$ be a complete lattice and let $f: L \rightarrow L$ be a monotone function. Then the set of fixed points of $f$ is a complete lattice.
 \end{theorem}
 \begin{corollary}
 	Since a complete lattice cannot be empty, $\lfp(f)$ exists.
 \end{corollary}
-\begin{theorem}[Kleene]
+\begin{theorem}[Kleene]\label{th:bg:kleene}
 	Let $C$ be a complete partial order and $f : C \rightarrow C$ a Scott-continuous function. Then $\lfp(f)$ is the least upper bound of the chain
 	\[
 	\bot \le f(\bot) \le f^2(\bot) \le f^3(\bot) \le \dots

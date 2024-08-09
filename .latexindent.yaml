@@ -1,3 +1,5 @@
 onlyOneBackUp: 1
 noAdditionalIndentGlobal:
   specialBeginEnd: 1
+verbatimEnvironments:
+  codeNT: 1

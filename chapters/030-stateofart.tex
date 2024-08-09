@@ -1,6 +1,6 @@
 % !TEX root = ../phd-thesis.tex
 
-\chapter{Related work}\label{ch:sota}
+\chapter{Related works}\label{ch:sota}
 This chapter surveys related work that combines over and under-approximations.
 Section~\ref{sec:sota:kat} analyses KATs as a possible formalism to describe together over and under-approximation, represented respectively by HL and IL.
 Section~\ref{sec:sota:lcl} present $\LCLA$, a logic that exploits under-approximations to ensure precision of an (over-approximating) abstraction and is able to prove both correctness and incorrectness at once.
@@ -254,51 +254,63 @@ Our description is high level and leaves out many details. We're not interested 
 
 \code{ic3} was developed for hardware model checking, that means variables are boolean and the transition system is finite. However, its core ideas are deep and not tied to the specific domain, which lead to a host of derived work in other fields. One of the main challenges to generalize it is moving to infinite states space, since termination of the algorithm relies on finiteness of the domain. To cope with this issue, the crucial step is ``generalization", that in \code{ic3} is the choice of $c \timplies \lnot s$ to remove $s$. Taking $c$ as general as possible removes many (unreachable) states at once. Clearly this doesn't impact termination if the state space is finite, but is crucial whenever it is infinite. Hence, while generalization is not needed for soundness, it becomes fundamental for termination of infinite generalizations.
 This notwithstanding, \code{ic3} has been successfully generalized. One example is \code{PrIC3} (``Probabilistic \code{ic3}") \cite{BJKKMS20}, for model checking Markov decision processes (MDPs). These are basically transition systems where, fixed the action, the state to which the system transitions is not determined but is chosen with a given probability distribution. Without entering in too much details, the key difference is that a system configuration is not a single state but a probability distribution, meaning the state space is infinite. The authors propose a first algorithm which depends on an heuristic for generalization and always terminates, but gives up correctness when the system detects a counterexample: it may very well return a false alarm. Then, to recover correctness, they propose an effective way to find a ``good" heuristics, that basically amount to run their algorithm repeatedly, using the false counterexample to refine the heuristic every step until either safety is proved or a true counterexample is found.
-Another generalization is software \code{ic3}, that uses the same core algorithm to model check software systems \cite{CG12,LNNK20}. Given their state spaces are infinite and variables are not just boolean, software \code{ic3} relies on SMT instead of SAT solvers. Moreover, they exploit explicitly the control-flow structure of programs, as doing so implicitly has been shown far less effective \cite{CG12}. This makes the algorithms more involved, but shows that \code{ic3} has indeed the potential to scale to infinite state spaces.
+Another generalization is software \code{ic3}, that uses the same core algorithm to model check software systems~\cite{CG12,LNNK20}. Given their state spaces are infinite and variables are not just boolean, software \code{ic3} relies on SMT instead of SAT solvers. Moreover, they exploit explicitly the control-flow structure of programs, as doing so implicitly has been shown far less effective~\cite{CG12}. This makes the algorithms more involved, but shows that \code{ic3} has indeed the potential to scale to infinite state spaces.
 
 \subsection{LT-PDR}\label{sec:sota:lt-pdr}
 \begin{figure}[t]
-	\SetKwRepeat{Repeat}{repeat (do one of the following)}{until}
-	\textbf{Initially:} $(X; C) \coloneqq (\bot \leq F \bot;\; ()\,)$ \\
-	\Repeat{any return value is obtained}{
-		\textbf{Valid}
-		If $X_{j+1} \leq X_j$ for some $j < n-1$, return \code{True} with the conclusive KT sequence $X$. \\
-		\textbf{Unfold} If $X_{n-1} \leq \alpha$, let $(X; C)\coloneqq(X_0 \leq \cdots \leq X_{n-1} \leq \top; ())$. \\
-		\textbf{Induction} If some $k \geq 2$ and $x\in L$ satisfy $X_{k} \not \leq x$ and $F(X_{k-1} \land x) \leq x$,
-		let $(X; C) \coloneqq (X[X_j := X_j \land x]_{2 \leq j \leq k}; C)$. \\
-		\textbf{Candidate} If $C=()$ and $X_{n-1} \not \leq \alpha$, choose $x\in L$ such that $x \leq X_{n-1}$ and $x \not \leq \alpha$,
-		and let $(X;C)\coloneqq(X; (x))$. \\
-		\textbf{Model}
-		If $C_1$ is defined, return \code{False} with the conclusive Kleene sequence $(\bot, C_1, \dots, C_{n-1})$. \\
-		\textbf{Decide} If $C_i \leq FX_{i-1}$, choose $x \in L$ satisfying $x \leq X_{i-1}$ and $C_i \leq Fx$,
-		and let $(X; C) \coloneqq (X; (x, C_i, \dots, C_{n-1}))$. \\
-		\textbf{Conflict} If $C_i \not \leq FX_{i-1}$, choose $x \in L$ satisfying $C_i \not \leq x$ and $F(X_{i-1} \land x) \leq x$, and let
-		$(X; C) \coloneqq (X[X_j := X_j \land x]_{2 \leq j \leq i}; (C_{i+1}, \dots, C_{n-1}))$. }
-	\vspace{-1ex}
-	\caption{LT-PDR, from \cite{KUKSH22}}\label{fig:sota:lt-pdr}
+	\begin{center}
+		\underline{{LT-PDR} $(F,\alpha)$}
+		{\small
+			\begin{codeNT}
+<INITIALISATION>
+  $( \vec{x} \| \vec{c} )_{n,k}$ := $(\bot, F \bot \| \varepsilon)_{2,2}$
+<ITERATION>						            % $\vec{X},\vec{C}$  not conclusive
+  case:
+       $k \ge 2$ :               	         	%(Induction)
+			choose $j \ge 2$ And $z \in L$ st $x_{j} \nleq z$ And $F(x_{j-1} \land z) \leq z$;
+			$(\vec{x} \| \vec{c} )_{n,k}$ := $(\vec{x} \land_j z \| \vec{c} )_{n,k}$
+       $\vec{c}=\varepsilon$ And $x_{n-1} \leq \alpha$     :                    %(Unfold)
+			$( \vec{x} \| \vec{c} )_{n,k}$ := $( \vec{x}, \top \| \varepsilon )_{n+1,n+1}$
+       $\vec{c}=\varepsilon$ And $x_{n-1} \nleq \alpha$    :                     %(Candidate)
+			choose $z \in L$ st $z \le x_{n-1}$ And $z \nleq \alpha$;
+			$( \vec{x} \| \vec{c} )_{n,k}$ := $( \vec{x} \| z )_{n,n-1}$
+       $\vec{c} \neq \varepsilon$ And $c_k \le F(x_{k-1})$ :                        %(Decide)
+			choose $z \in L$ st $z \le x_{k-1}$ And $c_{k} \le F(z)$;
+			$( \vec{x} \| \vec{c} )_{n,k}$ := $(\vec{x} \| z , \vec{c} )_{n,k-1}$
+       $\vec{c} \neq \varepsilon$ And $c_{k} \nleq F(x_{k-1})$ :                        %(Conflict)
+			choose $z \in L$ st $c_k \nleq z$ And $F(x_{k-1} \land z) \le z$;
+			$( \vec{x} \| \vec{c} )_{n,k}$ := $(\vec{x} \land_k z \| \mathsf{tail}(\vec{c}) )_{n,k+1}$
+  endcase
+<TERMINATION>
+  if $\exists j\in [0,n-2]\,.\, x_{j+1} \leq x_j$ then return true		 % $\vec{X}$ conclusive
+  if $k = 1$ then return false						 % $\vec{C}$ conclusive
+\end{codeNT}
+		}
+	\end{center}
+	\caption{LT-PDR, from~\cite{KUKSH22}}\label{fig:sota:lt-pdr}
 \end{figure}
-An interesting point of view is taken by \cite{KUKSH22}. In this article, the authors propose a generalization of \code{ic3} whose only constraint is that the space state is a complete lattice, that they call LT-PDR (``Lattice theoretic property directed reachability"). While LT-PDR is extremely generic and need heuristics to be instantiated for particular domains, it has the benefit of capturing the essence of the algorithm, showing in particular which properties are needed for soundness and termination. The paper highlight how \code{ic3} is actually based on Knaster-Tarski (for proving safety) and Kleene (for counterexample) fixed-point theorems \cite{DP02}.
-LT-PDR is presented in Figure~\ref{fig:sota:lt-pdr}. With respect to \code{ic3}, it differs a little in the notation. Given a complete lattice $L$, a monotone function $F: L \rightarrow L$ and a property $\alpha \in L$, the goal of the algorithm is to either prove or find a counterexample to $\lfp(F) \le \alpha$. To encode for instance the original \code{ic3} problem in this settings, it is sufficient to take $L = \pow(\states)$, $F(S) = I \cup T(S)$ and $\alpha = P$; it is not hard to verify that this gives exactly the model checking problem.
-With this in mind, $F$ broadly correspond to the transition relation $T$; the sequence of over-approximations is $( X_i )_{0 \le i \le k + 1}$, while $C$ is the so-called \emph{negative sequence}, and is more or less the call stack for the recursion on predecessors of error states.
-Intuitively, the algorithm is building an over-approximating sequence $X_i$ of the fixpoint iterates, hoping to reach a safe abstract fixpoint. However, when the next over-approximating iterate is not safe, it must contain a counterexample, that is then either traced back toward initial states or identified as spurious and hence removed.
+An interesting point of view is taken by \cite{KUKSH22}. In this article, the authors propose a generalization of \code{ic3} whose only constraint is that the space state is a complete lattice, that they call LT-PDR (``Lattice theoretic property directed reachability"). While LT-PDR is extremely generic and needs heuristics to be instantiated for particular domains, it captures the essence of the algorithm, showing in particular which properties are needed for soundness and termination. In fact, the paper highlights how \code{ic3} is based on Knaster-Tarski (for proving safety) and Kleene (for counterexample) fixed-point theorems (see Section~\ref{sec:bg:posets}).
+LT-PDR is presented in Figure~\ref{fig:sota:lt-pdr}. Its notation differs a little from \code{ic3}. Given a complete lattice $L$, a monotone function $F: L \rightarrow L$ and a property $\alpha \in L$, the goal of the algorithm is to either prove or find a counterexample to $\lfp(F) \le \alpha$. To encode for instance the original \code{ic3} problem in this settings, it is sufficient to take $L = \pow(\states)$, $F(S) = I \cup T(S)$ and $\alpha = P$; it is not hard to verify that this gives exactly the model checking problem.
+With this in mind, $F$ broadly correspond to the transition relation $T$; the sequence of over-approximations is $( x_i )_{0 \le i \le n}$, while $\vec{c}$ is the so-called \emph{negative sequence}, and is more or less the call stack for the recursion on predecessors of error states.
+Intuitively, the algorithm is building an over-approximating sequence $\vec{x}$ of the fixpoint iterates, hoping to reach a safe abstract fixpoint. However, when the next over-approximating iterate is not safe, it must contain a counterexample, that is then either traced back toward initial states or identified as spurious and hence removed.
 
-The algorithm keeps the following invariants on $X$, that matches those of \code{ic3}: (1) $X_i \le X_{i+1}$, (2) $F(X_i) \le X_{i+1}$, (3) $X_k \le \alpha$.
-\textbf{Unfold} increases $k$, advancing the major iteration. It doesn't perform clause propagation, though: this is the duty of \textbf{Induction}. The algorithm is nevertheless sound, as it basically already propagates clauses in \textbf{Conflict}.
-\textbf{Candidate} broadly correspond to the case when $T(X_k) \timplies P$ is not satisfied, with a slight difference. Here $x$ is a counterexample to $X_{k+1} \le \alpha$, not an element of $X_k$ that is predecessor of a bad state. This difference is insubstantial, though, as the algorithm just recurse on this element going to its predecessors.
-\textbf{Decide} and \textbf{Conflict} are, respectively, a new recursive call and the conclusion of a previous one. On the one hand, when $C_i$, the current predecessor of a bad state, is contained in $F (X_{i-1})$, it means it has a predecessor in the over-approximation. This predecessor is $x$, and the algorithm goes on recursing on it. On the other hand, if $C_i$ is not in $F (X_{i-1})$ it's a spurious counterexample, introduced by the over-approximation: it is then removed refining $X_{i-1}$ by conjoining with a suitable $x$ that excludes $C_i$, just like the clause $c$ is conjoined to $X_i$ in \code{ic3}.
-Lastly, \textbf{Valid} and \textbf{Decide} are the termination conditions: the former checks whether it reached an invariant (that is $X_{i+1} = X_i$, but it checks for inequality as the direction $X_i \le X_{i+1}$ is guaranteed by the algorithm invariant); the latter verifies whether the predecessors reached an initial state (as $F(\bot) = I$ with the given definition of $L$ and $F$).
+The algorithm keeps the following invariants on $\vec{x}$, analogously to \code{ic3}: (1)~$x_i \le x_{i+1}$, (2)~$F(x_i) \le x_{i+1}$, (3)~$x_k \le \alpha$.
+\textbf{Unfold} increases $n$, advancing the major iteration. It doesn't perform clause propagation, though: this is the duty of \textbf{Induction}. The algorithm is nevertheless sound, as it basically already propagates clauses in \textbf{Conflict}.
+\textbf{Candidate} broadly correspond to the case when $T(X_k) \timplies P$ is not satisfied, with a slight difference. Here $z$ is a counterexample to $x_{n-1} \le \alpha$, not an element of $x_{n-2}$ that is predecessor of a bad state. This difference is insubstantial, though, as the algorithm just recurse on this element going to its predecessors.
+\textbf{Decide} and \textbf{Conflict} are, respectively, a new recursive call and the conclusion of a previous one. On the one hand, when $c_k$, the current predecessor of a bad state, is contained in $F (x_{k-1})$, it means it has a predecessor in the over-approximation. This predecessor is $z$, and the algorithm goes on recursing on it. On the other hand, if $c_k$ is not in $F (x_{k-1})$ it's a spurious counterexample, introduced by the over-approximation: it is then removed refining $x_{k-1}$ by conjoining with a suitable $z$ that excludes $c_k$, just like the clause $c$ is conjoined to $X_i$ in \code{ic3}.
+The two termination conditions correspond to safety and unsafety respectively: the first one checks whether it reached an invariant (that is $X_{i+1} = X_i$); the second one verifies whether the predecessors reached an initial state (as $F(\bot) = I$ with the given definition of $L$ and $F$).
 
-The choice of $x$ in \textbf{Induction}, \textbf{Candidate}, \textbf{Decide} and \textbf{Conflict} is left unspecified by the algorithm. Save for induction (that is anyway not necessary for neither soundness nor termination), there are canonical choices for $x$ in the rules, but better solutions can be provided by heuristics. This allows LT-PDR to accommodate for other known instances of the algorithm, such as \code{ic3} and \code{PrIC3}, just fixing the right lattice and heuristics.
-While in general LT-PDR doesn't help in this choice, it's able to highlight pros and cons behind them. As briefly remarked above, in general we can look for either a bigger or a smaller $x$ in each of the rules. There are two different kind of choices here: \textbf{Induction} and \textbf{Conflict}, which pick an $x$ to \emph{refine} the over-approximation, and \textbf{Candidate} and \textbf{Decide}, whose goal is identify a counterexample.
-For the latter, a bigger $x$ means that we are possibly examining more counterexamples at once. However, if any of these counterexample is spurious we have to apply \textbf{Conflict} to remove that $x$, and possibly restart with a smaller one containing all the counterexamples we didn't discard with the refinement (that are all the true ones, but possibly also some of the false ones). Moreover, this requires to work on many states (eg. application of $F$, that must be exact for the algorithm to work) at once, that may be costly. On the other hand, a smaller $x$ means considering just a few counterexamples. While a lucky choice of such an $x$ may lead very cheaply to a counterexample, if the safety property is satisfied this may cause the removal of counterexample one by one, possibly taking a lot of time. We note that \code{ic3} follows the second path, only examining the single counterexample returned by the SAT solver.
-Considering instead the $x$ used to refine the over-approximation, there are two conflicting, driving forces guiding the choice. On the one hand, a smaller $x$ removes more counterexamples (this is the path chosen by \code{ic3} with its generalization to a minimal subclause). On the other hand, a bigger $x$ ensures more abstract over-approximations, yielding less expensive computations and, when there are no counterexamples, a faster fixpoint convergence.
+The choice of $z$ in \textbf{Induction}, \textbf{Candidate}, \textbf{Decide} and \textbf{Conflict} is left unspecified by the algorithm. Save for induction (that is anyway not necessary for neither soundness nor termination), there are canonical choices for $z$ in the rules, but better solutions can be provided by heuristics. This allows LT-PDR to accommodate for other known instances of the algorithm, such as \code{ic3} and \code{PrIC3}, just fixing the right lattice and heuristics.
+While in general LT-PDR doesn't help in this choice, it's able to highlight pros and cons behind them. As briefly remarked above, in general we can look for either a bigger or a smaller $z$ in each of the rules. There are two different kind of choices here: \textbf{Induction} and \textbf{Conflict}, which pick a $z$ to \emph{refine} the over-approximation, and \textbf{Candidate} and \textbf{Decide}, whose goal is identify a counterexample.
+For the latter, a bigger $z$ means that we are possibly examining more counterexamples at once. However, if any of these counterexample is spurious we have to apply \textbf{Conflict} to remove that $z$, and possibly restart with a smaller one containing all the counterexamples we didn't discard with the refinement (that are all the true ones, but possibly also some of the false ones). Moreover, this requires to work on many states (e.g., application of $F$, that must be exact for the algorithm to work) at once, that may be costly. On the other hand, a smaller $z$ means considering just a few counterexamples. While a lucky choice of such an $z$ may lead very quickly to a counterexample, if the safety property is satisfied this may cause the removal of counterexample one by one, possibly taking a lot of time. We note that \code{ic3} follows the second path, only examining the single counterexample returned by the SAT solver.
+Considering instead the $z$ used to refine the over-approximation, there are two conflicting, driving forces guiding the choice. On the one hand, a smaller $z$ removes more counterexamples (this is the path chosen by \code{ic3} with its generalization to a minimal subclause). On the other hand, a bigger $z$ ensures more abstract over-approximations, yielding less expensive computations and, when there are no counterexamples, a faster fixpoint convergence.
 
 The authors discuss the termination of LT-PDR. As many choices are left unspecified, the best they were able to prove unconditionally is the \emph{existence} of a sequence of choices that make the algorithm ends. On the contrary, to have termination for all possible sequence of choices they need more restrictive conditions:
 \begin{itemize}
 	\item the complete lattice $L$ is well-founded
 	\item either $\lfp(F) \nleq \alpha$ (ie. there is a counterexample) or $\lfp(F) \le \alpha$ (the property is satisfied) and there are no strictly increasing infinite chains bounded by $\alpha$
 \end{itemize}
-Intuitively, the first condition means that eventually the algorithm proceeds to the next major iteration (ie. increases $k$). The second instead limit the number of major iterations to a finite number: either it find a counterexample at some point, or it doesn't but then it can't increase arbitrarily while staying below $\alpha$.
+Intuitively, the first condition means that eventually the algorithm proceeds to the next major iteration (i.e., increases $n$). The second instead limit the number of major iterations to a finite number: either it find a counterexample at some point, or it doesn't but then it can't increase arbitrarily while staying below $\alpha$.
 
 \section{Outcome Logic}\label{sec:sota:ol}
 \todo[inline]{OL section}

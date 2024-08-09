@@ -1,3 +1,73 @@
 % !TEX root = ../phd-thesis.tex
 
 \chapter{AdjointPDR}\label{ch:pdr}
+In this chapter we study a new PDR-like algorithm (see Section~\ref{sec:sota:pdr}). Differently than previous approaches, our main tool are \emph{adjunctions}, which we use extensively in our development. We propose a first algorithm, \APDR{}, which exploits an adjoint $g$ to the function $f$ (which roughly identify the backward semantics of $f$) to quicken the counterexample search. This first algorithm allows us to devise a theory of heuristics to better understand and compare them.
+However, to apply \APDR{} the right adjoint $g$ to the forward semantics $f$ must exist, and this is not always the case. To get rid of this constraint, we propose \ADPDR{}, a variation of \APDR{} which lift the problem to lower sets, where it is always possible to define this adjoint.
+Lastly, we propose yet another variation of the algorithm, \APDRAI{}, which can instantiate both \APDR{} and \ADPDR{}. We implemented this latter algorithm, and compared it against other PDR-like algorithms and state-of-the-art tools with encouraging results.
+
+The content of this chapter is based on~\cite{KABBGH23}.
+
+\section{Overview}
+Category theory has recognized adjunctions $f \dashv g$ as fundamental concepts appearing across various mathematical domains~\cite{Lawvere69}. Adjointness is prevalent in various branches of computer science as well, including abstract interpretation and functional programming~\cite{Levy2004}. In our development, we employ adjoints in two distinct ways:
+\begin{itemize}
+	\item (Forward-Backward Adjoint) $f$ characterizes the \emph{forward semantics} of a transition system, while $g$ represents the \emph{backward} semantics.
+	\item (Abstraction-Concretization Adjoint) $C$ denotes a concrete semantic domain, while $A$ is an abstract one, akin to abstract interpretation. An adjoint allows us to translate a fixed-point problem from $C$ to $A$.
+\end{itemize}
+
+The problem we address is the standard lattice-theoretical formulation of safety problems, namely whether the least fixed point of a continuous map $b$ over a complete lattice $L$ is below a given element $p \in L$: $\mu b\leq_{?} p$.
+
+The first algorithm we present, \APDR{}, assumes the existence of an element $i \in L$ and two adjoints $f \dashv g \colon L \to L$, representing respectively initial states, forward semantics and backward semantics such that $b(x) = f(x) \lor i$ for all $x \in L$.
+
+\[
+\xymatrix{
+L \ar@/_1.5ex/[r]_-{g}^-\bot &L\ar@/_1.5ex/[l]_-{f}
+}
+\]
+
+Under this assumption, Knaster-Tarski Theorem~\ref{th:bg:knaster-tarski} yields the equivalences:
+\[
+\mu b\sqsubseteq p
+\quad \Leftrightarrow\quad
+\mu (f\sqcup i)\sqsubseteq p
+\quad \Leftrightarrow\quad
+i \sqsubseteq \nu (g \sqcap p),
+\]
+
+where $\mu (f\sqcup i)$  and $\nu (g \sqcap p)$ are, by Kleene Theorem~\ref{th:bg:kleene}, the limits of the \emph{initial} and \emph{final} chains illustrated below.
+\[
+\bot \sqsubseteq i \sqsubseteq f(i)\sqcup i \sqsubseteq  \cdots
+\qquad\qquad\qquad
+\cdots \sqsubseteq g(p)\sqcap p \sqsubseteq p \sqsubseteq \top
+\]
+
+The distinguishing feature of \APDR{} is to take as a negative sequence (that is a sequential construction of potential counterexamples) an over-approximation of the final chain. This crucially differs from the negative sequence of other PDR-like algorithm, which is an under-approximation of the computed positive chain.
+
+\APDR{} is sound (Theorem~\ref{th:pdr:soundness}) and does not loop (Proposition~\ref{prop:pdr:progres}), but since the problem $\mu b \sqsubseteq_? p$ is not always decidable, we cannot prove termination. Nevertheless, \APDR{} allows for a formal theory of heuristics that are essential when instantiating the algorithm to concrete problems. The theory prescribes the choices to obtain the boundary executions, using initial and final chains (Proposition~\ref{prop:pdr:negativesequencefinalchain}); it thus identifies a class of heuristics guaranteeing termination when answers are negative (Theorem~\ref{thm:pdr:negativetermination}).
+
+In general, \APDR{}'s assumption of a forward-backward adjoint $f \dashv g$ does not hold, especially in probabilistic settings. Our second algorithm \ADPDR{} circumvents this problem by extending the lattice for the negative sequence, from $L$ to the lattice $L^{\downarrow}$ of \emph{lower sets} in $L$. Specifically, by using the second form of adjoints, namely an abstraction-concretization pair, the problem $\mu b \sqsubseteq_{?} p$ in $L$ can be translated to an equivalent problem on $b^{\downarrow}$ in $L^\downarrow$, for which an adjoint $b^\downarrow \dashv b^\downarrow_r$ always exists.
+\[
+\xymatrix{
+L \lloop{b} \ar@/_1.5ex/[r]_-{(-)^\downarrow}^-\bot
+&L^\downarrow \rloop{b^\downarrow
+	\, \dashv\, b^\downarrow_r
+} \ar@/_1.5ex/[l]_-{\bigsqcup}
+}
+\]
+This allows us to run \APDR{} in the lattice $L^\downarrow$. We then notice that the search for a positive chain can be conveniently restricted to principals in $L^\downarrow$, which have representatives in $L$. The resulting algorithm, using $L$ for positive chains and $L^\downarrow$ for negative sequences, is \ADPDR{}.
+
+The use of lower sets for the negative sequence is a key advantage. It not only avoids the restrictive assumption of backward adjoint $g$, but also enables a more thorough search for counterexamples. {\ADPDR} can simulate stepwise LT-PDR (Theorem~\ref{th:pdr:LT-PDR-instance-ADPDR}), but it is more general since a single negative sequence in {\ADPDR} potentially represents multiple (Proposition~\ref{prop:pdr:multipleLTPDR}) or even all (Proposition~\ref{prop:pdr:LTPDRfinal}) negative sequences of LT-PDR.
+
+Our lattice-theoretic algorithms yield many concrete instances: the original IC3/PDR as well as Reverse PDR~\cite{SS17} are instances of \APDR{} with $L$ being the powerset of the state space; since LT-PDR can be simulated by \ADPDR{}, the latter generalizes all instances in~\cite{KUKSH22}.
+As a notable instance, we apply \ADPDR{} to MDPs, specifically to decide if the maximum reachability probability \cite{BK08} is below a given threshold. Here the lattice $L=[0,1]^S$ is that of fuzzy predicates over the state space $S$. Our theory provides guidance to devise two heuristics, for which we prove negative termination (Corollary~\ref{cor:pdr:ADPDRtermination}).
+
+We implement this latter instance in Haskell. However, the implementation is not based on \ADPDR{} directly, but rather on a third algorithm, \APDRAI{}. This can be understood as a generalisation of both \APDR{} and \ADPDR{} to a more abstract setting:
+\[
+\xymatrix{
+(L, \sqsubseteq_L) \lloop{b} \ar[r]^-{\gamma}
+&(C, \sqsubseteq_C) \rloop{\overline{b} \dashv \overline{b}_r}
+}
+\]
+where $\gamma \colon L \to C$ is an order embedding and $b,\overline{b}$ and $\gamma$ are required to satisfy a condition that is known in the setting of abstract interpretation as \emph{forward completeness}~\cite{GRS00}.
+
+We experimentally evaluate our implementation. We compare it against existing probabilistic PDR algorithms (PrIC3~\cite{BJKKMS20}, LT-PDR~\cite{KUKSH22}) and a non-PDR one (Storm~\cite{DJKV17}). The performance of \ADPDR{} is encouraging---it supports the potential of PDR algorithms in probabilistic model checking. The experiments also indicate the importance of having a variety of heuristics, and thus the value of our adjoint framework that helps in coming up with those.
+Additionally, we found that abstraction features of Haskell allow us to code lattice-theoretic algorithms almost literally ($\sim$100 lines). Implementing a few heuristics takes another $\sim$240 lines. This way, we found that mathematical abstraction can directly help in easing implementation effort.
