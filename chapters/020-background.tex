@@ -28,6 +28,26 @@ Given a function $f : C \rightarrow C$ on a poset $C$, we call a point $x \in C$
 	\]
 \end{theorem}
 
+The above chain is also called the \emph{initial chain} of $f$. If instead of $C$ we consider $C^{\op}$, by duality we get that whenever $f$ is Scott-co-continuous the greatest fixpoint of $f$, denoted by $\gfp(f)$, is the greatest lower bound of the \emph{final chain} of $f$
+\[
+\dots \le f^3(\top) \le f^2(\top) \le f(\top) \le \top  \text{.}
+\]
+
+If we assume $f$ is additive, then for any point $x \in C$ we have $(f \lor x)^n = \bigvee_{j < n} f^j(x)$. By Kleene, this means $\lfp(f \lor x) = \bigvee_{n \ge 0} f^n(x)$. Dually, if $f$ is co-additive, $\gfp(f \land x) = \bigwedge_{n \ge 0} f^n(x)$.
+
+Suppose $f \dashv g$. Then, by Knaster-Tarski,
+\begin{equation}
+	\lfp(f \lor x) \le y \iff x \le \gfp(g \land y) \label{eq:bg:adjoint-fixpoint} \text{.}
+\end{equation}
+
+Lastly, from Knaster-Tarski follows the following two (co)induction proof principles:
+\begin{equation}
+	\infer{\lfp(f) \le p}{\exists x . f(x) \le x \le p}
+	\qquad\qquad
+	\infer{p \le \gfp(f)}{\exists x . p \le x \le f(x)}
+	\label{eq:bg:coinductionproofprinciple}
+\end{equation}
+
 \section{Propositional logic}
 When talking about propositional logical formulas, we group variables $x_1$, $x_2$, $\dots$, $x_n$ in a vector denoted $\xbar$. Moreover, we often omit the variables a formula depends on. For instance, if the formula $F(\xbar)$ depends on variables $\xbar$, we shall write just $F$. We use the special shorthand $F'$ to denote $F[\xbar/\xbar']$, where we primed all variables appearing in $F$.
 An assignment $s$ of all variables $\xbar$ appearing in a formula $F(\xbar)$ either satisfies it, written $s \vDash F$, or falsifies it, written $s \nvDash F$. Given an assignment $s$ for variables $\xbar$, we shall write $s'$ for the corresponding assignment on primed variables $\xbar'$, that is the value of variable $x'$ in $s'$ is the same as $x$ in $s$. Moreover, we use the comma to ``merge" assignments when they refer to disjoint sets of variables: for instance, given the two assignments $s$ and $t$, we write $s, t'$ for the assignment that uses $s$ for $\xbar$ and $t'$ for $\xbar'$ (we assume the set of primed variables $\xbar'$ to be disjoint from the original set $\xbar$).

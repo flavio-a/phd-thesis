@@ -51,6 +51,7 @@
 \newcommand{\fix}{\text{fix}}
 \newcommand{\id}{\text{id}}
 \newcommand{\lfp}{\text{lfp}}
+\newcommand{\gfp}{\text{gfp}}
 \newcommand{\op}{\text{op}}
 \newcommand{\image}{\text{Im}}
 
@@ -152,6 +153,12 @@
 \newcommand{\rloop}[2][-]{\save \POS!R(.7) \ar@(ru,rd)^#1{#2} \restore}
 \newcommand{\lloop}[2][-]{\save \POS!L(.7) \ar@(lu,ld)_#1{#2} \restore}
 \newcommand{\uloop}[2][-]{\save \POS!U(.7) \ar@(lu,ru)^(.8){#2} \restore}
+
+\newcommand{\tr}[1]{\stackrel{#1}{\to}}
+\newcommand{\trz}[2]{{\stackrel{#1}{\to}}_{#2}}
+\newcommand{\Htrz}[3]{{\stackrel{#1}{\to}}_{#2}^{#3}}
+\newcommand{\ttr}[1]{\stackrel{#1}{\to^*}}
+\newcommand{\ttp}[1]{\stackrel{#1}{\to^+}}
 
 \definecolor{dkblue}{rgb}{0,0.1,0.6}
 \definecolor{dkgreen}{rgb}{0,0.35,0}

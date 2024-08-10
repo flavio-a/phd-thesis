@@ -233,8 +233,34 @@ To conclude this section, we point out there exists an algebraic formulation of 
 \code{ic3} (``Incremental Construction of Inductive Clauses for Indubitable Correctness"), also called PDR (``Property directed reachability"), was first proposed by Bradley as a model checking algorithm \cite{Bradley11}. Given a safety property $P$ and a finite transition system, it either proves the property or outputs a counterexample. In this sense, \code{ic3} operates both as prover and a bug finder \cite{Bradley12}. Its ingenuity consists in using an over-approximation to guide the search for counterexamples, that in turn are used to help refining little by little the over-approximation. This means that the core of \code{ic3} is a combination of over- and under-approximations.
 Thanks to this, it quickly became one of the best hardware model checker. Moreover, the algorithm was later applied to other settings, such as probabilistic transition systems, software model checking or generic complete lattices.
 
-In its original formulation, \code{ic3} operates on a finite transition system. Let $\states$ be the (finite) set of states, $I \subseteq \states$ the set of initial states and $T : \pow(\states) \rightarrow \pow(\states)$ the transition function: given a set of states $S$, it returns the sets of states reachable from $S$ in one step. If $\rightarrow \subseteq \pow(\states \times \states)$ is the transition relation, $T(S) \eqdef \{ t \svert \exists s \in S \sdot s \rightarrow t \}$.
+In its original formulation, \code{ic3} operates on a finite transition system. Let $\states$ be the (finite) set of states, $I \subseteq \states$ the set of initial states and $T : \pow(\states) \rightarrow \pow(\states)$ the transition function: given a set of states $S$, it returns the sets of states reachable from $S$ in one step. If $\rightarrow \subseteq \pow(\states \times \states)$ is the transition relation, $T(S) \eqdef \{ t \svert \exists s \in S \sdot s \rightarrow t \}$. In this case, $\lfp(T \cup I)$ is the set of all states reachable from $I$.
 Actually, $I$ and $T$ are represented by propositional formulas and a SAT solver is employed to prove implications and satisfiability queries.
+
+\begin{example}[Safety problem for transition systems]\label{ex:sota:ts}
+	\begin{figure}[t]
+		\begin{displaymath}
+			\xymatrix@R=5pt{
+			& s_1 \ar@/^1ex/[rd] \ar@/^1ex/[ld] &  s_5 \ar@(l,u)\ar[r] & s_6 \ar@(r,u)\\
+			s_0 \ar@/^1ex/[ur] \ar@/_1ex/[rd] & &s_3 \ar[r]& s_4\ar@(rd,ur) \\
+			& s_2 \ar@(ur,ul) \ar@/_1ex/[ru] &
+			}
+		\end{displaymath}
+		\caption{The transition system of Example~\ref{ex:sota:ts}, with $S = \{ s_0, \dots s_6 \}$ and $I=\{s_0\}$.}\label{fig:sota:ts}
+	\end{figure}
+
+	Consider the transition system in Figure~\ref{fig:sota:ts}. Hereafter we write $S_{j}$ for the set of states $\{s_0, s_1, \dots, s_j\}$ and we fix the set of safe states to be $P = S_5$.
+	We know that the transition system is safe if and only if $\lfp(T \cup I) \subseteq P$, and by Kleene Theorem~\ref{th:bg:kleene} this correspond to the limit of the intial chain
+	\[
+	\emptyset \subseteq  I \subseteq S_2 \subseteq S_3 \subseteq S_4 \subseteq S_4 \subseteq \cdots
+	\]
+	which stabilizes at $S_4$ and is therefore below $P$. Note that the $(j+1)$-th element of the initial chain contains all the states that can be reached from $I$ in at most $j$ transitions.
+
+	It is worth to remark that $T$ has a right adjoint $G \colon \pow(S) \to \pow(S)$ defined for all $X \in \pow(S)$ as $G(X) \eqdef \{s \mid \forall t. s \rightarrow t \implies t \in X \}$. Thus by~\eqref{eq:bg:adjoint-fixpoint}, $\lfp (T \cup I) \subseteq P$ iff $I \subseteq \gfp (G \cap P)$. We can check this by computing the final chain
+	\[
+	\cdots \subseteq S_4 \subseteq S_4 \subseteq P \subseteq S
+	\]
+	which again stabilizes at $S_4$ and is therefore below $P$. Note that the $(j+1)$-th element of the final chain contains all the states that in at most $j$ transitions reach safe states only.
+\end{example}
 
 \code{ic3} fundamental data structures is a sequence $(X_i)_{0 \le i \le k + 1}$ of over-approximations of states reachable in at most $i$ steps. $k$ is the number of so-called \emph{major iterations} the algorithm has performed.
 In \code{ic3}, $X_i$ are logical formulas in CNF. Moreover, the following invariants are kept: (1)~$\clause(X_{i+1}) \subseteq \clause(X_i)$, (2)~$T(X_i) \timplies X_{i+1}$, (3)~$X_{k} \timplies P$.
