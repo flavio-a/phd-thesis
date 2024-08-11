@@ -183,7 +183,7 @@ The inference rules for SIL are in Figure~\ref{fig:sil:sil-rules}. The top five 
 
 Note that all the rules can be applied to an arbitrary post $Q$ to infer a corresponding pre, in the same way as all the rules of IL can be applied to an arbitrary pre $P$ to infer a corresponding post. This is a key feature of SIL proof system, which facilitates backward reasoning.
 
-Atomic commands are handled by \silrule{atom}, which exploits the backward semantics and summarizes cases for \code{skip}, assignments and Boolean guards. In Section~\ref{sec:sil:assign} we discuss further the rule for assignment when pre and postconditions are formulae instead of sets of states.
+Atomic commands are handled by \silrule{atom}, which exploits the backward semantics and summarizes cases for \code{skip}, assignments and Boolean guards. In Section~\ref{sec:sil:rules-comparison} we discuss further the rule for assignment when pre and postconditions are formulae instead of sets of states.
 The consequence rule allows to generalize a proof by weakening/strengthening the two conditions $P$ and $Q$ involved. It can readily be derived from the validity condition (SIL). Moreover, \silrule{cons} allows SIL to drop disjuncts in the pre, just as \ilrule{cons} allows IL do it in the post. This feature is crucial in both SIL and IL to increase scalability of tools.
 Rule \silrule{seq} is standard: SIL triples are composed sequentially just like in all other logics.
 Rule \silrule{choice} states that if all states in $P_1$ (resp. $P_2$) have an execution of $\regr_1$ (resp. $\regr_2$) ending in $Q$, they also have an execution of $\regr_1 \regplus \regr_2$ ending in $Q$ since the semantics of $\regr_1 \regplus \regr_2$ is a superset of that of $\regr_1$ (resp. $\regr_2$), cf. Figure~\ref{fig:bg:regcom-sem}. This rule is also reminiscent of the equation for conditionals in the calculus of possible correctness \cite{Hoare78}.
@@ -528,7 +528,7 @@ Given a heap command $\regr \in \Regh$, we let $\fv(\regr) \subseteq \Var$ be th
 \end{figure}
 
 \subsection{Assertion language}
-Our assertion language is derived from SL and Incorrectness Separation Logic (ISL)~\cite{RBDDOV20}:
+Our assertion language is derived from SL and ISL~\cite{RBDDOV20}:
 \begin{align*}
 	\Asl \ni p, q ::= & \; \false \mid \true \mid p \land q \mid p \lor q \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid x \dealloc \mid p \andsep q
 \end{align*}

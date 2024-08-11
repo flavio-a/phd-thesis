@@ -732,7 +732,7 @@ Intuitively, the (local) forward completeness requirement $\gamma_0(\denot{\regr
 
 \section{Backward analysis}
 
-In principle, the theory of Abstract Interpretation does not rely on the analysis being forward. This suggests that LCL can be used for backward analysis, as discussed in~\cite[\S 5.3]{BGGR23}. However, they explored the use of \wlp{} as the reference backwards semantics, requiring the use of under\hyp{}approximation abstract domains, that are hard to exploit in practice (see Chapter~\ref{ch:limits-underapprox-domains}).
+In principle, the theory of Abstract Interpretation does not rely on the analysis being forward. This suggests that LCL can be used for backward analysis, as discussed in~\cite[\S 5.3]{BGGR23}. However, they explored the use of \wlp{} as the reference backwards semantics, requiring the use of under\hyp{}approximation abstract domains, that are hard to exploit in practice (see Chapter~\ref{ch:uai}).
 Instead, our key insight is that by using $\bwsem{\cdot}$ (see equation~\eqref{eq:sil:bwsem-definition}) the proof system can be turned over by duality for backward inference \emph{using classical, over-approximation abstract domains}.
 
 \begin{figure*}

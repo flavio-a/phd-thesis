@@ -26,25 +26,25 @@ L \ar@/_1.5ex/[r]_-{g}^-\bot &L\ar@/_1.5ex/[l]_-{f}
 
 Under this assumption, Knaster-Tarski Theorem~\ref{th:bg:knaster-tarski} yields the equivalences:
 \[
-\mu b\sqsubseteq p
+\mu b\le p
 \quad \Leftrightarrow\quad
-\mu (f\sqcup i)\sqsubseteq p
+\mu (f\lor i)\le p
 \quad \Leftrightarrow\quad
-i \sqsubseteq \nu (g \sqcap p),
+i \le \nu (g \land p),
 \]
 
-where $\mu (f\sqcup i)$  and $\nu (g \sqcap p)$ are, by Kleene Theorem~\ref{th:bg:kleene}, the limits of the \emph{initial} and \emph{final} chains illustrated below.
+where $\mu (f\lor i)$  and $\nu (g \land p)$ are, by Kleene Theorem~\ref{th:bg:kleene}, the limits of the \emph{initial} and \emph{final} chains illustrated below.
 \[
-\bot \sqsubseteq i \sqsubseteq f(i)\sqcup i \sqsubseteq  \cdots
+\bot \le i \le f(i)\lor i \le  \cdots
 \qquad\qquad\qquad
-\cdots \sqsubseteq g(p)\sqcap p \sqsubseteq p \sqsubseteq \top
+\cdots \le g(p)\land p \le p \le \top
 \]
 
 The distinguishing feature of \APDR{} is to take as a negative sequence (that is a sequential construction of potential counterexamples) an over-approximation of the final chain. This crucially differs from the negative sequence of other PDR-like algorithm, which is an under-approximation of the computed positive chain.
 
-\APDR{} is sound (Theorem~\ref{th:pdr:soundness}) and does not loop (Proposition~\ref{prop:pdr:progres}), but since the problem $\mu b \sqsubseteq_? p$ is not always decidable, we cannot prove termination. Nevertheless, \APDR{} allows for a formal theory of heuristics that are essential when instantiating the algorithm to concrete problems. The theory prescribes the choices to obtain the boundary executions, using initial and final chains (Proposition~\ref{prop:pdr:negativesequencefinalchain}); it thus identifies a class of heuristics guaranteeing termination when answers are negative (Theorem~\ref{thm:pdr:negativetermination}).
+\APDR{} is sound (Theorem~\ref{th:pdr:soundness}) and does not loop (Proposition~\ref{prop:pdr:progres}), but since the problem $\mu b \le_? p$ is not always decidable, we cannot prove termination. Nevertheless, \APDR{} allows for a formal theory of heuristics that are essential when instantiating the algorithm to concrete problems. The theory prescribes the choices to obtain the boundary executions, using initial and final chains (Proposition~\ref{prop:pdr:negativesequencefinalchain}); it thus identifies a class of heuristics guaranteeing termination when answers are negative (Theorem~\ref{th:pdr:negativetermination}).
 
-In general, \APDR{}'s assumption of a forward-backward adjoint $f \dashv g$ does not hold, especially in probabilistic settings. Our second algorithm \ADPDR{} circumvents this problem by extending the lattice for the negative sequence, from $L$ to the lattice $L^{\downarrow}$ of \emph{lower sets} in $L$. Specifically, by using the second form of adjoints, namely an abstraction-concretization pair, the problem $\mu b \sqsubseteq_{?} p$ in $L$ can be translated to an equivalent problem on $b^{\downarrow}$ in $L^\downarrow$, for which an adjoint $b^\downarrow \dashv b^\downarrow_r$ always exists.
+In general, \APDR{}'s assumption of a forward-backward adjoint $f \dashv g$ does not hold, especially in probabilistic settings. Our second algorithm \ADPDR{} circumvents this problem by extending the lattice for the negative sequence, from $L$ to the lattice $L^{\downarrow}$ of \emph{lower sets} in $L$. Specifically, by using the second form of adjoints, namely an abstraction-concretization pair, the problem $\mu b \le_{?} p$ in $L$ can be translated to an equivalent problem on $b^{\downarrow}$ in $L^\downarrow$, for which an adjoint $b^\downarrow \dashv b^\downarrow_r$ always exists.
 \[
 \xymatrix{
 L \lloop{b} \ar@/_1.5ex/[r]_-{(-)^\downarrow}^-\bot
@@ -63,8 +63,8 @@ As a notable instance, we apply \ADPDR{} to MDPs, specifically to decide if the 
 We implement this latter instance in Haskell. However, the implementation is not based on \ADPDR{} directly, but rather on a third algorithm, \APDRAI{}. This can be understood as a generalisation of both \APDR{} and \ADPDR{} to a more abstract setting:
 \[
 \xymatrix{
-(L, \sqsubseteq_L) \lloop{b} \ar[r]^-{\gamma}
-&(C, \sqsubseteq_C) \rloop{\overline{b} \dashv \overline{b}_r}
+(L, \le_L) \lloop{b} \ar[r]^-{\gamma}
+&(C, \le_C) \rloop{\overline{b} \dashv \overline{b}_r}
 }
 \]
 where $\gamma \colon L \to C$ is an order embedding and $b,\overline{b}$ and $\gamma$ are required to satisfy a condition that is known in the setting of abstract interpretation as \emph{forward completeness}~\cite{GRS00}.
@@ -72,7 +72,7 @@ where $\gamma \colon L \to C$ is an order embedding and $b,\overline{b}$ and $\g
 We experimentally evaluate our implementation. We compare it against existing probabilistic PDR algorithms (PrIC3~\cite{BJKKMS20}, LT-PDR~\cite{KUKSH22}) and a non-PDR one (Storm~\cite{DJKV17}). The performance of \ADPDR{} is encouraging---it supports the potential of PDR algorithms in probabilistic model checking. The experiments also indicate the importance of having a variety of heuristics, and thus the value of our adjoint framework that helps in coming up with those.
 Additionally, we found that abstraction features of Haskell allow us to code lattice-theoretic algorithms almost literally ($\sim$100 lines). Implementing a few heuristics takes another $\sim$240 lines. This way, we found that mathematical abstraction can directly help in easing implementation effort.
 
-\section{Adjoint PDR}\label{sec:APDR}
+\section{Adjoint PDR}\label{sec:pdr:APDR}
 
 \begin{figure}[t]
 	% Syntactic invariants
@@ -81,35 +81,35 @@ Additionally, we found that abstraction features of Haskell allow us to code lat
 		\begin{align}
 			\quad x_0 = \bot \tag{I0}\label{eq:pdr:x0bot} \\
 			1\leq k \leq n \tag{I1} \label{eq:pdr:invi}   \\
-			\forall j\in[0, n-2]\text{, }x_j \sqsubseteq x_{j+1} \tag{I2}\label{eq:pdr:positivechain}
+			\forall j\in[0, n-2]\text{, }x_j \le x_{j+1} \tag{I2}\label{eq:pdr:positivechain}
 		\end{align}
 	\end{minipage}%
 	% General invariants
 	\begin{minipage}{.65\linewidth}
 		\small
 		\begin{align}
-			\forall j \in [k, n - 1] \text{, } x_j \not\sqsubseteq y_j \tag{PN} \label{eq:pdr:positivenegative}                                                         \\
-			\forall j \in [0, n-1] \text{, } (f \sqcup i)^j (\bot) \sqsubseteq x_j \sqsubseteq (g \sqcap p)^{n-1-j} (\top) \tag{A1} \label{eq:pdr:positiveinitialfinal} \\
-			\forall j \in [1, n-1] \text{, } x_{j-1} \sqsubseteq g^{n-1-j}(p) \tag{A2} \label{eq:pdr:positivefinal}                                                     \\
-			\forall j\in[k,n-1]\text{, }g^{n-1-j}(p) \sqsubseteq y_j \tag{A3} \label{eq:pdr:negativefinal}
+			\forall j \in [k, n - 1] \text{, } x_j \not\le y_j \tag{PN} \label{eq:pdr:positivenegative}                                              \\
+			\forall j \in [0, n-1] \text{, } (f \lor i)^j (\bot) \le x_j \le (g \land p)^{n-1-j} (\top) \tag{A1} \label{eq:pdr:positiveinitialfinal} \\
+			\forall j \in [1, n-1] \text{, } x_{j-1} \le g^{n-1-j}(p) \tag{A2} \label{eq:pdr:positivefinal}                                          \\
+			\forall j\in[k,n-1]\text{, }g^{n-1-j}(p) \le y_j \tag{A3} \label{eq:pdr:negativefinal}
 		\end{align}
 	\end{minipage}
 	% Positive chain invariants
 	\begin{minipage}{.4\linewidth}
 		\small
 		\begin{align}
-			i \sqsubseteq x_1 \tag{P1} \label{eq:pdr:Ix1}                                            \\
-			x_{n-2} \sqsubseteq p \tag{P2}\label{eq:pdr:xP}                                          \\
-			\forall j\in[0, n-2]\text{, }f(x_j) \sqsubseteq x_{j+1} \tag{P3}\label{eq:pdr:positiveF} \\
-			\forall j\in[0, n-2]\text{, }x_j \sqsubseteq g(x_{j+1}) \tag{P3a} \label{eq:pdr:positiveG}
+			i \le x_1 \tag{P1} \label{eq:pdr:Ix1}                                            \\
+			x_{n-2} \le p \tag{P2}\label{eq:pdr:xP}                                          \\
+			\forall j\in[0, n-2]\text{, }f(x_j) \le x_{j+1} \tag{P3}\label{eq:pdr:positiveF} \\
+			\forall j\in[0, n-2]\text{, }x_j \le g(x_{j+1}) \tag{P3a} \label{eq:pdr:positiveG}
 		\end{align}
 	\end{minipage}%
 	% Negative sequence invariants
 	\begin{minipage}{.6\linewidth}
 		\small
 		\begin{align}
-			\text{If }\vec{y}\neq \varepsilon\text{ then }p \sqsubseteq y_{n-1} \tag{N1}\label{eq:pdr:Pepsilon} \\
-			\forall j\in[k,n-2]\text{, }g(y_{j+1}) \sqsubseteq y_j \tag{N2}\label{eq:pdr:negativeG}
+			\text{If }\vec{y}\neq \varepsilon\text{ then }p \le y_{n-1} \tag{N1}\label{eq:pdr:Pepsilon} \\
+			\forall j\in[k,n-2]\text{, }g(y_{j+1}) \le y_j \tag{N2}\label{eq:pdr:negativeG}
 		\end{align}
 	\end{minipage}
 
@@ -133,7 +133,7 @@ Notably, $\vec{x}$ is a positive chain and $\vec{y}$ a negative sequence, accord
 
 In a conclusive positive chain, $x_{j+1}$ provides an invariant for $f \lor i$ and thus, by \eqref{eq:bg:coinductionproofprinciple}, $\lfp (f \lor i) \le p$ holds. So, when $\vec{x}$ is conclusive, {\APDR} returns true.
 
-\begin{definition}[negative sequence] \label{def:neg_seq}
+\begin{definition}[negative sequence] \label{def:pdr:neg_seq}
 	A \emph{negative sequence} for $\lfp (f \lor i) \le p$ is a finite sequence $ y_k, \dots, y_{n-1}$ in $L$ with $1 \leq k \leq n$ which satisfies \eqref{eq:pdr:Pepsilon} and \eqref{eq:pdr:negativeG} in Figure~\ref{fig:pdr:invariants}.
 	It is \emph{conclusive} if $k=1$ and $i \nleq y_1$.
 \end{definition}
@@ -149,25 +149,25 @@ When $\vec{y}$ is conclusive, {\APDR} returns false as $y_1$ provides a countere
   $( \vec{x} \| \vec{y} )_{n,k}$ := $(\bot,\top\|\varepsilon)_{2,2}$
 <ITERATION>						           % $\vec{x},\vec{y}$  not conclusive
   case $( \vec{x} \| \vec{y} )_{n,k}$ of
-	   $\vec{y}=\varepsilon$ And $x_{n-1} \sqsubseteq p$     :                    %(Unfold)
+	   $\vec{y}=\varepsilon$ And $x_{n-1} \le p$     :                    %(Unfold)
 			$( \vec{x} \| \vec{y} )_{n,k}$ := $( \vec{x}, \top \| \varepsilon )_{n+1,n+1}$
-	   $\vec{y}=\varepsilon$ And $x_{n-1} \not \sqsubseteq p$    :                     %(Candidate)
-			choose $z\in L$ st  $x_{n-1} \not \sqsubseteq z$ And  $p \sqsubseteq z$;
+	   $\vec{y}=\varepsilon$ And $x_{n-1} \not\le p$    :                     %(Candidate)
+			choose $z\in L$ st  $x_{n-1} \not\le z$ And  $p \le z$;
 			$( \vec{x} \| \vec{y} )_{n,k}$ := $( \vec{x} \| z )_{n,n-1}$
-	   $\vec{y} \neq \varepsilon$ And $f(x_{k-1}) \not \sqsubseteq y_k$ :                        %(Decide)
-			choose $z \in L$ st $x_{k-1} \not \sqsubseteq z$ And $g(y_k) \sqsubseteq z$;
+	   $\vec{y} \neq \varepsilon$ And $f(x_{k-1}) \not \le y_k$ :                        %(Decide)
+			choose $z \in L$ st $x_{k-1} \not \le z$ And $g(y_k) \le z$;
 			$(\vec{x} \| \vec{y} )_{n,k}$ := $(\vec{x} \| z , \vec{y} )_{n,k-1}$
-	   $\vec{y} \neq \varepsilon$ And $f(x_{k-1}) \sqsubseteq y_k$ :                        %(Conflict)
-			choose $z \in L$ st $z \sqsubseteq y_k$ And $(f \sqcup i)(x_{k-1} \sqcap z) \sqsubseteq z$;
-			$(\vec{x} \| \vec{y} )_{n,k}$ := $(\vec{x} \sqcap_k z \| \mathsf{tail}(\vec{y}) )_{n,k+1}$
+	   $\vec{y} \neq \varepsilon$ And $f(x_{k-1}) \le y_k$ :                        %(Conflict)
+			choose $z \in L$ st $z \le y_k$ And $(f \lor i)(x_{k-1} \land z) \le z$;
+			$(\vec{x} \| \vec{y} )_{n,k}$ := $(\vec{x} \land_k z \| \mathsf{tail}(\vec{y}) )_{n,k+1}$
   endcase
 <TERMINATION>
-	if $\exists j\in [0,n-2]\,.\, x_{j+1} \sqsubseteq x_j$ then return true		 % $\vec{x}$ conclusive
-	if $i \not \sqsubseteq y_1$ then return false							% $\vec{y}$ conclusive
+	if $\exists j\in [0,n-2]\,.\, x_{j+1} \le x_j$ then return true		 % $\vec{x}$ conclusive
+	if $i \not \le y_1$ then return false							% $\vec{y}$ conclusive
 \end{codeNT}
 		}
 	\end{center}
-	\caption{{\APDR} algorithm checking $\lfp(f \sqcup i) \le p$.}\label{fig:pdr:apdr}
+	\caption{{\APDR} algorithm checking $\lfp(f \lor i) \le p$.}\label{fig:pdr:apdr}
 \end{figure}
 
 The pseudocode of the algorithm is in Figure~\ref{fig:pdr:apdr}, where we write $( \vec{x} \| \vec{y} )_{n,k}$ to compactly represents the state of the algorithm: the pair $(n,k)$ is called the \emph{index} of the state, with $\vec{x}$ of length $n$ and $\vec{y}$ of length $n-k$. When $k = n$, $\vec{y}$ is the empty sequence $\varepsilon$. For any $z \in L$, we write $\vec{x}, z$ for the chain $x_0, \dots, x_{n-1}, z$ of length $n+1$ and $z, \vec{y}$ for the sequence $z, y_k, \dots y_{n-1}$ of length $n-(k-1)$. Moreover, we write $\vec{x} \land_j z$ for the chain $x_0 \land z, \dots, x_j \land z, x_{j+1}, \dots , x_{n-1}$. Finally, $\mathsf{tail}(\vec{y})$ stands for the tail of $\vec{y}$, namely $y_{k+1}, \dots y_{n-1}$ of length $n-(k+1)$.
@@ -182,7 +182,7 @@ When irrelevant we omit to specify labels and choices and we just write $s \tr{}
 As usual $\ttp{}$ stands for the transitive closure of $\tr{}$ and $\ttr{}$ stands for the reflexive and transitive closure of $\tr{}$.
 
 \begin{example}\label{ex:pdr:simple-ts}
-	Consider the safety problem in Example~\ref{ex:}. Below we illustrate two possible computations of {\APDR} that differ for the choice of $z$ in (Conflict).
+	Consider the safety problem in Example~\ref{ex:sota:ts}. Below we illustrate two possible computations of {\APDR} that differ for the choice of $z$ in (Conflict).
 	The first run is conveniently represented as the following series of transitions.
 	\par\nobreak
 	{
@@ -210,7 +210,7 @@ As usual $\ttp{}$ stands for the transitive closure of $\tr{}$ and $\ttr{}$ stan
 	}
 
 	\noindent
-	The last state returns true since $x_4 = x_5=S_4$. Observe that the elements of $\vec{x}$, with the exception of the last element $x_{n-1}$, are those of the initial chain of $(F \cup I)$, namely, $x_j$ is the set of states reachable in at most $j-1$ steps. In the second computation, the elements of $\vec{x}$ are roughly those of the final chain of $(G \cap P)$. More precisely, after (Unfold) or (Candidate), $x_{n-j}$ for $j<n-1$ is the set of states which only reach safe states within $j$ steps.
+	The last state returns true since $x_4 = x_5 = S_4$. Observe that the chain $\vec{x}$, with the exception of its last element $x_{n-1}$, is exactly the initial chain of $(T \cup I)$, i.e., $x_j$ is the set of states reachable in at most $j-1$ steps. In the second computation, the elements of $\vec{x}$ are roughly those of the final chain of $(G \cap P)$. More precisely, after (Unfold) or (Candidate), $x_{n-j}$ for $j < n-1$ is the set of states which only reach safe states within $j$ steps.
 	\par\nobreak
 	{
 		\setlength{\abovedisplayskip}{0pt}
@@ -237,9 +237,9 @@ As usual $\ttp{}$ stands for the transitive closure of $\tr{}$ and $\ttr{}$ stan
 	Observe that, by invariant \eqref{eq:pdr:positiveinitialfinal}, the values of $\vec{x}$ in the two runs are, respectively, the least and the greatest values for all possible computations of {\APDR}.
 \end{example}
 
-\section{Properties of {\APDR}}\label{sec:pdf:properties}
+\section{Properties of {\APDR}}\label{sec:pdr:properties}
 
-In this section we prove the main properties of {\APDR}, namely: 1) that any returned result is valid (soundness); 2) that although {\APDR} can diverge, any state is never visited twice (called progression); and 3) that certain heuristics can be used to guarantee termination when a counterexample exists (called negative termination).
+In this section we prove the main properties of {\APDR}: (1) any returned result is valid (soundness); (2) although {\APDR} can diverge, any state is never visited twice (called progression); (3) certain heuristics can be used to guarantee termination when a counterexample exists (called negative termination).
 
 \subsection{Invariants}\label{sec:pdr:soundness}
 The proofs of the properties of {\APDR} rely on the properties in Figure~\ref{fig:pdr:invariants}. In this section, we prove that such properties are invariants:
@@ -261,65 +261,64 @@ Hereafter, we fix $s=( \vec{x} \| \vec{y} )_{n,k}$ and $s'=( \vec{x}' \| \vec{y}
 We illustrate below only the most interesting cases. The remaining ones are in Appendix~\ref{ch:app:pdr}.
 
 \begin{proof}[Proof sketch]
-	\proofcase{\eqref{eq:pdr:x0bot}}{$x_0 = \bot$}
+	\invariantproof{\eqref{eq:pdr:x0bot}}{$x_0 = \bot$}
 	\begin{itemize}
 		\item[(a)] In $s_0$, $x_0= \bot$.
 		\item[(b)] If $s \tr{U} s'$, then $x_0' = x_0 \stackrel{{\eqref{eq:pdr:x0bot}}}{=}\bot$. \\
-		      If $s \trz{\mathit{Co}}{z} s'$, then $x_0'=x_0 \sqcap z \stackrel{{\eqref{eq:pdr:x0bot}}}{=} \bot \sqcap z = \bot$.
+		      If $s \trz{\mathit{Co}}{z} s'$, then $x_0'=x_0 \land z \stackrel{{\eqref{eq:pdr:x0bot}}}{=} \bot \land z = \bot$.
 	\end{itemize}
 
-	\proofcase{\eqref{eq:pdr:invi}}{$1\leq k \leq n$}
+	\invariantproof{\eqref{eq:pdr:invi}}{$1\leq k \leq n$}
 	\begin{itemize}
-		\item To prove that $1 \leq k$, observe that $k$ is initialised at $2$ and that it is only decremented by $1$. When $k=1$, $\vec{y}\neq \varepsilon$. By~\eqref{eq:pdr:x0bot} $x_0=\bot$. Since $f$ is a left adjoint, $f(\bot) = \bot$. Thus, $f(x_0) \sqsubseteq y_1$. This means that either the state is conclusive and the algorithm returns, or (Conflict) is enabled and thus $k$ is incremented.
+		\item To prove that $1 \leq k$, observe that $k$ is initialised at $2$ and that it is only decremented by $1$. When $k=1$, $\vec{y}\neq \varepsilon$. By~\eqref{eq:pdr:x0bot} $x_0=\bot$. Since $f$ is a left adjoint, $f(\bot) = \bot$. Thus, $f(x_0) \le y_1$. This means that either the state is conclusive and the algorithm returns, or (Conflict) is enabled and thus $k$ is incremented.
 		\item To prove that $k \leq n$, observe that $k$ is incremented only by $1$. When $k=n$, the algorithm does either (Unfold) or (Candidate). In the latter case, $k$ is decremented. In the former, both $n$ and $k$ are incremented.
 	\end{itemize}
 
-	\proofcase{\eqref{eq:pdr:positiveF}}{$\forall j\in[0, n-2] \text{, } f(x_j) \sqsubseteq x_{j+1}$}
+	\invariantproof{\eqref{eq:pdr:positiveF}}{$\forall j\in[0, n-2] \text{, } f(x_j) \le x_{j+1}$}
 	\begin{itemize}
-		\item[(a)] In $s_0$, since $n=2$ one needs to check only the case $j=0$: $f(x_0) \sqsubseteq \top = x_1$.
-		\item[(b)] If $s \tr{U} s'$, then $f(x_j') =f(x_j) \stackrel{{\eqref{eq:pdr:positivechain}}}{\sqsubseteq} x_{j+1} =x_{j+1}'$ for all $j\in[0,n-2]$. For $j=n-1$, $f(x_{n-1}') = f(x_{n-1}) \sqsubseteq \top = x_{j+1}'$. Since $n'=n+1$, then $\forall j\in [0,n'-2] \text{, } f(x_j')\sqsubseteq x_{j+1}'$. \\
-		      If $s \trz{\mathit{Co}}{z} s'$, since $f(x_{k-1} \sqcap z) \sqsubseteq z$, then by \eqref{eq:pdr:positivechain} and monotonicity of $f$ it holds that $\forall j\in [0,k-1]$, $f(x_{j} \sqcap z) \sqsubseteq z$. Since $f(x_j \sqcap z) \sqsubseteq f(x_j) \stackrel{{\eqref{eq:pdr:positiveF}}}{\sqsubseteq} x_{j+1}$, it holds that $f(x_j \sqcap z) \sqsubseteq x_{j+1} \sqcap z $ for all $j\in[0, k-1]$. With this observation is immediate to conclude that $\forall j\in[0,n'-2] \text{, }f(x_j')\sqsubseteq x_{j+1}'$.
+		\item[(a)] In $s_0$, since $n=2$ one needs to check only the case $j=0$: $f(x_0) \le \top = x_1$.
+		\item[(b)] If $s \tr{U} s'$, then $f(x_j') =f(x_j) \stackrel{{\eqref{eq:pdr:positivechain}}}{\le} x_{j+1} =x_{j+1}'$ for all $j\in[0,n-2]$. For $j=n-1$, $f(x_{n-1}') = f(x_{n-1}) \le \top = x_{j+1}'$. Since $n'=n+1$, then $\forall j\in [0,n'-2] \text{, } f(x_j')\le x_{j+1}'$. \\
+		      If $s \trz{\mathit{Co}}{z} s'$, since $f(x_{k-1} \land z) \le z$, then by \eqref{eq:pdr:positivechain} and monotonicity of $f$ it holds that $\forall j\in [0,k-1]$, $f(x_{j} \land z) \le z$. Since $f(x_j \land z) \le f(x_j) \stackrel{{\eqref{eq:pdr:positiveF}}}{\le} x_{j+1}$, it holds that $f(x_j \land z) \le x_{j+1} \land z $ for all $j\in[0, k-1]$. With this observation is immediate to conclude that $\forall j\in[0,n'-2] \text{, }f(x_j')\le x_{j+1}'$.
 	\end{itemize}
 
-	\proofcase{\eqref{eq:pdr:negativeG}}{$\forall j\in[k,n-2] \text{, } g(y_{j+1}) \sqsubseteq y_j$}
-	\newline\noindent
-	We omit the case of (Conflict) because it's trivial: indeed, the negative sequence $\vec{y}$ is truncated in the rule (Conflict), but if the invariant holds for $\vec{y}$ then it obviously holds for its tail $\mathsf{tail}(\vec{y})$ as well.
+	\invariantproof{\eqref{eq:pdr:negativeG}}{$\forall j\in[k,n-2] \text{, } g(y_{j+1}) \le y_j$}\newline
+	The case of (Conflict) is trivial: the negative sequence $\vec{y}$ is truncated in the rule (Conflict), and if the invariant holds for $\vec{y}$ then it holds for its tail $\mathsf{tail}(\vec{y})$ as well.
 	\begin{itemize}
 		\item[(a)] In $s_0$, $k=2$ and $n=2$. Thus \eqref{eq:pdr:negativeG} trivially holds.
 		\item[(b)] If $s \tr{\mathit{Ca}} s'$, then $k'=n-1$ and thus \eqref{eq:pdr:negativeG} trivially holds.\\
-		      If $s \trz{D}{z} s'$, since $z\sqsupseteq g(y_k)$ and $k'=k-1$, then $y_{k'}' = y_{k-1}' = z \sqsupseteq g(y_k) = g(y_k')= g(y_{k'+1}')$. For $j\in[k'+1,n-2]$, namely for $j\in[k,n-2]$, it holds that $y'_j= y_j\stackrel{{\eqref{eq:pdr:negativeG}}}{\sqsupseteq} g(y_{j+1})=g(y_{j+1}')$. Thus, $\forall j \in [k',n-2] \text{, }g(y_{j+1}') \sqsubseteq y_j'$.
+		      If $s \trz{D}{z} s'$, since $z \ge g(y_k)$ and $k'=k-1$, then $y_{k'}' = y_{k-1}' = z \ge g(y_k) = g(y_k')= g(y_{k'+1}')$. For $j\in[k'+1,n-2]$, namely for $j\in[k,n-2]$, it holds that $y'_j= y_j\stackrel{{\eqref{eq:pdr:negativeG}}}{\ge} g(y_{j+1})=g(y_{j+1}')$. Thus, $\forall j \in [k',n-2] \text{, }g(y_{j+1}') \le y_j'$.
 	\end{itemize}
 
-	\proofcase{\eqref{eq:pdr:positivenegative}}{$\forall j \in [k, n - 1] \text{, } x_j \not\sqsubseteq y_j$}
+	\invariantproof{\eqref{eq:pdr:positivenegative}}{$\forall j \in [k, n - 1] \text{, } x_j \not\le y_j$}
 	\begin{itemize}
 		\item[(a)] In $s_0$, $k=n$ and thus \eqref{eq:pdr:positivenegative} trivially holds.
 		\item[(b)] If $s \tr{U} s'$, then $k'=n'$ and thus \eqref{eq:pdr:positivenegative} trivially holds.\\
-		      If $s \trz{\mathit{Ca}}{z} s'$, since $x_{n-1} \not\sqsubseteq z$, $x'_{n-1}=x_{n-1}$ and $k'=n'-1=n-1$, then $x'_{n'-1} = x_{n-1}\not\sqsubseteq z = y'_{n'-1}$. \\
-		      If $s \trz{D}{z} s'$, since $x_{k-1} \not\sqsubseteq z$, then $x_{k-1}'=x_{k-1} \not\sqsubseteq z = y'_{k-1}$. Moreover, $\forall j \in [k, n - 1]$,
-		      $x_j' = x_j \stackrel{{\eqref{eq:pdr:positivenegative}}}{ \not\sqsubseteq} y_j = y_j'$. Thus, $\forall j \in [k', n' - 1] \text{, } x_j' \not\sqsubseteq y_j'$.\\
-		      If $s \tr{\mathit{Co}} s'$, then $k'=k+1$ and $n'=n$. Observe that for $j \in [k + 1, n - 1]$, $x'_j = x_j \stackrel{{\eqref{eq:pdr:positivenegative}}}{ \not\sqsubseteq} y_j =y_j'$. Thus $\forall j \in [k', n' - 1] \text{, }x_j' \not\sqsubseteq y_j' $.
+		      If $s \trz{\mathit{Ca}}{z} s'$, since $x_{n-1} \not\le z$, $x'_{n-1}=x_{n-1}$ and $k'=n'-1=n-1$, then $x'_{n'-1} = x_{n-1}\not\le z = y'_{n'-1}$. \\
+		      If $s \trz{D}{z} s'$, since $x_{k-1} \not\le z$, then $x_{k-1}'=x_{k-1} \not\le z = y'_{k-1}$. Moreover, $\forall j \in [k, n - 1]$,
+		      $x_j' = x_j \stackrel{{\eqref{eq:pdr:positivenegative}}}{ \not\le} y_j = y_j'$. Thus, $\forall j \in [k', n' - 1] \text{, } x_j' \not\le y_j'$.\\
+		      If $s \tr{\mathit{Co}} s'$, then $k'=k+1$ and $n'=n$. Observe that for $j \in [k + 1, n - 1]$, $x'_j = x_j \stackrel{{\eqref{eq:pdr:positivenegative}}}{ \not\le} y_j =y_j'$. Thus $\forall j \in [k', n' - 1] \text{, }x_j' \not\le y_j' $.
 	\end{itemize}
 \end{proof}
 
 \subsection{Soundness}
 
-Once the properties in Fig.~\ref{fig:pdr:invariants} are proved to be invariants, the proof of soundness of {\APDR} is rather straightforward: it only appeals to the Knaster-Tarski fixed-point theorem for the positive case, and to the Kleene one for the negative case.
+Once the properties in Figure~\ref{fig:pdr:invariants} are proved to be invariants, the proof of soundness of {\APDR} is rather straightforward: it only appeals to the Knaster-Tarski fixed-point theorem for the positive case, and to the Kleene one for the negative case.
 
 \begin{theorem}[Soundness]\label{th:pdr:soundness}
 	\emph {\APDR} is sound, namely,
 	\begin{enumerate}
-		\item If \emph{\APDR} returns true then $\mu (f \lor i) \le p$.
-		\item If \emph{\APDR} returns false then $\mu (f \lor i) \nleq p$.
+		\item If \emph{\APDR} returns true then $\lfp (f \lor i) \le p$.
+		\item If \emph{\APDR} returns false then $\lfp (f \lor i) \nleq p$.
 	\end{enumerate}
 \end{theorem}
 \begin{proof}
 	We prove the two items separately.
 	\begin{enumerate}
-		\item Observe that {\APDR} returns true if $x_{j+1} \sqsubseteq x_j$. By \eqref{eq:pdr:positiveF}, we thus have $f(x_j) \le x_{j+1} \le x_j$. Moreover, by \eqref{eq:pdr:Ix1} and \eqref{eq:pdr:positivechain}, it holds that $i \le x_j$ and $x_j \le p$. Therefore, it holds that
+		\item Observe that {\APDR} returns true if $x_{j+1} \le x_j$. By \eqref{eq:pdr:positiveF}, we thus have $f(x_j) \le x_{j+1} \le x_j$. Moreover, by \eqref{eq:pdr:Ix1} and \eqref{eq:pdr:positivechain}, it holds that $i \le x_j$ and $x_j \le p$. Therefore, it holds that
 		      \[
 		      (f \lor i) x_j \le x_j \le p \text{.}
 		      \]
-		      By \eqref{eq:bg:coinductionproofprinciple}, we have that $\mu (f \lor i) \le p$.
+		      By \eqref{eq:bg:coinductionproofprinciple}, we have that $\lfp (f \lor i) \le p$.
 		\item Observe that {\APDR} returns false if $i \nleq y_1$. By \eqref{eq:pdr:negativefinal}, $g^{n-2}(p) \le y_1$. Thus $i \nleq g^{n-2}(p)$. Moreover
 		      \begin{align*}
 			      g^{n-2}p & \le \bigwedge_{j\in \omega} g^{j}(p) \\
@@ -329,8 +328,7 @@ Once the properties in Fig.~\ref{fig:pdr:invariants} are proved to be invariants
 	\end{enumerate}
 \end{proof}
 
-\subsection{Progression}\label{sec:progression}
-\fromhere
+\subsection{Progression}\label{sec:pdr:progression}
 It is necessary to prove that in any step of the execution, if the algorithm does not return true or false, then it can progress to a new state, not yet visited. To this aim we must deal with the subtleties of the non-deterministic choice of the element $z$ in (Candidate), (Decide) and (Conflict). The following proposition ensures that, for any of these three rules, there is always a possible choice.
 
 \begin{prop}[Canonical choices]\label{prop:pdr:CanonicalChoice}
@@ -339,33 +337,33 @@ It is necessary to prove that in any step of the execution, if the algorithm doe
 		\item in (Candidate) $z=p$;
 		\item in (Decide) $z= g(y_k)$;
 		\item in (Conflict) $z = y_k$;
-		\item in (Conflict) $z = (f \sqcup i)(x_{k-1})$.
+		\item in (Conflict) $z = (f \lor i)(x_{k-1})$.
 	\end{enumerate}
 	Thus, for all non-conclusive $s\in \states$, if $s_0 \ttr{} s $ then $s \tr{}$.
 \end{prop}
 \begin{proof}
 	For each rule, we prove that if the guard of the rule is satisfied then the choice of $z$ satisfies the required constraints.
 	\begin{enumerate}
-		\item The guard of (Candidate) is $x_{n-1} \not \sqsubseteq p$. By choosing $z=p$, one has that $x_{n-1} \not \sqsubseteq z$ and $p \sqsubseteq z$ are trivially satisfied;
-		\item The guard of (Decide) is $f(x_{k-1}) \not \sqsubseteq y_k$ thus, by $f \dashv g$, $x_{k-1} \not \sqsubseteq g(y_k)$. By choosing $z= g(y_k)$, one has that $x_{k-1} \not \sqsubseteq z$ and $g(y_k) \sqsubseteq z$;
+		\item The guard of (Candidate) is $x_{n-1} \not\le p$. By choosing $z=p$, one has that $x_{n-1} \not \le z$ and $p \le z$ are trivially satisfied;
+		\item The guard of (Decide) is $f(x_{k-1}) \not\le y_k$ thus, by $f \dashv g$, $x_{k-1} \not \le g(y_k)$. By choosing $z= g(y_k)$, one has that $x_{k-1} \not\le z$ and $g(y_k) \le z$;
 	\end{enumerate}
-	The proofs for the choices in (Conflict) are more subtle. First of all, observe that if $k=1$, then $i\sqsubseteq y_1$ otherwise the algorithm would have returned false. Moreover, for $k\geq 2$, we have that
-	$i \sqsubseteq x_{k-1} \sqsubseteq y_k$: the first inequality holds by \eqref{eq:Ix1} and the second by \eqref{eq:positivefinal} and \eqref{eq:negativefinal}. In summary,
-	\begin{equation}\label{eq:yigeqI}
-		\text{for all } j \geq 1\text{, } i \sqsubseteq y_j\text{.}
+	The proofs for the choices in (Conflict) are more subtle. First of all, observe that if $k=1$, then $i\le y_1$ otherwise the algorithm would have returned false. Moreover, for $k\geq 2$, we have that
+	$i \le x_{k-1} \le y_k$: the first inequality holds by \eqref{eq:pdr:Ix1} and the second by \eqref{eq:pdr:positivefinal} and \eqref{eq:pdr:negativefinal}. In summary,
+	\begin{equation}\label{eq:pdr:yigeqI}
+		\forall j \geq 1 \sdot i \le y_j \text{.}
 	\end{equation}
 	We can then proceed as follows.
 	\begin{enumerate}\setcounter{enumi}{2}
-		\item The guard of (Conflict) is $f(x_{k-1}) \sqsubseteq y_k$. By choosing $z=y_k$, one has that $z \sqsubseteq y_k$ trivially holds. For $(f \sqcup i)(x_{k-1} \sqcap z) \sqsubseteq z$ observe that
+		\item The guard of (Conflict) is $f(x_{k-1}) \le y_k$. By choosing $z=y_k$, one has that $z \le y_k$ trivially holds. For $(f \lor i)(x_{k-1} \land z) \le z$ observe that
 		      \begin{align*}
-			      (f \sqcup i)(x_{k-1} \sqcap z) & = f(x_{k-1} \sqcap z) \sqcup i   & \tag{def.}              \\
-			                                     & \sqsubseteq f(x_{k-1} ) \sqcup i & \tag{monotonicity}      \\
-			                                     & \sqsubseteq z \sqcup i           & \tag{guard}             \\
-			                                     & = z                              & \tag{\eqref{eq:yigeqI}}
+			      (f \lor i)(x_{k-1} \land z) & = f(x_{k-1} \land z) \lor i & [\text{def.}]           \\
+			                                  & \le f(x_{k-1} ) \lor i      & [\text{monotonicity}]   \\
+			                                  & \le z \lor i                & [\text{guard}]          \\
+			                                  & = z                         & [\eqref{eq:pdr:yigeqI}]
 		      \end{align*}
 
-		\item The guard of (Conflict) is $f(x_{k-1}) \sqsubseteq y_k$. By choosing $z=(f \sqcup i)(x_{k-1})$, one has that $(f \sqcup i)(x_{k-1} \sqcap z) \sqsubseteq (f \sqcup i)(x_{k-1}) =z$ holds by monotonicity.
-		      For $z \sqsubseteq y_k$, by using the guard and \eqref{eq:yigeqI}, we have that $z= (f \sqcup i)(x_{k-1}) = f(x_{k-1}) \sqcup i \sqsubseteq y_k$.
+		\item The guard of (Conflict) is $f(x_{k-1}) \le y_k$. By choosing $z=(f \lor i)(x_{k-1})$, one has that $(f \lor i)(x_{k-1} \land z) \le (f \lor i)(x_{k-1}) =z$ holds by monotonicity.
+		      For $z \le y_k$, by using the guard and \eqref{eq:pdr:yigeqI}, we have that $z= (f \lor i)(x_{k-1}) = f(x_{k-1}) \lor i \le y_k$.
 	\end{enumerate}
 \end{proof}
 
@@ -376,7 +374,7 @@ The following proposition ensures that {\APDR} always traverses new states.
 \begin{proof}
 	Let us consider the following partial order on positive chains: given two sequences $\vec{x}= x_0, \dots x_{n-1}$ and $\vec{x}' = x'_0, \dots, x'_{n'-1}$, we say $\vec{x} \preceq \vec{x}'$ if
 	\begin{equation*}
-		n \le n' \land x_j \sqsupseteq x'_j \text{ for each } j\in[0,n - 1]
+		n \le n' \land x_j \ge x'_j \text{ for each } j\in[0,n - 1]
 	\end{equation*}
 	We extend the order to states by letting $(\vec{x} \| \vec{y} )_{n, k} \preceq (\vec{x}' \| \vec{y}' )_{n', k'}$ with $\vec{x} \prec \vec{x}'$ or $\vec{x} = \vec{x}'$ and $k \ge k'$.
 
@@ -392,31 +390,27 @@ The following proposition ensures that {\APDR} always traverses new states.
 	For (Conflict), $n = n'$, and
 	\[
 	x'_j = \begin{cases*}
-		x_j          & if $j > k$   \\
-		x_j \sqcap z & if $j \le k$
+		x_j         & if $j > k$   \\
+		x_j \land z & if $j \le k$
 	\end{cases*}
 	\]
-	So for $j\in[k+1,n - 1]$ we have $x_j = x'_j$, and for $j\in[0,k]$ we have $x_j \sqsupseteq x_j \sqcap z = x'_j$. So $\vec{x} \preceq \vec{x}'$. Assume by contradiction that $x'_k = x_k$. Since $x'_k = x_k \sqcap z$, this is equivalent to $x_k \sqsubseteq z$. The choice of $z$ in (Conflict) satisfies $z \sqsubseteq y_k$, that would imply $x_k \sqsubseteq z \sqsubseteq y_k$. However, this is a contradiction, since by \eqref{eq:positivenegative} we know $x_k \not \sqsubseteq y_k$. Hence $x_k \sqsupset x'_k$, meaning $\vec{x} \prec \vec{x}'$.
+	So for $j\in[k+1,n - 1]$ we have $x_j = x'_j$, and for $j\in[0,k]$ we have $x_j \ge x_j \land z = x'_j$. So $\vec{x} \preceq \vec{x}'$. Assume by contradiction that $x'_k = x_k$. Since $x'_k = x_k \land z$, this is equivalent to $x_k \le z$. The choice of $z$ in (Conflict) satisfies $z \le y_k$, that would imply $x_k \le z \le y_k$. However, this is a contradiction, since by \eqref{eq:pdr:positivenegative} we know $x_k \not \le y_k$. Hence $x_k \sqsupset x'_k$, meaning $\vec{x} \prec \vec{x}'$.
 \end{proof}
 
 Observe that the above propositions entail that {\APDR} terminates whenever the lattice $L$ is finite, since the set of reachable states is finite in this case.
 
 \begin{example}
-	For $(I,F,G,P)$ as in Example \ref{eg:simple}, {\APDR} behaves essentially as IC3/PDR~\cite{Bradley11}, solving reachability problems for transition systems with finite state space $S$. Since
-	the lattice $\mathcal{P}S$ is also finite, %
-	{\APDR} always terminates.
+	For $(I,T,G,P)$ as in Example~\ref{ex:sota:ts}, {\APDR} behaves essentially as IC3/PDR~\cite{Bradley11}, solving reachability problems for transition systems with finite state space $S$. Since the lattice $\mathcal{P}S$ is also finite, {\APDR} always terminates.
 \end{example}
 
 \subsection{Heuristics}\label{sec:pdr:heuristics}
 The nondeterministic choices of the algorithm can be resolved by using heuristics. Intuitively, a heuristic chooses for any states $s\in\states$ an element $z\in L$ to be possibly used in (Candidate), (Decide) or (Conflict), so it is just a function $h\colon \states \to L$.
 When defining a heuristic, we will avoid to specify its values on conclusive states or in those performing (Unfold), as they are clearly irrelevant.
 
-With a heuristic, one can instantiate {\APDR} by making the choice of $z$ as prescribed by $h$. Syntactically, this means to erase from the code of Fig.~\ref{fig:naive} the three lines of \texttt{choose} and replace them by
-$z \texttt{:= } h(\,( \vec{x} \| \vec{c} )_{n,k}\,)$. We call {\APDR}$_h$ the resulting deterministic algorithm and write $s \Htrz{}{h}{} s'$ to mean that {\APDR}$_h$ moves from state $s$ to $s'$. We let $\states^h \eqdef \{s\in \states \mid s_0\Htrz{}{h}{*} s\}$ be the sets of all states reachable by {\APDR}$_h$.
+With a heuristic, one can instantiate {\APDR} by making the choice of $z$ as prescribed by $h$. Syntactically, this means to erase from the code of Figure~\ref{fig:pdr:apdr} the three lines of \texttt{choose} and replace them with $z \texttt{:= } h(\,( \vec{x} \| \vec{c} )_{n,k}\,)$. We call {\APDR}$_h$ the resulting deterministic algorithm and write $s \Htrz{}{h}{} s'$ to mean that {\APDR}$_h$ moves from state $s$ to $s'$. We let $\states^h \eqdef \{s\in \states \mid s_0\Htrz{}{h}{*} s\}$ be the sets of all states reachable by {\APDR}$_h$.
 
 \begin{definition}[legit heuristic]
-	A heuristic $h\colon \states \to L$ is called \emph{legit} whenever for all $s,s'\in \states^h$,
-	if $s \Htrz{}{h}{}s'$ then $s\tr{}s'$. %
+	A heuristic $h\colon \states \to L$ is called \emph{legit} whenever for all $s,s'\in \states^h$, if $s \Htrz{}{h}{}s'$ then $s\tr{}s'$.
 \end{definition}
 When $h$ is legit, the only execution of the deterministic algorithm {\APDR}$_h$ is one of the possible executions of the non-deterministic algorithm {\APDR}.
 
@@ -432,20 +426,20 @@ Then, if the choice in (Conflict) is like in Proposition \ref{prop:pdr:Canonical
 \[
 \begin{array}{r|ll}
 	\quad\emph{simple initial} \quad\
-	                     & \quad\eqref{eq:simple} \text{ and }( \vec{x} \| \vec{y} )_{n,k} \mapsto
-	(f\sqcup i)(x_{k-1}) & \quad\mbox{if $( \vec{x} \| \vec{y} )_{n,k} \in \mathit{Co}$}\quad
+	                   & \quad\eqref{eq:pdr:simple} \text{ and }( \vec{x} \| \vec{y} )_{n,k} \mapsto
+	(f\lor i)(x_{k-1}) & \quad\mbox{if $( \vec{x} \| \vec{y} )_{n,k} \in \mathit{Co}$}\quad
 	\\[5pt]
 	\hline
 	\\[-7pt]
 	\quad\emph{simple final} \quad\
-	                     & \quad\eqref{eq:simple} \text{ and }
+	                   & \quad\eqref{eq:pdr:simple} \text{ and }
 	( \vec{x} \| \vec{y} )_{n,k} \mapsto
-	y_k                  & \quad\mbox{if $( \vec{x} \| \vec{y} )_{n,k} \in \mathit{Co}$}\quad      \\
+	y_k                & \quad\mbox{if $( \vec{x} \| \vec{y} )_{n,k} \in \mathit{Co}$}\quad          \\
 \end{array}
 \]
 Interestingly, with any simple heuristic, the sequence $\vec{y}$ takes a familiar shape:
 \begin{prop}\label{prop:pdr:negativesequencefinalchain}
-	Let $h\colon \states \to L$ be any simple heuristic. For all $( \vec{x} \| \vec{y} )_{n,k} \in \states^h$, invariant~\eqref{eq:negativefinal} holds as an equality, namely for all $j\in[k,n-1]$,
+	Let $h\colon \states \to L$ be any simple heuristic. For all $( \vec{x} \| \vec{y} )_{n,k} \in \states^h$, invariant~\eqref{eq:pdr:negativefinal} holds as an equality, namely for all $j\in[k,n-1]$,
 	$y_j=g^{n-1-j}(p)$.
 \end{prop}
 \begin{proof}
@@ -464,100 +458,260 @@ Interestingly, with any simple heuristic, the sequence $\vec{y}$ takes a familia
 	For (Decide), $\vec{y}' = g(y_k), \vec{y}$ and $k' = k - 1$. For all $j \in [k' + 1, n-1]$ the thesis holds because $y'_j = y_j$. For $j = k'$, we have $y_{k'} = g(y_k) = g(g^{n - 1 -k}( p)) = g^{n - 1 - k'}(p)$.
 \end{proof}
 
-By the above proposition and~\eqref{eq:negativefinal}, the negative sequence $\vec{y}$ occurring in the execution of {\APDR}$_h$, for a simple heuristic $h$, is the least amongst all the negative sequences occurring in any execution of {\APDR}.
-%
-Instead, invariant \eqref{eq:positiveinitialfinal} informs us that the positive chain $\vec{x}$ is always in between the initial chain of $f\sqcup i$ and the final chain of $g \sqcap p$. Such values of $\vec{x}$ are obtained by, respectively, simple initial and simple final heuristic. %This is formally shown in Propositions~\ref{prop:heuristic-initial-chain} and \ref{prop:heuristic-final-chain} in Appendix~\ref{app:heuristics}.
-This is formally shown in Propositions~\ref{prop:heuristic-initial-chain} and \ref{prop:heuristic-final-chain} that, since will not play any role in our expositions, are reported in Appendix~\ref{app:heuristics}.
+By the above proposition and~\eqref{eq:pdr:negativefinal}, the negative sequence $\vec{y}$ occurring in the execution of {\APDR}$_h$, for a simple heuristic $h$, is the least amongst all the negative sequences occurring in any execution of {\APDR}.
+Instead, invariant \eqref{eq:pdr:positiveinitialfinal} informs us that the positive chain $\vec{x}$ is always in between the initial chain of $f\lor i$ and the final chain of $g \land p$. Such values of $\vec{x}$ are obtained by, respectively, simple initial and simple final heuristic.
+This is formally shown in Propositions~\ref{prop:pdr:heuristic-initial-chain} and \ref{prop:pdr:heuristic-final-chain} below.
 
 \begin{example}
-	Consider the two runs of {\APDR} in Example~\ref{ex:simple-ts}. The first one exploits the simple initial heuristic and indeed, the positive chain $\vec{x}$ coincides with the initial chain.
+	Consider the two runs of {\APDR} in Example~\ref{ex:pdr:simple-ts}. The first one exploits the simple initial heuristic and indeed, the positive chain $\vec{x}$ coincides with the initial chain.
 	Analogously, the second run uses the simple final heuristic.
 \end{example}
 
-\subsection{Negative Termination}\label{sec:termination}
-When the lattice $L$ is not finite, {\APDR} may not return a result, since checking $\mu (f\sqcup i) \sqsubseteq p$ is not always decidable. In this section, we show that the use of certain heuristics can guarantee termination whenever $\mu (f \sqcup i) \not \sqsubseteq p$. %
+\begin{prop}\label{prop:pdr:heuristic-initial-chain}
+	Assume $p \neq \top$ and let $h\colon \states \to L$ be any simple initial heuristic.  For all $( \vec{x} \| \vec{y} )_{n,k} \in \states^h$, the first inequality in \eqref{eq:pdr:positiveinitialfinal} holds as an equality for all $j\in[0,n-2]$, namely $x_j=(f\sqcup i)^{j}(\bot)$.
+\end{prop}
 
-The key insight is the following: if $\mu (f \sqcup i) \not \sqsubseteq p$ then by~\eqref{eq:Kleenefpthm}, there should exist some $\tilde{n}\in \setN$ such that $(f \sqcup i)^{\tilde{n}} (\bot) \not \sqsubseteq p$. By \eqref{eq:positiveinitialfinal}, the rule (Unfold) can be applied only when $(f \sqcup i)^{n-1} (\bot) \sqsubseteq x_{n-1} \sqsubseteq p$. Since (Unfold) increases $n$ and $n$ is never decreased by other rules, then (Unfold) can be applied at most $\tilde{n}$ times.
-Therefore, we can guarantee termination whenever the number of steps between two (Unfold) is finite.
+\begin{prop}\label{prop:pdr:heuristic-final-chain}
+	Assume $p \neq \top$ and let $h\colon \states \to L$ be any simple final heuristic. If $s_0\ttr{}\tr{U} ( \vec{x} \| \vec{y} )_{n,k}$ then the second inequality in \eqref{eq:pdr:positiveinitialfinal} holds as an equality, namely for all $j\in[1,n-1]$, $x_j=(g\sqcap p)^{n-1-j}(\top)$.
+\end{prop}
+
+\subsection{Negative Termination}\label{sec:pdr:termination}
+When the lattice $L$ is not finite, {\APDR} may not return a result, since checking $\lfp(f \lor i) \le p$ is not always decidable. In this section, we show that the use of certain heuristics can guarantee termination whenever $\lfp(f \lor i) \not\le p$.
+The key insight is the following: if $\lfp (f \lor i) \not \le p$ then by~\eqref{th:bg:kleene}, there should exist some $\tilde{n} \in \setN$ such that $(f \lor i)^{\tilde{n}} (\bot) \not \le p$. By \eqref{eq:pdr:positiveinitialfinal}, the rule (Unfold) can be applied only when $(f \lor i)^{n-1} (\bot) \le x_{n-1} \le p$. Since (Unfold) increases $n$ and $n$ is never decreased by other rules, then (Unfold) can be applied at most $\tilde{n}$ times. Therefore, we can guarantee termination whenever the number of steps between two (Unfold) is finite.
 
 The first observation for termination is the following lemma. It states that an element $z$ cannot be added twice to negative sequence until $n$ is increased, i.e., until (Unfold) is applied.
-\begin{lemma}\label{lemma:differentz}
+\begin{lemma}\label{lmm:pdr:differentz}
 	If $s_0 \ttr{} s \trz{D}{z} \ttr{ } s' \trz{D}{z'} $ and $s$ and $s'$ carry the same index $(n,k)$, then $z' \neq z$.
 	Similarly, if $s_0 \ttr{} s \trz{\mathit{Ca}}{z} \ttr{ } s' \trz{\mathit{Ca}}{z'} $ and $s$ and $s'$ carry the same index $(n,k)$, then $z' \neq z$.
 \end{lemma}
 
-Elements of negative sequences are introduced by rules (Candidate) and (Decide).
-If we guarantee that for any index $(n,k)$ the heuristic in such cases returns a finite number of values for $z$, then we can prove termination.
-To make this formal, we fix $\mathit{CaD}^h_{n,k} \eqdef \{ ( \vec{x} \| \vec{y} )_{n,k}\in \states^h \mid ( \vec{x} \| \vec{y} )_{n,k}\tr{\mathit{Ca}} \text{ or } ( \vec{x} \| \vec{y} )_{n,k}\tr{D}\}$, i.e., the set of all $(n,k)$-indexed states reachable by {\APDR}$_h$ that trigger (Candidate) or (Decide), and $h(\mathit{CaD}^h_{n,k}) \eqdef \{h(s) \mid s\in \mathit{CaD}^h_{n,k}\}$, i.e., the set of all possible values returned by $h$ in such states.
+Elements of negative sequences are introduced by rules (Candidate) and (Decide). If we guarantee that for any index $(n,k)$ the heuristic in such cases returns a finite number of values for $z$, then we can prove termination. To make this formal, we fix $\mathit{CaD}^h_{n,k} \eqdef \{ ( \vec{x} \| \vec{y} )_{n,k}\in \states^h \mid ( \vec{x} \| \vec{y} )_{n,k}\tr{\mathit{Ca}} \text{ or } ( \vec{x} \| \vec{y} )_{n,k}\tr{D}\}$, i.e., the set of all $(n,k)$-indexed states reachable by {\APDR}$_h$ that trigger (Candidate) or (Decide), and $h(\mathit{CaD}^h_{n,k}) \eqdef \{h(s) \mid s\in \mathit{CaD}^h_{n,k}\}$, i.e., the set of all possible values returned by $h$ in such states.
 
 \begin{theorem}[Negative termination]\label{th:pdr:negativetermination}
-	Let $h$ be a legit heuristic. If $h(\mathit{CaD}^h_{n,k})$ is finite for all $n,k$ and $\mu(f\sqcup i) \not \sqsubseteq p$, then \emph{\APDR}$_h$ terminates.
+	Let $h$ be a legit heuristic. If $h(\mathit{CaD}^h_{n,k})$ is finite for all $n,k$ and $\lfp(f\lor i) \not \le p$, then \emph{\APDR}$_h$ terminates.
 \end{theorem}
 
 \begin{corollary}\label{cor:pdr:negativetermiantion}
 	Let $h$ be a simple heuristic.
-	If $\mu(f\sqcup i) \not \sqsubseteq p$, then \emph{\APDR}$_h$ terminates.
+	If $\lfp(f\lor i) \not \le p$, then \emph{\APDR}$_h$ terminates.
 \end{corollary}
 
 Note that this corollary ensures negative termination whenever we use the canonical choices in (Candidate) and (Decide) \emph{irrespective of the choice for} (Conflict), therefore it holds for both simple initial and simple final heuristics.
 
-The proofs of all the results in this section are in Appendix~\ref{ch:app:pdr}.
-
 \subsection{The meet-semilattice of positive chains and the join-semilattice of negative sequences}
-We conclude this section with two results illustrating some algebraic properties of positive chains and negative sequences. These are not necessary for proving properties of {\APDR}, but they will turns out to be quite convenient in Section~\ref{ssec:LTPDRvsADPDR}.
+We conclude this section with two results illustrating some algebraic properties of positive chains and negative sequences. These are not necessary for proving properties of {\APDR}, but they will be quite convenient in Section~\ref{sec:pdr:LTPDRvsADPDR}.
 
-We observe that positive chains of a fixed length $n$ form a join-semilattice and negative sequences a meet-semilattices, where joins and meets are defined point-wise, i.e., for two positive chains $\vec{x^1}, \vec{x^2}$ their join is defined as $(\vec{x^1} \sqcup \vec{x^2})_j \eqdef x^1_j\sqcup x^2_j$, and similarly for negative sequences. To show this it suffices to prove that the join of an arbitrary set of positive chains (resp. the meet of an arbitrary set of negative sequences) is still a positive chain (resp. negative sequence).
+We observe that positive chains of a fixed length $n$ form a join-semilattice and negative sequences a meet-semilattices, where joins and meets are defined point-wise, i.e., for two positive chains $\vec{x^1}, \vec{x^2}$ their join is defined as $(\vec{x^1} \lor \vec{x^2})_j \eqdef x^1_j\lor x^2_j$, and similarly for negative sequences. To show this it suffices to prove that the join of an arbitrary set of positive chains (resp. the meet of an arbitrary set of negative sequences) is still a positive chain (resp. negative sequence).
 
 \begin{lemma}\label{lmm:pdr:joinpositive}
 	Let $I$ be a set. For all $m \in I$, let $\vec{x^m}=x^m_0, \dots, x^m_{n-1}$ be a positive chain.
-	Then, the chain $\bigsqcup_{m\in I} \vec{x^m}$ defined for all $j \in [0, n-1]$ as
+	Then, the chain $\bigvee_{m\in I} \vec{x^m}$ defined for all $j \in [0, n-1]$ as
 	\[
-	(\bigsqcup_{m\in I} \vec{x^m})_j \eqdef \bigsqcup_{m\in I}x^m_{j}
+	(\bigvee_{m\in I} \vec{x^m})_j \eqdef \bigvee_{m\in I}x^m_{j}
 	\]
 	is a positive chain.
 \end{lemma}
 \begin{proof}
-	Since $ i \sqsubseteq x^m_{1}$ for all $m\in I$, then $ i \sqsubseteq \bigsqcup_{m\in I}x^m_{1} $.
+	Since $ i \le x^m_{1}$ for all $m\in I$, then $ i \le \bigvee_{m\in I}x^m_{1} $.
+	Since $ x^m_{n-2} \le p$ for all $m\in I$, then $ \bigvee_{m\in I}x^m_{n-2} \le p$.
 
-	Since $ x^m_{n-2} \sqsubseteq p$ for all $m\in I$, then $ \bigsqcup_{m\in I}x^m_{n-2} \sqsubseteq p$.
-
-	To show that $f( (\bigsqcup_{m\in I}\vec{x^m})_{j}) \sqsubseteq (\bigsqcup_{m\in I}\vec{x^m})_{j+1}$ we just observe the following
+	To show that $f( (\bigvee_{m\in I}\vec{x^m})_{j}) \le (\bigvee_{m\in I}\vec{x^m})_{j+1}$ we just observe the following
 	\begin{align*}
-		f((\bigsqcup_{m\in I}\vec{x^m})_{j}) & = f(\bigsqcup_{m\in I}x^m_j)             & \tag{def.}                 \\
-		                                     & = \bigsqcup_{m\in I} f(x^m_{j} )         & \tag{$f \dashv g$}         \\
-		                                     & \sqsubseteq \bigsqcup_{m\in I} x^m_{j+1} & \tag{\eqref{eq:positiveF}} \\
-		                                     & = (\bigsqcup_{m\in I}\vec{x^m})_{j+1}    & \tag{def.}
+		f((\bigvee_{m\in I}\vec{x^m})_{j}) & = f(\bigvee_{m\in I}x^m_j)          & [\text{def.}]              \\
+		                                   & = \bigvee_{m\in I} f(x^m_{j} )      & [f \dashv g]               \\
+		                                   & \le \bigvee_{m\in I} x^m_{j+1}      & [\eqref{eq:pdr:positiveF}] \\
+		                                   & = (\bigvee_{m\in I}\vec{x^m})_{j+1} & [\text{def.}]
 	\end{align*}
-	Thus \eqref{eq:Ix1}, \eqref{eq:xP} and \eqref{eq:positiveF} hold for $\bigsqcup_{m\in I} \vec{x^m}$.
+	Thus \eqref{eq:pdr:Ix1}, \eqref{eq:pdr:xP} and \eqref{eq:pdr:positiveF} hold for $\bigvee_{m\in I} \vec{x^m}$.
 \end{proof}
 
 \begin{lemma}\label{lmm:pdr:meetneg}
-	Let $I$ be a set. For all $m \in I$, let $\vec{y^m}=y^m_k, \dots, y^m_{n-1}$ be a negative sequence. Then, the sequence $\bigsqcap_{m\in I} \vec{y^m}$ defined for all $j = 0, \dots n-1$ as
+	Let $I$ be a set. For all $m \in I$, let $\vec{y^m}=y^m_k, \dots, y^m_{n-1}$ be a negative sequence. Then, the sequence $\bigwedge_{m\in I} \vec{y^m}$ defined for all $j = 0, \dots n-1$ as
 	\[
-	(\bigsqcap_{m\in I} \vec{y^m})_j \eqdef \bigsqcap_{m\in I}y^m_{j}
+	(\bigwedge_{m\in I} \vec{y^m})_j \eqdef \bigwedge_{m\in I}y^m_{j}
 	\]
-	is a negative sequence. Moreover, if $\vec{y^m}$ is conclusive for all $m \in I$, then also $\bigsqcap_{m\in I} \vec{y^m}$ is conclusive.
+	is a negative sequence. Moreover, if $\vec{y^m}$ is conclusive for all $m \in I$, then also $\bigwedge_{m\in I} \vec{y^m}$ is conclusive.
 \end{lemma}
 \begin{proof}
-	Since $p \sqsubseteq y^m_{n-1}$ for all $m\in I$, then $p \sqsubseteq \bigsqcap_{m\in I}y^m_{n-1} $.
+	Since $p \le y^m_{n-1}$ for all $m\in I$, then $p \le \bigwedge_{m\in I}y^m_{n-1} $.
 
-	To show that $g(\bigsqcap_{m\in I}\vec{y^m})_{j+1} \sqsubseteq (\bigsqcap_{m\in I}\vec{y^m})_{j}$ we proceed as follows
+	To show that $g(\bigwedge_{m\in I}\vec{y^m})_{j+1} \le (\bigwedge_{m\in I}\vec{y^m})_{j}$ we proceed as follows
 	\begin{align*}
-		g(\bigsqcap_{m\in I}\vec{y^m})_{j+1} & = g(\bigsqcap_{m\in I}y^m_j)           & \tag{def.}                 \\
-		                                     & = \bigsqcap_{m\in I} g(y^m_{j+1} )     & \tag{$f \dashv g$}         \\
-		                                     & \sqsubseteq \bigsqcap_{m\in I} y^m_{j} & \tag{\eqref{eq:negativeG}} \\
-		                                     & = (\bigsqcap_{m\in I}\vec{y^m})_{j}    & \tag{def.}
+		g(\bigwedge_{m\in I}\vec{y^m})_{j+1} & = g(\bigwedge_{m\in I}y^m_j)        & [\text{def.}]              \\
+		                                     & = \bigwedge_{m\in I} g(y^m_{j+1} )  & [f \dashv g]               \\
+		                                     & \le \bigwedge_{m\in I} y^m_{j}      & [\eqref{eq:pdr:negativeG}] \\
+		                                     & = (\bigwedge_{m\in I}\vec{y^m})_{j} & [\text{def.}]
 	\end{align*}
 
-	For conclusive sequences, observe that, since $i \not \sqsubseteq y_1^m$ for all $m \in I$, then $i \not \sqsubseteq \bigsqcap_{m\in I}y_1^m = (\bigsqcap_{m\in I}\vec{y^m})_{1}$.
+	For conclusive sequences, observe that, since $i \not \le y_1^m$ for all $m \in I$, then $i \not \le \bigwedge_{m\in I}y_1^m = (\bigwedge_{m\in I}\vec{y^m})_{1}$.
 \end{proof}
 
-The bottom element of the meet-semilattice of negative sequences is given by $g^{n-1-j}(p)$ for all $j\in [k,n-1]$, and is exactly the one in invariant \eqref{eq:negativefinal}. The top element of the join-semilattice of positive chains is the chain defined as $(g \sqcap p)^{n-1-j} (\top)$ for all $j\in [0,n-1]$; its bottom element is the chain $(f \sqcup i)^j (\bot)$. Again, these are exactly the bounds that appear in invariant \eqref{eq:positiveinitialfinal}.
-Note that, if $\vec{y^1}$ and $\vec{y^2}$ are conclusive, also $\vec{y^1} \sqcap \vec{y^2}$ is conclusive. An analogous property for positive chains does not hold.
+The bottom element of the meet-semilattice of negative sequences is given by $g^{n-1-j}(p)$ for all $j\in [k,n-1]$, and is exactly the one in invariant \eqref{eq:pdr:negativefinal}. The top element of the join-semilattice of positive chains is the chain defined as $(g \land p)^{n-1-j} (\top)$ for all $j\in [0,n-1]$; its bottom element is the chain $(f \lor i)^j (\bot)$. Again, these are exactly the bounds that appear in invariant \eqref{eq:pdr:positiveinitialfinal}.
+Note that, if $\vec{y^1}$ and $\vec{y^2}$ are conclusive, also $\vec{y^1} \land \vec{y^2}$ is conclusive. An analogous property for positive chains does not hold.
 
-\section{{\ADPDR}}
+\section{{\ADPDR}}\label{sec:pdr:downset}
+In Section~\ref{sec:pdr:APDR}, we have introduced an algorithm for checking $\lfp(b) \le p$ whenever $b$ is of the form $f \lor i$ for an element $i\in L$ and a left-adjoint $f\colon L \to L$. This, unfortunately, is not the case for several interesting problems, like the max reachability problem for Markov Decision Processes~\cite{BK08} that we will illustrate in Section~\ref{sec:pdr:MDP}.
+
+The next result informs us that, under standard assumptions, one can transfer the problem of checking $\lfp(b) \sqsubseteq p$ to lower sets, where adjoints can always be defined.
+Recall that, for a lattice $(L,\sqsubseteq)$, a \emph{lower set} is a subset $X\subseteq L$ such that if $x\in X$ and $x'\sqsubseteq x$ then $x'\in X$; the set of lower sets of $L$ forms a complete lattice $(L^\downarrow, \subseteq)$ with joins and meets given by  union and intersection; as expected $\bot$ is $\emptyset$ and $\top$ is $L$.
+Given $b\colon L\to L$, one can define two functions $b^\downarrow, b^\downarrow_r \colon L^\downarrow \to L^\downarrow$ as $b^\downarrow(X) \eqdef b(X)^\downarrow$ and $b^\downarrow_r(X) \eqdef \{x \mid b(x) \in X\}$. It holds that $b^\downarrow\, \dashv\, b^\downarrow_r$.
+
+\begin{equation}\label{eq:pdr:lowersetadjunction}
+	\xymatrix{
+	(L, \sqsubseteq) \lloop{b} \ar@/_1.5ex/[r]_-{(-)^\downarrow}^-\bot
+	&(L^\downarrow, \subseteq) \rloop{b^\downarrow\, \dashv\, b^\downarrow_r} \ar@/_1.5ex/[l]_-{\bigsqcup}
+	}
+\end{equation}
+In the diagram above, $(-)^\downarrow\colon x \mapsto \{x' \mid x' \sqsubseteq x\}$ and $\bigsqcup \colon L^\downarrow \to L$ maps a lower set $X$ into $\bigsqcup \{x\mid x\in X\}$. The maps $\bigsqcup$ and $(-)^\downarrow$ form a \emph{Galois insertion}, namely $\bigsqcup \dashv (-)^\downarrow$ and $\bigsqcup (-)^\downarrow = id$, and thus one can think of~\eqref{eq:pdr:lowersetadjunction} in terms of abstract interpretation: $L^\downarrow$ represents the concrete domain, $L$ the abstract domain and $b$ is a sound abstraction of $b^\downarrow$. Most importantly, it turns out that $b$ is \emph{forward-complete}~\cite{GRS00,BGGP18} w.r.t. $b^\downarrow$, namely the following equation holds.
+\begin{equation}\label{eq:pdr:EMlaw}
+	(-)^\downarrow \circ b = b^\downarrow \circ (-)^\downarrow
+\end{equation}
+
+\begin{prop}\label{prop:pdr:prob_down_up}
+	Let $(L,\sqsubseteq)$ be a complete lattice, $p\in L$ and $b \colon L \to L$ be a $\omega$-continuous map. Then $\lfp(b) \sqsubseteq p$ iff $\lfp(b^\downarrow \cup \bot^\downarrow) \subseteq p^\downarrow$.
+\end{prop}
+\begin{proof}
+	A simple inductive argument using \eqref{eq:pdr:EMlaw} confirms that
+	\begin{equation}\label{eq:pdr:hdownn}
+		(b^n x)^\downarrow = (b^\downarrow)^n x^\downarrow
+	\end{equation}
+	for all $x\in L$. The following sequence of logical equivalences
+	\begin{align*}
+		\lfp(b) \sqsubseteq p & \Leftrightarrow \forall n \in \mathbb{N}.~b^n \bot \sqsubseteq p                                   & [\text{Theorem \ref{th:bg:kleene}}]                                                   \\
+		                      & \Leftrightarrow \forall n \in \mathbb{N}.~(b^n \bot)^\downarrow \subseteq p^\downarrow             & [\text{mon. of }(-)^\downarrow, \bigsqcup \text{ and } \bigsqcup (-)^{\downarrow}=id] \\
+		                      & \Leftrightarrow \bigcup_{n \in \mathbb{N}} (b^n \bot)^\downarrow  \subseteq p^\downarrow           & [\text{def. of }\bigcup]                                                              \\
+		                      & \Leftrightarrow \bigcup_{n \in \mathbb{N}} (b^\downarrow)^n \bot^\downarrow \subseteq p^\downarrow & [\eqref{eq:pdr:hdownn}]                                                               \\
+		                      & \Leftrightarrow \lfp(b^\downarrow \cup \bot^\downarrow) \subseteq p^\downarrow                     & [\text{Theorem \ref{th:bg:kleene}}].
+	\end{align*}
+	concludes the proof of the main statement.
+\end{proof}
+
+By means of Proposition~\ref{prop:pdr:prob_down_up}, we can thus solve $\lfp(b) \sqsubseteq p$ in $L$ by running {\APDR} on $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$.
+Hereafter, we tacitly assume that $b$ is $\omega$-continuous.
+
+\begin{figure}[t]
+	\begin{center}
+		\underline{{\ADPDR} $(b,p)$}
+		{\small
+			\begin{codeNT}
+<INITIALISATION>
+  $( \vec{x} \| \vec{Y} )_{n,k}$ := $(\emptyset,\bot,\top\|\varepsilon)_{3,3}$
+<ITERATION>
+  case $( \vec{x} \| \vec{Y} )_{n,k}$ of								% $\vec{x}, \vec{Y}$ not conclusive
+	   $\vec{Y}=\varepsilon$ And $x_{n-1} \sqsubseteq p$     :                    %(Unfold)
+			$( \vec{x} \| \vec{Y} )_{n,k}$ := $( \vec{x}, \top \| \varepsilon )_{n+1,n+1}$
+	   $\vec{Y}=\varepsilon$ And $x_{n-1} \not \sqsubseteq p$    :                     %(Candidate)
+			choose $Z\in L^{\downarrow}$ st  $x_{n-1} \not \in Z$ And  $p \in Z$;
+			$( \vec{x} \| \vec{Y} )_{n,k}$ := $( \vec{x} \| Z )_{n,n-1}$
+	   $\vec{Y} \neq \varepsilon$ And $b(x_{k-1}) \not \in Y_k$ :                        %(Decide)
+			choose $Z\in L^{\downarrow}$ st $x_{k-1} \not \in Z$ And $b^{\downarrow}_r(Y_k) \subseteq Z$;
+			$(\vec{x} \| \vec{Y} )_{n,k}$ := $(\vec{x} \| Z , \vec{Y} )_{n,k-1}$
+	   $\vec{Y} \neq \varepsilon$ And $b(x_{k-1}) \in Y_k$ :                        %(Conflict)
+			choose $z \in L$ st $z \in Y_k$ And $b(x_{k-1} \sqcap z) \sqsubseteq z$;
+			$(\vec{x} \| \vec{Y} )_{n,k}$ := $(\vec{x} \sqcap_k z \| \mathsf{tail}(\vec{Y}) )_{n,k+1}$
+  endcase
+<TERMINATION>
+	if $\exists j\in [0,n-2]\,.\, x_{j+1} \sqsubseteq x_j$ then return true		% $\vec{x}$ conclusive
+	if $Y_1=\emptyset$ then return false							% $\vec{Y}$ conclusive
+\end{codeNT}
+		}
+	\end{center}
+	\caption{The algorithm {\ADPDR} for checking $\lfp(b) \sqsubseteq p$: the elements of negative sequence are in $L^\downarrow$, while those of the positive chain are in $L$, with the only exception of $x_0$ which is constantly the bottom lower set $\emptyset$. For $x_0$, we fix $b(x_0) = \bot$.}
+	\label{fig:pdr:adpdr}
+\end{figure}
+
+\subsection{{\ADPDR}: Positive Chain in $L$, Negative Sequence in \texorpdfstring{$L^\downarrow$}{L↓}}\label{sec:pdr:ADPDR}
+While {\APDR} on $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ might be computationally expensive, it is the first step toward the definition of an efficient algorithm that exploits a convenient form of the positive chain.
+
+A lower set $X\in L^{\downarrow}$ is said to be a \emph{principal} if $X=x^\downarrow$ for some $x\in L$. Observe that the top of the lattice $(L^\downarrow, \subseteq)$ is a principal, namely $\top^\downarrow$, and that the meet (intersection) of two principals $x^\downarrow$ and $y^\downarrow$ is the principal $(x\sqcap y)^\downarrow$.
+
+Suppose that, in (Conflict), {\APDR}$(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ always chooses principals rather than arbitrary lower sets. This suffices to guarantee that all the elements of $\vec{x}$ are principals (with the only exception of $x_0$ which is constantly the bottom element of $L^\downarrow$ that, note, is $\emptyset$ and not $\bot^\downarrow$). In fact, the elements of $\vec{x}$ are all obtained by (Unfold), that adds the principal $\top^\downarrow$, and by (Conflict), that  takes their meets with the chosen principal.
+
+Since principals are in bijective correspondence with the elements of $L$, by imposing to {\APDR}$(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ to choose  a principal in (Conflict), we obtain an algorithm, named {\ADPDR}, where the elements of the positive chain are drawn from $L$, while the negative sequence is taken in $L^{\downarrow}$. The algorithm is reported in Figure~\ref{fig:pdr:adpdr} where we use the notation $( \vec{x} \| \vec{Y} )_{n,k}$ to emphasize that the elements of the negative sequence are lower sets of elements in $L$.
+
+All definitions and results illustrated in Sections~\ref{sec:pdr:APDR} and \ref{sec:pdr:properties} for {\APDR}  are inherited\footnote{Up to a suitable renaming: the domain is $(L^\downarrow, \subseteq)$ instead of $(L,\sqsubseteq)$, the parameters are $\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow}$ instead of $i, f, g, p$ and the negative sequence is $\vec{Y}$ instead of $\vec{y}$.} by {\ADPDR}, with the only exception of Proposition~\ref{prop:pdr:CanonicalChoice}.3. The latter does not hold, as it prescribes a choice for (Conflict) that may not be a principal. In contrast, the choice in Proposition~\ref{prop:pdr:CanonicalChoice}.4 is, thanks to \eqref{eq:pdr:EMlaw}, a principal. This means in particular that the simple initial heuristic is always applicable.
+
+\begin{theorem}\label{th:pdr:ADPDR}
+	All results in Section~\ref{sec:pdr:properties}, but Proposition~\ref{prop:pdr:CanonicalChoice}.3, hold for \emph{\ADPDR}.
+\end{theorem}
+The proof, in Appendix~\ref{ch:app:pdr}, relies on some transformations of programs from {\APDR}$(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$  to {\ADPDR} $(b,p)$.
+
+\subsection{{\ADPDR} simulates LT-PDR}\label{sec:pdr:LTPDRvsADPDR}
+The closest approach to {\APDR} and {\ADPDR} is the lattice-theoretic extension of the original PDR, called LT-PDR~\cite{KUKSH22}. While these algorithms exploit essentially the same positive chain to find an invariant, the main difference lies in the sequence used to witness the existence of some counterexamples.
+\begin{definition}[Kleene sequence, from~\cite{KUKSH22}]
+	A sequence $\vec{c}= c_k,\dots, c_{n-1}$ of elements of $L$ is a \emph{Kleene sequence} if the conditions \emph{(C1)} and \emph{(C2)} below hold.
+	It is \emph{conclusive} if also condition \emph{(C0)} holds.
+	\[
+	\emph{(C0) } c_1 \sqsubseteq b(\bot),
+	\qquad
+	\emph{(C1) } c_{n-1} \not \sqsubseteq p,
+	\qquad
+	\emph{(C2) } \forall j\in[k,n-2].~c_{j+1} \sqsubseteq b(c_j)\text{.}
+	\]
+\end{definition}
+
+LT-PDR tries to construct an under-approximation $c_{n-1}$ of $b^{n-2}(\bot)$ that violates the property $p$. The Kleene sequence is constructed by trial and error, starting by some arbitrary choice of $c_{n-1}$.
+
+	{\APDR} crucially differs from LT-PDR in the search for counterexamples: LT-PDR under-approximates the final chain while {\APDR} over\hyp{}approximates it. However, we can draw a formal correspondence between {\ADPDR} and LT-PDR by showing that {\ADPDR} simulates LT-PDR, but cannot be simulated by LT-PDR.
+In fact, {\ADPDR} exploits the existence of the adjoint to start from an over\hyp{}approximation $Y_{n-1}$ of $p^\downarrow$ and computes backward an over-approximation of the set of safe states.
+Thus, the key difference comes from the strategy to look for a counterexample: to prove $\lfp(b) \not \sqsubseteq p$, {\ADPDR} tries to find $Y_{n-1}$ satisfying $p \in Y_{n-1}$ and $\lfp(b) \not \in Y_{n-1}$ while LT-PDR tries to find $c_{n-1}$ s.t. $c_{n-1} \not \sqsubseteq p$ and $c_{n-1} \sqsubseteq \lfp(b)$.
+
+Theorem~\ref{th:pdr:LT-PDR-instance-ADPDR} below states that any execution of LT-PDR can be mimicked by {\ADPDR}. The proof exploits a map from LT-PDR's Kleene sequences $\vec{c}$ to {\ADPDR}'s negative sequences $\negation{\vec{c}}$ of a particular form.
+Let $(L^{\uparrow}, \supseteq)$  be the complete lattice of upper sets, namely subsets $X \subseteq L$ such that $X=X^\uparrow \eqdef \{x'\in L \mid \exists x\in X \,. \, x\sqsubseteq x'\}$.
+There is an isomorphism $\neg \colon {(L^\uparrow, \supseteq)} \stackrel{\cong}{\longleftrightarrow} (L^\downarrow, \subseteq)$ mapping each $X\subseteq S$ into its complement.
+For a Kleene sequence $\vec{c} = c_k,\dots, c_{n-1}$ of LT-PDR, the sequence $\negation{\vec{c}} \eqdef \lnot (\{ c_k \}^{\uparrow}), \dots, \lnot (\{ c_{n-1} \}^{\uparrow})$ is a negative sequence, in the sense of Definition~\ref{def:pdr:neg_seq}, for {\ADPDR}.
+
+\begin{prop}\label{prop:pdr:negLTPDR}
+	Let $\vec{c}$ be a Kleene sequence. Then $\negation{\vec{c}}$ is a negative sequence for {\ADPDR}.
+\end{prop}
+\begin{proof}
+	First, we show that $p \in \negation{\vec{c}}_{n-1}$. Since $c_{n-1}\not \sqsubseteq p$, by (C1), then $p \not\in \{c_{n-1}\}^\uparrow$. Thus $p \in \neg ( \{c_{n-1}\}^\uparrow)$, that is $p \in \negation{\vec{c}}_{n-1}$.
+
+	Then, we show that $b_r^\downarrow(\negation{\vec{c}}_{j+1}) \subseteq \negation{\vec{c}}_j$.
+	\begin{align*}
+		b_r^\downarrow(\negation{\vec{c}}_{j+1}) & = b_r^\downarrow(\neg(\{c_{j+1}\}^\uparrow))        & [\text{def.}]       \\
+		                                         & = \{x \mid b(x) \notin (\{c_{j+1}\}^\uparrow \}     & [\text{def.}]       \\
+		                                         & =  \{x \mid c_{j+1} \not \sqsubseteq b(x) \}        & [\text{def.}]       \\
+		                                         & \subseteq  \{x \mid b(c_j) \not \sqsubseteq b(x) \} & [\text{(C2)}]       \\
+		                                         & \subseteq  \{x \mid c_j \not \sqsubseteq x \}       & [\text{mon. of } b] \\
+		                                         & =  \neg(\{c_j\}^\uparrow)                           & [\text{def.}]       \\
+		                                         & =  \negation{\vec{c}}_j                             & [\text{def.}]
+	\end{align*}
+\end{proof}
+
+Most importantly, the assignment $\vec{c} \mapsto \negation{\vec{c}}$ extends to a function, from the states of LT-PDR to those of {\ADPDR}, that is proved to be a \emph{strong simulation}~\cite{Milner89}.
+
+\begin{theorem}\label{th:pdr:LT-PDR-instance-ADPDR}
+	\emph{\ADPDR} simulates LT-PDR.
+\end{theorem}
+
+Remarkably, {\ADPDR}'s negative sequences are not limited to the images of LT-PDR's Kleene sequences: they are more general  than the complement of the upper closure of a singleton. In fact, a single negative sequence of {\ADPDR} can represent \emph{multiple} Kleene sequences of LT-PDR at once. Intuitively, this means that a single execution of {\ADPDR} can correspond to multiple runs of LT-PDR. We can make this formal by means of the following result.
+
+\begin{prop}\label{prop:pdr:multipleLTPDR}
+	Let $\{\vec{c^m}\}_{m\in M}$ be a family of Kleene sequences.
+	Then its pointwise intersection $\bigcap_{m\in M} \negation{\vec{c^m}}$ is a negative sequence.
+\end{prop}
+\begin{proof}
+	Since each of the $\vec{c^m}$ is a Kleene sequence, for all $m\in M$, $\negation{\vec{c^m}}$ is, by Proposition~\ref{prop:pdr:negLTPDR}, a negative sequence.
+	Since negative sequences form a meet-semilattice, their intersection is also a negative sequence (Lemma~\ref{lmm:pdr:meetneg}).
+\end{proof}
+
+The above intersection is pointwise in the sense that, for all $j\in {[k,n-1]}$, it holds $(\bigcap_{m\in M} \negation{\vec{c^m}})_j \eqdef \bigcap_{m\in M} (\negation{\vec{c^m}})_j = \lnot(\{ c_j^m \mid m \in M \}^{\uparrow})$: intuitively, this is (up to $\negation{\cdot}$) a set containing all the $M$ counterexamples.
+Note that, if the negative sequence of {\ADPDR} makes \eqref{eq:pdr:negativefinal} hold as an equality, as it is possible with any simple heuristic (see Proposition~\ref{prop:pdr:negativesequencefinalchain}), then its complement contains \emph{all} Kleene sequences possibly computed by LT-PDR.
+
+\begin{prop}\label{prop:pdr:LTPDRfinal}
+	Let $\vec{c}$ be a Kleene sequence and $\vec{Y}$ be the negative sequence s.t. $Y_j= (b_r^\downarrow)^{n-1-j}(p^\downarrow)$ for all $j \in [k,n-1]$.
+	Then  $c_j \in \neg(Y_j)$ for all $j \in [k,n-1]$.
+\end{prop}
+\begin{proof}
+	Since $\vec{c} = c_0, \dots, c_{n-1}$ is a Kleene sequence, $\negation{\vec{c}} = \lnot (\{ c_k \}^{\uparrow}), \dots, \lnot (\{ c_{n-1} \}^{\uparrow})$ is, by Proposition~\ref{prop:pdr:negLTPDR}, a negative sequence.
+	By~\eqref{eq:pdr:negativefinal}, for all $j \in [k, n - 1]$ we have $(b_r^\downarrow)^{n-1-j}(p^\downarrow) \subseteq  \neg(\{c_j\}^\uparrow)$. Therefore, $\neg (b_r^\downarrow)^{n-1-j}(p^\downarrow) \supseteq \{c_j\}^\uparrow$ and thus $c_j \in \neg (b_r^\downarrow)^{n-1-j}(p^\downarrow) = \neg (Y_j)$.
+\end{proof}
+
+While the previous result suggests that simple heuristics are always the best in theory, as they can carry all counterexamples, this is  often not the case in practice, since they might be computationally hard and outperformed by  some smart over-approximations. An example is given by \eqref{eq:pdr:secondterminatingheuristics} in the next section.
 
 \section{Instantiating {\ADPDR} for MDPs}
+\fromhere
 
 \section{{\APDRAI}}
 
