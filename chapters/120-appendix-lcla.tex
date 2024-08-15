@@ -132,7 +132,7 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 		\alpha(Q) & \le \alpha(\denot{\regr} P)                                             & [\text{(1) and monotonicity of }\alpha]  \\
 		          & \le \denot{\regr}^{A} \alpha(P)                                         & [\text{soundness of } \denot{\regr}^{A}] \\
 		          & = \alpha \denot{\regr} \gamma \alpha(P)                                 & [\text{definition}]                      \\
-		          & = \alpha \gamma' \alpha' \denot{\regr} \gamma' \alpha' \gamma \alpha(P) & [\text{Lemma~\ref{th:lemma-AA'}}]        \\
+		          & = \alpha \gamma' \alpha' \denot{\regr} \gamma' \alpha' \gamma \alpha(P) & [\text{Lemma~\ref{lmm:app:lemma-AA'}}]   \\
 		          & = \alpha \gamma' \denot{\regr}^{A'} \alpha' A(P)                        & [\text{definition}]                      \\
 		          & = \alpha(Q)                                                             & [\text{hypothesis of the rule}]
 	\end{align*}
@@ -147,7 +147,7 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 		\alpha(Q) & \le \alpha(\denot{\regr} P )                                & [Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
 		          & \le \denot{\regr}^{A} \alpha(P)                             & [\text{soundness of }\denot{\regr}^{A}]                    \\
 		          & = \alpha \denot{\regr} A(P)                                 & [\text{definition}]                                        \\
-		          & = \alpha \gamma' \alpha' \denot{\regr} A' A(P)              & [\text{Lemma~\ref{th:lemma-AA'}}]                          \\
+		          & = \alpha \gamma' \alpha' \denot{\regr} A' A(P)              & [\text{Lemma~\ref{lmm:app:lemma-AA'}}]                     \\
 		          & = \alpha \gamma' \denot{\regr}^{A'} \alpha' A(P)            & [\text{definition}]                                        \\
 		          & \le \alpha \gamma' \denot{\regr}^{\sharp}_{A'} \alpha' A(P) & [\denot{\regr}^{A'} \le \denot{\regr}^{\sharp}_{A'}]       \\
 		          & = \alpha(Q)                                                 & [\text{Last hypothesis of the rule}]
@@ -164,10 +164,10 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 		          & \le \denot{\regr}^{A} \alpha(P)                & [\text{soundness of }\denot{\regr}^{A}]                    \\
 		          & = \alpha \denot{\regr} A(P)                    & [\text{definition}]                                        \\
 		          & = \alpha \denot{\regr} A'(P)                   & [\text{hp of the rule}]                                    \\
-		          & = \alpha \gamma' \alpha' \denot{\regr} A'(P)   & [\text{Lemma~\ref{th:lemma-AA'}}]                          \\
+		          & = \alpha \gamma' \alpha' \denot{\regr} A'(P)   & [\text{Lemma~\ref{lmm:app:lemma-AA'}}]                     \\
 		          & = \alpha \gamma' \denot{\regr}^{A'} \alpha'(P) & [\text{definition}]                                        \\
 		          & = \alpha \gamma' \alpha'(Q)                    & [\text{extensional soundness (3)}]                         \\
-		          & = \alpha(Q)                                    & [\text{Lemma~\ref{th:lemma-AA'}}]
+		          & = \alpha(Q)                                    & [\text{Lemma~\ref{lmm:app:lemma-AA'}}]
 	\end{align*}
 	Hence all the lines are equal, and in particular $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$.
 \end{proof}
@@ -434,7 +434,7 @@ The following lemma is used in the subsequent proof.
 	The proof is by induction on the derivation tree of the provable triple $\clcltriple{A}{P}{\regr}{Q}$. We prove here only some relevant cases.\todo{Add all of them?}
 
 	\proofcase{\clclrule{transfer}}
-	For (1), we have trivially $\bwsem{\regc} Q \subseteq \bwsem{\regc} Q$. For (2), we have $\alpha(\bwsem{\regc} Q) = \alpha(\bwsem{\regc} \gamma \alpha Q) = \bwsem{\regc}^{\sharp}_A \alpha (Q)$ by $\complete{A}{Q}{\bwsem{\regc}}$ and definition of $\bwsem{\regc}^{\sharp}_A$, respectively (see Fig.~\ref{fig:abs-semantics:bw}).
+	For (1), we have trivially $\bwsem{\regc} Q \subseteq \bwsem{\regc} Q$. For (2), we have $\alpha(\bwsem{\regc} Q) = \alpha(\bwsem{\regc} \gamma \alpha Q) = \bwsem{\regc}^{\sharp}_A \alpha (Q)$ by $\complete{A}{Q}{\bwsem{\regc}}$ and definition of $\bwsem{\regc}^{\sharp}_A$, respectively (see Figure~\ref{fig:abs-semantics:bw}).
 
 	\proofcase{\clclrule{relax}}
 	For (1) we have

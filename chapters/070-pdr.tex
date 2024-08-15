@@ -394,7 +394,7 @@ The following proposition ensures that {\APDR} always traverses new states.
 		x_j \land z & if $j \le k$
 	\end{cases*}
 	\]
-	So for $j\in[k+1,n - 1]$ we have $x_j = x'_j$, and for $j\in[0,k]$ we have $x_j \ge x_j \land z = x'_j$. So $\vec{x} \preceq \vec{x}'$. Assume by contradiction that $x'_k = x_k$. Since $x'_k = x_k \land z$, this is equivalent to $x_k \le z$. The choice of $z$ in (Conflict) satisfies $z \le y_k$, that would imply $x_k \le z \le y_k$. However, this is a contradiction, since by \eqref{eq:pdr:positivenegative} we know $x_k \not \le y_k$. Hence $x_k \sqsupset x'_k$, meaning $\vec{x} \prec \vec{x}'$.
+	So for $j\in[k+1,n - 1]$ we have $x_j = x'_j$, and for $j\in[0,k]$ we have $x_j \ge x_j \land z = x'_j$. So $\vec{x} \preceq \vec{x}'$. Assume by contradiction that $x'_k = x_k$. Since $x'_k = x_k \land z$, this is equivalent to $x_k \le z$. The choice of $z$ in (Conflict) satisfies $z \le y_k$, that would imply $x_k \le z \le y_k$. However, this is a contradiction, since by \eqref{eq:pdr:positivenegative} we know $x_k \not \le y_k$. Hence $x_k \ge x'_k$, meaning $\vec{x} \prec \vec{x}'$.
 \end{proof}
 
 Observe that the above propositions entail that {\APDR} terminates whenever the lattice $L$ is finite, since the set of reachable states is finite in this case.
@@ -468,11 +468,11 @@ This is formally shown in Propositions~\ref{prop:pdr:heuristic-initial-chain} an
 \end{example}
 
 \begin{prop}\label{prop:pdr:heuristic-initial-chain}
-	Assume $p \neq \top$ and let $h\colon \states \to L$ be any simple initial heuristic.  For all $( \vec{x} \| \vec{y} )_{n,k} \in \states^h$, the first inequality in \eqref{eq:pdr:positiveinitialfinal} holds as an equality for all $j\in[0,n-2]$, namely $x_j=(f\sqcup i)^{j}(\bot)$.
+	Assume $p \neq \top$ and let $h\colon \states \to L$ be any simple initial heuristic.  For all $( \vec{x} \| \vec{y} )_{n,k} \in \states^h$, the first inequality in \eqref{eq:pdr:positiveinitialfinal} holds as an equality for all $j\in[0,n-2]$, namely $x_j=(f\lor i)^{j}(\bot)$.
 \end{prop}
 
 \begin{prop}\label{prop:pdr:heuristic-final-chain}
-	Assume $p \neq \top$ and let $h\colon \states \to L$ be any simple final heuristic. If $s_0\ttr{}\tr{U} ( \vec{x} \| \vec{y} )_{n,k}$ then the second inequality in \eqref{eq:pdr:positiveinitialfinal} holds as an equality, namely for all $j\in[1,n-1]$, $x_j=(g\sqcap p)^{n-1-j}(\top)$.
+	Assume $p \neq \top$ and let $h\colon \states \to L$ be any simple final heuristic. If $s_0\ttr{}\tr{U} ( \vec{x} \| \vec{y} )_{n,k}$ then the second inequality in \eqref{eq:pdr:positiveinitialfinal} holds as an equality, namely for all $j\in[1,n-1]$, $x_j=(g\land p)^{n-1-j}(\top)$.
 \end{prop}
 
 \subsection{Negative Termination}\label{sec:pdr:termination}
@@ -552,23 +552,22 @@ Note that, if $\vec{y^1}$ and $\vec{y^2}$ are conclusive, also $\vec{y^1} \land 
 \section{{\ADPDR}}\label{sec:pdr:downset}
 In Section~\ref{sec:pdr:APDR}, we have introduced an algorithm for checking $\lfp(b) \le p$ whenever $b$ is of the form $f \lor i$ for an element $i\in L$ and a left-adjoint $f\colon L \to L$. This, unfortunately, is not the case for several interesting problems, like the max reachability problem for Markov Decision Processes~\cite{BK08} that we will illustrate in Section~\ref{sec:pdr:MDP}.
 
-The next result informs us that, under standard assumptions, one can transfer the problem of checking $\lfp(b) \sqsubseteq p$ to lower sets, where adjoints can always be defined.
-Recall that, for a lattice $(L,\sqsubseteq)$, a \emph{lower set} is a subset $X\subseteq L$ such that if $x\in X$ and $x'\sqsubseteq x$ then $x'\in X$; the set of lower sets of $L$ forms a complete lattice $(L^\downarrow, \subseteq)$ with joins and meets given by  union and intersection; as expected $\bot$ is $\emptyset$ and $\top$ is $L$.
+The next result informs us that, under standard assumptions, one can transfer the problem of checking $\lfp(b) \le p$ to lower sets, where adjoints can always be defined.
+Recall that, for a lattice $(L,\le)$, a \emph{lower set} is a subset $X\subseteq L$ such that if $x\in X$ and $x'\le x$ then $x'\in X$; the set of lower sets of $L$ forms a complete lattice $(L^\downarrow, \subseteq)$ with joins and meets given by  union and intersection; as expected $\bot$ is $\emptyset$ and $\top$ is $L$.
 Given $b\colon L\to L$, one can define two functions $b^\downarrow, b^\downarrow_r \colon L^\downarrow \to L^\downarrow$ as $b^\downarrow(X) \eqdef b(X)^\downarrow$ and $b^\downarrow_r(X) \eqdef \{x \mid b(x) \in X\}$. It holds that $b^\downarrow\, \dashv\, b^\downarrow_r$.
-
 \begin{equation}\label{eq:pdr:lowersetadjunction}
 	\xymatrix{
-	(L, \sqsubseteq) \lloop{b} \ar@/_1.5ex/[r]_-{(-)^\downarrow}^-\bot
+	(L, \le) \lloop{b} \ar@/_1.5ex/[r]_-{(-)^\downarrow}^-\bot
 	&(L^\downarrow, \subseteq) \rloop{b^\downarrow\, \dashv\, b^\downarrow_r} \ar@/_1.5ex/[l]_-{\bigsqcup}
 	}
 \end{equation}
-In the diagram above, $(-)^\downarrow\colon x \mapsto \{x' \mid x' \sqsubseteq x\}$ and $\bigsqcup \colon L^\downarrow \to L$ maps a lower set $X$ into $\bigsqcup \{x\mid x\in X\}$. The maps $\bigsqcup$ and $(-)^\downarrow$ form a \emph{Galois insertion}, namely $\bigsqcup \dashv (-)^\downarrow$ and $\bigsqcup (-)^\downarrow = id$, and thus one can think of~\eqref{eq:pdr:lowersetadjunction} in terms of abstract interpretation: $L^\downarrow$ represents the concrete domain, $L$ the abstract domain and $b$ is a sound abstraction of $b^\downarrow$. Most importantly, it turns out that $b$ is \emph{forward-complete}~\cite{GRS00,BGGP18} w.r.t. $b^\downarrow$, namely the following equation holds.
+In the diagram above, $(-)^\downarrow\colon x \mapsto \{x' \mid x' \le x\}$ and $\bigsqcup \colon L^\downarrow \to L$ maps a lower set $X$ into $\bigsqcup \{x\mid x\in X\}$. The maps $\bigsqcup$ and $(-)^\downarrow$ form a \emph{Galois insertion}, namely $\bigsqcup \dashv (-)^\downarrow$ and $\bigsqcup (-)^\downarrow = id$, and thus one can think of~\eqref{eq:pdr:lowersetadjunction} in terms of abstract interpretation: $L^\downarrow$ represents the concrete domain, $L$ the abstract domain and $b$ is a sound abstraction of $b^\downarrow$. Moreover, $b$ is \emph{forward-complete}~\cite{GRS00,BGGP18} w.r.t. $b^\downarrow$, namely:
 \begin{equation}\label{eq:pdr:EMlaw}
 	(-)^\downarrow \circ b = b^\downarrow \circ (-)^\downarrow
 \end{equation}
 
 \begin{prop}\label{prop:pdr:prob_down_up}
-	Let $(L,\sqsubseteq)$ be a complete lattice, $p\in L$ and $b \colon L \to L$ be a $\omega$-continuous map. Then $\lfp(b) \sqsubseteq p$ iff $\lfp(b^\downarrow \cup \bot^\downarrow) \subseteq p^\downarrow$.
+	Let $(L,\le)$ be a complete lattice, $p\in L$ and $b \colon L \to L$ be a $\omega$-continuous map. Then $\lfp(b) \le p$ iff $\lfp(b^\downarrow \cup \bot^\downarrow) \subseteq p^\downarrow$.
 \end{prop}
 \begin{proof}
 	A simple inductive argument using \eqref{eq:pdr:EMlaw} confirms that
@@ -577,18 +576,19 @@ In the diagram above, $(-)^\downarrow\colon x \mapsto \{x' \mid x' \sqsubseteq x
 	\end{equation}
 	for all $x\in L$. The following sequence of logical equivalences
 	\begin{align*}
-		\lfp(b) \sqsubseteq p & \Leftrightarrow \forall n \in \mathbb{N}.~b^n \bot \sqsubseteq p                                   & [\text{Theorem \ref{th:bg:kleene}}]                                                   \\
-		                      & \Leftrightarrow \forall n \in \mathbb{N}.~(b^n \bot)^\downarrow \subseteq p^\downarrow             & [\text{mon. of }(-)^\downarrow, \bigsqcup \text{ and } \bigsqcup (-)^{\downarrow}=id] \\
-		                      & \Leftrightarrow \bigcup_{n \in \mathbb{N}} (b^n \bot)^\downarrow  \subseteq p^\downarrow           & [\text{def. of }\bigcup]                                                              \\
-		                      & \Leftrightarrow \bigcup_{n \in \mathbb{N}} (b^\downarrow)^n \bot^\downarrow \subseteq p^\downarrow & [\eqref{eq:pdr:hdownn}]                                                               \\
-		                      & \Leftrightarrow \lfp(b^\downarrow \cup \bot^\downarrow) \subseteq p^\downarrow                     & [\text{Theorem \ref{th:bg:kleene}}].
+		\lfp(b) \le p & \Leftrightarrow \forall n \in \mathbb{N}.~b^n \bot \le p                                           & [\text{Theorem \ref{th:bg:kleene}}]                                                   \\
+		              & \Leftrightarrow \forall n \in \mathbb{N}.~(b^n \bot)^\downarrow \subseteq p^\downarrow             & [\text{mon. of }(-)^\downarrow, \bigsqcup \text{ and } \bigsqcup (-)^{\downarrow}=id] \\
+		              & \Leftrightarrow \bigcup_{n \in \mathbb{N}} (b^n \bot)^\downarrow  \subseteq p^\downarrow           & [\text{def. of }\bigcup]                                                              \\
+		              & \Leftrightarrow \bigcup_{n \in \mathbb{N}} (b^\downarrow)^n \bot^\downarrow \subseteq p^\downarrow & [\eqref{eq:pdr:hdownn}]                                                               \\
+		              & \Leftrightarrow \lfp(b^\downarrow \cup \bot^\downarrow) \subseteq p^\downarrow                     & [\text{Theorem \ref{th:bg:kleene}}].
 	\end{align*}
 	concludes the proof of the main statement.
 \end{proof}
 
-By means of Proposition~\ref{prop:pdr:prob_down_up}, we can thus solve $\lfp(b) \sqsubseteq p$ in $L$ by running {\APDR} on $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$.
+By means of Proposition~\ref{prop:pdr:prob_down_up}, we can thus solve $\lfp(b) \le p$ in $L$ by running {\APDR} on $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$.
 Hereafter, we tacitly assume that $b$ is $\omega$-continuous.
 
+\subsection{{\ADPDR}: Positive Chain in $L$, Negative Sequence in \texorpdfstring{$L^\downarrow$}{L↓}}\label{sec:pdr:ADPDR}
 \begin{figure}[t]
 	\begin{center}
 		\underline{{\ADPDR} $(b,p)$}
@@ -598,43 +598,42 @@ Hereafter, we tacitly assume that $b$ is $\omega$-continuous.
   $( \vec{x} \| \vec{Y} )_{n,k}$ := $(\emptyset,\bot,\top\|\varepsilon)_{3,3}$
 <ITERATION>
   case $( \vec{x} \| \vec{Y} )_{n,k}$ of								% $\vec{x}, \vec{Y}$ not conclusive
-	   $\vec{Y}=\varepsilon$ And $x_{n-1} \sqsubseteq p$     :                    %(Unfold)
+	   $\vec{Y}=\varepsilon$ And $x_{n-1} \le p$     :                    %(Unfold)
 			$( \vec{x} \| \vec{Y} )_{n,k}$ := $( \vec{x}, \top \| \varepsilon )_{n+1,n+1}$
-	   $\vec{Y}=\varepsilon$ And $x_{n-1} \not \sqsubseteq p$    :                     %(Candidate)
+	   $\vec{Y}=\varepsilon$ And $x_{n-1} \not \le p$    :                     %(Candidate)
 			choose $Z\in L^{\downarrow}$ st  $x_{n-1} \not \in Z$ And  $p \in Z$;
 			$( \vec{x} \| \vec{Y} )_{n,k}$ := $( \vec{x} \| Z )_{n,n-1}$
 	   $\vec{Y} \neq \varepsilon$ And $b(x_{k-1}) \not \in Y_k$ :                        %(Decide)
 			choose $Z\in L^{\downarrow}$ st $x_{k-1} \not \in Z$ And $b^{\downarrow}_r(Y_k) \subseteq Z$;
 			$(\vec{x} \| \vec{Y} )_{n,k}$ := $(\vec{x} \| Z , \vec{Y} )_{n,k-1}$
 	   $\vec{Y} \neq \varepsilon$ And $b(x_{k-1}) \in Y_k$ :                        %(Conflict)
-			choose $z \in L$ st $z \in Y_k$ And $b(x_{k-1} \sqcap z) \sqsubseteq z$;
-			$(\vec{x} \| \vec{Y} )_{n,k}$ := $(\vec{x} \sqcap_k z \| \mathsf{tail}(\vec{Y}) )_{n,k+1}$
+			choose $z \in L$ st $z \in Y_k$ And $b(x_{k-1} \land z) \le z$;
+			$(\vec{x} \| \vec{Y} )_{n,k}$ := $(\vec{x} \land_k z \| \mathsf{tail}(\vec{Y}) )_{n,k+1}$
   endcase
 <TERMINATION>
-	if $\exists j\in [0,n-2]\,.\, x_{j+1} \sqsubseteq x_j$ then return true		% $\vec{x}$ conclusive
+	if $\exists j\in [0,n-2]\,.\, x_{j+1} \le x_j$ then return true		% $\vec{x}$ conclusive
 	if $Y_1=\emptyset$ then return false							% $\vec{Y}$ conclusive
 \end{codeNT}
 		}
 	\end{center}
-	\caption{The algorithm {\ADPDR} for checking $\lfp(b) \sqsubseteq p$: the elements of negative sequence are in $L^\downarrow$, while those of the positive chain are in $L$, with the only exception of $x_0$ which is constantly the bottom lower set $\emptyset$. For $x_0$, we fix $b(x_0) = \bot$.}
+	\caption{The algorithm {\ADPDR} for checking $\lfp(b) \le p$: the elements of negative sequence are in $L^\downarrow$, while those of the positive chain are in $L$, with the only exception of $x_0$ which is constantly the bottom lower set $\emptyset$. For $x_0$, we fix $b(x_0) = \bot$.}
 	\label{fig:pdr:adpdr}
 \end{figure}
 
-\subsection{{\ADPDR}: Positive Chain in $L$, Negative Sequence in \texorpdfstring{$L^\downarrow$}{L↓}}\label{sec:pdr:ADPDR}
-While {\APDR} on $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ might be computationally expensive, it is the first step toward the definition of an efficient algorithm that exploits a convenient form of the positive chain.
+While {\APDR} on $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ might be computationally expensive, it is the first step toward an efficient algorithm that exploits a convenient form of the positive chain.
 
-A lower set $X\in L^{\downarrow}$ is said to be a \emph{principal} if $X=x^\downarrow$ for some $x\in L$. Observe that the top of the lattice $(L^\downarrow, \subseteq)$ is a principal, namely $\top^\downarrow$, and that the meet (intersection) of two principals $x^\downarrow$ and $y^\downarrow$ is the principal $(x\sqcap y)^\downarrow$.
+A lower set $X\in L^{\downarrow}$ is said to be a \emph{principal} if $X=x^\downarrow$ for some $x\in L$. Observe that the top of the lattice $(L^\downarrow, \subseteq)$ is a principal, namely $\top^\downarrow$, and that the meet (intersection) of two principals $x^\downarrow$ and $y^\downarrow$ is the principal $(x\land y)^\downarrow$.
 
 Suppose that, in (Conflict), {\APDR}$(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ always chooses principals rather than arbitrary lower sets. This suffices to guarantee that all the elements of $\vec{x}$ are principals (with the only exception of $x_0$ which is constantly the bottom element of $L^\downarrow$ that, note, is $\emptyset$ and not $\bot^\downarrow$). In fact, the elements of $\vec{x}$ are all obtained by (Unfold), that adds the principal $\top^\downarrow$, and by (Conflict), that  takes their meets with the chosen principal.
 
 Since principals are in bijective correspondence with the elements of $L$, by imposing to {\APDR}$(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ to choose  a principal in (Conflict), we obtain an algorithm, named {\ADPDR}, where the elements of the positive chain are drawn from $L$, while the negative sequence is taken in $L^{\downarrow}$. The algorithm is reported in Figure~\ref{fig:pdr:adpdr} where we use the notation $( \vec{x} \| \vec{Y} )_{n,k}$ to emphasize that the elements of the negative sequence are lower sets of elements in $L$.
 
-All definitions and results illustrated in Sections~\ref{sec:pdr:APDR} and \ref{sec:pdr:properties} for {\APDR}  are inherited\footnote{Up to a suitable renaming: the domain is $(L^\downarrow, \subseteq)$ instead of $(L,\sqsubseteq)$, the parameters are $\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow}$ instead of $i, f, g, p$ and the negative sequence is $\vec{Y}$ instead of $\vec{y}$.} by {\ADPDR}, with the only exception of Proposition~\ref{prop:pdr:CanonicalChoice}.3. The latter does not hold, as it prescribes a choice for (Conflict) that may not be a principal. In contrast, the choice in Proposition~\ref{prop:pdr:CanonicalChoice}.4 is, thanks to \eqref{eq:pdr:EMlaw}, a principal. This means in particular that the simple initial heuristic is always applicable.
+All definitions and results illustrated in Sections~\ref{sec:pdr:APDR} and \ref{sec:pdr:properties} for {\APDR}  are inherited by {\ADPDR}, with the only exception of Proposition~\ref{prop:pdr:CanonicalChoice}.3. This does not hold because it prescribes a choice for (Conflict) that may not be a principal. In contrast, the choice in Proposition~\ref{prop:pdr:CanonicalChoice}.4 is, thanks to \eqref{eq:pdr:EMlaw}, a principal. This means in particular that the simple initial heuristic is always applicable.
 
 \begin{theorem}\label{th:pdr:ADPDR}
 	All results in Section~\ref{sec:pdr:properties}, but Proposition~\ref{prop:pdr:CanonicalChoice}.3, hold for \emph{\ADPDR}.
 \end{theorem}
-The proof, in Appendix~\ref{ch:app:pdr}, relies on some transformations of programs from {\APDR}$(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$  to {\ADPDR} $(b,p)$.
+%The proof relies on some transformations of programs from {\APDR}$(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$  to {\ADPDR} $(b,p)$.
 
 \subsection{{\ADPDR} simulates LT-PDR}\label{sec:pdr:LTPDRvsADPDR}
 The closest approach to {\APDR} and {\ADPDR} is the lattice-theoretic extension of the original PDR, called LT-PDR~\cite{KUKSH22}. While these algorithms exploit essentially the same positive chain to find an invariant, the main difference lies in the sequence used to witness the existence of some counterexamples.
@@ -642,11 +641,11 @@ The closest approach to {\APDR} and {\ADPDR} is the lattice-theoretic extension 
 	A sequence $\vec{c}= c_k,\dots, c_{n-1}$ of elements of $L$ is a \emph{Kleene sequence} if the conditions \emph{(C1)} and \emph{(C2)} below hold.
 	It is \emph{conclusive} if also condition \emph{(C0)} holds.
 	\[
-	\emph{(C0) } c_1 \sqsubseteq b(\bot),
+	\emph{(C0) } c_1 \le b(\bot),
 	\qquad
-	\emph{(C1) } c_{n-1} \not \sqsubseteq p,
+	\emph{(C1) } c_{n-1} \not \le p,
 	\qquad
-	\emph{(C2) } \forall j\in[k,n-2].~c_{j+1} \sqsubseteq b(c_j)\text{.}
+	\emph{(C2) } \forall j\in[k,n-2].~c_{j+1} \le b(c_j)\text{.}
 	\]
 \end{definition}
 
@@ -654,10 +653,10 @@ LT-PDR tries to construct an under-approximation $c_{n-1}$ of $b^{n-2}(\bot)$ th
 
 	{\APDR} crucially differs from LT-PDR in the search for counterexamples: LT-PDR under-approximates the final chain while {\APDR} over\hyp{}approximates it. However, we can draw a formal correspondence between {\ADPDR} and LT-PDR by showing that {\ADPDR} simulates LT-PDR, but cannot be simulated by LT-PDR.
 In fact, {\ADPDR} exploits the existence of the adjoint to start from an over\hyp{}approximation $Y_{n-1}$ of $p^\downarrow$ and computes backward an over-approximation of the set of safe states.
-Thus, the key difference comes from the strategy to look for a counterexample: to prove $\lfp(b) \not \sqsubseteq p$, {\ADPDR} tries to find $Y_{n-1}$ satisfying $p \in Y_{n-1}$ and $\lfp(b) \not \in Y_{n-1}$ while LT-PDR tries to find $c_{n-1}$ s.t. $c_{n-1} \not \sqsubseteq p$ and $c_{n-1} \sqsubseteq \lfp(b)$.
+Thus, the key difference comes from the strategy to look for a counterexample: to prove $\lfp(b) \not \le p$, {\ADPDR} tries to find $Y_{n-1}$ satisfying $p \in Y_{n-1}$ and $\lfp(b) \not \in Y_{n-1}$ while LT-PDR tries to find $c_{n-1}$ s.t. $c_{n-1} \not \le p$ and $c_{n-1} \le \lfp(b)$.
 
-Theorem~\ref{th:pdr:LT-PDR-instance-ADPDR} below states that any execution of LT-PDR can be mimicked by {\ADPDR}. The proof exploits a map from LT-PDR's Kleene sequences $\vec{c}$ to {\ADPDR}'s negative sequences $\negation{\vec{c}}$ of a particular form.
-Let $(L^{\uparrow}, \supseteq)$  be the complete lattice of upper sets, namely subsets $X \subseteq L$ such that $X=X^\uparrow \eqdef \{x'\in L \mid \exists x\in X \,. \, x\sqsubseteq x'\}$.
+Theorem~\ref{th:pdr:LT-PDR-instance-ADPDR} below states that {\ADPDR} can mimic any execution of LT-PDR. The proof exploits a map from LT-PDR's Kleene sequences $\vec{c}$ to {\ADPDR}'s negative sequences $\negation{\vec{c}}$ of a particular form.
+Let $(L^{\uparrow}, \supseteq)$  be the complete lattice of upper sets, namely subsets $X \subseteq L$ such that $X=X^\uparrow \eqdef \{x'\in L \mid \exists x\in X \,. \, x\le x'\}$.
 There is an isomorphism $\neg \colon {(L^\uparrow, \supseteq)} \stackrel{\cong}{\longleftrightarrow} (L^\downarrow, \subseteq)$ mapping each $X\subseteq S$ into its complement.
 For a Kleene sequence $\vec{c} = c_k,\dots, c_{n-1}$ of LT-PDR, the sequence $\negation{\vec{c}} \eqdef \lnot (\{ c_k \}^{\uparrow}), \dots, \lnot (\{ c_{n-1} \}^{\uparrow})$ is a negative sequence, in the sense of Definition~\ref{def:pdr:neg_seq}, for {\ADPDR}.
 
@@ -665,17 +664,17 @@ For a Kleene sequence $\vec{c} = c_k,\dots, c_{n-1}$ of LT-PDR, the sequence $\n
 	Let $\vec{c}$ be a Kleene sequence. Then $\negation{\vec{c}}$ is a negative sequence for {\ADPDR}.
 \end{prop}
 \begin{proof}
-	First, we show that $p \in \negation{\vec{c}}_{n-1}$. Since $c_{n-1}\not \sqsubseteq p$, by (C1), then $p \not\in \{c_{n-1}\}^\uparrow$. Thus $p \in \neg ( \{c_{n-1}\}^\uparrow)$, that is $p \in \negation{\vec{c}}_{n-1}$.
+	First, we show that $p \in \negation{\vec{c}}_{n-1}$. Since $c_{n-1}\not \le p$, by (C1), then $p \not\in \{c_{n-1}\}^\uparrow$. Thus $p \in \neg ( \{c_{n-1}\}^\uparrow)$, that is $p \in \negation{\vec{c}}_{n-1}$.
 
 	Then, we show that $b_r^\downarrow(\negation{\vec{c}}_{j+1}) \subseteq \negation{\vec{c}}_j$.
 	\begin{align*}
-		b_r^\downarrow(\negation{\vec{c}}_{j+1}) & = b_r^\downarrow(\neg(\{c_{j+1}\}^\uparrow))        & [\text{def.}]       \\
-		                                         & = \{x \mid b(x) \notin (\{c_{j+1}\}^\uparrow \}     & [\text{def.}]       \\
-		                                         & =  \{x \mid c_{j+1} \not \sqsubseteq b(x) \}        & [\text{def.}]       \\
-		                                         & \subseteq  \{x \mid b(c_j) \not \sqsubseteq b(x) \} & [\text{(C2)}]       \\
-		                                         & \subseteq  \{x \mid c_j \not \sqsubseteq x \}       & [\text{mon. of } b] \\
-		                                         & =  \neg(\{c_j\}^\uparrow)                           & [\text{def.}]       \\
-		                                         & =  \negation{\vec{c}}_j                             & [\text{def.}]
+		b_r^\downarrow(\negation{\vec{c}}_{j+1}) & = b_r^\downarrow(\neg(\{c_{j+1}\}^\uparrow))    & [\text{def.}]       \\
+		                                         & = \{x \mid b(x) \notin (\{c_{j+1}\}^\uparrow \} & [\text{def.}]       \\
+		                                         & =  \{x \mid c_{j+1} \not \le b(x) \}            & [\text{def.}]       \\
+		                                         & \subseteq  \{x \mid b(c_j) \not \le b(x) \}     & [\text{(C2)}]       \\
+		                                         & \subseteq  \{x \mid c_j \not \le x \}           & [\text{mon. of } b] \\
+		                                         & =  \neg(\{c_j\}^\uparrow)                       & [\text{def.}]       \\
+		                                         & =  \negation{\vec{c}}_j                         & [\text{def.}]
 	\end{align*}
 \end{proof}
 
@@ -705,16 +704,579 @@ Note that, if the negative sequence of {\ADPDR} makes \eqref{eq:pdr:negativefina
 \end{prop}
 \begin{proof}
 	Since $\vec{c} = c_0, \dots, c_{n-1}$ is a Kleene sequence, $\negation{\vec{c}} = \lnot (\{ c_k \}^{\uparrow}), \dots, \lnot (\{ c_{n-1} \}^{\uparrow})$ is, by Proposition~\ref{prop:pdr:negLTPDR}, a negative sequence.
-	By~\eqref{eq:pdr:negativefinal}, for all $j \in [k, n - 1]$ we have $(b_r^\downarrow)^{n-1-j}(p^\downarrow) \subseteq  \neg(\{c_j\}^\uparrow)$. Therefore, $\neg (b_r^\downarrow)^{n-1-j}(p^\downarrow) \supseteq \{c_j\}^\uparrow$ and thus $c_j \in \neg (b_r^\downarrow)^{n-1-j}(p^\downarrow) = \neg (Y_j)$.
+	By~\eqref{eq:pdr:negativefinal}, for all $j \in [k, n - 1]$ we have $(b_r^\downarrow)^{n-1-j}(p^\downarrow) \subseteq  \neg(\{c_j\}^\uparrow)$. Therefore, $\neg (b_r^\downarrow)^{n-1-j}(p^\downarrow) \supseteq \{c_j\}^\uparrow$, so $c_j \in \neg (b_r^\downarrow)^{n-1-j}(p^\downarrow) = \neg (Y_j)$.
 \end{proof}
 
 While the previous result suggests that simple heuristics are always the best in theory, as they can carry all counterexamples, this is  often not the case in practice, since they might be computationally hard and outperformed by  some smart over-approximations. An example is given by \eqref{eq:pdr:secondterminatingheuristics} in the next section.
 
-\section{Instantiating {\ADPDR} for MDPs}
-\fromhere
+\section{Instantiating {\ADPDR} for MDPs}\label{sec:pdr:MDP}
+In this section we illustrate how to use {\ADPDR} to address the max reachability problem \cite{BK08} for Markov Decision Processes.
+
+\subsection{The max reachability problem}
+A \emph{Markov Decision Process} (MDP) is a tuple  $(A, S, s_\iota, \delta)$ where $A$ is a set of labels, $S$ is a set of states, $s_\iota \in S$ is an initial state, and $\delta \colon S\times A  \to \mathcal{D}S + 1$ is a transition function.
+Here $\mathcal{D}S$ is the set of probability distributions over $S$, namely functions $d\colon S\to [0, 1]$ such that $\sum_{s\in S} d(s)=1$, and $\mathcal{D}S + 1$ is the disjoint union of $\mathcal{D}S$ and $1=\{*\}$. The transition function $\delta$ assigns to every label $a\in A$ and to every state $s\in S$ either a distribution of states or $* \in 1$. We assume that both $S$ and $A$ are finite sets and that the set $\mathit{Act}(s) \eqdef \{ a\in A \mid \delta(s,a)\neq *\}$ of actions enabled at $s$ is non-empty for all states.
+
+An MDP $(A, S, s_\iota, \delta)$ mixes nondeterministic and probabilistic computations. The notion of a \emph{scheduler}, also known as \emph{adversary}, \emph{policy} or \emph{strategy}, is used to resolve nondeterministic choices.
+Below, we write $S^+$ for the set of non-empty sequence over $S$, intuitively representing runs of the MDP.
+A scheduler is a function $\alpha \colon S^+ \to A$ such that $\alpha(s_0 s_1\dots s_n)\in \mathit{Act}(s_n)$: given the states visited so far, the scheduler decides which action to trigger among the enabled ones so that the MDP behaves as a Markov chain. A scheduler $\alpha$ is called \emph{memoryless} if it always selects the same action in a given state, namely, if $\alpha(s_0 s_1\dots s_n)=\alpha(s_n)$ for any sequence $s_0 s_1\dots s_n\in S^+$. Memoryless schedulers can thus be represented just as functions $\alpha \colon S \to A$ such that $\alpha(s)\in \mathit{Act}(s)$ for any $s\in S$.
+
+Given an MDP, the \emph{max reachability problem} requires to check whether the probability of reaching some bad states $\beta \subseteq S$ is less than or equal to a given threshold $\lambda \in [0, 1]$ for all possible schedulers.
+Thus, to solve this problem, one should compute the supremum over infinitely many schedulers. Notably, it is known that there always exists one memoryless scheduler that maximizes the probabilities to reach $\beta$  (see e.g. \cite{BK08}). As the memoryless schedulers are finitely many (although their number can grow exponentially), the supremum can thus be replaced by a maximum.
+
+\subsection{Applying {\ADPDR} to the max reachability problem}
+The max-reachability problem, namely checking for a MDP $(A, S, s_\iota, \delta)$ whether the probability of reaching some bad states $\beta\subseteq P$ is less than a threshold $\lambda \in [0, 1]$, enjoys a convenient lattice-theoretical formulation~\cite{BK08}.
+
+Consider the lattice $([0, 1]^S,\leq)$ of all functions $d\colon S\to [0,1]$, often called frames or fuzzy predicates, ordered pointwise. The max reachability problem is equivalent to check that $\mu b \leq p$ for $p\in[0,1]^S$ and $b \colon [0, 1]^S \to [0, 1]^S$, defined for all $d\in [0, 1]^S $ and $s\in S$, as
+\begin{displaymath}
+	p(s) \eqdef \begin{cases}
+		\lambda & \text{ if } s=s_\iota,       \\
+		1       & \text{ if }  s \neq s_\iota,
+	\end{cases}
+	\qquad
+	b(d)(s) \eqdef \begin{cases}
+		1                                                                                      & \text{ if } s \in \beta,     \\
+		\displaystyle \max_{a \in \mathit{Act}(s)} \sum_{s'\in S} d(s') \cdot \delta(s, a)(s') & \text{ if } s \notin \beta .
+	\end{cases}
+\end{displaymath}
+
+Since $b$ is not of the form $f\lor i$ for a left adjoint $f$ (see e.g.~\cite{KUKSH22}), we can't use {\APDR}, but we can use {\ADPDR}.
+Beyond the simple initial heuristic, which is always applicable and enjoys negative termination, we illustrate now two additional heuristics that are experimentally tested in Section~\ref{sec:pdr:experiments}.
+
+The two novel heuristics make the same choices in (Candidate) and (Decide). They exploit memoryless schedulers $\alpha \colon S \to A$, and the function $b_{\alpha} \colon [0, 1]^S \to [0, 1]^S$ defined for all $d\in [0, 1]^S $ and $s\in S$ as follows:
+\begin{equation}\label{def:pdr:balpha}
+	b_{\alpha}(d)(s) \eqdef \begin{cases}
+		1                                                   & \text{ if } s \in \beta, \\
+		\sum_{s'\in S} d(s') \cdot \delta(s, \alpha(s))(s') & \text{ otherwise}.
+	\end{cases}
+\end{equation}
+Since for all $D\in ([0,1]^S)^\downarrow$, $b^\downarrow_r (D) = \{d \mid b(d) \in D\} = \bigcap_{\alpha}\{d \mid b_{\alpha} (d)\in D\}$ and since {\ADPDR} executes (Decide) only when $b(x_{k-1}) \notin Y_k$, there should exist some $\alpha$ such that $b_{\alpha} (x_{k-1})\notin Y_k$. One can thus fix
+\begin{equation}\label{eq:pdr:secondterminatingheuristics}
+	( \vec{x} \| \vec{Y} )_{n,k} \mapsto
+	\begin{cases*}
+		p^\downarrow                     & if $( \vec{x} \| \vec{Y} )_{n,k} \tr{\mathit{Ca}}$ \\
+		\{d \mid b_{\alpha}(d) \in Y_k\} & if $( \vec{x} \| \vec{Y} )_{n,k} \tr{D}$
+	\end{cases*}
+\end{equation}
+Intuitively, such choices are smart refinements of those in \eqref{eq:pdr:simple}: for (Candidate) they are exactly the same; for (Decide) rather than taking $b^\downarrow_r (Y_k)$, we consider a larger lower-set determined by the labels chosen by $\alpha$. This allows to represent each $Y_j$ as a set of $d\in [0, 1]^S $ satisfying a \emph{single} linear inequality, while using $b^\downarrow_r (Y_k)$ would yield a systems of possibly exponentially many inequalities (see Example~\ref{ex:pdr:shortheuristicforDecide} below). Moreover, from Theorem~\ref{th:pdr:negativetermination}, it follows that such choices ensures negative termination.
+
+\begin{corollary}\label{cor:pdr:ADPDRtermination}
+	Let $h$ be a legit heuristic defined for (Candidate) and (Decide) as in \eqref{eq:pdr:secondterminatingheuristics}.
+	If $\mu b \not \leq p$, then \emph{\ADPDR}$_h$ terminates.
+\end{corollary}
+
+\begin{example}\label{ex:pdr:shortheuristicforDecide}
+	Consider the maximum reachability problem with threshold $\lambda = \frac{1}{4}$ and $\beta= \{s_3\}$ for the following MDP on alphabet $A=\{a,b\}$ and $s_\iota=s_0$.
+	\begin{displaymath}
+		\xymatrix@C=30pt{
+		s_2\ar@/^1ex/[r]^{b,1} & s_0 \ar@(dr,dl)|{b,\frac{1}{3}} \ar@/^1ex/[l]^{a,\frac{1}{2}\; b,\frac{2}{3}} \ar@/_1ex/[r]_{a,\frac{1}{2}} &s_1 \ar@/_1ex/[l]_{a,\frac{1}{2}} \ar[r]^{a,\frac{1}{2}} &s_3 \ar@(rd, ru)_{a, 1}},
+	\end{displaymath}
+	Hereafter we write $d\in [0,1]^S$ as column vectors with four entries $v_0\dots v_3$
+	and we will use $\cdot$ for the usual matrix multiplication.
+	With this notation, the lower set $p^\downarrow \in ([0,1]^S)^\downarrow$ and $b\colon [0,1]^S \to [0,1]^S$ can be written as
+	\[
+	p^\downarrow = \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {{ \!\begin{bmatrix} 1 & 0 & 0 &0 \end{bmatrix}\!}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {{ \!\begin{bmatrix} \frac{1}{4}  \end{bmatrix}\!} } \} \quad \text{ and } \quad b (\, \cvec{v_0}{v_1}{v_2}{v_3} \,) =\cvec{\max(\frac{v_1+v_2}{2}, \frac{v_0+2v_2}{3})}{\frac{v_0+v_3}{2}}{v_0}{1}
+	\textrm{.}
+	\]
+
+	Amongst the several memoryless schedulers, only two are relevant for us:
+	\begin{align}
+		\zeta \eqdef & ( s_0 \mapsto a ,\; s_1 \mapsto a ,\; s_2 \mapsto b ,\; s_3 \mapsto a )
+		\text{  and }                                                                                \\
+		\xi \eqdef   & (s_0 \mapsto b ,\; s_1 \mapsto a ,\; s_2 \mapsto b ,\; s_3 \mapsto a)\text{.}
+	\end{align}
+
+	By using the definition of $b_\alpha \colon [0,1]^S \to [0,1]^S$ in \eqref{def:pdr:balpha}, we have that
+	\[
+	b_\zeta (\, \cvec{v_0}{v_1}{v_2}{v_3} \,) =\cvec{\frac{v_1+v_2}{2}}{\frac{v_0+v_3}{2}}{v_0}{1}  \qquad \text{ and } \qquad b_\xi (\, \cvec{v_0}{v_1}{v_2}{v_3} \,) =\cvec{ \frac{v_0+2v_2}{3}}{\frac{v_0+v_3}{2}}{v_0}{1}\textrm{.}
+	\]
+
+	It is immediate to see that the problem has negative answer, since using $\zeta$ in $4$ steps or less, $s_0$ can reach $s_3$ already with probability $\frac{1}{4}+\frac{1}{8}$.
+
+	\begin{figure}[t]
+		\[
+		\begin{array}{rc|c|c}
+			\mathcal{F}^0 & \eqdef & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 1 & 0 & 0 &0 \end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{1}{4}  \end{bmatrix}\!$} } \}                                                                          & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 1 & 0 & 0 &0 \end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{1}{4}  \end{bmatrix}\!$} } \,\}                                                                         \\
+			\mathcal{F}^1 & \eqdef & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 0 & 1 & 1 &0 \\ 1&0 &2 &0 \end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{1}{2} \\ \frac{3}{4} \end{bmatrix}\!$} } \}                                               & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 0 & \frac{1}{2} & \frac{1}{2} &0 \end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{1}{4}  \end{bmatrix}\!$} } \,\}                                                     \\
+			\mathcal{F}^2 & \eqdef & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 3 & 0 & 0 & 1 \\ 2&1 &1 &0 \\ 4&0&2&0\end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix}1 \\ \frac{3}{2} \\ \frac{9}{4}  \end{bmatrix}\!$} } \}                               & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{3}{4} & 0 & 0 & \frac{1}{4} \end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{1}{4}  \end{bmatrix}\!$} } \,\}                                                    \\
+			\mathcal{F}^3 & \eqdef & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 0 & \frac{3}{2} & \frac{3}{2} & 0 \\ 1&0 &2 &0 \\ \frac{3}{2}&1&1&\frac{1}{2} \\ \frac{13}{6} & 0 & \frac{4}{3} & \frac{1}{2}
+                \\ 2&2&2&0 \\ \frac{10}{3}&0&\frac{8}{3}&0\end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix}0 \\ 0 \\ \frac{3}{2} \\ \frac{3}{2} \\\frac{9}{4} \\ \frac{9}{4}  \end{bmatrix}\!$} } \}                                                                     & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 0 & \frac{3}{8} & \frac{3}{8} & 0 \end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} 0  \end{bmatrix}\!$} } \,\} \\
+			\mathcal{F}^4 & \eqdef & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid  {\scalebox{\vecscale}{$ \!\begin{bmatrix} 1 & 0 & 0 & 0 \\ 0&1 &0 &0 \\ 0&0&1&0\\ 0&0&0&1\end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix}0 \\ 0 \\ 0\\0  \end{bmatrix}\!$} }    \}  = \{ \, \cvec{0}{0}{0}{0} \, \} & \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{9}{16} & 0 & 0 & \frac{3}{16} \end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} 0  \end{bmatrix}\!$} } \,\}                                                            \\
+			\mathcal{F}^5 & \eqdef & \emptyset                                                                                                                                                                                                                                                                                                & \emptyset
+		\end{array}
+		\]
+		\caption{The elements of the negative sequences computed by {\ADPDR} for the MDP in Example~\ref{ex:pdr:shortheuristicforDecide}. In the central column, these elements are computed by means of the simple initial heuristics, that is $\mathcal{F}^i=(b_r^\downarrow)^i(p^\downarrow)$. In the rightmost column, these elements are computed using the heuristic in \eqref{eq:pdr:secondterminatingheuristics}. In particular $\mathcal{F}^i = \{d\mid b_\zeta(d) \in \mathcal{F}^{i-1} \}$ for $i\leq 3$, while for $i\geq 4$ these are computed as $\mathcal{F}^i = \{d\mid b_\xi(d) \in \mathcal{F}^{i-1} \}$.}
+		\label{fig:pdr:exDecideheuristics}
+	\end{figure}
+
+	To illustrate the advantages of \eqref{eq:pdr:secondterminatingheuristics}, we run {\ADPDR} with the simple initial heuristic and with the heuristic that only differs for the choice in (Decide), taken as in \eqref{eq:pdr:secondterminatingheuristics}. For both heuristics, the first iterations are the same: several repetitions of (Candidate), (Conflict) and (Unfold) exploiting elements of the positive chain that form the initial chain (except for the last element $x_{n-1}$).
+		{\footnotesize
+			\begin{align*}
+				(\emptyset\cvec{0}{0}{0}{0}\cvec{1}{1}{1}{1} \| \varepsilon)_{3,3}
+				\tr{\mathit{Ca}} %
+				\tr{\mathit{Co}} (\emptyset\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \| \varepsilon)_{3,3}
+				\tr{U}\tr{\mathit{Ca}} %
+				\tr{\mathit{Co}} %
+				\tr{U}\tr{\mathit{Ca}} %
+				\tr{\mathit{Co}} %
+				\tr{U}\tr{\mathit{Ca}}  %
+				\tr{\mathit{Co}} %
+				\tr{U}\tr{\mathit{Ca}}  (\emptyset\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{1}{2}}{0}{1}\cvec{\frac{1}{4}}{\frac{1}{2}}{0}{1} \cvec{\frac{1}{4}}{\frac{5}{8}}{\frac{1}{4}}{1} \cvec{1}{1}{1}{1} \|  p^\downarrow )_{7,6} \textrm{.}
+			\end{align*}
+		}
+
+	In the latter state the algorithm has to perform (Decide), since $b(x_5) \notin p^\downarrow$.
+	Now the choice of $z$ in (Decide) is different for the two heuristics: the former uses $b_r^\downarrow(p^\downarrow) = \{d \mid b(d) \in p^\downarrow \}$, the latter uses $\{d \mid b_\zeta(d) \in p^\downarrow \}$. Despite the different choices, both the heuristics proceed with $6$ steps of (Decide):
+	{\footnotesize
+	\begin{align*}
+		(\emptyset\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{1}{2}}{0}{1}\cvec{\frac{1}{4}}{\frac{1}{2}}{0}{1} \cvec{\frac{1}{4}}{\frac{5}{8}}{\frac{1}{4}}{1} \cvec{1}{1}{1}{1} \|  \mathcal{F}^0 )_{7,6} \tr{D}
+		\tr{D} %
+		\tr{D} %
+		\tr{D} %
+		\tr{D} (\emptyset\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{1}{2}}{0}{1}\cvec{\frac{1}{4}}{\frac{1}{2}}{0}{1} \cvec{\frac{1}{4}}{\frac{5}{8}}{\frac{1}{4}}{1} \cvec{1}{1}{1}{1} \|  \mathcal{F}^5,\mathcal{F}^4, \mathcal{F}^3,\mathcal{F}^2,\mathcal{F}^1, \mathcal{F}^0 )_{7,1}
+	\end{align*}
+	}
+
+	The element of the negative sequence $\mathcal{F}^i$ are illustrated in Figure~\ref{fig:pdr:exDecideheuristics} for both the heuristics. In both cases, $\mathcal{F}^5=\emptyset$ and thus {\ADPDR} returns false.
+
+	To appreciate the advantages provided by \eqref{eq:pdr:secondterminatingheuristics}, it is  enough to compare the two columns for the $\mathcal{F}^i$ in Figure~\ref{fig:pdr:exDecideheuristics}:  in the central column, the number of inequalities defining $\mathcal{F}^i$ grows significantly, while in the rightmost column is always $1$.
+\end{example}
+
+The fact that using \eqref{eq:pdr:secondterminatingheuristics} ensures that $Y_k$ is generated by a single linear inequality is quite convenient. Indeed, in this case
+\[
+Y_k=\{d\in [0,1]^S \mid \sum_{s\in S}(r_s \cdot d(s)) \leq r \}
+\]
+for suitable non-negative real numbers $r$ and $r_s$ for all $s\in S$.
+The convex set $Y_k$ is generated by finitely many $d\in [0,1]^S$ enjoying a useful property: $d(s)$ is different from $0$ and $1$ only for at most one $s\in S$. The set of its generators, denoted by $\mathcal{G}_k$, can thus be easily computed. We exploit this property to resolve the choice for (Conflict). We consider  its subset $\mathcal{Z}_k \eqdef \{d \in \mathcal{G}_k \mid b(x_{k-1}) \leq d\}$ and define $z_{B}, z_{01}\in[0,1]^S$ for all $s\in S$ as
+\begin{equation}\label{eq:pdr:heuristicsZConflict}
+	\hspace{-10pt}z_{B}(s) \!\eqdef\!
+	\begin{cases*}
+		(\bigwedge \mathcal{Z}_k)(s) & if $r_s \neq 0$, $\mathcal{Z}_k\neq\emptyset$ \\
+		b(x_{k-1})(s)                & otherwise
+	\end{cases*}
+	\hspace{-4pt}z_{01}(s) \!\eqdef\!
+	\begin{cases*}
+		\lceil z_{B}(s)\rceil & if $r_s = 0, \mathcal{Z}_k\neq\emptyset$ \\
+		z_{B}(s)              & otherwise
+	\end{cases*}
+\end{equation}
+where, for $u\in[0,1]$, $\lceil u \rceil$ denotes $0$ if $u=0$ and $1$ otherwise. We call \verb|hCoB|  and \verb|hCo01| the heuristics defined as in \eqref{eq:pdr:secondterminatingheuristics} for (Candidate) and (Decide) and as $z_{B}$, respectively $z_{01}$, for (Conflict). The heuristics \verb|hCo01| can be seen as a Boolean modification of \verb|hCoB|, rounding up positive values to $1$ to accelerate convergence.
+
+\begin{prop}\label{prop:pdr:genlegit}
+	The heuristics \verb|hCoB|  and \verb|hCo01| are legit.
+\end{prop}
+
+By Corollary~\ref{cor:pdr:ADPDRtermination}, {\ADPDR} terminates for negative answers with both \verb|hCoB| and \verb|hCo01|. We conclude this section with a last example.
+\begin{example}\label{ex:pdr:MDPpositive}
+	Consider the following MDP with alphabet $A=\{a,b\}$ and $s_\iota=s_0$
+	\begin{displaymath}
+		\xymatrix{  s_2 \ar@(ld,lu)^{a, 1} & s_0 \ar@(lu,ru)^{a, 1} \ar[l]^{b, \frac{1}{2}} \ar@/_1ex/[r]_{b, \frac{1}{2}} &s_1 \ar@/_1ex/[l]_{a, \frac{1}{3}} \ar[r]^{a, \frac{2}{3}} &s_3 \ar@(rd,ru)_{a, 1}    }
+	\end{displaymath}
+	and the max reachability problem with threshold $\lambda = \frac{2}{5}$ and $\beta=\{s_3\}$.
+	The lower set $p^\downarrow \in ([0,1]^S)^\downarrow$ and $b\colon [0,1]^S \to [0,1]^S$ can be written as
+	\[
+	p^\downarrow = \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 1 & 0 & 0 &0 \end{bmatrix}\!$}} \cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{2}{5}  \end{bmatrix}\!$} } \}
+	\quad \text{ and }  \quad
+	b (\, \cvec{v_0}{v_1}{v_2}{v_3} \,) =\cvec{\max(v_0, \frac{v_1+v_2}{2})}{\frac{v_0+2\cdot v_3}{3}}{v_2}{1}
+	\]
+	Consider also the scheduler $\xi\colon S \to A$ defined as $\xi \eqdef [s_0\mapsto b,s_1\mapsto a,s_2\mapsto a,s_3\mapsto a]$, for which we illustrate
+	\begin{equation}\label{eq:pdr:xi}
+		b_\xi (\, \cvec{v_0}{v_1}{v_2}{v_3} \,) =\cvec{\frac{v_1+v_2}{2}}{\frac{v_0+2\cdot v_3}{3}}{v_2}{1}
+		\quad \text{ and }  \quad
+		\mathcal{F}^1_\xi \eqdef \{ d \mid b_\xi(d ) \in p^\downarrow \} = \{\,\cvec{v_0}{v_1}{v_2}{v_3} \mid {\scalebox{\vecscale}{$ \!\begin{bmatrix} 0 & 1 & 1 &0 \end{bmatrix}\!$}}\cdot \cvec{v_0}{v_1}{v_2}{v_3} \leq {\scalebox{\vecscale}{$ \!\begin{bmatrix} \frac{4}{5}  \end{bmatrix}\!$} } \}
+	\end{equation}
+
+	\begin{figure}[t]
+		{\footnotesize
+			\begin{align*}
+				                       & (\cvec{0}{0}{0}{0}\cvec{1}{1}{1}{1} \| \varepsilon)_{2,2} \tr{\mathit{Ca}} (\cvec{0}{0}{0}{0}\cvec{1}{1}{1}{1} \| p^\downarrow )_{2,1}
+				\tr{\mathit{Co}} (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \| \varepsilon)_{2,2}                                                                                                                                                                         \\
+				\tr{U}\tr{\mathit{Ca}} & (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{1}{1}{1}{1} \| p^\downarrow )_{3,2}
+				\tr{\mathit{Co}} (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \| \varepsilon)_{3,3}                                                                                                                                             \\
+				\tr{U}\tr{\mathit{Ca}} & (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \cvec{1}{1}{1}{1} \| p^\downarrow )_{4,3}
+				\tr{\mathit{Co}} (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \cvec{\frac{1}{3}}{\frac{2}{3}}{0}{1} \| \varepsilon )_{4,4}                                                                                                      \\
+				\tr{U}\tr{\mathit{Ca}} & (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \cvec{\frac{1}{3}}{\frac{2}{3}}{0}{1}\cvec{1}{1}{1}{1} \| p^\downarrow )_{5,4}
+				\tr{\mathit{Co}} (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \cvec{\frac{1}{3}}{\frac{2}{3}}{0}{1}\cvec{\frac{1}{3}}{\frac{7}{9}}{0}{1} \| \varepsilon )_{4,4}                                                                 \\
+				\tr{U}\tr{\mathit{Ca}} & (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \cvec{\frac{1}{3}}{\frac{2}{3}}{0}{1}\cvec{\frac{1}{3}}{\frac{7}{9}}{0}{1}\cvec{1}{1}{1}{1} \| p^\downarrow )_{6,5}
+				\tr{\mathit{Co}} (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \cvec{\frac{1}{3}}{\frac{2}{3}}{0}{1}\cvec{\frac{1}{3}}{\frac{7}{9}}{0}{1}\cvec{\frac{7}{18}}{\frac{7}{9}}{0}{1} \| \varepsilon )_{6,6}                           \\
+				\tr{U}\tr{\mathit{Ca}} & (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \cvec{\frac{1}{3}}{\frac{2}{3}}{0}{1}\cvec{\frac{1}{3}}{\frac{7}{9}}{0}{1}\cvec{\frac{7}{18}}{\frac{7}{9}}{0}{1}\cvec{1}{1}{1}{1} \| p^\downarrow )_{7,6}
+				\tr{\mathit{Co}} (\cvec{0}{0}{0}{0}\cvec{0}{0}{0}{1} \cvec{0}{\frac{2}{3}}{0}{1} \cvec{\frac{1}{3}}{\frac{2}{3}}{0}{1}\cvec{\frac{1}{3}}{\frac{7}{9}}{0}{1}\cvec{\frac{7}{18}}{\frac{7}{9}}{0}{1}\cvec{\frac{7}{18}}{\frac{43}{54}}{0}{1} \| \varepsilon )_{7,7}
+				\cdots
+			\end{align*}
+		}
+		\caption{The non-terminating execution of {\ADPDR} with the simple initial heuristics for the max reachability problem of Example~\ref{ex:pdr:MDPpositive}. The elements of the positive chain, with the exception of the last one $x_{n-1}$ are those of the initial chain.}
+		\label{fig:pdr:exsimpleinitialMDPs}
+	\end{figure}
+
+	\begin{figure}[t]
+		{\footnotesize
+			\begin{align*}
+				                                                                                                                                                                                    & (\emptyset\cvec{0}{0}{0}{0}\cvec{1}{1}{1}{1} \| \varepsilon)_{3,3}
+				\tr{\mathit{Ca}} (\emptyset\cvec{0}{0}{0}{0}\cvec{1}{1}{1}{1} \| p^\downarrow )_{3,2} \tr{\mathit{Co}} (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \| \varepsilon)_{3,3} & b(\cvec{0}{0}{0}{0})=\cvec{0}{0}{0}{1} \quad \mathcal{Z}_2 = \{\cvec{\frac{2}{5}}{0}{0}{1}, \cvec{\frac{2}{5}}{1}{0}{1},\cvec{\frac{2}{5}}{0}{1}{1}, \cvec{\frac{2}{5}}{1}{1}{1} \}                                                                                                                                                                                                                                                                                                                                                \\
+				\tr{U}  \tr{\mathit{Ca}}                                                                                                                                                            & (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{1}{1}{1}{1}\| p^\downarrow)_{4,3} \tr{\mathit{Co}} (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{1}{0}{1} \| \varepsilon)_{4,4}                                                                                                                                     & b(\cvec{\frac{2}{5}}{0}{0}{1})= \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \quad \mathcal{Z}_3 = \{ \cvec{\frac{2}{5}}{1}{0}{1}, \cvec{\frac{2}{5}}{1}{1}{1} \}          \\
+				\tr{U} \tr{\mathit{Ca}}                                                                                                                                                             & (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{1}{0}{1} \cvec{1}{1}{1}{1} \| p^\downarrow)_{5,4}  \tr{D}  (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{1}{0}{1} \cvec{1}{1}{1}{1} \| \mathcal{F}^1_\xi p^\downarrow)_{5,3}                                                                           & b(\cvec{\frac{2}{5}}{1}{0}{1})= \cvec{max(\frac{2}{5},\frac{1}{2})}{\frac{4}{5}}{0}{1} \not \in p^\downarrow                                                        \\
+				\tr{\mathit{Co}}                                                                                                                                                                    & (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \cvec{1}{1}{1}{1} \| p^\downarrow)_{5,4}                                                                                                                                                                                                                        & b(\cvec{\frac{2}{5}}{0}{0}{1})= \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \quad \mathcal{Z}_3 = \{ \cvec{1}{\frac{4}{5}}{0}{1} \}                                       \\
+				\tr{\mathit{Co}}                                                                                                                                                                    & (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \cvec{\frac{2}{5}}{1}{0}{1} \| \varepsilon)_{5,5}                                                                                                                                                                                                               & b(\cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1})= \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \quad \mathcal{Z}_4 =\{ \cvec{\frac{2}{5}}{1}{0}{1}, \cvec{\frac{2}{5}}{1}{1}{1} \} \\
+				\tr{U} \tr{\mathit{Ca}}                                                                                                                                                             & (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \cvec{\frac{2}{5}}{1}{0}{1} \cvec{1}{1}{1}{1} \| p^\downarrow)_{6,5} \tr{D} (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \cvec{\frac{2}{5}}{1}{0}{1} \cvec{1}{1}{1}{1} \| \mathcal{F}^1_\xi p^\downarrow)_{6,4} & b(\cvec{\frac{2}{5}}{1}{0}{1})= \cvec{max(\frac{2}{5},\frac{1}{2})}{\frac{4}{5}}{0}{1} \not \in p^\downarrow                                                        \\
+				\tr{\mathit{Co}}                                                                                                                                                                    & (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \cvec{1}{1}{1}{1} \|  p^\downarrow)_{6,4}                                                                                                                                                                                 & b(\cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1})= \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1}\quad \mathcal{Z}_3 = \{ \cvec{1}{\frac{4}{5}}{0}{1} \}
+			\end{align*}
+		}
+		\caption{On the left, the execution of {\ADPDR}$_{\texttt{hCo01}}$ for the max reachability problem of Example~\ref{ex:pdr:MDPpositive}: in the last state, it returns true since $x_3=x_4$. On the right, the data explaining the choices of (Conflict) and (Decide). Note that, in the two (Decide) steps, the guard $b(x_{k-1}) \notin Y_k$ holds because of the possibility of choosing the label $b$ in state $s_0$. This explain why  $Z$  is taken as $\mathcal{F}^1_\xi(p^{\downarrow})$ for the scheduler $\xi$ defined in~\eqref{eq:pdr:xi}.}
+		\label{fig:pdr:exgen}
+	\end{figure}
+
+	\begin{figure}[t]
+		{\footnotesize
+			\begin{align*}
+				                                                                                                                                                                                    & (\emptyset\cvec{0}{0}{0}{0}\cvec{1}{1}{1}{1} \| \varepsilon)_{3,3}
+				\tr{\mathit{Ca}} (\emptyset\cvec{0}{0}{0}{0}\cvec{1}{1}{1}{1} \| p^\downarrow )_{3,2} \tr{\mathit{Co}} (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \| \varepsilon)_{3,3} & { b(\cvec{0}{0}{0}{0})=\cvec{0}{0}{0}{1} \quad \mathcal{Z}_2 = \{\cvec{\frac{2}{5}}{0}{0}{1}, \cvec{\frac{2}{5}}{1}{0}{1},\cvec{\frac{2}{5}}{0}{1}{1}, \cvec{\frac{2}{5}}{1}{1}{1} \}  }                                                                                                                                                                                                                                                                                           \\
+				\tr{U}  \tr{\mathit{Ca}}                                                                                                                                                            & (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{1}{1}{1}{1}\| p^\downarrow)_{4,3} \tr{\mathit{Co}}  (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \| \varepsilon)_{4,4}                                                                                & {b(\cvec{\frac{2}{5}}{0}{0}{1})= \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \quad \mathcal{Z}_3 = \{ \cvec{\frac{2}{5}}{1}{0}{1}, \cvec{\frac{2}{5}}{1}{1}{1} \} } \\
+				\tr{U} \tr{\mathit{Ca}}                                                                                                                                                             & (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \cvec{1}{1}{1}{1} \| p^\downarrow)_{5,4}  \tr{\mathit{Co}}  (\emptyset\cvec{0}{0}{0}{0}\cvec{\frac{2}{5}}{0}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \| p^\downarrow)_{5,4} & {b(\cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1})= \cvec{\frac{2}{5}}{\frac{4}{5}}{0}{1} \quad \mathcal{Z}_4 = \mathcal{Z}_3 }
+			\end{align*}
+		}
+		\caption{On the left, the execution of {\ADPDR}$_{\texttt{hCoB}}$ for the max reachability problem of Example~\ref{ex:pdr:MDPpositive}: in the last state, it returns true since $x_3=x_4$. On the right, the data explaining the three choices of (Conflict). }\label{fig:pdr:exgen2}
+	\end{figure}
+
+	With the simple initial heuristic, {\ADPDR} does not terminate (Figure~\ref{fig:pdr:exsimpleinitialMDPs}). With the heuristic \verb|hCo01| using scheduler $\xi$, it returns true in 14 steps (Figure~\ref{fig:pdr:exgen}), while with \verb|hCoB| in 8 (Figure~\ref{fig:pdr:exgen2}). The first 4 steps of both \verb|hCoB| and \verb|hCo01| are the same: in the first (Conflict) $z_B = z_{01}$, while in the second $z_{01}(s_1)=1$ and $z_{B}(s_1)=\frac{4}{5}$, leading to the two different executions. Observe that this difference is due to the fact that in $p^\downarrow$, the coefficient corresponding to $s_1$, namely $r_{s_1}$, is $0$ and, since $\mathcal{Z}_3 \neq \emptyset$, then $z_{01}(s_1)= \lceil z_{B}(s_1)\rceil$.
+\end{example}
 
 \section{{\APDRAI}}
+In Section~\ref{sec:pdr:APDR} we have introduced {\APDR} and in Section~\ref{sec:pdr:downset} {\ADPDR}: the latter is inspired by the former but takes the positive chain in some lattice $L$ and the negative sequence in $L^\downarrow$.
+In this section, we introduce {\APDRAI}, a third algorithm that generalises both by allowing to manipulate positive and negative sequences in two different lattices.
+The interest in this generalisation is not just theoretical, but it is also convenient in practice since it allows us in the next section to use an implementation of {\APDRAI} as a common template for both {\APDR} and {\ADPDR}.
 
-\section{Implementation}
+The framework for {\APDRAI} is a diagram
+\begin{equation}
+	\xymatrix{
+	(L, \le_L) \lloop{b} \ar[r]^-{\gamma}
+	&(C, \le_C) \rloop{\overline{b} \dashv \overline{b}_r}
+	}
+	\label{eq:pdr:a-l}
+\end{equation}
+where $(L, \le_L)$ and $(C, \le_C)$ are complete lattices, $b\colon L \to L$ is an $\omega$-continuous function, $\overline{b} \dashv \overline{b}_r\colon C \to C$, and $\gamma: L \to C$ is a function satisfying
+\begin{enumerate}
+	\item \emph{order-embeddingness}: $x \le y$ if and only if $\gamma (x) \le \gamma (y)$ for all $x, y \in L$, and
+	\item \emph{forward completeness}: $\overline{b}\gamma = \gamma b$.
+\end{enumerate}
 
-\section{Conclusions}
+In this setting the problem $\mu b \le p$ in $L$ has an equivalent formulation in  $C$:
+\begin{prop}\label{prop:pdr:alp_gamma}
+	Consider the framework \eqref{eq:pdr:a-l} and let $p \in L$.
+	Then $\lfp(b) \le p$ is equivalent to $\lfp(\overline{b} \lor \gamma \bot) \le \gamma p$.
+\end{prop}
+\begin{proof}
+	\begin{align*}
+		\lfp(b) \le p
+		 & \iff \forall n \in \mathbb{N}.~b^n \bot \le p                                                                              \\
+		 & \iff \forall n \in \mathbb{N}.~\gamma b^n \bot \le \gamma p            & [\text{because $\gamma$ is order-embedding}]      \\
+		 & \iff \forall n \in \mathbb{N}.~\overline{b}^n \gamma \bot \le \gamma p & [\text{by the forward completeness}]              \\
+		 & \iff \lfp(\overline{b} \lor  \gamma \bot) \le \gamma p                 & [\text{since }\overline{b} \dashv \overline{b}_r]
+	\end{align*}
+\end{proof}
+The reader may have recognised some similarities with the proof of Proposition~\ref{prop:pdr:prob_down_up}. Indeed, as we will show in Example~\ref{ex:pdr:cat}, the latter result is an instance of Proposition~\ref{prop:pdr:alp_gamma}.
+
+\begin{example}
+	Consider a Galois insertion with a forward complete abstract interpretation $b\colon L \to L$ to a concrete semantic function $\overline{b}\colon C \to C$. If the function $\overline{b}$ has a right adjoint, then this is an instance of \eqref{eq:pdr:a-l}.
+\end{example}
+
+\begin{example}\label{ex:pdr:cat}
+	It is easy to check that \eqref{eq:pdr:lowersetadjunction} is an instance of \eqref{eq:pdr:a-l}. Hereafter, we illustrate how this can be understood in categorical terms. For a complete lattice $L$ and an $\omega$-continuous function $b\colon L \to L$, we shall see $L$ as a $\mathbf{Bool}$-enriched category where $\mathbf{Bool}$ is the monoidal category with two objects $\bot, \top$, one arrow $\bot \rightarrow \top$ and monoidal product given by $\land$.
+	Then the left Kan extension $\mathrm{Lan}_{y} (y \circ b)$ along the Yoneda embedding $y\colon L \to \mathbf{Bool}^{L^\op}$ is a left adjoint of the induced functor $b^* \eqdef (-) \circ b^\op$.
+	\begin{displaymath}
+		\xymatrix{
+		L \lloop{b} \ar[r]^-{y}
+		&\mathbf{Bool}^{L^\op} \rloop{\mathrm{Lan}_{y} (y \circ b) \dashv b^*}
+		}
+	\end{displaymath}
+	The above diagram is the same as \eqref{eq:pdr:lowersetadjunction} under the isomorphism $\mathbf{Bool}^{L^\op} \cong L^\downarrow$. It is an instance of \eqref{eq:pdr:a-l} because:
+	\begin{enumerate}
+		\item $y$ is order-embedding since $y$ is full and faithful and
+		\item $y$ is forward complete since the unit $b \Rightarrow \mathrm{Lan}_y (y \circ b) \circ y$ is an isomorphism by \cite[Proposition~4.23]{Kelly82} and full and faithfulness of $y$.
+	\end{enumerate}
+\end{example}
+
+The algorithm \APDRAI checking $\mu b \le p$ in $L$ is illustrated in Figure~\ref{fig:pdr:adjai}. It is an adaptation of {\APDR} algorithm checking $\lfp(\overline{b} \lor \gamma \bot) \le \gamma p$ in $C$ (that, by Proposition~\ref{prop:pdr:alp_gamma}, is equivalent to $\lfp(b) \le p$) that takes positive sequences in $L$.
+
+More precisely, \APDRAI manipulates pairs $(\vec{x} \| \vec{y})_{n, k}$ of sequences $\vec{x}$ in $L$ and $\vec{y}$ in $C$ while \APDR manipulates pairs of sequences in $C$. The pairs in {\APDRAI} satisfy invariants \eqref{eq:pdr:x0bot}, \eqref{eq:pdr:invi}, \eqref{eq:pdr:positivechain} and (PN'): $\forall j \in [k, n - 1] \text{, } \gamma x_j \not\le y_j$. Observe that $(\bot,\gamma \vec{x}) \eqdef (\bot,\gamma x_0, \dots , \gamma x_{n-1})$ forms a positive chain (Definition~\ref{def:pdr:posi_seq}) and $\vec{y}$ forms a negative sequence (Definition~\ref{def:pdr:neg_seq}) for $\lfp(\overline{b} \lor \gamma \bot) \le \gamma p$ in $C$.
+The algorithm returns true if $\vec{x}$ is conclusive (i.e., $\exists j\in [0,n-2]\,.\, x_{j+1} \le x_j$) which implies $(\bot, \gamma \vec{x})$ is also conclusive. It returns false if $y_0$ is defined, or equivalently, if $\vec{y}$ in the pair $(\bot, \gamma \vec{x} \| \vec{y})$ is conclusive. This equivalence is deduced from \eqref{eq:pdr:x0bot} and $\gamma x_0 \not \le y_0$ by (PN').
+
+The above discussion immediately yields the soundness of \APDRAI. One can also prove the properties of canonical choices, impossibility of loops, and negative termination for \APDRAI{} in the same way as for \ADPDR{}, yielding the following result.
+\begin{theorem}
+	All results in Section~\ref{sec:pdr:properties}, but Proposition~\ref{prop:pdr:CanonicalChoice}.3, hold for \APDRAI{}.
+\end{theorem}
+
+\begin{figure}[t]
+	\centering
+	\underline{{\APDRAI} $(b,p, \gamma\colon L \to C, \overline{b}, \overline{b}_r)$}
+	\begin{codeNT}
+<INITIALISATION>
+  $( \vec{x} \| \vec{y} )_{n,k}$ := $(\bot,\top\|\varepsilon)_{2,2}$
+<ITERATION>			                % $\vec{x},\vec{y}$  not conclusive
+  case $( \vec{x} \| \vec{y} )_{n,k}$ of
+	  $\vec{y}=\varepsilon$ And $x_{n-1} \le p$     :                    %(Unfold)
+		$( \vec{x} \| \vec{y} )_{n,k}$ := $( \vec{x}, \top \| \varepsilon )_{n+1,n+1}$
+	  $\vec{y}=\varepsilon$ And $x_{n-1} \not \le p$    :                     %(Candidate)
+		choose $z\in C$ st $\gamma x_{n-1} \not \le z$ And  $\gamma p \le z$;
+		$( \vec{x} \| \vec{y} )_{n,k}$ := $( \vec{x} \| z )_{n,n-1}$
+	  $\vec{y} \neq \varepsilon$ And $\overline{b}\gamma x_{k-1} \not \le y_k$ :                        %(Decide)
+		choose $z \in C$ st $\gamma x_{k-1} \not \le z$ And $\overline{b}_r(y_k) \le z$;
+		$(\vec{x} \| \vec{y} )_{n,k}$ := $(\vec{x} \| z , \vec{y} )_{n,k-1}$
+	  $\vec{y} \neq \varepsilon$ And $\gamma b x_{k-1} \le y_k$ :                        %(Conflict)
+		choose $z \in L$ st $\gamma z \le y_k$ And $b(x_{k-1} \land z) \le z$;
+		$(\vec{x} \| \vec{y} )_{n,k}$ := $(\vec{x} \land_k z \| \mathsf{tail}(\vec{y}) )_{n,k+1}$
+  endcase
+<TERMINATION>
+  if $\exists j\in [0,n-2]\,.\, x_{j+1} \le x_j$ then return true		 % $\vec{x}$ conclusive
+  if $y_0$ is defined then return false	  	% $\vec{y}$ conclusive
+\end{codeNT}
+	\caption{{\APDRAI} algorithm checking $\mu b \le p$.}\label{fig:pdr:adjai}
+\end{figure}
+
+We conclude this section by illustrating how the algorithm \APDRAI{} generalises both \APDR{} and \ADPDR{}.
+\begin{prop}\label{prop:pdr:instanceAI}
+	\APDR{} is an instance of \APDRAI{}.
+\end{prop}
+\begin{proof}
+	Consider the setting for \APDR with $(i, f, g, p)$, i.e.~$i, p \in L$ and $f \dashv g \colon L \to L$. Let $\Li$ be the complete lattice $\{ x \in L \mid i \le x \}$ (with the same order as $L$) and let $s \colon \Li \hookrightarrow L$ be the inclusion function. Then \APDRAI with parameters $(f \lor i, p, s\colon \Li \hookrightarrow L, f, g)$ defines exactly \APDR{} with parameters $(i, f, g, p)$ and starting state $(\bot, i, \top \| \epsilon)_{3, 3}$ (reachable in \APDR{} applying (Candidate), (Conflict) and (Unfold)).
+\end{proof}
+
+\begin{prop}\label{prop:pdr:instanceAI2}
+	\ADPDR{} is an instance of \APDRAI{}.
+\end{prop}
+\begin{proof}
+	Consider the setting for \ADPDR{}, i.e.~$(b, p)$ with an $\omega$-continuous function $b\colon L \to L$ and $p \in L$.
+	Then \APDRAI{} with parameters $(b,p, (-)^\downarrow \colon L \to L^\downarrow,b^\downarrow, b^\downarrow_r)$ defines exactly \ADPDR{} with parameters $(b, p)$ under the correspondence between intermediate data $(\vec{x} \| \vec{y})_{n, k}$ in \APDRAI{} and $(\emptyset, \vec{x} \| \vec{Y})$ in \ADPDR{} where $Y_{i+1} \coloneqq y_{i}$ for each $i \in \{k, \dots, n-1\}$. Please note that $x^\downarrow \subseteq Z$ if and only if $x \in Z$ for a lower set $Z$.
+\end{proof}
+
+\section{Implementation}\label{sec:pdr:experiments}
+We first developed, using Haskell and exploiting its abstraction features, a common template of {\APDRAI} that accommodates both {\APDR} and {\ADPDR}.
+It is a  program parametrized by two lattices---used for positive chains and negative sequences, respectively---and by a heuristic.
+
+For our experiments, we instantiated the template to \ADPDR{} for MDPs (letting $L=[0,1]^{S}$), with three different heuristics: \verb|hCoB| and \verb|hCo01| from Proposition~\ref{prop:pdr:genlegit}; and \verb|hCoS| introduced below. Besides the template ($\sim$100 lines),  we needed $\sim$140 lines to account for \verb|hCoB| and \verb|hCo01|, and additional $\sim$100 lines to further obtain \verb|hCoS|. All this indicates a clear benefit of our abstract theory: a general template can itself be coded succinctly; instantiation to concrete problems is easy, too, thanks to an explicitly specified interface of heuristics.
+
+Our implementation accepts MDPs  expressed in a symbolic format inspired by Prism models~\cite{KNP11}, in which states are variable valuations and  transitions are described by symbolic functions (they can be segmented with symbolic guards $\{\text{guard}_i\}_{i}$). We use rational arithmetic (\verb|Rational| in Haskell) for probabilities to avoid rounding errors.
+
+\paragraph{Heuristics.}
+The three heuristics (\verb|hCoB|, \verb|hCo01|, \verb|hCoS|) use the same choices in (Candidate) and (Decide), as defined in \eqref{eq:pdr:secondterminatingheuristics}, but different ones in (Conflict).
+
+The third heuristics \verb|hCoS| is a \emph{symbolic} variant of \verb|hCoB|; it relies on our symbolic model format. It uses $z_{S}$ for $z$ in (Conflict), where $z_{S}(s)=z_{B}(s)$ if $r_{s}\neq 0$ or $\mathcal{Z}_k=\emptyset$. The definition of $z_{S}(s)$ otherwise is notable: we use a piecewise affine function $(t_{i}\cdot s + u_{i})_{i}$ for $z_{S}(s)$, where the affine functions $(t_{i}\cdot s + u_{i})_{i}$ are guarded by the same guards $\{\text{guard}_i\}_{i}$ of the MDP's transition function. We let the SMT solver Z3~\cite{MB08} search for the values of the coefficients $t_{i}, u_{i}$, so that $z_{S}$ satisfies the requirements of (Conflict) (namely $b(x_{k-1})(s) \leq z_{S}(s) \leq 1$ for each $s\in S$ with $r_s=0$), together with the condition $b (z_{S}) \leq z_{S}$ for faster convergence. If the search is unsuccessful, we give up \verb|hCoS| and fall back on the \verb|hCoB|.
+
+As a task common to the three heuristics, we need to calculate $\mathcal{Z}_k = \{d \in \mathcal{G}_k \mid b(x_{k-1}) \leq d\}$ in (Conflict) (see~(\ref{eq:pdr:heuristicsZConflict})). Rather than computing the whole set $\mathcal{G}_k$ of generating points of the linear inequality that defines $Y_{k}$, we implemented an ad-hoc algorithm that crucially exploits the condition $b(x_{k-1}) \leq d$ for pruning.
+
+\paragraph{Experiment Settings.}
+We conducted the experiments on Ubuntu 18.04 and AWS t2.xlarge (4 CPUs, 16 GB memory, up to 3.0 GHz Intel Scalable Processor). We used several Markov chain (MC) benchmarks and a couple of MDP ones.
+
+%\begin{table}[tb]\scriptsize
+%  \caption{Experimental results on MC benchmarks.
+% $|S|$ is the number of states, $P$ is the
+%reachability probability (calculated by manual inspection), $\lambda$ is the threshold in the problem $P\le_{?} \lambda$ (shaded if the answer is no). The other columns show the average execution time in seconds; TO is timeout (\SI{900}{\second}); MO is out-of-memory.
+%For \ADPDR{} and LT-PDR
+%we used the \texttt{tasty-bench} Haskell package and repeated executions until std.\ dev.\ is $<$ 5\% (at least three execs). For PrIC3 and Storm, we made five executions. Storm's execution does not depend on $\lambda$: it seems to answer queries of the form $P\le_{?} \lambda$ by calculating $P$. We observed a wrong answer for the entry with $(\dagger)$ (Storm, sp.-num., Haddad-Monmege); see the discussion of RQ2.
+%} \label{tb:mc}
+%\begin{lrbox}{\lstbox}\begin{minipage}{\textwidth}
+%  \npdecimalsign{.}
+%  \nprounddigits{3}
+%	       \begin{tabular}{ccccccccccccccc}
+%    	       \toprule
+%    	       Benchmark & $|S|$ &
+%    	       %
+%    	       $P$
+%    	       & $\lambda$
+%    	       &\multicolumn{3}{c}{\ADPDR}
+%    	       &%
+%     	       LT-PDR
+%    	       &\multicolumn{4}{c}{PrIC3}
+%    	       &\multicolumn{3}{c}{Storm}
+%    	       \\\cmidrule(lr){5-7} \cmidrule(lr){9-12} \cmidrule(lr){13-15}
+%    	       &&&&\verb|hCoB| &\verb|hCo01| &\verb|hCoS|
+%    	       & &none & lin. & pol. & hyb. &sp.-num. &sp.-rat. &sp.-sd. \\
+%    	       \midrule\midrule
+%    	       \multirow{4}{*}{Grid} & \multirow{2}{*}{$10^2$} & \multirow{2}{*}{0.033} & 0.3 & 0.013 &0.022 & 0.659 & 0.343 & 1.383 &23.301 &MO &MO &\multirow{2}{*}{0.010} &\multirow{2}{*}{0.010} &\multirow{2}{*}{0.010} \\
+%               &   &   & 0.2 & 0.013 &0.031 & 0.657 & 0.519 & 1.571 &26.668 &TO &MO \\
+%    	       \cmidrule[0.5pt](r){2-15}
+%     	       & \multirow{2}{*}{$10^3$} & \multirow{2}{*}{$<$0.001} & 0.3 & 1.156 &2.187 & 5.633 & 126.441 & TO &TO &TO &MO &\multirow{2}{*}{0.010} &\multirow{2}{*}{0.017} &\multirow{2}{*}{0.011} \\
+%               &   &   & 0.2 & 1.146 &2.133 & 5.632 & 161.667 & TO &TO &TO &MO \\
+%    	       \midrule
+%    	       \multirow{3}{*}{BRP} & \multirow{3}{*}{$10^3$} & \multirow{3}{*}{0.035} & 0.1 & 12.909 &7.969 & 55.788 & TO & TO &TO &MO &MO &\multirow{3}{*}{0.012} &\multirow{3}{*}{0.018} &\multirow{3}{*}{0.011} \\
+%               &   &   & \cellcolor{gray!25}0.01  & 1.977 &8.111 & 5.645 & 21.078 & 60.738 &626.052 &524.373 &823.082  \\
+%               &   &   & \cellcolor{gray!25}0.005 & 0.604 &2.261  & 2.709 & 1.429 & 12.171 &254.000 &197.940 &318.840  \\
+%      	       \midrule
+%    	       \multirow{8}{*}{\parbox{4em}{Zero- Conf}} & \multirow{4}{*}{$10^2$} & \multirow{4}{*}{0.5} & 0.9 &1.217 &68.937  & 0.196 & TO & 19.765 &136.491 &0.630 &0.468 &\multirow{4}{*}{0.010} &\multirow{4}{*}{0.018} &\multirow{4}{*}{0.011} \\
+%               &   &   & 0.75 & 1.223 & 68.394 & 0.636 & TO & 19.782 &132.780 &0.602 &0.467  \\
+%               &   &   & 0.52 & 1.228 & 60.024 & 0.739& TO & 19.852 &136.533 &0.608 &0.474  \\
+%               &   &   & \cellcolor{gray!25}0.45 &$<$0.001 & 0.001 & 0.001 & $<$0.001 & 0.035 &0.043 &0.043 &0.043 \\
+%    	       \cmidrule[0.5pt](r){2-15}
+%     	       & \multirow{4}{*}{$10^4$} & \multirow{4}{*}{0.5} & 0.9 &MO & TO & 7.443 & TO & TO &TO &0.602 &0.465 &\multirow{4}{*}{0.037} &\multirow{4}{*}{262.193} &\multirow{4}{*}{0.031} \\
+%               &   &   & 0.75 & MO & TO & 15.223 & TO & TO &TO &0.599 &0.470  \\
+%               &   &   & 0.52 & MO & TO & TO & TO &TO &TO &0.488 & 0.475 \\
+%               &   &   & \cellcolor{gray!25}0.45 &0.108 & 0.119 & 0.169 & 0.016 & 0.035 &0.040 &0.040 &0.040  \\
+%    	       \midrule
+%    	       \multirow{4}{*}{Chain} & \multirow{4}{*}{$10^3$} & \multirow{4}{*}{0.394} & 0.9 & 36.083 & TO & 0.478 & TO & 269.801 &TO &0.938 &0.686 &\multirow{4}{*}{0.010} &\multirow{4}{*}{0.014} &\multirow{4}{*}{0.011} \\
+%               &   &   & 0.4 & 35.961 & TO & 394.955 & TO & 271.885 &TO &0.920 &TO\\
+%               &   &   & \cellcolor{gray!25}0.35 & 101.351 & TO & 454.892 & 435.199 & 238.613 &TO &TO &TO  \\
+%               &   &   & \cellcolor{gray!25}0.3 & 62.036 & 463.981 & 120.557 & 209.346 & 124.829 &746.595 &TO &TO \\
+%    	       \midrule
+%    	       \multirow{4}{*}{\parbox{4em}{Double- Chain}} & \multirow{4}{*}{$10^3$} & \multirow{4}{*}{0.215} & 0.9 & 12.122 & 7.318 & TO & TO & TO &TO &1.878 &2.053 &\multirow{4}{*}{0.011} &\multirow{4}{*}{0.018} &\multirow{4}{*}{0.010} \\
+%               &   &   & 0.3 & 12.120 & 20.424 & TO & TO & TO &TO &1.953 &2.058 \\
+%               &   &   & 0.216 & 12.096 & 19.540 & TO & TO & TO &TO &172.170 &TO \\
+%               &   &   & \cellcolor{gray!25}0.15 & 12.344 & 16.172 & TO & 16.963 & TO &TO &TO &TO \\
+%    	       \midrule
+%    	       \multirow{4}{*}{\parbox{4em}{Haddad- Monmege}} & \multirow{2}{*}{$41$} & \multirow{2}{*}{0.7} & 0.9 & 0.004 & 0.009 &8.528 & TO & 1.188 &31.915 &TO &MO &\multirow{2}{*}{0.011} &\multirow{2}{*}{0.011} &\multirow{2}{*}{1.560} \\
+%               &   &   & 0.75 & 0.004 & 0.011 & 2.357 & TO & 1.209 &32.143 &TO &712.086 \\
+%    	       \cmidrule[0.5pt](r){2-15}
+%     	       & \multirow{2}{*}{$10^3$} & \multirow{2}{*}{0.7} & 0.9 & 59.721 & 61.777 &TO & TO & TO &TO &TO &TO &\multirow{2}{*}{0.013 $(\dagger)$} &\multirow{2}{*}{0.043} &\multirow{2}{*}{TO} \\
+%               &   &   & 0.75 & 60.413 & 63.050 & TO & TO & TO &TO &TO &TO \\
+%    	       \bottomrule
+%  	       \end{tabular}
+%\end{minipage}\end{lrbox}
+%\scalebox{.71}{\centering\usebox\lstbox}
+%
+%\end{table}
+\begin{sidewaystable}
+	\caption{\small Experimental results on MC benchmarks.
+		$|S|$ is the number of states, $P$ is the reachability probability (calculated by manual inspection), $\lambda$ is the threshold in the problem $P\le_{?} \lambda$ (shaded if the answer is no). The other columns show the average execution time in seconds; TO is timeout (\SI{900}{\second}); MO is out-of-memory.
+		For \ADPDR{} and LT-PDR we used the \texttt{tasty-bench} Haskell package and repeated executions until std.\ dev.\ is $<$ 5\% (at least three execs). For PrIC3 and Storm, we made five executions. Storm's execution does not depend on $\lambda$: it seems to answer queries of the form $P\le_{?} \lambda$ by calculating $P$. We observed a wrong answer for the entry with $(\dagger)$ (Storm, sp.-num., Haddad-Monmege); see the discussion of RQ2.
+	}
+	\label{tb:pdr:mc}
+	\centering
+	\begin{lrbox}{\lstbox}\begin{minipage}{\textheight}
+			\npdecimalsign{.}
+			\nprounddigits{3}
+			\begin{tabular}{ccccccccccccccc}
+				\toprule
+				Benchmark                                      & $|S|$                      &
+				%
+				$P$
+				                                               & $\lambda$
+				                                               & \multicolumn{3}{c}{\ADPDR}
+				                                               &                                                                                                                                                                                                                                                                          %
+				LT-PDR
+				                                               & \multicolumn{4}{c}{PrIC3}
+				                                               & \multicolumn{3}{c}{Storm}
+				\\\cmidrule(lr){5-7} \cmidrule(lr){9-12} \cmidrule(lr){13-15}
+				                                               &                            &                           &                          & \verb|hCoB| & \verb|hCo01| & \verb|hCoS|
+				                                               &                            & none                      & lin.                     & pol.        & hyb.         & sp.-num.    & sp.-rat. & sp.-sd.                                                                                                                        \\
+				\midrule\midrule
+				\multirow{4}{*}{Grid}                          & \multirow{2}{*}{$10^2$}    & \multirow{2}{*}{0.033}    & 0.3                      & 0.013       & 0.022        & 0.659       & 0.343    & 1.383   & 23.301  & MO      & MO      & \multirow{2}{*}{0.010}             & \multirow{2}{*}{0.010}   & \multirow{2}{*}{0.010} \\
+				                                               &                            &                           & 0.2                      & 0.013       & 0.031        & 0.657       & 0.519    & 1.571   & 26.668  & TO      & MO                                                                                               \\
+				\cmidrule[0.5pt](r){2-15}
+				                                               & \multirow{2}{*}{$10^3$}    & \multirow{2}{*}{$<$0.001} & 0.3                      & 1.156       & 2.187        & 5.633       & 126.441  & TO      & TO      & TO      & MO      & \multirow{2}{*}{0.010}             & \multirow{2}{*}{0.017}   & \multirow{2}{*}{0.011} \\
+				                                               &                            &                           & 0.2                      & 1.146       & 2.133        & 5.632       & 161.667  & TO      & TO      & TO      & MO                                                                                               \\
+				\midrule
+				\multirow{3}{*}{BRP}                           & \multirow{3}{*}{$10^3$}    & \multirow{3}{*}{0.035}    & 0.1                      & 12.909      & 7.969        & 55.788      & TO       & TO      & TO      & MO      & MO      & \multirow{3}{*}{0.012}             & \multirow{3}{*}{0.018}   & \multirow{3}{*}{0.011} \\
+				                                               &                            &                           & \cellcolor{gray!25}0.01  & 1.977       & 8.111        & 5.645       & 21.078   & 60.738  & 626.052 & 524.373 & 823.082                                                                                          \\
+				                                               &                            &                           & \cellcolor{gray!25}0.005 & 0.604       & 2.261        & 2.709       & 1.429    & 12.171  & 254.000 & 197.940 & 318.840                                                                                          \\
+				\midrule
+				\multirow{8}{*}{\parbox{4em}{Zero- Conf}}      & \multirow{4}{*}{$10^2$}    & \multirow{4}{*}{0.5}      & 0.9                      & 1.217       & 68.937       & 0.196       & TO       & 19.765  & 136.491 & 0.630   & 0.468   & \multirow{4}{*}{0.010}             & \multirow{4}{*}{0.018}   & \multirow{4}{*}{0.011} \\
+				                                               &                            &                           & 0.75                     & 1.223       & 68.394       & 0.636       & TO       & 19.782  & 132.780 & 0.602   & 0.467                                                                                            \\
+				                                               &                            &                           & 0.52                     & 1.228       & 60.024       & 0.739       & TO       & 19.852  & 136.533 & 0.608   & 0.474                                                                                            \\
+				                                               &                            &                           & \cellcolor{gray!25}0.45  & $<$0.001    & 0.001        & 0.001       & $<$0.001 & 0.035   & 0.043   & 0.043   & 0.043                                                                                            \\
+				\cmidrule[0.5pt](r){2-15}
+				                                               & \multirow{4}{*}{$10^4$}    & \multirow{4}{*}{0.5}      & 0.9                      & MO          & TO           & 7.443       & TO       & TO      & TO      & 0.602   & 0.465   & \multirow{4}{*}{0.037}             & \multirow{4}{*}{262.193} & \multirow{4}{*}{0.031} \\
+				                                               &                            &                           & 0.75                     & MO          & TO           & 15.223      & TO       & TO      & TO      & 0.599   & 0.470                                                                                            \\
+				                                               &                            &                           & 0.52                     & MO          & TO           & TO          & TO       & TO      & TO      & 0.488   & 0.475                                                                                            \\
+				                                               &                            &                           & \cellcolor{gray!25}0.45  & 0.108       & 0.119        & 0.169       & 0.016    & 0.035   & 0.040   & 0.040   & 0.040                                                                                            \\
+				\midrule
+				\multirow{4}{*}{Chain}                         & \multirow{4}{*}{$10^3$}    & \multirow{4}{*}{0.394}    & 0.9                      & 36.083      & TO           & 0.478       & TO       & 269.801 & TO      & 0.938   & 0.686   & \multirow{4}{*}{0.010}             & \multirow{4}{*}{0.014}   & \multirow{4}{*}{0.011} \\
+				                                               &                            &                           & 0.4                      & 35.961      & TO           & 394.955     & TO       & 271.885 & TO      & 0.920   & TO                                                                                               \\
+				                                               &                            &                           & \cellcolor{gray!25}0.35  & 101.351     & TO           & 454.892     & 435.199  & 238.613 & TO      & TO      & TO                                                                                               \\
+				                                               &                            &                           & \cellcolor{gray!25}0.3   & 62.036      & 463.981      & 120.557     & 209.346  & 124.829 & 746.595 & TO      & TO                                                                                               \\
+				\midrule
+				\multirow{4}{*}{\parbox{4em}{Double- Chain}}   & \multirow{4}{*}{$10^3$}    & \multirow{4}{*}{0.215}    & 0.9                      & 12.122      & 7.318        & TO          & TO       & TO      & TO      & 1.878   & 2.053   & \multirow{4}{*}{0.011}             & \multirow{4}{*}{0.018}   & \multirow{4}{*}{0.010} \\
+				                                               &                            &                           & 0.3                      & 12.120      & 20.424       & TO          & TO       & TO      & TO      & 1.953   & 2.058                                                                                            \\
+				                                               &                            &                           & 0.216                    & 12.096      & 19.540       & TO          & TO       & TO      & TO      & 172.170 & TO                                                                                               \\
+				                                               &                            &                           & \cellcolor{gray!25}0.15  & 12.344      & 16.172       & TO          & 16.963   & TO      & TO      & TO      & TO                                                                                               \\
+				\midrule
+				\multirow{4}{*}{\parbox{4em}{Haddad- Monmege}} & \multirow{2}{*}{$41$}      & \multirow{2}{*}{0.7}      & 0.9                      & 0.004       & 0.009        & 8.528       & TO       & 1.188   & 31.915  & TO      & MO      & \multirow{2}{*}{0.011}             & \multirow{2}{*}{0.011}   & \multirow{2}{*}{1.560} \\
+				                                               &                            &                           & 0.75                     & 0.004       & 0.011        & 2.357       & TO       & 1.209   & 32.143  & TO      & 712.086                                                                                          \\
+				\cmidrule[0.5pt](r){2-15}
+				                                               & \multirow{2}{*}{$10^3$}    & \multirow{2}{*}{0.7}      & 0.9                      & 59.721      & 61.777       & TO          & TO       & TO      & TO      & TO      & TO      & \multirow{2}{*}{0.013 $(\dagger)$} & \multirow{2}{*}{0.043}   & \multirow{2}{*}{TO}    \\
+				                                               &                            &                           & 0.75                     & 60.413      & 63.050       & TO          & TO       & TO      & TO      & TO      & TO                                                                                               \\
+				\bottomrule
+			\end{tabular}
+		\end{minipage}\end{lrbox}
+	\scalebox{.85}{\centering\usebox\lstbox}
+\end{sidewaystable}
+
+\paragraph{Research Questions.} We wish to address the following questions.
+\begin{description}
+	\item[RQ1] Does \ADPDR{} advance the state-of-the-art performance of \emph{PDR} algorithms for probabilistic model checking?
+	\item[RQ2] How does \ADPDR{}'s performance compare against \emph{non-PDR} algorithms for probabilistic model checking?
+	\item[RQ3] Does the  theoretical framework of \ADPDR{} successfully guide the discovery of various heuristics with practical performance?
+	\item[RQ4] Does \ADPDR{} successfully manage nondeterminism in MDPs (that is absent in MCs)?
+\end{description}
+
+\paragraph{Experiments on MCs (Table~\ref{tb:pdr:mc}).}
+We used six benchmarks: Haddad\hyp{}Monmege is from~\cite{HKPQR19}; the others are from~\cite{BJKKMS20,KUKSH22}. We compared \ADPDR (with three heuristics) against LT-PDR~\cite{KUKSH22}, PrIC3 (with four  heuristics \emph{none}, \emph{lin.}, \emph{pol.}, \emph{hyb.}, see~\cite{BJKKMS20}), and Storm 1.5~\cite{DJK017}. Storm is a recent comprehensive toolsuite that implements different algorithms and solvers. Among them, our comparison is against \emph{sparse-numeric}, \emph{sparse-rational}, and \emph{sparse-sound}.
+The \emph{sparse} engine uses explicit state space representation by sparse matrices; this is unlike another representative \emph{dd} engine that uses symbolic BDDs. (We did not use \emph{dd} since it often reported errors, and was overall slower than \emph{sparse}.)
+\emph{Sparse-numeric}  is a value-iteration (VI) algorithm;  \emph{sparse-rational}  solves linear (in)equations using rational arithmetic;
+\emph{sparse-sound} is a sound VI algorithm~\cite{QK18}.\footnote{There are two more sound algorithms in Storm: one that utilizes interval iteration~\cite{BKLPW17} and the other does optimistic VI~\cite{HK20}. We have excluded them from the results since we observed that they returned incorrect answers.}
+
+\begin{table}[tb]
+	\caption{Experimental results on MDP benchmarks. The legend is the same as Table~\ref{tb:pdr:mc}, except that $P$ is now the maximum reachability probability.}
+	\label{tb:pdr:mdp}
+	\centering
+	{\small
+		\begin{tabular}{cccccccccc}
+			\toprule
+			Benchmark                  & $|S|$                      &
+			$P$\
+			                           & $\lambda$
+			                           & \multicolumn{3}{c}{\ADPDR}
+			                           & \multicolumn{3}{c}{Storm}
+			\\\cmidrule(lr){5-7}\cmidrule{8-10}
+			                           &                            &                        &                         & \verb|hCoB| & \verb|hCo01| & \verb|hCoS| & sp.-num                & sp.-rat.               & sp.-sd.                \\
+			\midrule\midrule
+			\multirow{3}{*}{CDrive2}   & \multirow{3}{*}{38}        & \multirow{3}{*}{0.865} & 0.9                     & MO          & 0.172        & TO          & \multirow{3}{*}{0.019} & \multirow{3}{*}{0.019} & \multirow{3}{*}{0.018} \\
+			                           &                            &                        & \cellcolor{gray!25}0.75 & MO          & 0.058        & TO                                                                                     \\
+			                           &                            &                        & \cellcolor{gray!25}0.5  & 0.015       & 0.029        & 86.798                                                                                 \\
+			\midrule
+			\multirow{3}{*}{TireWorld} & \multirow{3}{*}{8670}      & \multirow{3}{*}{0.233} & 0.9                     & MO          & 3.346        & TO          & \multirow{4}{*}{0.070} & \multirow{4}{*}{0.164} & \multirow{4}{*}{0.069} \\
+			                           &                            &                        & 0.75                    & MO          & 3.337        & TO                                                                                     \\
+			                           &                            &                        & 0.5                     & MO          & 6.928        & TO                                                                                     \\
+			                           &                            &                        & \cellcolor{gray!25}0.2  & 4.246       & 24.538       & TO                                                                                     \\
+			\bottomrule
+		\end{tabular}
+	}
+\end{table}
+
+\paragraph{Experiments on MDPs (Table~\ref{tb:pdr:mdp}).}
+We used two benchmarks from~\cite{HKPQR19}. We compared \ADPDR only against Storm, since RQ1 is already addressed using MCs (besides, PrIC3 did not run for MDPs).
+
+\paragraph{Discussion.}
+The experimental results suggest the following answers to the RQs.
+
+\textbf{RQ1}.
+The performance advantage of \ADPDR{}, over both LT-PDR and PrIC3, was clearly observed throughout the benchmarks.
+\ADPDR{} outperformed LT-PDR, thus confirming empirically the theoretical observation in Section~\ref{sec:pdr:LTPDRvsADPDR}. The profit is particularly evident in those instances whose answer is positive.
+\ADPDR{} generally outperformed PrIC3, too.
+Exceptions are in ZeroConf, Chain and DoubleChain, where PrIC3 with  polynomial (pol.) and hybrid (hyb.) heuristics performs well. This seems to be thanks to the expressivity of the polynomial template in PrIC3, which is a possible enhancement we are yet to implement (currently our symbolic heuristic \verb|hCoS| uses only the affine template).
+
+\textbf{RQ2}.
+The comparison with Storm is interesting. Note first that Storm's \emph{sparse-numeric} algorithm is a VI algorithm that gives a guaranteed lower bound \emph{without guaranteed convergence}. Therefore  its positive answer to $P\le_{?}\lambda$ may not be correct. Indeed, for Haddad-Monmege with $|S|\sim 10^{3}$, it answered $P=0.5$ which is wrong ($(\dagger)$ in Table~\ref{tb:pdr:mc}). This is in contrast with PDR algorithms that discovers an explicit witness for  $P\le\lambda$ via their positive chain.
+
+Storm's \emph{sparse-rational} algorithm is precise.
+It was faster than PDR algorithms in many benchmarks, although \ADPDR was better or comparable in ZeroConf ($10^4$) and Haddad-Monmege ($41$), for $\lambda$ such that $P\le\lambda$ is true. We believe this suggests a general advantage of PDR algorithms, namely to accelerate the search for an invariant-like witness for safety.
+
+Storm's \emph{sparse-sound} algorithm is a sound VI algorithm that returns correct answers aside numerical errors.
+Its performance was similar to that of sparse-numeric, except for the two instances of Haddad-Monmege: sparse-sound returned correct answers but was much slower than sparse-numeric.
+For these two instances, \ADPDR{} outperformed sparse-sound.
+
+It seems that a big part of Storm's good performance is attributed to the sparsity of state representation. This is notable in the comparison of the two instances of Haddad-Monmege ($41$ vs.\ $10^3$): while Storm handles both of them easily, \ADPDR{} struggles a bit in the bigger instance. Our implementation can be extended to use sparse representation, too; this is future work.
+
+\textbf{RQ3}.
+We derived the three heuristics (\verb|hCoB|, \verb|hCo01|, \verb|hCoS|) exploiting the theory of \ADPDR{}. The experiments show that each heuristic has its own strength. For example, \verb|hCo01| is slower than \verb|hCoB| for MCs, but it is much better for MDPs. In general, there is no silver bullet heuristic, so coming up with a variety of them is important. The experiments suggest that our theory of \ADPDR{} provides great help in doing so.
+
+\textbf{RQ4}.
+Table~\ref{tb:pdr:mdp} shows that \ADPDR{} can handle nondeterminism well: once a suitable heuristic is chosen, its performances on MDPs and on MCs of similar size are comparable. It is also interesting that better-performing heuristics vary, as we discussed above.
+
+\paragraph{Summary.}
+\ADPDR{} clearly outperforms existing probabilistic PDR algorithms in many benchmarks. It also compares well with Storm---a highly sophisticated toolsuite---in a couple of benchmarks. These are notable especially given that \ADPDR{} currently lacks enhancing features such as richer symbolic templates and sparse representation (adding which is future work). Overall, we believe that \ADPDR{} \emph{confirms the potential of PDR algorithms in probabilistic model checking}. Through the three heuristics, we also observed the value of an abstract general theory in devising heuristics in PDR, which is probably true of verification algorithms in general besides PDR.
+
+\section{Conclusions}\label{sec:pdr:conclusions}
+This work presents \APDR{} (Figure~\ref{fig:pdr:apdr}), an algorithm that generalizes Bradley's PDR \cite{Bradley11} to address a least fixed-point problem $\lfp(f\lor i) \le p$ for an arbitrary lattice $L$, monotone map $f\colon L\to L$, and elements $i,p \in L$. The key innovation of our proposal lies in leveraging a right adjoint $g\colon L \to L$ of the map $f$ to search for counterexamples.
+
+Similar to Bradley's PDR, {\APDR{}} depends on the non-deterministic choice of an element $z\in L$ satisfying specific constraints. Therefore, in addition to establishing soundness (Theorem~\ref{th:pdr:soundness}), we had to demonstrate that it is always possible to choose such an element $z$ (Proposition~\ref{prop:pdr:CanonicalChoice}) and that the algorithm always progresses to a new state (Proposition~\ref{prop:pdr:progres}). Unlike Bradley's PDR, however, {\APDR{}} is not guaranteed to terminate since the problem $\lfp(f\lor i) \le p$ is generally undecidable. We showed that certain well-behaved heuristics, which essentially fix a legitimate choice of $z$, ensure termination whenever the problem has a negative answer (Theorem~\ref{th:pdr:negativetermination}).
+
+The assumption that $f$ possesses a right adjoint $g$ is not satisfied in several interesting cases, particularly those involving probabilistic systems. To address these cases, we introduce \ADPDR{} (Figure~\ref{fig:pdr:adpdr}), a variation of \APDR{} that employs lower sets to guarantee the presence of a right adjoint. In this algorithm, a proof for a positive solution is sought in the lattice $L$, while a counterexample in the lattice of lower sets $L^\downarrow$. We demonstrated that most properties of \APDR{} hold for \ADPDR{} (Theorem~\ref{th:pdr:ADPDR}) and that \ADPDR{} simulates LT-PDR, another lattice-theoretical generalization of PDR previously introduced in~\cite{KUKSH22} (Theorem~\ref{th:pdr:LT-PDR-instance-ADPDR}). Conversely, LT-PDR cannot simulate \ADPDR{}: indeed, the use of $L^\downarrow$ enables \ADPDR{} to simultaneously search for multiple -- even all -- counterexamples potentially computed by LT-PDR (Propositions~\ref{prop:pdr:multipleLTPDR} and \ref{prop:pdr:LTPDRfinal}).
+
+We instantiated \ADPDR{} to address the max-reachability problem of Markov Decision Processes. Specifically, we devised two heuristics, named \verb|hCoB| and \verb|hCo01|, which intelligently reduce the search space and are guaranteed to terminate in the case of a negative answer (Corollary~\ref{cor:pdr:ADPDRtermination}). We conducted experimental comparisons of the two heuristics with other tools, yielding promising results (Tables~\ref{tb:pdr:mc} and \ref{tb:pdr:mdp}): our implementation clearly outperforms other PDR-based algorithms in many benchmarks, and even compares favourably with state-of-the-art tools in a couple of benchmarks. Our implementation is based on a template algorithm, called \APDRAI{} (Fig.~\ref{fig:pdr:adjai}), that generalizes both \APDR{} and \ADPDR{} (Propositions~\ref{prop:pdr:instanceAI} and \ref{prop:pdr:instanceAI2}).
