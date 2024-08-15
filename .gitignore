@@ -18,6 +18,7 @@
 *.xdv
 *-converted-to.*
 *.pdf
+!phd-thesis.pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
