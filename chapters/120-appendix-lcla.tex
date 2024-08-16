@@ -139,10 +139,12 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 	Hence all the lines are equal; in particular $\denot{r}^{A} \alpha(P) = \alpha(Q)$.
 \end{proof}
 
-\begin{proof}[Proof of Proposition~\ref{th:lcla:refine-int-sound}, extensional soundness of rule \lclrule{refine\mbox{-}int}]
-	We show that the hypotheses of \lclrule{refine\mbox{-}int} implies those of \lclrule{refine\mbox{-}ext}. This means than whenever we can apply the former we could also apply the latter, so that Theorem~\ref{th:lcla:soundness-rule-refine} ensures extensional soundness.
+\begin{proof}[Proof of Proposition~\ref{th:lcla:refine-derived-sound}, extensional soundness of derived refinement rules]
+	We show that the hypotheses of both rules implies those of \lclrule{refine\mbox{-}ext}. This means than whenever we can apply the former we could also apply the latter, so that Theorem~\ref{th:lcla:soundness-rule-refine} ensures extensional soundness.
 
-	The first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the two rules, so we only have to show $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. We recall that $\lcl{A'}{P}{\regr}{Q}$ implies $Q \le \denot{\regr} P$ by extensional soundness.
+	The first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among all three rules, so we only have to show $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. We recall that, by extensional soundness, $\lcl{A'}{P}{\regr}{Q}$ implies (1) $Q \le \denot{\regr} P$ and (3) $\denot{\regr}^{A'} \alpha'(P) = \alpha'(Q)$.
+
+	For \lclrule{refine\mbox{-}int}, we observe
 	\begin{align*}
 		\alpha(Q) & \le \alpha(\denot{\regr} P )                                & [Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
 		          & \le \denot{\regr}^{A} \alpha(P)                             & [\text{soundness of }\denot{\regr}^{A}]                    \\
@@ -153,12 +155,8 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 		          & = \alpha(Q)                                                 & [\text{Last hypothesis of the rule}]
 	\end{align*}
 	Hence all the lines are equal, and in particular $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$.
-\end{proof}
 
-\begin{proof}[Proof of Proposition~\ref{th:lcla:refine-pre-sound}, extensional soundness of rule \lclrule{refine\mbox{-}pre}]
-	As in the above proof or Proposition~\ref{th:lcla:refine-int-sound}, we show that the hypotheses of \lclrule{refine\mbox{-}pre} implies those of \lclrule{refine\mbox{-}ext}.
-
-	The first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the two rules, so we only have to show $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. We recall that $\lcl{A'}{P}{\regr}{Q}$ implies by extensional soundness (1) $Q \le \denot{\regr} P$ and (3) $\denot{\regr}^{A'} \alpha'(P) = \alpha'(Q)$.
+	For \lclrule{refine\mbox{-}pre}, we observe
 	\begin{align*}
 		\alpha(Q) & \le \alpha(\denot{\regr} P )                   & [Q \le \denot{\regr} P \text{ and monotonicity of }\alpha] \\
 		          & \le \denot{\regr}^{A} \alpha(P)                & [\text{soundness of }\denot{\regr}^{A}]                    \\
@@ -173,61 +171,59 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 \end{proof}
 
 \begin{sidewaysfigure}
-	\[
-	\scriptsize
-	\infer[(\mathsf{seq})]
-	{ ($**$) }
-	{
-		\infer[(\mathsf{transfer})]
-		{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1}}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} } }
-		{ \complete{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\denot{\code{y := y - 1}}} }
-		&
-		\infer[(\mathsf{transfer})]
-		{ \lcl{\Oct}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} }{\code{x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
-		{ \complete{\Oct}{\code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y}}{\denot{\code{x := x - 1}}} }
-	}
-	\]
-	\[
-	\small
-	\infer[(\mathsf{iterate})]
-	{ ($*$) }
-	{
+	\centering
+	\scalebox{0.9}{\(
 		\infer[(\mathsf{seq})]
-		{ \lcl{\Oct}{R_2}{\regr_i}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}}
-			\qquad (\code{y} \in \{1; 99\} \land \code{x} = \code{y}) \le A(R_2) }
+		{ ($**$) }
 		{
 			\infer[(\mathsf{transfer})]
-			{ \lcl{\Oct}{R_2}{\code{(x > 1)?}}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}} }
-			{ \complete{\Oct}{R_2}{\denot{\code{(x > 1)?}}}}
+			{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1}}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} } }
+			{ \complete{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\denot{\code{y := y - 1}}} }
+			&
+			\infer[(\mathsf{transfer})]
+			{ \lcl{\Oct}{ \code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y} }{\code{x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
+			{ \complete{\Oct}{\code{y} \in \{1; 99\} \land \code{x} - 1 = \code{y}}{\denot{\code{x := x - 1}}} }
+		}
+		\)}
+
+	\scalebox{0.95}{\(
+		\infer[(\mathsf{iterate})]
+		{ ($*$) }
+		{
+			\infer[(\mathsf{seq})]
+			{ \lcl{\Oct}{R_2}{\regr_i}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}}
+				\qquad (\code{y} \in \{1; 99\} \land \code{x} = \code{y}) \le A(R_2) }
+			{
+				\infer[(\mathsf{transfer})]
+				{ \lcl{\Oct}{R_2}{\code{(x > 1)?}}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}} }
+				{ \complete{\Oct}{R_2}{\denot{\code{(x > 1)?}}}}
+				&
+				\infer[(\mathsf{seq})]
+				{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1; x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
+				{ ($**$) }
+			}
+		}
+		\)}
+
+	\scalebox{0.95}{\(
+		\infer[(\mathsf{seq})]
+		{\lcl{\Oct}{R}{\regr_2}{Q}}
+		{
+			\infer[(\mathsf{transfer})]
+			{\lcl{\Oct}{R}{\code{x := y}}{R_2}}{ \complete{\Oct}{R}{\denot{\code{x := y}}} }
 			&
 			\infer[(\mathsf{seq})]
-			{ \lcl{\Oct}{\code{y} \in \{2; 100\} \land \code{x} = \code{y}}{\code{y := y - 1; x := x - 1}}{\code{y} \in \{1; 99\} \land \code{x} = \code{y}} }
-			{ ($**$) }
+			{\lcl{\Oct}{R_2}{\regr_i^{\kstar}\code{; (x <= 1)?}}{Q}}
+			{
+				\infer[(\mathsf{iterate})]
+				{\lcl{\Oct}{R_2}{\regr_i^{\kstar}}{R_2 \lor (\code{y} \in \{1; 99\} \land \code{x} = \code{y})}}
+				{ ($*$) }
+				&
+				\infer[(\mathsf{transfer})]
+				{\lcl{\Oct}{R_2}{\code{(x <= 1)?}}{Q}}{ \complete{\Oct}{R_2}{\denot{\code{(x <= 1)?}}} }
+			}
 		}
-	}
-	\]
-	\[
-	\small
-	\infer[(\mathsf{seq})]
-	{\lcl{\Oct}{R}{\regr_2}{Q}
-		%					\qquad \Int_{\neq 0} \preceq \Int \qquad \Int(P) = \Int_{\neq 0}(P)
-	}
-	{
-		\infer[(\mathsf{transfer})]
-		{\lcl{\Oct}{R}{\code{x := y}}{R_2}}{ \complete{\Oct}{R}{\denot{\code{x := y}}} }
-		&
-		\infer[(\mathsf{seq})]
-		{\lcl{\Oct}{R_2}{\regr_i^{\kstar}\code{; (x <= 1)?}}{Q}}
-		{
-			\infer[(\mathsf{iterate})]
-			{\lcl{\Oct}{R_2}{\regr_i^{\kstar}}{R_2 \lor (\code{y} \in \{1; 99\} \land \code{x} = \code{y})}}
-			{ ($*$) }
-			&
-			\infer[(\mathsf{transfer})]
-			{\lcl{\Oct}{R_2}{\code{(x <= 1)?}}{Q}}{ \complete{\Oct}{R_2}{\denot{\code{(x <= 1)?}}} }
-		}
-	}
-	\]
+		\)}
 	\caption{Derivation of $\lcl{\Oct}{R}{\regr_2}{Q}$ for Example~\ref{ex:lcla:refine-pre-usefulness}.}
 	\label{fig:app:ex-refine-pre-derivation-2}
 \end{sidewaysfigure}
@@ -421,58 +417,84 @@ The following lemma is used in the subsequent proof.
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{th:lcla:clcl-sound-int}]
-	The proof follows closely that for LCL (Theorem~\ref{th:lcla:soundness-ext}).\todo{Check the proof for name consistency and references}
+	The proof follows closely that for LCL (Theorem~\ref{th:lcla:soundness-ext}).
 
 	As for $\LCLA$, points (1) and (3) implies point (2):
 	\begin{align*}
-		\alpha(P) & \le_A \alpha(\bwsem{\regr} Q)              & [\text{(1) and monotonicity of }\alpha]          \\
-		          & \le_A \bwsem{\regr}^{\sharp}_{A} \alpha(Q) & [\text{soundness of }\bwsem{\cdot}^{\sharp}_{A}] \\
-		          & = \alpha(P)                                & [\text{(3)}]
+		\alpha(P) & \le \alpha(\bwsem{\regr} Q)              & [\text{(1) and monotonicity of }\alpha]          \\
+		          & \le \bwsem{\regr}^{\sharp}_{A} \alpha(Q) & [\text{soundness of }\bwsem{\cdot}^{\sharp}_{A}] \\
+		          & = \alpha(P)                              & [\text{(3)}]
 	\end{align*}
 	Therefore, we only have to prove (1) and (3).
 
-	The proof is by induction on the derivation tree of the provable triple $\clcltriple{A}{P}{\regr}{Q}$. We prove here only some relevant cases.\todo{Add all of them?}
+	The proof is by induction on the derivation tree of the provable triple $\clcltriple{A}{P}{\regr}{Q}$.
 
 	\proofcase{\clclrule{transfer}}
-	For (1), we have trivially $\bwsem{\regc} Q \subseteq \bwsem{\regc} Q$. For (2), we have $\alpha(\bwsem{\regc} Q) = \alpha(\bwsem{\regc} \gamma \alpha Q) = \bwsem{\regc}^{\sharp}_A \alpha (Q)$ by $\complete{A}{Q}{\bwsem{\regc}}$ and definition of $\bwsem{\regc}^{\sharp}_A$, respectively (see Figure~\ref{fig:abs-semantics:bw}).
+	For (1), we have trivially $\bwsem{\regc} Q \le \bwsem{\regc} Q$. For (3), we have $\alpha(\bwsem{\regc} Q) = \alpha(\bwsem{\regc} \gamma \alpha Q) = \bwsem{\regc}^{\sharp}_A \alpha (Q)$ by $\complete{A}{Q}{\bwsem{\regc}}$ and definition of $\bwsem{\regc}^{\sharp}_A$, respectively (see Figure~\ref{fig:lcla:regcom-abs-sem-bw}).
 
 	\proofcase{\clclrule{relax}}
-	For (1) we have
+	For (1) we have by inductive hypothesis $P' \le \bwsem{\regr} Q'$, and together with the other hypotheses of the rules we get $P \le P' \le \bwsem{\regr} Q' \le \bwsem{\regr} Q$.
+
+	\noindent For (3), we recall that $P \le P' \le A(P)$ implies $\alpha(P) = \alpha(P')$: one inequality holds by monotonicity of $\alpha$, the other by the adjunctive property of a GC since $A = \gamma \alpha$. Then
 	\begin{align*}
-		P & \subseteq P'               & [\text{hp of the rule}]                                     \\
-		  & \subseteq \bwsem{\regr} Q' & [\text{inductive hp (1) on } \clcltriple{A}{P'}{\regr}{Q'}] \\
-		  & \subseteq \bwsem{\regr} Q  & [\text{hp of the rule}]
+		\alpha(P) & = \alpha(P')                            & [\text{hp of the rule } P \le P' \le A(P)]                  \\
+		          & = \bwsem{\regr}^{\sharp}_{A} \alpha(Q') & [\text{inductive hp (2) on } \clcltriple{A}{P'}{\regr}{Q'}] \\
+		          & = \bwsem{\regr}^{\sharp}_{A} \alpha(Q)  & [\text{hp of the rule } Q' \le Q \le A(Q')]
 	\end{align*}
 
-	For (2), we recall that $P \subseteq P' \subseteq A(P)$ implies $\alpha(P) = \alpha(P')$: one inequality holds by monotonicity of $\alpha$, the other by the adjunctive property of a GC since $A = \gamma \circ \alpha$. Then
+	\proofcase{\lclrule{seq}}
+	For (1) $P \le \bwsem{\regr_1} R \le \bwsem{\regr_1} (\bwsem{\regr_2} Q) = \bwsem{\regr_1; \regr_2} Q$, where the inequalities follow from inductive hypotheses and monotonicity of $\bwsem{\regr_1}$.
+
+	\noindent For (3), we recall that $\bwsem{\regr_1; \regr_2}^{A} \le \bwsem{\regr_1}^{A} \bwsem{\regr_2}^{A}$.
 	\begin{align*}
-		\alpha(P) & = \alpha(P')                            & [\text{hp of the rule } P \subseteq P' \subseteq A(P)]      \\
-		          & = \bwsem{\regr}^{\sharp}_{A} \alpha(Q') & [\text{inductive hp (2) on } \clcltriple{A}{P'}{\regr}{Q'}] \\
-		          & = \bwsem{\regr}^{\sharp}_{A} \alpha(Q)  & [\text{hp of the rule } Q' \subseteq Q \subseteq A(Q')]
+		\alpha(P) & \le \alpha(\bwsem{\regr_1; \regr_2} Q)                & [\text{(1) and monotonicity of }\alpha] \\
+		          & \le \bwsem{\regr_1; \regr_2}^{A} \alpha(Q)            & [\text{soundness of }\bwsem{\regr}^{A}] \\
+		          & \le \bwsem{\regr_1}^{A} \bwsem{\regr_2}^{A} \alpha(Q) & [\text{recalled above}]                 \\
+		          & = \denot{\regr_1}^{A} \alpha(R)                       & [\text{inductive hp}]                   \\
+		          & = \alpha(P)                                           & [\text{inductive hp}]
+	\end{align*}
+	So all the lines are equal, in particular $\bwsem{\regr_1; \regr_2}^{A} \alpha(Q) = \alpha(P)$.
+
+	\proofcase{\lclrule{join}}
+	For (1), by inductive hypotheses, $P_1 \le \denot{\regr_1} Q$ and $P_2 \le \denot{\regr_2} Q$. Hence, $P_1 \lor P_2 \le \denot{\regr_1} Q \lor \denot{\regr_2} Q = \denot{\regr_1 \oplus \regr_2} Q$.
+
+	\noindent For (3), we observe that
+	\begin{align*}
+		\bwsem{\regr_1 \oplus \regr_2}^{A} \alpha(Q) & = \alpha \bwsem{\regr_1 \oplus \regr_2} \gamma \alpha(Q)                               \\
+		                                             & = \alpha (\bwsem{\regr_1} \gamma \alpha(Q) \lor \bwsem{\regr_2} \gamma \alpha(Q))      \\
+		                                             & = \alpha \bwsem{\regr_1} \gamma \alpha(Q) \lor \alpha \bwsem{\regr_2} \gamma \alpha(Q) \\
+		                                             & = \bwsem{\regr_1}^{A}\alpha(Q) \lor \bwsem{\regr_2}^{A} \alpha(Q)
+	\end{align*}
+	where we used additivity of $\alpha$.
+	Recalling that, by inductive hypotheses, $\alpha(P_1) = \bwsem{\regr_1}^{A} \alpha(Q)$ and $\alpha(P_2) = \bwsem{\regr_2}^{A} \alpha(Q)$, we get
+	\begin{align*}
+		\alpha(P_1 \lor P_2) & = \alpha(P_1) \lor \alpha(P_2)                                     & [\alpha\text{ is additive}]   \\
+		                     & = \denot{\regr_1}^{A} \alpha(Q) \lor \denot{\regr_2}^{A} \alpha(Q) & [\text{inductive hypotheses}] \\
+		                     & = (\denot{\regr_1 \oplus \regr_2}^{A}) \alpha(Q)                   & [\text{observation above}]
 	\end{align*}
 
 	\proofcase{\clclrule{rec}}
 	We first observe that
 	\begin{align*}
-		\bwsem{\regr^{\kstar}} \bwsem{\regr} Q & \le Q \cup \bwsem{\regr^{\kstar}} \bwsem{\regr} Q                                &                                         \\
-		                                       & =\bwsem{\regr}^0 Q \cup \bigcup\limits_{n \ge 0} \bwsem{\regr}^n \bwsem{\regr} Q & [\text{Lemma~}\ref{lmm:bwsem-calculus}] \\
-		                                       & =\bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q                                      &                                         \\
-		                                       & =\bwsem{\regr^{\kstar}} Q                                                        & [\text{Lemma~}\ref{lmm:bwsem-calculus}]
+		\bwsem{\regr^{\kstar}} \bwsem{\regr} Q & \le Q \lor \bwsem{\regr^{\kstar}} \bwsem{\regr} Q                                &                                             \\
+		                                       & =\bwsem{\regr}^0 Q \lor \bigvee\limits_{n \ge 0} \bwsem{\regr}^n \bwsem{\regr} Q & [\text{Lemma }\ref{lmm:sil:bwsem-calculus}] \\
+		                                       & =\bigvee\limits_{n \ge 0} \bwsem{\regr}^n Q                                      &                                             \\
+		                                       & =\bwsem{\regr^{\kstar}} Q                                                        & [\text{Lemma }\ref{lmm:sil:bwsem-calculus}]
 	\end{align*}
 
 	We can then prove (1) by
 	\begin{align*}
-		P & \subseteq \bwsem{\regr^{\kstar}} (R \cup Q)                            & [\text{inductive hp (1) on } \clcltriple{A}{P}{\regr^{\kstar}}{R \cup Q}] \\
-		  & \subseteq \bwsem{\regr^{\kstar}} (\bwsem{\regr} Q \cup Q)              & [\text{inductive hp (1) on } \clcltriple{Q}{R}{\regr}{Q}]                 \\
-		  & = \bwsem{\regr^{\kstar}} \bwsem{\regr} Q \cup \bwsem{\regr^{\kstar}} Q & [\text{additivity of }\bwsem{\cdot}]                                      \\
-		  & \subseteq \bwsem{\regr^{\kstar}} Q \cup \bwsem{\regr^{\kstar}} Q       & [\text{observation above}]                                                \\
+		P & \le \bwsem{\regr^{\kstar}} (R \lor Q)                                  & [\text{inductive hp (1) on } \clcltriple{A}{P}{\regr^{\kstar}}{R \lor Q}] \\
+		  & \le \bwsem{\regr^{\kstar}} (\bwsem{\regr} Q \lor Q)                    & [\text{inductive hp (1) on } \clcltriple{Q}{R}{\regr}{Q}]                 \\
+		  & = \bwsem{\regr^{\kstar}} \bwsem{\regr} Q \lor \bwsem{\regr^{\kstar}} Q & [\text{additivity of }\bwsem{\cdot}]                                      \\
+		  & \le \bwsem{\regr^{\kstar}} Q \lor \bwsem{\regr^{\kstar}} Q             & [\text{observation above}]                                                \\
 		  & = \bwsem{\regr^{\kstar}} Q
 	\end{align*}
 
-	For (2)
+	\noindent For (3)
 	\begin{align*}
-		\bwsem{\regr^{\kstar}}^{\sharp}_A \alpha(Q) & \le_A \bwsem{\regr^{\kstar}}^{\sharp}_A (Q \cup R) &                                                                           \\
-		                                            & = \alpha(P)                                        & [\text{inductive hp (2) on } \clcltriple{A}{P}{\regr^{\kstar}}{R \cup Q}] \\
+		\bwsem{\regr^{\kstar}}^{\sharp}_A \alpha(Q) & \le_A \bwsem{\regr^{\kstar}}^{\sharp}_A (Q \lor R) &                                                                           \\
+		                                            & = \alpha(P)                                        & [\text{inductive hp (2) on } \clcltriple{A}{P}{\regr^{\kstar}}{R \lor Q}] \\
 		                                            & \le_A \alpha(\bwsem{\regr^{\kstar}} Q)             & [\text{condition (1) shown above}]                                        \\
 		                                            & \le_A \bwsem{\regr^{\kstar}}^{\sharp}_A \alpha(Q)  & [\text{soundness of }\bwsem{\cdot}^{\sharp}_A]
 	\end{align*}
@@ -480,13 +502,13 @@ The following lemma is used in the subsequent proof.
 	\proofcase{\clclrule{iterate}}
 	For (1)
 	\begin{align*}
-		P \cup Q & \subseteq \bwsem{\regr} Q \cup Q                     & [\text{inductive hp (1) on }\clcltriple{A}{P}{\regr}{Q}] \\
-		         & = \bwsem{\regr}^1 Q \cup \bwsem{\regr}^0 Q           &                                                          \\
-		         & \subseteq \bigcup\limits_{n \ge 0} \bwsem{\regr}^n Q &                                                          \\
-		         & = \bwsem{\regr^{\kstar}} Q                           & [\text{Lemma~}\ref{lmm:bwsem-calculus}]
+		P \lor Q & \le \bwsem{\regr} Q \lor Q                     & [\text{inductive hp (1) on }\clcltriple{A}{P}{\regr}{Q}] \\
+		         & = \bwsem{\regr}^1 Q \lor \bwsem{\regr}^0 Q     &                                                          \\
+		         & \le \bigvee\limits_{n \ge 0} \bwsem{\regr}^n Q &                                                          \\
+		         & = \bwsem{\regr^{\kstar}} Q                     & [\text{Lemma~}\ref{lmm:sil:bwsem-calculus}]
 	\end{align*}
 
-	For (2), we first prove by induction that $(\bwsem{\regr}^{\sharp}_{A})^n \alpha(Q) \le_A \alpha(Q)$. Recall that, by the adjunctive property of a Galois connection, $P \subseteq A(Q)$ iff $\alpha(P) \le_A \alpha(Q)$. The base case $n = 0$ is trivial because $(\bwsem{\regr}^{\sharp}_{A})^0$ is the identity. Suppose it holds for some $n$: then
+	\noindent For (3), we first prove by induction that $(\bwsem{\regr}^{\sharp}_{A})^n \alpha(Q) \le_A \alpha(Q)$. Recall that, by the adjunctive property of a Galois connection, $P \le A(Q)$ iff $\alpha(P) \le_A \alpha(Q)$. The base case $n = 0$ is trivial because $(\bwsem{\regr}^{\sharp}_{A})^0$ is the identity. Suppose it holds for some $n$: then
 	\begin{align*}
 		(\bwsem{\regr}^{\sharp}_{A})^{n+1} \alpha(Q) & = \bwsem{\regr}^{\sharp}_{A} (\bwsem{\regr}^{\sharp}_{A})^n \alpha(Q) &                                                          \\
 		                                             & \le_A \bwsem{\regr}^{\sharp}_{A} \alpha(Q)                            & [\text{inductive hp}]                                    \\
@@ -496,15 +518,15 @@ The following lemma is used in the subsequent proof.
 
 	From this, we observe that
 	\[
-	\alpha(Q) = (\bwsem{\regr^{\kstar}}^{\sharp}_{A})^0 \alpha(Q) \le_A \bigcup\limits_{n \ge 0} (\bwsem{\regr^{\kstar}}^{\sharp}_{A})^n \alpha(Q) \le_A \bigcup\limits_{n \ge 0} \alpha(Q) = \alpha(Q)
+	\alpha(Q) = (\bwsem{\regr^{\kstar}}^{\sharp}_{A})^0 \alpha(Q) \le_A \bigvee\limits_{n \ge 0} (\bwsem{\regr^{\kstar}}^{\sharp}_{A})^n \alpha(Q) \le_A \bigvee\limits_{n \ge 0} \alpha(Q) = \alpha(Q)
 	\]
-	and therefore $\bwsem{\regr^{\kstar}}^{\sharp}_{A} \alpha(Q) = \alpha(Q)$ by Lemma~\ref{lmm:bwsem-calculus}.
+	and therefore $\bwsem{\regr^{\kstar}}^{\sharp}_{A} \alpha(Q) = \alpha(Q)$ by Lemma~\ref{lmm:sil:bwsem-calculus}.
 
 	We then conclude the proof of (2) with
 	\begin{align*}
 		\bwsem{\regr^{\kstar}}^{\sharp}_{A} \alpha(Q) & = \alpha(Q)                  &                                     \\
 		                                              & = \alpha(P) \vee_A \alpha(Q) & [\text{hp of the rule } P \le A(Q)] \\
-		                                              & = \alpha(P \cup Q)           & [\text{additivity of } \alpha]
+		                                              & = \alpha(P \lor Q)           & [\text{additivity of } \alpha]
 	\end{align*}
 \end{proof}
 
@@ -548,7 +570,7 @@ The following lemma is used in the subsequent proof.
 				\infer[\clclrule{iterate}]
 				{\clcltriple{\Oct}{S_{2M} \lor R_{2M}}{\regr_w^{\kstar}}{T_{2M} \lor R_{2M}}}
 				{
-					S_{2M} \subseteq \Oct(T_{2M} \lor R_{2M})
+					S_{2M} \le \Oct(T_{2M} \lor R_{2M})
 					& \infer{\clcltriple{\Oct}{S_{2M}}{\regr_w}{T_{2M} \lor R_{2M}}}{\dots}
 				}
 				& \infer{\clcltriple{\Oct}{T_{2M}}{\regr_w}{R_{2M}}}{\dots}
@@ -559,3 +581,7 @@ The following lemma is used in the subsequent proof.
 	\caption{Derivation of the CLCL triple $\clcltriple{\Oct}{(n > 0 \land x + n \le 2000000) \lor R_{2M}}{\regr_w^{\kstar}}{R_{2M}}$. For brevity, we omit rule name \clclrule{transfer}, we let $\bar{k} \eqdef 2000000$, we recall that $R_{2M} \eqdef (x = \bar{k} \land n \le 0)$, $T_{2M} \eqdef (x + n = \bar{k} \land n > 0)$ and we define $S_{2M} \eqdef (x + n \le \bar{k} \land n > 0)$.}
 	\label{fig:app:clcl-derivation}
 \end{sidewaysfigure}
+
+\begin{proof}[Proof of Proposition~\ref{prop:lcla:clcl-sound-refinement}]
+	\todo[inline]{Write the proof or decide I don't care}
+\end{proof}

@@ -95,7 +95,7 @@ Since in this chapter we deal with different kinds of program logics, a summary 
 	\label{fig:sil:notation-summary}
 \end{figure}
 
-\section{Sufficient Incorrectness Logic}
+\section{Sufficient Incorrectness Logic}\label{sec:sil:sil}
 
 SIL is a backward\hyp{}oriented under\hyp{}approximation proof system for Lisbon triples that focuses on \emph{finding the sources of incorrectness rather than highlighting the presence of bugs}. Assuming the post $Q$ defines some class of errors, i.e., it is what we call an \emph{incorrectness specification}, a (valid) SIL triple $\siltriple{P}{\regr}{Q}$ means that ``\emph{all input states that satisfy $P$ have at least one execution of the program $\regr$ leading to a state that satisfies $Q$}''. For deterministic programs, SIL guarantees that a state satisfying the pre \emph{always} leads to an error. Instead, if $\regr$ is nondeterministic, SIL guarantees that there \emph{exists} an execution that leads to an error. Sufficient incorrectness preconditions are extremely valuable to programmers: by pointing out the sources of errors, they serve as a starting point to scope down debugging, fuzzing, and testing. Moreover, it is known that, contrary to IL and its extensions, backward under\hyp{}approximation can expose manifest errors \cite[§3.2]{LRVBDO22}: an error $Q$ is manifest iff the SIL triple $\siltriple{\true}{\regr}{Q}$ is valid. These are bugs that happen regardless of the context and it has been observed experimentally that are more likely to be fixed when reported~\cite[§5]{LRVBDO22}. Therefore, we study SIL to enhance program analysis frameworks with the ability to identify the source of incorrectness.
 
@@ -652,7 +652,7 @@ In the third group, we instantiated the SIL rules from Figure~\ref{fig:sil:sil-r
 			\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
 				                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
 				                                             \emptyset                         & otherwise
-			                                             \end{cases*}    \\
+			                                             \end{cases*}  \\
 			\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}(l)\right\rbrace \\
 			\edenot{\code{free(x)}} (s, h)      & \eqdef
 			\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                       \\

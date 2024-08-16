@@ -9,10 +9,11 @@ Lastly, we study further the possibility of using $\LCLA$ for backward analysis,
 The content of this chapter is based on~\cite{ABG23} and~\cite[\S 6]{ABGL24}.
 
 \section{Motivation}
-While any $\LCLA$ valid triple allows to prove both correctness and incorrectness, a very powerful capability, proving an $\LCLA$ triple can be challenging.
-The strongest of the three properties required by $\LCLA$ is point~(3) in Theorem~\ref{th:sota:lcl-soundness}, which is a key property to guarantee that point~(2) holds.
-The issue is that requiring the abstract interpreter $\denot{\regc}^{\sharp}_{A}$ to be locally complete is an \emph{intensional} property, because the evaluation of $\denot{\regc}^{\sharp}_{A}$ depends on how the code $\regc$ is written.
-In fact, it is well known that the abstract analyses $\denot{\regc_1}^{\sharp}_{A}$ and $\denot{\regc_2}^{\sharp}_{A}$ of two programs $\regc_1$ and $\regc_2$ that compute the same function (i.e., $\denot{\regc_1}=\denot{\regc_2}$) can yield different results.
+While any $\LCLA$ valid triple allows to prove both correctness and incorrectness, a very powerful ability, proving an $\LCLA$ triple can be challenging. Therefore, it is important to study how to simplify this task.
+
+The strongest of the three properties required by $\LCLA$ is point~(3) in Theorem~\ref{th:sota:lcl-soundness}, which in turn is key to guarantee that point~(2) holds.
+However, requiring the abstract interpreter $\denot{\regc}^{\sharp}_{A}$ to be locally complete is an \emph{intensional} property, because the function $\denot{\regc}^{\sharp}_{A}$ depends on how $\regc$ is written.
+In fact, it is well known that the abstract analyses $\denot{\regc_1}^{\sharp}_{A}$ and $\denot{\regc_2}^{\sharp}_{A}$ of two programs $\regc_1$ and $\regc_2$ computing the same function (i.e., $\denot{\regc_1}=\denot{\regc_2}$) can yield different results.
 
 A weaker requirement that suffices to guarantee the validity of point~(2) is the local completeness of the bca $\denot{\regc}^{A}$ of the function $\denot{\regc}$, which is an \emph{extensional} property: it only depends on the abstract domain $A$ and on the computed function $\denot{\regc}$ associated with $\regc$, not on the way $\regc$ is composed. In its original formulation, $\LCLA$ exploits $\denot{\regc}^{\sharp}_{A}$ instead of $\denot{\regc}^{A}$ because the second can be as hard to compute as the concrete semantics $\denot{\regc}$ and because the sequential composition of bcas is not necessarily a bca itself.
 The difference between $\denot{\regc}^{A}$ and $\denot{\regc}^{\sharp}_{A}$ is exemplified below (see also, e.g.,~\cite[Example~1]{LL09}):
@@ -53,8 +54,11 @@ The difference between $\denot{\regc}^{A}$ and $\denot{\regc}^{\sharp}_{A}$ is e
 	Consider the simple program fragment
 	$$\regc \eqdef \code{x := x + 1; x := x - 1}\ .$$
 
-	Its denotational semantics $\denot{\regc}$ is the identity function $\id_{\setZ}$, so its bca $$\denot{\regc}^{\Sign} \eqdef \alpha~\id_{\setZ}~\gamma = \id_{\Sign}$$
-	is just the abstract identity. We say that $\denot{\regc}^{\Sign}$ is \emph{extensional} because it only depends on the function computed by $\regc$, i.e., its denotational semantics. However, an analyser does not know the semantics of $\regc$, so it has to analyse the program syntactically, breaking it down in elementary pieces and gluing the results together. So for instance, starting from the concrete point $P = \{ 1 \}$ the analysis first abstracts it to the property $\alpha(P) = \setZ_{> 0}$, then it computes
+	It's denotational semantics $\denot{\regc}$ is the identity $\id_{\setZ}$, so its bca (see Definition~\ref{def:bg:sound-abstraction})
+	\[
+	\denot{\regc}^{\Sign} \eqdef \alpha~\id_{\setZ}~\gamma = \id_{\Sign}
+	\]
+	is just the abstract identity. We say that $\denot{\regc}^{\Sign}$ is \emph{extensional} because it only depends on the function computed by $\regc$, i.e., its denotational semantics. However, an analyser does not know the semantics of $\regc$, so it has to analyse the program syntactically, breaking it down into elementary pieces and gluing the results together. For instance, starting from the concrete point $P = \{ 1 \}$, the analysis first abstracts it to the property $\alpha(P) = \setZ_{> 0}$, then it computes
 	\begin{align*}
 		\denot{\regc}^{\sharp}_{\Sign} (\setZ_{> 0}) & = \denot{\code{x := x - 1}}^{\sharp}_{\Sign} \denot{\code{x := x + 1}}^{\sharp}_{\Sign} (\setZ_{> 0}) \\
 		                                             & = \denot{\code{x := x - 1}}^{\sharp}_{\Sign} (\setZ_{> 0}) = \setZ_{\ge 0} .
@@ -70,20 +74,22 @@ The difference between $\denot{\regc}^{A}$ and $\denot{\regc}^{\sharp}_{A}$ is e
 	\]
 	that, albeit sound, is less precise than $\id_{\Sign}$ (we highlight with a gray background all inputs on which $\denot{\regc}^{\sharp}_{\Sign}$ loses accuracy).
 
-	The program $\regc$ is equivalent to the command $\code{skip}$, because $\denot{\code{skip}}=\id_{\setZ}$, and thus $\regc$ and $\code{skip}$ are assigned the same bca $\denot{\code{skip}}^{\Sign} = \denot{\code{skip}}^{\Sign} =  \id_{\Sign}$.
+	The program $\regc$ is equivalent to the command $\code{skip}$, because $\denot{\code{skip}}=\id_{\setZ}$, and thus $\regc$ and $\code{skip}$ are assigned the same bca $\denot{\code{skip}}^{\Sign} = \denot{\regc}^{\Sign} = \id_{\Sign}$.
 	However, $\denot{\code{skip}}^{\sharp}_{\Sign} = \id_{\Sign} \neq \denot{\regc}^{\sharp}_{\Sign}$, exposing the \emph{intensional} essence of the abstract interpreter: the abstraction depends on how the program is written and not only on its semantics.\footnote{While it falls outside the scope of this thesis, we refer the interested reader to, e.g.,~\cite{BGGGP19,BRZ22} for more about intensional and extensional abstract properties.}
 \end{example}
 
 The possibility of weakening point~(3) from being an intensional requirement based on $\denot{\regc}^{\sharp}_A$ to an extensional one based on bcas $\denot{\regc}^A$ has several nice consequences.
 First, the local completeness of $\denot{\regc}^A$ is enough to guarantee that points~(1-2) hold.
 Second, while the proof system itself provides an intensional analysis, because its rules are defined inductively on the program syntax, the information it produces is more precise, in the sense that the property associated with triples is extensional: no precision is lost because of the approximation introduced by the intensional abstract interpreter.
-Third, it allows the proof system to derive more triples than the original one, because bcas can be locally complete also in cases where the abstract interpreter is not (but not vice versa).
-Finally, since extensional properties are irrespective of how the program is written, this possibility provides the potential for deriving exactly the same triples for equivalent programs.
+Third, it allows the proof system to derive more triples than the original one because a bca can be locally complete even when the abstract interpreter is not (but not vice versa).
+Finally, since extensional properties are independent of how the program is written, this possibility provides the potential for deriving exactly the same triples for equivalent programs.
 
-Lastly, the whole theory of completeness in abstract interpretation is based on the framework of Galois connection. Therefore, $\LCLA$ cannot be applied to known instances of abstract domains lacking an abstraction function $\alpha$, such as convex polyhedra abstractions~\cite{CH78} that are widely used in static analysis. However, abstract convexity of local completeness can help mitigate this limitation: even if a point doesn't have a best abstraction, if it can be bound between another point and its abstraction, we can in a sense ``prove'' local completeness on it thanks to abstract convexity.
+Another constraint imposed by $\LCLA$ is the need for a Galois connection: the whole theory of completeness in abstract interpretation is based on it. Therefore, $\LCLA$ cannot be applied to known instances of abstract domains lacking an abstraction function $\alpha$, such as convex polyhedra~\cite{CH78} that are widely used in static analysis. However, abstract convexity of local completeness can help mitigate this limitation: even if a point doesn't have a best abstraction, if it can be bound between another point and its abstraction, we can in a sense ``prove'' local completeness on it thanks to abstract convexity.
+
+Lastly, $\LCLA$ was proposed for forward analysis. In theory, nothing prevents it to be used in a backward fashion, but the classical forward/backward duality requires the use of under-approximation abstract domains, making it impractical (see Chapter~\ref{ch:uai}). However, if we consider the backward semantics $\bwsem{\cdot}$ defined in the previous chapter, it turns out that it is possible to combine SIL (Section~\ref{sec:sil:sil}) with over-approximation abstract domain in a $\LCLA$-style.
 
 \section{Extensional soundness}
-As anticipated at the beginning of the Chapter, one of our goals is to weaken point (3) of the soundness Theorem~\ref{th:sota:lcl-soundness} from local completeness of the abstract interpreter $\denot{\regr}^{\sharp}_A$ to that of the bca $\denot{\regr}^A$. The key observation is that the proof of Corollary~\ref{th:sota:corollary-verification} only relies on points (1-2) of Theorem~\ref{th:sota:lcl-soundness}, so from a program analysis perspective point (3) can be seen as a technical requirement to prove the other two. However, we observe that local completeness of the bca is enough to this aim: we therefore present a slightly weaker\footnote{Logically speaking, we prove a stronger conclusion, so the theorem as an implication is weaker.} soundness result for $\LCLA$, with the bca $\denot{\regr}^A$ in place of the inductively defined abstract interpreter $\denot{\regr}^{\sharp}_A$.
+As anticipated at the beginning of the chapter, one of our goals is to weaken point (3) of the soundness Theorem~\ref{th:sota:lcl-soundness} from local completeness of the abstract interpreter $\denot{\regr}^{\sharp}_A$ to that of the bca $\denot{\regr}^A$. The key observation is that the proof of Corollary~\ref{th:sota:corollary-verification} only relies on points (1-2) of Theorem~\ref{th:sota:lcl-soundness}, so from a program analysis perspective point (3) can be seen as a technical requirement to prove the other two. However, we observe that local completeness of the bca is enough to this aim: we therefore present a slightly weaker\footnote{Logically speaking, we prove a stronger conclusion, so the theorem as an implication is weaker.} soundness result for $\LCLA$, with the bca $\denot{\regr}^A$ in place of the inductively defined abstract interpreter $\denot{\regr}^{\sharp}_A$.
 
 \begin{theorem}[Extensional soundness]\label{th:lcla:soundness-ext}
 	Let $A_{\alpha, \gamma} \in \Abs(C)$.
@@ -148,7 +154,7 @@ Formally, given the two abstract domains $A_{\alpha, \gamma}, A'_{\alpha', \gamm
 With the addition of rule \lclrule{refine\mbox{-}ext}, intensional soundness (Theorem~\ref{th:sota:lcl-soundness}) does not hold anymore: since this rule allows to perform part of the analysis in a more concrete domain $A'$, we do not get any information on $\denot{\regr}^{\sharp}_A$. However, rule \lclrule{refine\mbox{-}ext} is sound w.r.t. the bca $\denot{\regr}^A$, and therefore it makes the proof system extensionally sound:
 
 \begin{theorem}[Extensional soundness of \lclrule{refine\mbox{-}ext}]\label{th:lcla:soundness-rule-refine}
-	The proof system in Figure~\ref{fig:sota:lcla-rules} with the addition of rule \lclrule{refine\mbox{-}ext} from Figure~\ref{fig:lcla:rule-refine}) is extensionally sound.
+	The proof system in Figure~\ref{fig:sota:lcla-rules} with the addition of rule \lclrule{refine\mbox{-}ext} from Figure~\ref{fig:lcla:rule-refine} is extensionally sound.
 \end{theorem}
 \begin{proof}[Proof sketch]
 	We extend the proof of Theorem~\ref{th:lcla:soundness-ext} with a new inductive case. The full details are in Appendix~\ref{ch:app:lcla}.
@@ -172,11 +178,9 @@ We remark that a rule like \lclrule{refine\mbox{-}ext}, that allows to carry on 
 \end{example}
 
 \subsection{Logical completeness}\label{sec:logical-completeness}
-Among all the possible conditions that make a refinement rule valid, we believe ours to be very general since the \lclrule{refine\mbox{-}ext} allows us to derive logical completeness, i.e., the ability to prove \emph{any} triple satisfying the soundness properties guaranteed by the proof system. Note that this was not the case for the original $\LCLA$ proof system~\cite[§5.2]{BGGR21}.
+Among all the possible conditions that make a refinement rule valid, we believe ours to be very general since \lclrule{refine\mbox{-}ext} allows us to derive logical completeness, that is, the ability to prove \emph{any} triple satisfying the soundness properties guaranteed by the proof system. Note that this was not the case for the original $\LCLA$ proof system~\cite[§5.2]{BGGR21}.
 
-%In Section~5.2 of \cite{BGGR21}, the authors discuss logical completeness of $\LCLA$. Here the adjective ``logical" is used to disambiguate the term with respect to Abstract interpretation completeness.
-%: the former is about the class of triples that can be proved in the proof system, while the latter is the extensively discussed concept of not losing precision in an analysis.
-However, to prove such a result, our extension need an additional rule to handle loops, just like the original $\LCLA$ and IL.
+However, to prove such a result, our extension need an additional rule to handle loops, just like the original $\LCLA$ and other logics (IL, SIL).
 The necessary infinitary rule, called \lclrule{limit}, allows the proof system to handle Kleene star, and is the same as $\LCLA$:
 
 \[\infer[(\mathsf{limit})]
@@ -219,11 +223,7 @@ The necessary infinitary rule, called \lclrule{limit}, allows the proof system t
 	\]
 \end{proof}
 
-The previous theorem proves the logical completeness of our proof system with respect to extensional validity: indeed, if $Q \le \denot{\regr} P$ and $\denot{\regr}^A \alpha(P) = \alpha(Q)$ we also have:
-\begin{align*}
-	\alpha(Q) \le \alpha(\denot{\regr} P) \le \denot{\regr}^{A} \alpha(P) = \alpha(Q) ,
-\end{align*}
-hence all three conditions of Theorem~\ref{th:lcla:soundness-ext} are satisfied.
+The previous theorem proves the logical completeness of our proof system with respect to extensional validity: indeed, if $Q \le \denot{\regr} P$ and $\denot{\regr}^A \alpha(P) = \alpha(Q)$ we also have $\alpha(\denot{\regr} P) = \alpha(Q)$ (see, e.g., the proof of Theorem~\ref{th:lcla:soundness-ext}).
 
 An interesting consequence of this result is the existence of a refinement $A'$ in which it is possible to carry out the proof. In principle, such a refinement could be the concrete domain $C$ (as shown in the proof), that is not computable. However, it is worth nothing that for a sequential fragment (a portion of code without loops) the concrete domain can be actually used (for instance via first-order logic). This opens up the possibility, for instance, to infer a loop invariant on the body using $C$, and then prove it using an abstract domain.
 In Section~\ref{sec:lcla:choose-refinement} we discuss this issue further.
@@ -278,7 +278,7 @@ The hypothesis $A \denot{\regr}^{A'} A(P) = A(Q)$ is added to rule \lclrule{refi
 	\]
 \end{example}
 
-Despite being necessary, the hypothesis of rule \lclrule{refine\mbox{-}ext} cannot be checked algorithmically because, in general, the bca $\denot{\regr}^{A'}$ of a composite command $\regr$ is not computable. To mitigate this issue, we present two derived rules whose premises imply the premises of Rule \lclrule{refine\mbox{-}ext}, hence ensuring extensional soundness by means of Theorem~\ref{th:lcla:soundness-rule-refine}.
+Despite being necessary, the hypothesis of rule \lclrule{refine\mbox{-}ext} cannot be checked algorithmically because, in general, the bca $\denot{\regr}^{A'}$ of a composite command $\regr$ is not computable. To mitigate this issue, we present in Figure~\ref{fig:lcla:rules-refine-derived} two derived rules whose premises imply the premises of \lclrule{refine\mbox{-}ext}, thus ensuring extensional soundness via Theorem~\ref{th:lcla:soundness-rule-refine}.
 
 \begin{figure*}[t]
 	\begin{framed}
@@ -287,23 +287,31 @@ Despite being necessary, the hypothesis of rule \lclrule{refine\mbox{-}ext} cann
 		{\lcl{A}{P}{\regr}{Q}}
 		{\lcl{A'}{P}{\regr}{Q} \quad A' \preceq A \quad A \denot{\regr}^{\sharp}_{A'} A(P) = A(Q) }
 		\]
+
+		\[
+		\infer[\lclrule{refine\mbox{-}pre}]
+		{\lcl{A}{P}{\regr}{Q}}
+		{\lcl{A'}{P}{\regr}{Q} \quad A' \preceq A \quad A'(P) = A(P) }
+		\]
 	\end{framed}
 	\vspace{-1ex}
-	\caption{Rule \lclrule{refine\mbox{-}int} for $\LCLA$.}\label{fig:lcla:rule-refine-int}
+	\caption{Derived refinement rules for $\LCLA$.}\label{fig:lcla:rules-refine-derived}
 \end{figure*}
 
-The first rule we present replaces the requirement on the extensional bca $\denot{\regr}^{A'}$ with requirements on the intensional compositional abstraction $\denot{\regr}^{\sharp}_{A'}$ computed in $A'$ (see Figure~\ref{fig:lcla:rule-refine-int}). For this reason, we call this rule \lclrule{refine\mbox{-}int}.
+The first rule we present replaces the requirement on the extensional bca $\denot{\regr}^{A'}$ with requirements on the intensional compositional abstraction $\denot{\regr}^{\sharp}_{A'}$ computed in $A'$. For this reason, we call this rule \lclrule{refine\mbox{-}int}.
 
-\begin{prop}\label{th:lcla:refine-int-sound}
-	The rule \lclrule{refine\mbox{-}int} in Figure~\ref{fig:lcla:rule-refine-int} is extensionally sound.
+The second derived rule we propose is simpler than \lclrule{refine\mbox{-}ext}: it just requires the abstractions $A(P)$ and $A'(P)$ to coincide, with no reference to the regular command $\regr$ nor to the postcondition $Q$. Since the premise is only on the precondition $P$, we call this rule \lclrule{refine\mbox{-}pre}.
+
+\begin{prop}\label{th:lcla:refine-derived-sound}
+	Both rules \lclrule{refine\mbox{-}int} and \lclrule{refine\mbox{-}pre} in Figure~\ref{fig:lcla:rules-refine-derived} are extensionally sound.
 \end{prop}
 \begin{proof}[Proof sketch]
-	We show that the hypotheses of \lclrule{refine\mbox{-}int} implies those of \lclrule{refine\mbox{-}ext}. Since the first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the two rules, we only have to show that $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. The details of this are in Appendix~\ref{ch:app:lcla}.
+	We show that the hypotheses of both rules imply those of \lclrule{refine\mbox{-}ext}. Since the first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among the rules, we only have to show that $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. The details are in Appendix~\ref{ch:app:lcla}.
 
-	Because the hypotheses of \lclrule{refine\mbox{-}int} implies those of \lclrule{refine\mbox{-}ext}, whenever we can apply the former we can also apply the latter, so that Theorem~\ref{th:lcla:soundness-rule-refine} ensures extensional soundness.
+	Because the hypotheses of \lclrule{refine\mbox{-}int} and \lclrule{refine\mbox{-}pre} implies those of \lclrule{refine\mbox{-}ext}, whenever we can apply the former we can also apply the latter, so that Theorem~\ref{th:lcla:soundness-rule-refine} ensures extensional soundness.
 \end{proof}
 
-It is worth noting that the condition on the compositional abstraction $\denot{\regr}^{\sharp}_{A'}$ can easily be checked by the analyser, possibly alongside the analysis of $\regr$ with LCL or using a stand-alone abstract interpreter.
+It is worth noting that the condition in \lclrule{refine\mbox{-}int} on the compositional abstraction $\denot{\regr}^{\sharp}_{A'}$ can easily be checked by the analyser, possibly alongside the analysis of $\regr$ with LCL or using a stand-alone abstract interpreter.
 Moreover, this rule is as powerful as the original \lclrule{refine\mbox{-}ext} because it enjoys a logical completeness result akin to Theorem~\ref{th:lcla:refinement-rule-completeness}.
 \begin{theorem}[Logical completeness of \lclrule{refine\mbox{-}int}]\label{th:lcla:refine-int-completeness}
 	Consider the proof system of Figure~\ref{fig:sota:lcla-rules} with the addition of rules \lclrule{refine\mbox{-}int} and \lclrule{limit}. If $Q \le \denot{\regr} P$ and $\denot{\regr}^A \alpha(P) = \alpha(Q)$ then $\lcl{A}{P}{\regr}{Q}$.
@@ -314,29 +322,7 @@ Moreover, this rule is as powerful as the original \lclrule{refine\mbox{-}ext} b
 
 Just like logical completeness of \lclrule{refine\mbox{-}ext}, this result implies the existence of a refinement $A'$ (possibly the concrete domain) in which it is possible to carry out the proof.
 
-\begin{figure*}[t]
-	\begin{framed}
-		\[
-		\infer[\lclrule{refine\mbox{-}pre}]
-		{\lcl{A}{P}{\regr}{Q}}
-		{\lcl{A'}{P}{\regr}{Q} \quad A' \preceq A \quad A'(P) = A(P) }
-		\]
-	\end{framed}
-	\vspace{-1ex}
-	\caption{Rule \lclrule{refine\mbox{-}pre} for $\LCLA$.}\label{fig:lcla:rule-refine-pre}
-\end{figure*}
-
-The second derived rule we propose (see Figure~\ref{fig:lcla:rule-refine-pre}) is simpler than \lclrule{refine\mbox{-}ext}: it just requires the abstractions $A(P)$ and $A'(P)$ to coincide, with no reference to the regular command $\regr$ nor to the postcondition $Q$. Since the premise is only on the precondition $P$, we call this rule \lclrule{refine\mbox{-}pre}.
-
-\begin{prop}\label{th:lcla:refine-pre-sound}
-	The rule \lclrule{refine\mbox{-}pre} in Figure~\ref{fig:lcla:rule-refine-pre} is extensionally sound.
-\end{prop}
-\begin{proof}[Proof sketch]
-	The proof follows the same line as Proposition~\ref{th:lcla:refine-int-sound}. The details are in Appendix~\ref{ch:app:lcla}.
-\end{proof}
-
 Rule \lclrule{refine\mbox{-}pre} only requires a simple check at the application site instead of an expensive analysis of the program $\regr$, so it can be preferable in practice.
-
 We present an example to highlight the advantages of this rule (as well as \lclrule{refine\mbox{-}int}), which allows us to use different domains in the proof derivation of different parts of the program.
 
 \begin{example}[The use of \lclrule{refine\mbox{-}pre}]\label{ex:lcla:refine-pre-usefulness}
@@ -373,28 +359,6 @@ We present an example to highlight the advantages of this rule (as well as \lclr
 	This suggests to use the octagons domain $\Oct$~\cite{Mine06} to analyse $\regr_2$. It is worth noting that the abstract domain $\Oct$ would not be able to perform a locally complete analysis of $\regr_1$ for the same reasons that the domain $\Int$ could not.
 
 	However, rule \lclrule{refine\mbox{-}pre} allows us to combine these different proof derivations. Since the program state between $\regr_1$ and $\regr_2$ can be precisely represented in $\Int$, we use this domain as a baseline and refine it to $\Int_{\neq 0}$ and to $\Oct$ for the two parts, respectively.
-
-	%	\begin{figure*}[t]
-	%		\[
-	%		\text{\small
-	%			\infer[(\mathsf{seq})]
-	%			{\lcl{\Int_{\neq 0}}{P}{\regr_1}{R}
-	%					\qquad \Int_{\neq 0} \preceq \Int \qquad \Int(P) = \Int_{\neq 0}(P)
-	%			}
-	%			{
-	%				\infer[(\mathsf{transfer})]
-	%				{\lcl{\Int_{\neq 0}}{P}{\code{y != 0?}}{R_1}}{ \complete{\Int_{\neq 0}}{P}{\denot{\code{y != 0?}}} }
-	%				&
-	%				\infer[(\mathsf{relax})]
-	%				{\lcl{\Int_{\neq 0}}{R_1}{\code{y := abs(y)}}{R}}
-	%				{\infer[(\mathsf{transfer})]
-	%					{\lcl{\Int_{\neq 0}}{R_1}{\code{y := abs(y)}}{\code{y} \in [1; 100]}}{ \complete{\Int_{\neq 0}}{R_1}{\denot{\code{y := abs(y)}}} }
-	%				}
-	%			}
-	%		}
-	%		\]
-	%		\caption{Derivation of $\lcl{\Int_{\neq 0}}{P}{\regr_1}{R}$ for Example~\ref{ex:refine-pre-usefulness}.}\label{fig:ex-refine-pre-derivation-1}
-	%	\end{figure*}
 
 	Let $R = (\code{y} \in \{ 1; 2; 100 \})$ that is an under\hyp{}approximation of the concrete state in between $\regr_1$ and $\regr_2$ with the same abstraction in $\Int$, so the triple $\lcl{\Int}{P}{\regr_1}{R}$ is valid. Note that the concrete point $2$ was added to $R$ in order to have local completeness for \code{(x > 1)?} in $\regr_2$. However, this triple cannot be proved in $\Int$ because $\denot{\regr_1}^{\sharp}_{\Int}$ is not locally complete on $P$, so we resort to \lclrule{refine\mbox{-}pre} to change the domain to $\Int_{\neq 0}$.
 	In the derivation below, we let $R_1 = (\code{y} \in [-100; 100] \land \code{y} \neq 0)$ and we omit for simplicity the additional hypothesis of \lclrule{relax}:
@@ -513,16 +477,21 @@ We now present an example to illustrate that there are situations in which \lclr
 Thanks to the three new rules \lclrule{refine\mbox{-}ext}, \lclrule{refine\mbox{-}int} and \lclrule{refine\mbox{-}pre} we can now combine different domains in the same derivation.
 However, in order to obtain an algorithm that automatises the search of a provable $\LCLA$ triple we are left with the problem of the selection of the right refinement to use each time. A crucial point to the applicability of refine rules is a strategy to find the most convenient refined abstract domain. While we have not addressed this problem yet, we believe there are some interesting starting points in the literature.
 
-In previous sections, we settled the question from a theoretical point of view. Logical completeness results for \lclrule{refine\mbox{-}ext} (Theorem~\ref{th:lcla:refinement-rule-completeness}) and \lclrule{refine\mbox{-}int} (Theorem~\ref{th:lcla:refine-int-completeness}) implies the existence of a domain in which it is possible to complete the proof (if this were not the case, then the proof could not be completed in any domain, against logical completeness). However, the proofs of those theorems exhibit the concrete domain $C$ as an example, which is unfeasible in general. Dually, as \lclrule{refine\mbox{-}pre} is logically incomplete (Example~\ref{ex:lcla:refine-pre-incomplete}), there are triples that cannot be proved in any domain with it.
+In previous sections, we settled the question from a theoretical point of view. Logical completeness results for \lclrule{refine\mbox{-}ext} (Theorem~\ref{th:lcla:refinement-rule-completeness}) and \lclrule{refine\mbox{-}int} (Theorem~\ref{th:lcla:refine-int-completeness}) implies the existence of a domain in which it is possible to complete the proof (if this were not the case, then the proof could not be completed in any domain, contradicting logical completeness). However, the proofs of those theorems exhibit the concrete domain $C$ as an example, which is unfeasible in general. Dually, as \lclrule{refine\mbox{-}pre} is logically incomplete (Example~\ref{ex:lcla:refine-pre-incomplete}), there are triples that cannot be proved in any domain with it.
 
 As more practical alternatives, we envisage some possibilities.
 First, we are studying relationships with counterexample\hyp{}guided abstraction refinement (CEGAR) \cite{CGJLV00}, which is a technique that exploits refinement in the context of abstract model checking. However, CEGAR and our approach seem complementary. On the one hand, our refinement rules allow a dynamic change of domain, during the analysis and only for a part of it, while CEGAR performs a static refinement and then a new analysis of the whole transition system in the new, more precise domain. On the other hand, our rules lack an instantiation technique, while for CEGAR there are effective algorithms available to pick a suitable refinement.
 
 Second, local completeness shell \cite{BGGR22} were proposed as an analogous of (global) completeness shell \cite{GRS00}. In the article, the authors proposed to use local completeness shells to perform abstract interpretation repair, a technique to refine the abstract domain depending on the program to analyse, just like CEGAR does for abstract model checking. Abstract interpretation repair works well with $\LCLA$, and could be a way to decide the best refinement for one of our rules in presence of a failed local completeness proof obligation. The advantage of combining repair with our new rules is given by the possibility of discarding the refined domain just after its use in a subderivation instead of using it to carry out the whole derivation. Investigations in this direction is ongoing.
 
-Another related approach, which shares some common ground with CEGAR, is Lazy (Predicate) Abstraction \cite{HJMS02,McMillan06}. Both ours and this approach exploits different abstract domains for different parts of the proof, refining it as needed. The key difference is that Lazy Abstraction unwinds the control flow graph (CFG) of the program (with techniques to handle loops) while we work inductively on the syntax. This means that, when Lazy Abstraction refines a domain, it must use it from that point onward (unless it finds a loop invariant). On the other hand, our method can change abstract domain even for different parts of sequential code. However, the technique used in Lazy Abstraction (basically to trace a counterexample back with a theorem prover until it is either found to be spurious or proved to be true) could be applicable to $\LCLA$: a failed local completeness proof obligation in \lclrule{transfer} can be traced back with a theorem prover and the failed proof can be used to understand how to refine the abstract domain.
+Another related approach, which shares some common ground with CEGAR, is Lazy (Predicate) Abstraction \cite{HJMS02,McMillan06}. Both ours and this approach exploits different abstract domains for different parts of the proof, refining it as needed. The key difference is that Lazy Abstraction unwinds the control flow graph of the program (with techniques to handle loops) while we work inductively on the syntax. This means that, when Lazy Abstraction refines a domain, it must use it from that point onward (unless it finds a loop invariant). On the other hand, our method can change abstract domain even for different parts of sequential code. However, the technique used in Lazy Abstraction (basically to trace a counterexample back with a theorem prover until it is either found to be spurious or proved to be true) could be applicable to $\LCLA$: a failed local completeness proof obligation in \lclrule{transfer} can be traced back with a theorem prover and the failed proof can be used to understand how to refine the abstract domain.
 
 \section{Locally complete simplification}
+We now turn our attention to \emph{simplification} of the abstract domain in the $\LCLA$ proof system. It is known that (global) completeness can be achieved both by refining and by simplifying the abstract domain (these construction are called completeness shell and core, respectively~\cite{GRS00}). Therefore, we do the same for local completeness.
+We propose the rule \lclrule{simplify}, in Figure~\ref{fig:lcla:rule-simplify}. This is a dual of \lclrule{refine\mbox{-}pre}: while the latter requires $A'$ to be a refinement of $A$ with the same abstraction on the precondition $P$, the former requires $A'$ to be a simplification of $A$ with the same abstraction on the postcondition $Q$. We remark that this rule is independent of the refinement ones: it can be added to $\LCLA$ both with and without any of the refinement rules.
+
+The proposed rule \lclrule{simplify} is sound, but differently than the refinement rules, it is so \emph{intensionally}:
+
 \begin{figure*}[t]
 	\begin{framed}
 		\[
@@ -535,11 +504,6 @@ Another related approach, which shares some common ground with CEGAR, is Lazy (P
 	\caption{Rule \lclrule{simplify} for $\LCLA$.}\label{fig:lcla:rule-simplify}
 \end{figure*}
 
-We now turn our attention to \emph{simplification} of the abstract domain in the $\LCLA$ proof system. It is known that (global) completeness can be achieved both by refining and by simplifying the abstract domain (these construction are called completeness shell and core, respectively~\cite{GRS00}). Therefore, we do the same for local completeness.
-We propose the rule \lclrule{simplify}, in Figure~\ref{fig:lcla:rule-simplify}. This is a dual of \lclrule{refine\mbox{-}pre}: while the latter requires $A'$ to be a refinement of $A$ with the same abstraction on the precondition $P$, the former requires $A'$ to be a simplification of $A$ with the same abstraction on the postcondition $Q$. We remark that this rule is independent of the refinement ones: it can be added to $\LCLA$ both with and without any of the refinement rules.
-
-The proposed rule \lclrule{simplify} is sound, but differently than the refinement rules, it is so \emph{intensionally}:
-
 \begin{theorem}[Intensional soundness of rule simplify]\label{th:lcla:soundness-rule-simpl}
 	The proof system in Figure~\ref{fig:sota:lcla-rules} with the addition of rule \lclrule{simplify} from Figure~\ref{fig:lcla:rule-simplify} is intensionally sound.
 \end{theorem}
@@ -547,7 +511,7 @@ The proposed rule \lclrule{simplify} is sound, but differently than the refineme
 	Since the proof of Theorem~\ref{th:sota:lcl-soundness} in~\cite{BGGR21} is by rule induction, we extend its proof with a new inductive case. The full details are in Appendix~\ref{ch:app:lcla}.
 \end{proof}
 
-This result is somewhat surprising: for completeness, refinement and simplification have the same power; instead, for local completeness, the former appears to be stronger than the former.
+This result is somewhat surprising: for completeness, refinement and simplification have the same power; instead, for local completeness, the former appears to be stronger than the latter.
 
 Even though rule \lclrule{simplify} does not allow the proof system to prove triples which are not intensionally sound, it still allows to prove more triples, as shown in the following example.
 
@@ -586,7 +550,7 @@ Even though rule \lclrule{simplify} does not allow the proof system to prove tri
 	\]
 \end{example}
 
-Intuitively, in the previous example the incompleteness is caused by the precision of $\Int_{\neq 0}$ on the output of $\regr_1$. However, this precision is not needed because the details of the intermediate state are discarded by $\regr_w$. The simpler domain $\Div$ is able to cancel such precision, thus proving local completeness of the composite command.
+Intuitively, in the previous example the incompleteness is caused by the precision of $\Int_{\neq 0}$ on the output of $\regr_1$. However, this precision is not needed because the details of the intermediate state are discarded by $\regr_w$. The simpler domain $\Div$ is able to discard such precision, thus proving local completeness of the composite command.
 
 In this example, we showed that $\lcl{\Int_{\neq 0}}{P}{\regr}{\emptyset}$ can be proved in $\LCLA$ extended with \lclrule{simplify}, but by Example~\ref{ex:lcla:refine-pre-incomplete} we know it is not provable by \lclrule{refine\mbox{-}pre}. We remark that the opposite is true as well: $\LCLA$ extended with \lclrule{refine\mbox{-}pre} can prove extensionally valid triples (cf. Example~\ref{ex:lcla:refine-pre-usefulness}) that it cannot prove when extended with \lclrule{simplify}, because the latter is bound by intensional soundness. Together, these two facts means that \lclrule{refine\mbox{-}pre} and \lclrule{simplify} extend the logic in two incomparable ways. If we instead include \lclrule{refine\mbox{-}int}, we know by logical completeness (Theorem~\ref{th:lcla:refine-int-completeness}) that it can prove all (extensionally) valid triples, including all those provable with \lclrule{simplify}.
 
@@ -648,7 +612,6 @@ On the other hand, rule \lclrule{simplify} perform the ``global" analysis in $\P
 
 Since \lclrule{simplify} is analogous to \lclrule{refine\mbox{-}pre}, a natural question is whether there exists one simplification rule similar to the stronger \lclrule{refine\mbox{-}ext}. We believe this is not the case.
 A dual of \lclrule{refine\mbox{-}ext} for simplification should involve $\denot{\regr}^{A'}$, because the goal of the rule is to perform the analysis in $A'$. The only reasonable input to which we can apply $\denot{\regr}^{A'}$ is $\alpha'(P)$. Note that, since $A' \succeq A$, abstracting with $A$ before does not change the result: $\alpha' A(P) = \alpha'(P)$. The hypothesis $\lcl{A'}{P}{\regr}{Q}$ implies, by soundness, $\denot{\regr}^{A'} \alpha'(P) = \alpha'(Q)$. Moreover, for the rule to be sound its hypotheses must ensure that $\alpha(Q) = \alpha(\denot{\regr} P) = \denot{\regr}^{A} \alpha(P)$, so any condition involving $\denot{\regr}^{A'} \alpha'(P)$ and any of those three is equivalent to $A'(Q) = A(Q)$.
-%Lastly, if we consider $\denot{\regr}^{A}$, if its input is $\alpha A'(P)$ we know, by Example~\ref{ex:bound-A'-not-A}, that $\denot{\regr}^{A} \alpha(P)$ could be arbitrarily smaller than $\denot{\regr}^{A} \alpha A'(P)$, so conditions on the latter can't ensure soundness. If its input is $\alpha(P)$, so that the condition is analogous to $\denot{\regr}^{A} \alpha(P) = \alpha(Q)$, the rule would be sound because we're forcing the soundness condition in the hypotheses of the rule.
 Based on this argument, we don't expect a weaker condition (that is, a more general rule) for simplification to exist.
 
 \section{Exploiting convexity}
@@ -659,9 +622,9 @@ Formally, we introduce an intermediate domain $L$ between $C$ and $A$ such that 
 \[
 C \xleftarrow{\gamma_0} L \mathrel{\substack{\gamma \\ \leftrightarrows \\ \alpha}} A
 \]
-Intuitively, we take $L$ as the set of all the assertions we can write as pre- and post-conditions of $\LCLA$ triples, and we limit this to be only a subset of $C$ for which there is an abstraction function $\alpha : L \rightarrow A$. For instance, if $A = \Poly$, we can take as $L$ the set of finite unions of polyhedra, and limit the logic to only use those as pre- and post-conditions of triples, instead of any possible concrete state.
-To apply $\LCLA$ using $L$ as the concrete domain, we fix a sound abstraction $\denot{\regr}_L : L \rightarrow L$ of $\denot{\regr}$. As it is standard~\cite{CC92} in the absence of the abstraction function $\alpha$, we require $\denot{\regr}_L$ to satisfy the soundness condition $\denot{\regr} \gamma_0 \le \gamma_0 \denot{\regr}_L$.
-Since there is a Galois connection between $L$ and $A$, we can exploit the $\LCLA$ framework (and all of its extensions) using $L$ as the concrete domain and $\denot{\regr}_L$ as the concrete semantics. However, we want to obtain informations on $C$ and $\denot{\regr}$. To move the nice properties of $\LCLA$ from $L$ to $C$, we require the concrete point $X \in C$ to be in between the current assertion $P \in L$ and its abstraction $\alpha(P) \in A$. Formally, we require that, at any program point with concrete state $X$ and assertion $P$, the following invariant holds:
+Intuitively, we take $L$ as the set of all the assertions we can write as pre and postconditions of $\LCLA$ triples, and we limit this to be only a subset of $C$ for which there is an abstraction function $\alpha : L \rightarrow A$. For instance, if $A = \Poly$, we can take $L$ to be the set of finite unions of polyhedra, and limit the logic to only use those as pre and postconditions of triples, instead of any possible concrete state.
+To apply $\LCLA$ using $L$ as the concrete domain, we fix an abstraction $\denot{\regr}_L : L \rightarrow L$ of $\denot{\regr}$. As it is standard in the absence of the abstraction function~\cite{CC92}, we require $\denot{\regr}_L$ to satisfy the soundness condition $\denot{\regr} \gamma_0 \le \gamma_0 \denot{\regr}_L$.
+Since there is a Galois connection between $L$ and $A$, we can exploit the $\LCLA$ framework (and all of its extensions) using $L$ as the concrete domain and $\denot{\regr}_L$ as the concrete semantics. Then , to transfer the nice properties of $\LCLA$ from $L$ to $C$, we require the concrete point $X \in C$ to be in between the current assertion $P \in L$ and its abstraction $\alpha(P) \in A$. Formally, at any program point with concrete state $X$ and assertion $P$, we require that
 \begin{equation*}\label{eqn:lcla:I}
 	\gamma_0(P) \le X \le \gamma_0\gamma\alpha(P) \tag{I}
 \end{equation*}
@@ -672,9 +635,9 @@ However, in general this invariant is not preserved by program execution. Given 
 \gamma_0(\denot{\regr}_L P) = \denot{\regr} \gamma_0(P) .
 \]
 
-Under this hypothesis, we show the following lemma:
+Under this hypothesis, we show the following proposition:
 
-\begin{prop}
+\begin{prop}\label{prop:lcla:no-alpha-soundness}
 	Assume that $\denot{\regr}_L$ is forward complete on $P$, that $\lclvalid{A}{P}{\regr}{Q}$ is valid taking $L$ as the concrete domain and that invariant~\eqref{eqn:lcla:I} holds.
 	Then
 	\[
@@ -751,37 +714,33 @@ We define inductively in Figure~\ref{fig:lcla:regcom-abs-sem-bw} the backward ab
 \begin{figure*}[t]
 	\centering
 	\begin{framed}
-		\resizebox{\textwidth}{!}{
-			\(
+		\resizebox{\textwidth}{!}{\(
 			\begin{array}{l}
 				\infer[\clclrule{transfer}]
 				{\clcltriple{A}{\bwsem{\regc}Q}{\regc}{Q}}
 				{\complete{A}{Q}{\bwsem{\regc}}}
-				\quad %&
+				\quad
 				\infer[\clclrule{relax}]
 				{\clcltriple{A}{P}{\regr}{Q}}
-				{P \subseteq P' \subseteq A(P)             & \clcltriple{A}{P'}{\regr}{Q'} & Q' \subseteq Q \subseteq A(Q')}
+				{P \le P' \le A(P)                         & \clcltriple{A}{P'}{\regr}{Q'}    & Q' \le Q \le A(Q')}
 				\\[7.5pt]
 				\infer[\clclrule{seq}]
 				{\clcltriple{A}{P}{\regr_1;\regr_2}{Q}}
-				{\clcltriple{A}{P}{\regr_1}{R}             &
-					\clcltriple{A}{R}{\regr_2}{Q}}
-				\hfill %&
+				{\clcltriple{A}{P}{\regr_1}{R}             & \clcltriple{A}{R}{\regr_2}{Q}}
+				\hfill
 				\infer[\clclrule{join}]
-				{\clcltriple{A}{P_1 \cup P_2}{\regr_1 \regplus \regr_2}{Q}}
-				{ \clcltriple{A}{P_1}{\regr_1}{Q}          &
-					\clcltriple{A}{P_2}{\regr_2}{Q}}
+				{\clcltriple{A}{P_1 \lor P_2}{\regr_1 \regplus \regr_2}{Q}}
+				{ \clcltriple{A}{P_1}{\regr_1}{Q}          & \clcltriple{A}{P_2}{\regr_2}{Q}}
 				\\[7.5pt]
 				\infer[\clclrule{rec}]
 				{\clcltriple{A}{P}{\regr^\kstar}{Q}}
-				{\clcltriple{A}{P}{\regr^\kstar}{R \cup Q} & \clcltriple{A}{R}{\regr}{Q}}
-				\hfill %&
+				{\clcltriple{A}{P}{\regr^\kstar}{R \lor Q} & \clcltriple{A}{R}{\regr}{Q}}
+				\hfill
 				\infer[\clclrule{iterate}]
-				{\clcltriple{A}{P \cup Q}{\regr^\kstar}{Q}}
-				{P \subseteq A(Q)                          & \clcltriple{A}{P}{\regr}{Q}}
+				{\clcltriple{A}{P \lor Q}{\regr^\kstar}{Q}}
+				{P \le A(Q)                                & \clcltriple{A}{P}{\regr}{Q}}
 			\end{array}
-			\)
-		}
+			\)}
 	\end{framed}
 	\caption{The proof system for CLCL.}
 	\label{fig:lcla:clcl-rules}
@@ -810,14 +769,50 @@ Just like regular LCL, any provable CLCL triple ensures that $\bwsem{\regr} Q$ i
 	Using this triple, we conclude as in Example~\ref{ex:sil:derivation}: both applications of \silrule{atom} in Figure~\ref{fig:sil:example-derivation} can be replaced by \clclrule{transfer} since the backward semantics of both assignments is locally complete. Thus, we prove the triple $\clcltriple{\Oct}{\true}{\mathsf{rloop0}}{Q_{2M}}$ for the full program, which exposes a manifest error.
 \end{example}
 
-We\todo{Either do (better solution) or rewrite (worse)} conclude by remarking that this is just a proof-of-concept that shows how to exploit the duality between IL and SIL proof systems. We believe all properties (logical (in)completeness~\cite[\S 5.2]{BGGR23}) and extensions (while loops~\cite[\S 7]{BGGR23}, refinement rules~\cite{ABG23}) of the original LCL can be seamlessly adapted to CLCL.
+\begin{figure}[t]
+	\begin{framed}
+		\(
+		\begin{array}{c}
+			\infer[\clclrule{refine\mbox{-}ext}]
+			{\clcltriple{A}{P}{\regr}{Q}}
+			{\clcltriple{A'}{P}{\regr}{Q} & A' \preceq A & A(P) = A \bwsem{\regr}^{A'} A(Q)}
+			\\[7.5pt]
+			\infer[\clclrule{simplify}]
+			{\clcltriple{A}{P}{\regr}{Q}}
+			{\clcltriple{A'}{P}{\regr}{Q} & A' \succeq A & A'(P) = A(P)}
+			\\[7.5pt]
+			\infer[\clclrule{refine\mbox{-}int}]
+			{\clcltriple{A}{P}{\regr}{Q}}
+			{\clcltriple{A'}{P}{\regr}{Q} \quad A' \preceq A \quad A(P) = A \denot{\regr}^{\sharp}_{A'} A(Q) }
+			\\[7.5pt]
+			\infer[\clclrule{refine\mbox{-}pre}]
+			{\clcltriple{A}{P}{\regr}{Q}}
+			{\clcltriple{A'}{P}{\regr}{Q} \quad A' \preceq A \quad A'(Q) = A(Q) }
+		\end{array}
+		\)
+	\end{framed}
+	\vspace{-1ex}
+	\caption{Refinement and simplification rules for CLCL.}
+	\label{fig:lcla:clcl-refinement-rules}
+\end{figure}
 
-\section{Conclusions}
-In this chapter, we started from $\LCLA$~\cite{BGGR21} to propose a logical framework to prove both correctness and incorrectness of a program combining over and under-approximation in the form of (locally complete) abstractions and Incorrectness Logic. The original work was \emph{intensionally} sound, based on Galois connection and more suitable for forward analysis. We tried to relax those constraints.
+Other than the original $\LCLA$ proof system, we can adapt all the other extensions proposed in this chapter to CLCL. The fundamental reason that allows this is the fact that $\fwsem{\cdot}$ and $\bwsem{\cdot}$ enjoy the same inductive definition.
+For instance, \lclrule{refine\mbox{-}ext} can be adapted with the additional condition $A(P) = A \bwsem{\regr}^{A'} A(Q)$. All refinement and simplification rules are presented in Figure~\ref{fig:lcla:clcl-refinement-rules}. The refinement rules can be proved \emph{extensionally} sound (whose definition is analogous to $\LCLA$), while the simplification rule is (intensionally) sound.
+\begin{prop}\label{prop:lcla:clcl-sound-refinement}
+	The proof system in Figure~\ref{fig:lcla:clcl-rules} with the addition of any rule from Figure~\ref{fig:lcla:clcl-refinement-rules} is sound.
+\end{prop}
+\begin{proof}[Proof sketch]
+	The proof is analogous to those for $\LCLA$. It extends the soundness proof with new inductive cases for the new rules.
+\end{proof}
 
-For the first, we followed the idea of~\cite{BGGR23} to exploit different abstract domains to analyse different portions of the whole program. We propose new rules that can be added independently to the proof system. Three of them are based on domain \emph{refinement}, with different complexity-precision trade-off, and the last is based on domain \emph{simplification}. With any of this rule, we are able to prove many triples that the original $\LCLA$ could not because of how the program is written.
+Similarly, if the abstract domain doesn't have an abstraction function $\alpha$, we can adapt Proposition~\ref{prop:lcla:no-alpha-soundness} assuming that the invariant holds in for the final state $Q$ and prove it for $P$, by replacing $\fwsem{\cdot}$ with $\bwsem{\cdot}$ in the proof and using validity of the $\clcltriple{A}{P}{\regr}{Q}$.
+
+\section{Summary}
+In this chapter, we started from $\LCLA$~\cite{BGGR21}, a logical framework to prove both correctness and incorrectness of a program combining over and under-approximation in the form of (locally complete) abstractions and Incorrectness Logic. The original work was \emph{intensionally} sound, based on Galois connection and more suitable for forward analysis. We tried to relax those constraints.
+
+For the first, we followed the idea of~\cite{BGGR23} to exploit different abstract domains to analyse different portions of the whole program. We propose four new rules that can be independently added to the proof system. Three of them are based on domain \emph{refinement}, with different complexity-precision trade-off, and the last is based on domain \emph{simplification}. With any of this rule, we are able to prove many triples that the original $\LCLA$ could not because of how the program is written.
 For the second, in the absence of $\alpha$ we investigated the possibility to introduce an intermediate domain $L$ between $C$ and $A$. Under the hypothesis of local forward completeness, we showed that this is enough to recover the properties of $\LCLA$.
-For the third, we explored the use of the backward SIL together with over-approximation abstract domains instead of IL with under-approximation abstract domains, and we showed that we can recast all the previously known results for $\LCLA$ to CLCL.
+For the third, we explored the use of the backward SIL together with over-approximation abstract domains instead of IL with under-approximation abstract domains, and we showed that we can recast all results for $\LCLA$ to CLCL.
 
 \begin{figure}[t]
 	\centering
@@ -839,32 +834,32 @@ For the third, we explored the use of the backward SIL together with over-approx
 	\caption{Relations between the new proof systems}\label{fig:lcla:rules-comparison-graph}
 \end{figure}
 
-We present a pictorial comparison among the expressiveness of the various proof systems in Figure~\ref{fig:lcla:rules-comparison-graph}. The bottom node of the diagram represents the original proof system $\LCLA$ (see Figure~\ref{fig:sota:lcla-rules}). Each other node represents the proof system extended with the single rule mentioned in the balloon. Each arrow corresponds to an expressivity result: all triples provable in the target system are also provable in the source system, which is thus more powerful. The labels of the arrows point out the result that justifies the claim. The two mutual arrows between the two topmost nodes indicate that the two proof systems are logically equivalent, i.e., they can prove the same triples. For presentation purposes, we omit arrows obtained by transitivity.
+We present a pictorial comparison among the expressiveness of the various proof systems in Figure~\ref{fig:lcla:rules-comparison-graph}. The bottom node of the diagram represents the original proof system $\LCLA$. Each other node represents the proof system extended with the single rule mentioned in the balloon. Each arrow corresponds to an expressivity result: all triples provable in the target system are also provable in the source system, which is thus more powerful. The labels reference the result that justifies the claim. For simplicity, we omit arrows obtained by transitivity. The two mutual arrows between the two topmost nodes indicate that the two proof systems are logically equivalent (i.e., they can prove the same triples).
 
-We also summarises the properties $\LCLA$ enjoys when extended with different rules in Table~\ref{tab:lcla:rules-comparison-table}.
-\lclrule{refine\mbox{-}ext} is the most general refinement rule, from which the other two \lclrule{refine\mbox{-}int} and \lclrule{refine\mbox{-}pre} are derived. The former turns out to be as strong as \lclrule{refine\mbox{-}ext}, since they are both logically complete, while the latter is simpler to use, although weaker.
-The only simplification rule \lclrule{simplify} is theoretically slightly stronger than plain $\LCLA$, given its intrinsic incompleteness, but it can prove triples which are not provable using \lclrule{refine\mbox{-}pre}, and it may be useful in practice.
+%\begin{table}[t]
+%	\caption{Comparison of the proof systems}
+%	\label{tab:lcla:rules-comparison-table}
+%	\centering
+%	\renewcommand{\arraystretch}{1.5}
+%	\setlength{\tabcolsep}{0.6em}
+%	\begin{tabular}{c|c|c}
+%		Proof system                          & Extensional & Logical completeness \\ \hline \hline
+%		Plain $\LCLA$                         & \ding{55}   & \ding{55}            \\ \hline
+%		$\LCLA$ + \lclrule{refine\mbox{-}ext} & \checkmark  & \checkmark           \\ \hline
+%		$\LCLA$ + \lclrule{refine\mbox{-}int} & \checkmark  & \checkmark           \\ \hline
+%		$\LCLA$ + \lclrule{refine\mbox{-}pre} & \checkmark  & \ding{55}            \\ \hline
+%		$\LCLA$ + \lclrule{simplify}          & \ding{55}   & \ding{55}            \\
+%	\end{tabular}
+%\end{table}
+%
+%We also summarises the properties $\LCLA$ enjoys when extended with different rules in Table~\ref{tab:lcla:rules-comparison-table}.
+%\lclrule{refine\mbox{-}ext} is the most general refinement rule, from which the other two \lclrule{refine\mbox{-}int} and \lclrule{refine\mbox{-}pre} are derived. The former turns out to be as strong as \lclrule{refine\mbox{-}ext}, since they are both logically complete, while the latter is simpler to use, although weaker.
+%The only simplification rule \lclrule{simplify} is theoretically slightly stronger than plain $\LCLA$, given its intrinsic incompleteness, but it can prove triples which are not provable using \lclrule{refine\mbox{-}pre}, and it may be useful in practice.
 
-\begin{table}[t]
-	\caption{Comparison of the proof systems}
-	\label{tab:lcla:rules-comparison-table}
-	\centering
-	\renewcommand{\arraystretch}{1.5}
-	\setlength{\tabcolsep}{0.6em}
-	\begin{tabular}{c|c|c}
-		Proof system                          & Extensional & Logical completeness \\ \hline \hline
-		Plain $\LCLA$                         & \ding{55}   & \ding{55}            \\ \hline
-		$\LCLA$ + \lclrule{refine\mbox{-}ext} & \checkmark  & \checkmark           \\ \hline
-		$\LCLA$ + \lclrule{refine\mbox{-}int} & \checkmark  & \checkmark           \\ \hline
-		$\LCLA$ + \lclrule{refine\mbox{-}pre} & \checkmark  & \ding{55}            \\ \hline
-		$\LCLA$ + \lclrule{simplify}          & \ding{55}   & \ding{55}            \\
-	\end{tabular}
-\end{table}
-
-\subsection{Future works}
-While the new rules we introduced are relevant from both a theoretical and practical point of view, they do not define an algorithm because of their nondeterminism:
-% In principle, they may be applied to prove every triple moving to any refinement of the abstract domain, so
-we need techniques to determine \emph{when} a change of abstract domain is needed and \emph{how} to choose the most convenient new domain.
-We believe these two issues are actually related. For instance, if the analysis is unable to satisfy a local completeness proof obligation to apply \lclrule{transfer}, an heuristics may determine both what additional information is needed to make it true (i.e., how to refine the abstract domain) and where that additional information came from (i.e., when to refine). We briefly discussed in Section~\ref{sec:lcla:choose-refinement} some possibilities to perform this choice.
-Ideally, one would systematically select an off-the-shelf abstract domain best suited to deal with each code fragment and the heuristic would inspect the proof obligations, and exploit some sort of catalogue that can track suitable abstract domains that are locally complete for the code and input at hand or derive on-the-fly some convenient domain refinement as done, e.g., by partition refinement.
-To this aim, we intend to investigate a mutual exchange of ideas between CEGAR and our approach, and to integrate abstract interpretation repair into our framework.
+%\subsection{Future works}
+%While the new rules we introduced are relevant from both a theoretical and practical point of view, they do not define an algorithm because of their nondeterminism:
+%% In principle, they may be applied to prove every triple moving to any refinement of the abstract domain, so
+%we need techniques to determine \emph{when} a change of abstract domain is needed and \emph{how} to choose the most convenient new domain.
+%We believe these two issues are actually related. For instance, if the analysis is unable to satisfy a local completeness proof obligation to apply \lclrule{transfer}, an heuristics may determine both what additional information is needed to make it true (i.e., how to refine the abstract domain) and where that additional information came from (i.e., when to refine). We briefly discussed in Section~\ref{sec:lcla:choose-refinement} some possibilities to perform this choice.
+%Ideally, one would systematically select an off-the-shelf abstract domain best suited to deal with each code fragment and the heuristic would inspect the proof obligations, and exploit some sort of catalogue that can track suitable abstract domains that are locally complete for the code and input at hand or derive on-the-fly some convenient domain refinement as done, e.g., by partition refinement.
+%To this aim, we intend to investigate a mutual exchange of ideas between CEGAR and our approach, and to integrate abstract interpretation repair into our framework.
