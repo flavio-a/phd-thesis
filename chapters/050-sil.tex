@@ -99,7 +99,7 @@ Since in this chapter we deal with different kinds of program logics, a summary 
 
 SIL is a backward\hyp{}oriented under\hyp{}approximation proof system for Lisbon triples that focuses on \emph{finding the sources of incorrectness rather than highlighting the presence of bugs}. Assuming the post $Q$ defines some class of errors, i.e., it is what we call an \emph{incorrectness specification}, a (valid) SIL triple $\siltriple{P}{\regr}{Q}$ means that ``\emph{all input states that satisfy $P$ have at least one execution of the program $\regr$ leading to a state that satisfies $Q$}''. For deterministic programs, SIL guarantees that a state satisfying the pre \emph{always} leads to an error. Instead, if $\regr$ is nondeterministic, SIL guarantees that there \emph{exists} an execution that leads to an error. Sufficient incorrectness preconditions are extremely valuable to programmers: by pointing out the sources of errors, they serve as a starting point to scope down debugging, fuzzing, and testing. Moreover, it is known that, contrary to IL and its extensions, backward under\hyp{}approximation can expose manifest errors \cite[§3.2]{LRVBDO22}: an error $Q$ is manifest iff the SIL triple $\siltriple{\true}{\regr}{Q}$ is valid. These are bugs that happen regardless of the context and it has been observed experimentally that are more likely to be fixed when reported~\cite[§5]{LRVBDO22}. Therefore, we study SIL to enhance program analysis frameworks with the ability to identify the source of incorrectness.
 
-SIL goals include: (i)~defining a default deduction mechanism that starts from some specification of erroneous outcomes and traces the computation back to some initial states responsible for such errors; (ii)~exhibiting a minimal set of rules that are complete and correct for Lisbon triples; and (iii)~spelling out, a posteriori, a formalization and generalization of the backward analysis step performed by industrial grade analysis tools for security developed at Meta~\cite{DFLO19,MarianaTrench,Pysa}.
+SIL goals include: (i)~defining a default deduction mechanism that starts from a specification of erroneous outcomes and traces the computation back to some initial states responsible for such errors; (ii)~exhibiting a minimal set of rules that are sound and complete for Lisbon triples; and (iii)~spelling out, a posteriori, a formalization of the backward analysis step performed by industrial grade analysis tools for security developed at Meta~\cite{DFLO19,MarianaTrench,Pysa}.
 Those tools automatically find more than $50$\% of the security bugs in the Meta family of apps and many severe bugs~\cite[Fig.~5]{DFLO19}.
 
 Roughly, the SIL triple
@@ -180,7 +180,6 @@ A convenient way to exploit SIL is to assume that the analysis takes as input th
 \end{figure*}
 
 The inference rules for SIL are in Figure~\ref{fig:sil:sil-rules}. The top five rules form a minimal, sound and complete proof system. The additional rules are other valid rules that can ease program analysis and are discussed in Section~\ref{sec:sil:sil-rules-additional}.
-
 Note that all the rules can be applied to an arbitrary post $Q$ to infer a corresponding pre, in the same way as all the rules of IL can be applied to an arbitrary pre $P$ to infer a corresponding post. This is a key feature of SIL proof system, which facilitates backward reasoning.
 
 Atomic commands are handled by \silrule{atom}, which exploits the backward semantics and summarizes cases for \code{skip}, assignments and Boolean guards. In Section~\ref{sec:sil:rules-comparison} we discuss further the rule for assignment when pre and postconditions are formulae instead of sets of states.
@@ -528,7 +527,7 @@ Given a heap command $\regr \in \Regh$, we let $\fv(\regr) \subseteq \Var$ be th
 \end{figure}
 
 \subsection{Assertion language}
-Our assertion language is derived from SL and ISL~\cite{RBDDOV20}:
+Our assertion language is derived from SL (see Section~\ref{sec:bg:sl}) and ISL~\cite{RBDDOV20}:
 \begin{align*}
 	\Asl \ni p, q ::= & \; \false \mid \true \mid p \land q \mid p \lor q \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid x \dealloc \mid p \andsep q
 \end{align*}

@@ -8,8 +8,6 @@ We first point out some intuitive reasons that break the symmetry between over a
 The content of this chapter is based on~\cite{ABG22,ABG24}.
 
 \section{Overview}
-%A shortened version of the introduction, with related work, the general idea and the examples.
-
 In their first work on Abstract Interpretation~\cite{CC77}, Patrick and Radhia Cousot introduced the formal theory that could be used to study both over and under-approximations.
 However, while the former has been extensively studied, there are only sparse studies on under-approximation abstract domain.
 For instance, Lev-Ami et al.~\cite{LSRG07} proposed to use complements of over-approximation domains to infer sufficient preconditions for program correctness. However, such an approach is severely limited in proving incorrectness, as we show in Example~\ref{ex:uai:complement-domain}.
@@ -303,7 +301,6 @@ The following proposition uses the same proof line as Proposition~\ref{prop:uai:
 Again, the only assumption on $A_N$ is about its size, so our result applies to many kinds of domains. For instance, a predicate abstraction \cite{GS97} with $\Omega(\log(N))$ predicates exceeds this bound, as its size is doubly exponential in the number $n$ of predicates.
 
 \section{General infinite concrete domains}\label{sec:uai:infinite}
-\fromhere
 In this section, we try to extend the results of the previous Section~\ref{sec:uai:integers-infinite} on the infinite concrete domain of integers to other infinite concrete domains. More precisely, we deal with an infinite set $C$ of concrete values, and a UGI $\ugi{\pow(C)}{\alpha}{A}$.
 Again, we take the Assumption~\ref{assump:uai:size-A-infinite-integers} on the size of $A$.
 Under this assumption, we can prove again Lemma~\ref{lmm:uai:R-S-bound-integer-inf}, that does not depend on the specific integer domain considered in the previous section.
@@ -407,7 +404,6 @@ Similarly to Theorem~\ref{th:uai:non-empt-res-local}, this result can be used to
 We point out once more that the only hypothesis on the abstract domain is about its size for both theorems in this section. For instance, our result applies to any under-approximation predicate abstraction domain~\cite{GS97}. Such a domain is defined by a (finite) list of predicates, each one representing the set of states satisfying the predicate, and an abstract state is a subset of predicates. By duality with respect to over-approximation, the concretization of such a set is the \emph{union} of the states described by each predicate. Analogously, the abstraction of a set of concrete states $S$ is the set of predicates which are \emph{entirely contained} in $S$. Note that this interpretation is consistent with the use of under-approximations in Incorrectness Logic: the difference is that the logic can use any under-approximation formula, while predicate abstraction is constrained to use just a finite set of predicates, fixed beforehand.
 
 \subsection{On the necessity of high surjectivity}\label{sec:uai:high-surjective}
-\fromhere
 Both sets of conditions we proposed in this section require the function family to be highly surjective. This turns out to be necessary to prove that no under-approximation abstract domain exists, as we show in this section.
 
 \begin{prop}\label{prop:uai:existence-base}

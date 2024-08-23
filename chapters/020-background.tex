@@ -52,7 +52,6 @@ Lastly, from Knaster-Tarski follows the following two (co)induction proof princi
 When talking about propositional logical formulas, we group variables $x_1$, $x_2$, $\dots$, $x_n$ in a vector denoted $\xbar$. Moreover, we often omit the variables a formula depends on. For instance, if the formula $F(\xbar)$ depends on variables $\xbar$, we shall write just $F$. We use the special shorthand $F'$ to denote $F[\xbar/\xbar']$, where we primed all variables appearing in $F$.
 An assignment $s$ of all variables $\xbar$ appearing in a formula $F(\xbar)$ either satisfies it, written $s \vDash F$, or falsifies it, written $s \nvDash F$. Given an assignment $s$ for variables $\xbar$, we shall write $s'$ for the corresponding assignment on primed variables $\xbar'$, that is the value of variable $x'$ in $s'$ is the same as $x$ in $s$. Moreover, we use the comma to ``merge" assignments when they refer to disjoint sets of variables: for instance, given the two assignments $s$ and $t$, we write $s, t'$ for the assignment that uses $s$ for $\xbar$ and $t'$ for $\xbar'$ (we assume the set of primed variables $\xbar'$ to be disjoint from the original set $\xbar$).
 A \emph{literal} is either a variable or its negation. A \emph{clause} $c$ is a disjunction of literals. Any assignment $s$ of variables $\xbar$ has a corresponding clause that is satisfied exactly by that assignment of the same variables, and we overload the symbol $s$ to denote both. A \emph{subclause} $d \subseteq c$ is a clause whose literals are a subset of literals of $c$. A formula $F$ in conjunctive normal form (CNF) is a conjunction of clauses, and we write $\clause(F)$ to denote the set of clauses that appear in $F$.
-\todo{Add stuff for first-order logic?}
 
 \section{Regular commands}\label{sec:bg:regcomm}
 A common setting to study static analysis is a simple while-language, which contains basic constructs needed to write imperative programs \cite{Winskel93}. However, we consider a different system that is able to encode the standard while-language, namely we focus on regular commands (as done in many recent works~\cite{OHearn20,BGGR21,MOH21,RBDDOV20,ZDS23}):
@@ -308,8 +307,22 @@ if (x is even) {
 	On the contrary, we have, e.g., that $\underline{P}= (z\neq 42)$ is a necessary precondition, while $(z > 42)$ is not, because it excludes some good runs.
 \end{example}
 
-\section{Separation logic}
-\todo[inline]{write}
+\section{Separation logic}\label{sec:bg:sl}
+Separation Logic (SL)~\cite{Reynolds02,ORY01} is an extension of HL introduced to handle pointers and dynamic memory management. Its ingenuity lies in the assertion language used to specify heaps in pre and postconditions: the key insight is that logical conjunction is not apt to describe pointers because of aliasing, therefore the need for a new kind of conjunction.
+Consider for instance the simple program
+\[
+\regr \eqdef \code{*x := 1; *y := 2; *z := 3}
+\]
+where \code{x}, \code{y} and \code{z} are pointers. The HL triple $\hltriple{\true}{\regr}{x \mapsto 1 \land y \mapsto 2 \land z \mapsto 3}$ is not valid because the pointer may be aliased at the entry point of the program. To avoid aliasing, the precondition should explicitly state that the addresses are different adding $x \neq y \land x \neq z \land y \neq z$, which becomes unfeasible as the program grows. This aliasing problem makes also hard to reuse specifications, since variables modified internally by some function calls may be implicitly exposed to the outside through aliasing.
+To address this problem, SL introduces the separating conjunction $\andsep$ (read "and separately"). To understand how it works, consider the simple formula $x \mapsto 1 \andsep y \mapsto 2$. A heap satisfies this formula if it can be split in two disjoin sub-heaps such that one satisfies $x \mapsto 1$ and the other $y \mapsto 2$. Therefore, this implicitly means that $x$ and $y$ can't be aliased: if they were, the unique memory location couldn't be put at the same time in both disjoint sub-heaps for the two assertions. Intuitively, whenever there is a separating conjunction, every heap location is "owned" by exactly one of the two subformulae involved.
+Note that SL does not always prevent aliasing: it is always possible to write $x \mapsto 1 \andsep x = y$. The key difference is that here the aliasing is \emph{explicit} in the formula instead of being implicit in the model.
+
+Formally, SL is a triple-based program logic analogous to HL, which uses as assertion language not first-order logic or sets of states but rather formulae built with the following grammar
+\begin{align*}
+	p, q ::= & \; \true \mid p \land q \mid \lnot p \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid \code{a} \mapsto \code{a} \mid x \dealloc
+\end{align*}
+The first construct describe standard first-order logic. The last three describes heap: $\emp$ is satisfied only by the empty heap, $\code{a}_1 \mapsto \code{a}_2$ is satisfied by heaps with a single location, corresponding to the evaluation of $\code{a}_1$ and containing the value $\code{a}_2$, and $\andsep$ is the separating conjunction described above.
+\todo{What do I want to do say about SL?}
 
 \section{Kleene algebras}\label{sec:bg:algebra}
 In this Section, we present Kleene algebras as an algebraic formulation that is able to describe programs.
