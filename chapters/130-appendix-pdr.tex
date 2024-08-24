@@ -3,4 +3,469 @@
 \chapter{Appendix}\label{ch:app:pdr}
 \chaptermark{Supplementary materials}
 This appendix contains technical details of proofs and examples for Chapter~\ref{ch:pdr}.
-\fromhere
+
+\begin{proof}[Proof of Proposition~\ref{prop:pdr:invariants-valid}]
+	We use the same notation, and follow the same proof schema of showing
+	\begin{itemize}
+		\item[(a)] $s_0 \models (Q)$ and
+		\item[(b)] if $s \models (Q)$ and $s \tr{ } s'$, then $s'\models (Q)$.
+	\end{itemize}
+
+	\invariantproof{\eqref{eq:pdr:positivechain}}{$\forall j\in[0, n-2] \text{, } x_j \leq x_{j+1}$}
+	\begin{itemize}
+		\item[(a)] In $s_0$, since $n=2$ one needs to check only the case $j=0$: $x_{0} = \bot \leq \top =x_1 $.
+		\item[(b)] If $s \tr{U} s'$, then $x_j' =x_j \stackrel{{\eqref{eq:pdr:positivechain}}}{\leq}  x_{j+1} =x_{j+1}'$ for all $j\in[0,n-2]$. For $j=n-1$, $x_{n-1}' =x_{n-1} \leq \top =x_{n}'$. Since $n'=n+1$, then $\forall j\in [0,n'-2] \text{, } x_j'\leq x_{j+1}'$.\\
+		      If $s \trz{\mathit{Co}}{z} s'$, then $x_j' = x_j \land z \stackrel{{\eqref{eq:pdr:positivechain}}}{\leq} x_{j+1} \land z \leq x_{j+1}'$ for all $j\in[0,k]$.
+		      For all $j\in [i+1,n-2]$, $x_j' = x_j \stackrel{{\eqref{eq:pdr:positivechain}}}{\leq} x_{j+1}  =x_{j+1}'$. Thus, $\forall j\in [0,n'-2] \text{, } x_j'\leq x_{j+1}'$.
+	\end{itemize}
+
+	\invariantproof{\eqref{eq:pdr:Ix1}}{$i \leq x_1$}
+	\begin{itemize}
+		\item[(a)] In $s_0$, $x_1 = \top \geq i$.
+		\item[(b)] If $s \tr{U} s'$, then $x_1'=x_1 \stackrel{{\eqref{eq:pdr:Ix1}}}{\geq} i$. \\
+		      If $s \trz{\mathit{Co}}{z} s'$, since $z\geq i$,  then $x_1' = x_1\land z \stackrel{{\eqref{eq:pdr:Ix1}}}{\geq} i\land i = i$.
+	\end{itemize}
+
+	\invariantproof{\eqref{eq:pdr:xP}}{$x_{n-2}\leq p$}
+	\begin{itemize}
+		\item[(a)] In $s_0$, $n=2$ and $x_{0}= \bot \leq p$.
+		\item[(b)] If $s \tr{U} s'$, since (Unfold) is applied only if $x_{n-1}\leq p$ and $n'=n+1$, then $x'_{n'-2}=x_{n-1} \leq p$. \\
+		      If $s \tr{\mathit{Co}} s'$, since $n'=n$, then $x_{n'-2}'= x_{n-2}'  \leq x_{n-2} \stackrel{{\eqref{eq:pdr:xP}}}{\leq} p$.
+	\end{itemize}
+
+	\invariantproof{\eqref{eq:pdr:positiveG}}{$\forall j\in[0, n-2] \text{, }x_j \leq g(x_{j+1})$}
+	\newline\noindent
+	Follows immediately from \eqref{eq:pdr:positiveF} and $f \dashv g$.
+
+	\invariantproof{\eqref{eq:pdr:Pepsilon}}{If $\vec{y}\neq \varepsilon$ then $p \leq y_{n-1}$}
+	\newline\noindent
+	The case of (Conflict) is trivial as in the proof of invariant \eqref{eq:pdr:negativeG}: if \eqref{eq:pdr:Pepsilon} holds for $\vec{y}$ then it obviously holds for its tail $\mathsf{tail}(\vec{y})$ as well.
+	\begin{itemize}
+		\item[(a)] In $s_0$, $\vec{y}= \varepsilon$. Thus \eqref{eq:pdr:Pepsilon} trivially holds.
+		\item[(b)] If $s \trz{\mathit{Ca}}{z} s'$, since $p\leq z$, then $p \leq z = y_{n-1}'$.\\
+		      If $s \tr{D} s'$, then $p \stackrel{{\eqref{eq:pdr:Pepsilon}}}{\leq} y_{n-1}=y'_{n-1}$.
+	\end{itemize}
+
+	\invariantproof{\eqref{eq:pdr:positiveinitialfinal}}{$\forall j \in [0, n-1] \text{, } (f \lor i)^j (\bot) \leq x_j \leq (g \land p)^{n-1-j} (\top)$}
+	\begin{itemize}
+		\item We prove $(f \lor i)^j \bot \leq x_j$ by induction on $j \in [0, n-1]$.
+		      For $j=0$, $(f \lor i)^j  \bot = \bot \leq x_j$. For $j \in [1,n-1]$,
+		      \begin{align*}
+			      (f \lor i)^j \bot
+			       & = (f \lor i) (\, (f \lor i)^{j-1} \bot \,) & [\text{def.}]                                                \\
+			       & = f (\, (f \lor i)^{j-1} \bot \,)  \lor i  & [\text{def.}]                                                \\
+			       & \leq f(x_{j-1}) \lor i                     & [\text{induction hypothesis}]                                \\
+			       & \leq x_j \lor i                            & [\eqref{eq:pdr:positiveF}]                                   \\
+			       & = x_j                                      & [\eqref{eq:pdr:Ix1}\text{ and }\eqref{eq:pdr:positivechain}]
+		      \end{align*}
+		\item In order to prove $x_j \leq (g \land p)^{n-1-j} \top$ for all $j \in [0, n-1]$, it is convenient to prove the equivalent statement  $x_{n-1-j} \leq (g \land p)^{j} \top$ for all $j \in [0, n-1]$.
+		      For $j=0$, $x_{n-1} \leq \top = (g \land p)^{0} \top$. For $j \in [1,n-1]$,
+		      \begin{align*}
+			      (g \land p)^{j} \top
+			       & = (g \land p) (\, (g \land p)^{j-1} \top \,) & [\text{def.}]                                               \\
+			       & = g (\, (g \land p)^{j-1} \top \,)  \land p  & [\text{def.}]                                               \\
+			       & \geq g(x_{n-1-j+1}) \land p                  & [\text{induction hypothesis}]                               \\
+			       & \geq x_{n-1-j} \land p                       & [\eqref{eq:pdr:positiveG}]                                  \\
+			       & = x_{n-1-j}                                  & [\eqref{eq:pdr:xP}\text{ and }\eqref{eq:pdr:positivechain}]
+		      \end{align*}
+	\end{itemize}
+
+	\invariantproof{\eqref{eq:pdr:positivefinal}}{$\forall j \in [1, n-1] \text{, } x_{j-1} \leq g^{n-1-j}(p)$}
+	\newline\noindent
+	For all $l\in \setN$, $(g \land p)^{l+1}\top = \bigwedge_{j\leq l}g^j(p)$. Thus, using \eqref{eq:pdr:positiveinitialfinal}, it holds that for all $j\in [1,n-1]$, $x_{j-1} \leq (g \land p)^{n-j} \top = \bigwedge_{j\leq n-j-1}g^j(p) \leq g^{n-j-1}(p)$.
+
+	\invariantproof{\eqref{eq:pdr:negativefinal}}{$\forall j\in[k,n-1]\text{, }g^{n-1-j}(p) \leq y_j$}
+	\newline\noindent
+	In order to prove \eqref{eq:pdr:negativefinal}, we prove the equivalent statement $g^j(p) \leq y_{n-1-j}$ for all $j\in [0,n-1-k]$.
+	For $j=0$, $g^0(p)=p \leq y_{n-1}$. The last inequality holds by \eqref{eq:pdr:Pepsilon}. For $j\in [1,n-1-k]$,
+	\begin{align*}
+		g^{j}(p)
+		 & = g (\, g^{j-1} (p) \,) & [\text{def.}]                 \\
+		 & \geq g(y_{n-1-(j-1)} )  & [\text{induction hypothesis}] \\
+		 & = g(y_{n-j} )           & [\text{def.}]                 \\
+		 & \geq y_{n-1-j}          & [\eqref{eq:pdr:negativeG}]
+	\end{align*}
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:pdr:heuristic-initial-chain}]
+	We prove this property by showing the exact sequence of steps the algorithm performs with this heuristics. To do so, assume $m$ is the smallest integer such that $f^m (i) \not \leq p$. Note that, if $\lfp (f \lor i) \leq p$, there is no such $m$; if that is the case we say $m = +\infty$. Also note that, for all $n < m$ it holds $f^n (i) \leq p$, hence also $f (f \lor i)^n \bot = f \bigvee\limits_{j < n} f^j (i) = \bigvee\limits_{j < n} f^{j+1} (i) \leq p$, and for $n \leq m$ we have $(f \lor i)^n \bot = \bigvee\limits_{j < n} f^j (i) \leq p$.
+
+	Intuitively, while $n < m + 2$ the algorithm performs a cycle of (Unfold), then (Candidate), then (Conflict) and then (Unfold) again. When it reaches $n = m + 2$, it enters a sequence of (Decide) that eventually lead to return false. Of course, if $m = + \infty$, this sequence of (Decide) never happens.
+
+	To prove this formally, we prove by induction that after initialization and every (Unfold) applied in this sequence, for all $j \in [0,n-2]$, $x_j=(f\lor i)^{j}\bot$. We do so by showing this holds for initialization, and that if we assume this to be true after initialization or (Unfold), (a) if $n < m + 2$, the algorithm does exactly (Candidate), then (Conflict), then (Unfold) and the invariant holds again, and (b) if $n = m + 2$, the algorithm does (Candidate) then (Decide) until $k = 1$, then returns false. In doing so, we also show that the invariant holds after every rule, that is exactly the thesis.
+
+	For initialization, as $k = n = 2$ and $x_0 = \bot$ the property holds.
+
+	For (a), suppose the algorithm just did (Unfold) or initialization. Then, by the invariant, for all $j \in [0,n-2]$, $x_j=(f\lor i)^{j}\bot$, and both after initialization and (Unfold), $x_{n-1} = \top$.
+	Applying the algorithm, the sequence of states is then
+	\begin{align*}
+		                     & ( \bot, (f\lor i)\bot, \dots, (f\lor i)^{n-2}\bot, \top \| \varepsilon )_{n,n}                          \\
+		\trz{\mathit{Ca}}{h} & ( \bot, (f\lor i)\bot, \dots, (f\lor i)^{n-2}\bot, \top \| p )_{n,n-1}                                  \\
+		\trz{\mathit{Co}}{h} & ( \bot, (f\lor i)\bot, \dots, (f\lor i)^{n-2}\bot, (f\lor i)^{n-1}\bot \| \varepsilon )_{n,n}           \\
+		\trz{U}{h}           & ( \bot, (f\lor i)\bot, \dots, (f\lor i)^{n-2}\bot, (f\lor i)^{n-1}\bot, \top \| \varepsilon )_{n+1,n+1}
+	\end{align*}
+	where the choice for (Candidate) is $p$ and the choice for (Conflict) is $(f\lor i) x_{n-2} = (f\lor i)^{n-1} \bot$.
+	The condition to apply (Candidate) is $x_{n-1} = \top \not\leq p$, which follows from $p \neq \top$.
+	The condition to apply (Conflict) is $f (x_{n-2}) = f (f\lor i)^{n-2}\bot \leq p$, which follows from $n - 2 < m$.
+	The condition to apply (Unfold) is $x_{n-1} = (f\lor i)^{n-1}\bot \not\leq p$, which follows from $n - 1 \le m$.
+	The invariant clearly holds for all three states traversed.
+
+	For (b), suppose again the algorithm just did (Unfold) or initialization, so $\vec{x} = \langle \bot, (f\lor i)\bot, \dots, (f\lor i)^{n-2}\bot, \top \rangle$. Recalling that $n = m + 2$, the sequence of states is
+	\begin{align*}
+		                     & ( \bot, (f\lor i)\bot, \dots, (f\lor i)^{m}\bot, \top \| \varepsilon )_{m+2,m+2}              \\
+		\trz{\mathit{Ca}}{h} & ( \bot, (f\lor i)\bot, \dots, (f\lor i)^{m}\bot, \top \| p )_{m+2,m+1}                        \\
+		\trz{D}{h}           & ( \bot, (f\lor i)\bot, \dots, (f\lor i)^{m}\bot, \top \| g (p), p )_{m+2,m}                   \\
+		\trz{D}{h}           & \dots                                                                                         \\
+		\trz{D}{h}           & ( \bot, (f\lor i)\bot, \dots, (f\lor i)^{m}\bot, \top \| g^{m} (p), \dots, g (p), p )_{m+2,1}
+	\end{align*}
+	where the choice for (Candidate) is $p$ and the choice for (Decide) is $g (y_{k})$.
+	The condition to apply (Candidate) is again $x_{n-1} = \top \not\leq p$.
+	The condition to apply (Decide) for $k$ is $f (x_{k-1}) \not \leq y_k$, that is $f (f\lor i)^{k-1}\bot \not \leq g^{m+1-k} (p)$. This holds because $f (f\lor i)^{k-1}\bot \leq f^{k-1} (i)$ and, by $f \dashv g$, $f^{k-1} (i) \not\leq g^{m+1-k} (p)$ if and only if $f^{m+1-k} f^{k-1} (i) = f^{m} (i) \not\leq p$.
+	Lastly, when $k = 1$, we have $i \not\leq g^m (p)$ again by $f \dashv g$, so the algorithm returns false.
+	The invariant clearly holds for all the $m$ states traversed.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:pdr:heuristic-final-chain}]
+	To prove this property, first we prove by induction that the following invariants hold:
+	\begin{itemize}
+		\item[(a)] either $x_1 = (g \land p)^{n-1} \top$ or $x_1 = (g \land p)^{n-2} \top$,
+		\item[(b)] if $x_1 = (g \land p)^{n-1} \top$, for all $j \in [1, k-1]$, $x_j = (g \land p)^{n-j} \top$ and for all $j \in [k, n-1]$, $x_j = (g \land p)^{n-1-j} \top$,
+		\item[(c)] if $x_1 = (g \land p)^{n-2} \top$, for all $j \in [1, n-1]$, $x_j = (g \land p)^{n-1-j} \top$,
+		\item[(d)] if $k = 1$ then $x_1 = (g \land p)^{n-2} \top$.
+	\end{itemize}
+	Note that by (a) exactly one of of the consequences of (b) and (c) hold, and when $k = 1$ (d) prescribes it must be (c). In the rest of the proof, we say that (b) or (c) hold meaning that $x_1$ is $(g \land p)^{n-1} \top$ or $(g \land p)^{n-2} \top$ respectively, so that the respective consequence holds, too.
+
+	At initialization, $\vec{x} = \bot, \top$ and $n = 2$, so (a) $x_1 = (g \land p)^{n-2} \top$, and (c) holds.
+
+	After (Unfold), $\vec{x}' =  \vec{x}, \top$ and $n' = n+1$. Since we applied (Unfold), it must be the case that $\vec{y} = \varepsilon$, so $k = n$, and $x_{n-1} \leq p$. By (a) either $x_{n-1} = (g \land p) \top = p$, or $x_{n-1} = (g \land p)^{0} \top = \top$. But since $x_{n-1} \leq p$, it can't be the latter. Thus (b) holds before (Unfold).
+	After the rule, (a) holds because $x'_1 = x_1 = (g \land p)^{n-1} \top = (g \land p)^{n'-2} \top$; (c) holds too because for all $j \in [1, n'-1] = [1, n]$, $x'_j = x_j = (g \land p)^{n-j} \top = (g \land p)^{n'-1-j} \top$ (where we used that (b) holds before the rule) and for $j = n'$, $x'_j = \top = (g \land p)^0 \top$. (d) holds because $k' = n' > 1$.
+
+	For (Candidate), since we applied it, it must be the case that $x_{n-1} \not\leq p$. If (b) held before the rule, it would mean that $x_{n-1} = (g \land p) \top = p \leq p$, so (c) holds.
+	After the rule, (a) and (c) still hold because $\vec{x}' = \vec{x}$ and $n' = n$. (d) holds because (c) holds.
+
+	For (Decide), since we applied it, it must be the case that $f (x_{k-1}) \not\leq y_k = g^{n-1-k} (p)$. This, by $f \dashv g$, is equivalent to $x_{k-1} \not\leq g^{n-k} (p)$. If (b) held before the rule, it would mean that $x_{k-1} = (g \land p)^{n-k+1} \top \leq g^{n-k} (p)$, so (c) holds.
+	After the rule, (a) and (c) still hold because $\vec{x}' = \vec{x}$ and $n' = n$. (d) holds because (c) holds.
+
+	For (Conflict), let us distinguish two cases.
+
+	If $k = 1$, (c) holds before the rule because of (d). The choice in the rule is $z = y_1 = g^{n-2} (p)$, so after (Conflict) $\vec{x}' = \vec{x} \land_1 g^{n-2} (p)$ and $k' = k+1$. (a) holds because $x'_1 = x_1 \land g^{n-2} (p) = (g \land p)^{n-2} \top \land g^{n-2} (p) = (g \land p)^{n-1} \top$. (b) holds because for $j \in [1, k' -1] = [1, 1]$, $x'_1 = (g \land p)^{n-1} \top$ and for $j \in [k', n-1]$, $x'_j = x_j = (g \land p)^{n-1-j} \top$. (d) holds because $k' = 2 > 1$.
+
+	If $k > 1$, since we applied (Conflict), it must be the case that $f (x_{k-1}) \leq y_k = g^{n-1-k} (p)$. This, by $f \dashv g$, is equivalent to $x_{k-1} \leq g^{n-k} (p)$. If (c) held before the rule, it would mean that $x_{k-1} = (g \land p)^{n-k} \top \not\leq g^{n-k} (p)$, so (b) holds.
+	The choice in the rule is $z = y_k = g^{n-1-k} (p)$. After (Conflict), (a) holds because $x'_1 = x_1 \land g^{n-1-k} (p) = (g \land p)^{n-1} \top \land g^{n-1-k} (p) = (g \land p)^{n-1} \top$. (b) holds because for $j \in [1, k'-2] = [1, k-1]$, $x'_j = x_j \land g^{n-1-k} (p) = (g \land p)^{n-j} \top \land g^{n-1-k} (p) = (g \land p)^{n-j} \top$; for $j = k'-1 = k$, $x'_j = x_j \land g^{n-1-k} (p) = (g \land p)^{n-1-k} \top \land g^{n-1-k} (p) = (g \land p)^{n-k} \top$; for $j \in [k', n-1]$, $x'_j = x_j = (g \land p)^{n-1-j} \top$. (d) holds because $k' = k + 1 > 1$.
+
+	This concludes the proof of the invariants. To prove the original statement, it is enough to observe that right after (Unfold) (c) holds.
+\end{proof}
+
+\begin{lemma}\label{lmm:app:pdr-decreasing}
+	If $s_0 \ttr{}  ( \vec{x} \| \vec{y} )_{n,k} \ttr{}  ( \vec{x}' \| \vec{y}' )_{n',k'}$, then $n'\geq n$ and, for all $j\in [0,n-1]$, $x_j \geq x_j'$.
+\end{lemma}
+\begin{proof}
+	Follows from proof of Proposition~\ref{prop:pdr:progres}.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lmm:pdr:differentz}]
+	Since $s$ and $s'$ carry the same index $(n, k)$ and the algorithm only increases $n$, then $n$ is never increased in the steps between $s$ and $s'$. Thus (Unfold) is never executed. On the other hand, $k$ will be increased by (Conflict) and decreased in (Candidate) and (Decide).
+
+	We prove the proposition for (Decide), the case of (Candidate) is analogous. Let us fix $s=( \vec{x} \| \vec{y} )_{n,k}$. The state immediately after $s$ would be $( \vec{x} \| z, \vec{y} )_{n,k-1}$.
+	Observe that before arriving to the state $( \vec{x}' \| \vec{y}' )_{n,k}$,  the $z$ inserted by the (Decide) right after $s$ should be removed by some (Conflict), as that's the only rule that can remove elements from $\vec{y}$.
+	The state before such (Conflict) will be of the form $(\vec{x}'' \| z, \vec{y} )_{n,k+1}$ for some positive chain $\vec{x}''$. Now let $z''$ be the element chosen by such (Conflict). It holds that $z'' \leq y_{k+1} = z$. The state after the (Conflict) will be $(\vec{x}''\land_k z'' \| \vec{y} )_{n,k}$. In this state and, by Corollary~\ref{lmm:app:pdr-decreasing} in any of the following states, the $(k-1)$-th element of the positive chain is below $z$. In particular, for $s'=( \vec{x}' \| \vec{y}' )_{n,k}$, we have that $x_{k-1}' \leq z$. Since $( \vec{x}' \| \vec{y}' )_{n,k} \trz{D}{z'} $, $x_{k-1}'\not \leq z'$. Thus $z' \neq z$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:pdr:negativetermination}]
+	Let us fix an $n$. Since the possible choices of $z\in h(\mathit{CaD}^h_{n,k})$ are finitely many, by Lemma~\ref{lmm:pdr:differentz}  we can apply (Candidate) or (Decide) only a finite amount of times for every $k$.
+	Since by invariant~\eqref{eq:pdr:invi}, $1 \le k \le n$, we only have a finite amount of different values of $k$, so (Candidate) and (Decide) occur only finitely many times with the same $n$.
+
+	Since both (Candidate) and (Decide) decrease $k$, (Conflict) increase $k$ and $1 \le k \le n$, then also (Conflict) occurs only finitely many times with the same $n$.
+	Therefore in any infinite computation of \texttt{A-PDR}$_h$ (Unfold), which is the only rule that increase $n$, should occur infinitely many times.
+
+	But when $\lfp (f \lor i) \not\leq p$, by \eqref{th:bg:kleene}, there is some $j\in \setN$ such that $(f \lor i)^{j} \bot \not\leq p$. Since (Unfold) can be applied only when $(f \lor i)^{n-1} \bot \leq x_{n-1} \leq p$, then it can applied only a finite amount of time.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:pdr:negativetermiantion}]
+	By Proposition \ref{prop:pdr:negativesequencefinalchain}, $h$ maps any reachable state $s$ such that $s\tr{D}$ into $g^{n-1-k}(p)$ and any reachable state $s$ such that $s\tr{\mathit{Ca}}$ into $p$. Thus $h(\mathit{CaD}^h_{n,k})$ has cardinality 2. By Theorem \ref{th:pdr:negativetermination}, if $\lfp(f\lor i) \not \leq p$, then {\APDR}$_h$ terminates.
+\end{proof}
+
+\begin{proof}[Proof of Corollary \ref{cor:pdr:ADPDRtermination}]
+	Using Theorem~\ref{th:pdr:negativetermination}, it is enough to prove that, for all indexes $(n,k)$, the set of all possible choices for (Candidate) and (Decide), denoted by $h(\mathit{CaD}^h_{n,k})$, is finite. For simplicity, in this proof let $\mathit{CaD}^h_{n,k} = \mathit{Ca}^h_{n,k} \uplus D^h_{n,k}$, where $\mathit{Ca}^h_{n,k} \eqdef \{ s\in \mathit{CaD}^h_{n,k} \mid s \tr{\mathit{Ca}}\}$ is the set of reachable $(n,k)$-indexed states that trigger (Candidate) and  $D^h_{n,k} \eqdef \{ s\in \mathit{CaD}^h_{n,k} \mid s\tr{D}\}$  is the set of reachable $(n,k)$-indexed states that trigger (Decide).
+	We prove that both images $h(\mathit{Ca}^h_{n,k})$ and $h(D^h_{n,k})$ are finite so that also $h(\mathit{CaD}^h_{n,k})$ is such.
+	\begin{itemize}
+		\item In (Candidate), any heuristics $h$ defined as in \eqref{eq:pdr:secondterminatingheuristics} always choose $z=p^\downarrow$.
+		      Therefore the image $h(\mathit{Ca}^h_{n,k})$ has cardinality $1$ for all $(n,k)$.
+		\item In (Decide), when $k=n-1$, any heuristic $h$ defined as in  \eqref{eq:pdr:secondterminatingheuristics} may select any lower set $\{d \mid b_\alpha(d)\in p^\downarrow\}$ for some function $\alpha\colon S \to A$. Since, there are $|S|^{|A|}$ of such functions $\alpha$, then there are at most $|S|^{|A|}$ of such lower set. Thus the set $h(D^h_{n,n-1})$ has at most cardinality $|S|^{|A|}$.
+
+		      When $k=n-2$, the heuristic $h$ may select any lower set $\{d \mid b_{\alpha_2}(b_{\alpha_2}(d))\in p^\downarrow\}$ for any two functions $\alpha_1,\alpha_2\colon S \to A$. Thus, the set $h(D^h_{n,n-2})$ has at most cardinality $|(|S^{|A|})^2$.
+
+		      One can easily generalise these cases to arbitrary $j\in [1,n]$, and prove with a simple inductive argument that the cardinality of $h(D^h_{n,n-j})$ is at most $(|S|^{|A|})^j$. Since both $S$ and $A$ are finite, then the set $h(D^h_{n,k})$ is finite for all indices $(n,k)$.
+	\end{itemize}
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:pdr:genlegit}]
+	We need to prove that the choices of \verb|hCoB| and \verb|hCo01| for (Candidate), (Decide) and (Conflict) respect the constraints imposed by {\ADPDR}.
+
+	\begin{itemize}
+		\item For (Candidate), both \verb|hCoB| and \verb|hCo01| take $Z = p^\downarrow$. We need to prove that $x_{n-1} \not \in Z$ and $p\in Z$.
+		      \begin{itemize}
+			      \item For the former, recall that the guard of (Candidate) is $x_{n-1} \not \leq p$. Thus $x_{n-1}\not \in p^\downarrow = Z$.
+			      \item The second is trivial: $p\in p^\downarrow =Z$.
+		      \end{itemize}
+
+		\item For (Decide), both \verb|hCoB| and \verb|hCo01|  take $Z=\{d\mid b_\alpha(d) \in Y_k\}$ for an $\alpha$ such that $b_\alpha(x_{k-1})\notin Y_k$. We need to prove $x_{k-1}\notin Z$ and $b_r^\downarrow(Y_K)\subseteq Z$.
+		      \begin{itemize}
+			      \item Since $b_\alpha(x_{k-1})\notin Y_k$, then $x_{k-1}\notin \{d\mid b_\alpha(d) \in Y_k\}=Z$.
+			      \item To see that $b_r^\downarrow(Y_k)\subseteq Z$, it is enough to observe that $b^\downarrow_r (Y_k) = \{d \mid b(d) \in Y_k\}
+			            = \bigcap_{\alpha}\{d \mid b_{\alpha} (d)\in Y_k\} \subseteq \{d \mid b_{\alpha} (d)\in Y_k\} = Z$.
+		      \end{itemize}
+
+		\item For (Conflict), we start with \verb|hCoB| and show later \verb|hCo01|.
+
+		      Let us consider first the case  $\mathcal{Z}_k=\emptyset$, then \verb|hCoB| chooses $z_B=b(x_{k-1})$. The proof is the same as for Proposition \ref{prop:pdr:CanonicalChoice}.4.
+
+		      Let us consider now the case $\mathcal{Z}_k \neq \emptyset$, and let $z_k = \bigwedge \mathcal{Z}_k$, so that
+		      \begin{equation*}
+			      z_{B} \eqdef
+			      \begin{cases*}
+				      z_k(s)        & if $r_s \neq 0$ \\
+				      b(x_{k-1})(s) & if $r_s = 0$
+			      \end{cases*}
+		      \end{equation*}
+		      We first prove  $z_k\in Y_k$ and $b(x_{k-1} \wedge z_k) \leq z_k$.
+		      \begin{itemize}
+			      \item Since $\mathcal{Z}_k \neq \emptyset$, then there should be at least a $d \in \mathcal{Z}_k$. By definition, $d$ is a (convex) generator of $Y_k$ and thus $d\in Y_k$. Since $z_k=\bigwedge \mathcal{Z}_k \leq d$ and since $Y_k$ is, by definition, a lower set, then $z_k\in Y_k$.
+			      \item By definition of $\mathcal{Z}_k$, $b(x_{k-1})\leq d$, for all $d\in \mathcal{Z}_k$. Thus $b(x_{k-1})\leq \bigwedge \mathcal{Z}_k =z_k$. Therefore $b(x_{k-1} \wedge z_k) \leq b(x_{k-1}) \leq z_k$.
+		      \end{itemize}
+		      Now let us show that $z_B\in Y_k$ and $b(x_{k-1} \wedge z_B) \leq z_B$.
+		      \begin{itemize}
+			      \item Since $Y_k=\{d\in [0,1]^S \mid \sum_{s\in S}(r_s \cdot d(s)) \leq r \}$ and $z_B$ differs from $z_k$ only when $r_s=0$, we have $\sum_{s\in S}(r_s \cdot z_B(s)) = \sum_{s\in S}(r_s \cdot z_k(s)) \leq r$, because we already proved that $z_k\in Y_k$.
+			      \item We know that $b(x_{k-1})\leq z_k$. Then, for any $s\in S$ it follows that $b(x_{k-1})(s)\leq z_k(s) = z_B(s)$ if $r_s \neq 0$, and $b(x_{k-1})(s) = z_B(s)$  if $r_s = 0$. Therefore $b(x_{k-1})\leq z_B$, from which we get $b(x_{k-1} \wedge z_B) \leq b(x_{k-1}) \leq z_B$.
+		      \end{itemize}
+
+		      Finally, we focus on \verb|hCo01|: we need to prove $z_{01}\in Y_k$ and $b(x_{k-1} \wedge z_{01}) \leq z_{01}$.
+		      \begin{itemize}
+			      \item Since $Y_k=\{d\in [0,1]^S \mid \sum_{s\in S}(r_s \cdot d(s)) \leq r \}$ and $z_{01}$ differs from $z_B$ only when $r_s=0$, we have $\sum_{s\in S}(r_s \cdot z_{01}(s)) = \sum_{s\in S}(r_s \cdot z_B(s)) \leq r$, because we already proved that $z_B\in Y_k$.
+			      \item We know that $b(x_{k-1})\leq z_B$.
+			            Then, for any $s\in S$ it follows that $b(x_{k-1})(s) \leq \lceil z_B(s)\rceil = z_{01}(s)$  if $r_s = 0$ and $\mathcal{Z}_k\neq \emptyset$, and that $b(x_{k-1})(s)\leq z_B(s) = z_{01}(s)$ otherwise. Therefore $b(x_{k-1})\leq z_{01}$, from which it readily follows $b(x_{k-1} \wedge z_{01}) \leq b(x_{k-1}) \leq z_{01}$.
+		      \end{itemize}
+	\end{itemize}
+\end{proof}
+
+\section{Proofs of Section~\ref{sec:pdr:downset}}
+\subsection{Proofs of Section \ref{sec:pdr:ADPDR}: {\ADPDR}}
+
+\begin{figure}[t]
+	\centering
+	\underline{{\APDR} $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$}
+	\begin{center}
+		\small
+		\begin{codeNT}
+<INITIALISATION>
+  $( \vec{X} \| \vec{Y} )_{n,k}$ := $(\emptyset,L\|\varepsilon)_{2,2}$
+<ITERATION>
+  case $( \vec{X} \| \vec{Y} )_{n,k}$ of
+	   $\vec{Y}=\varepsilon$ And $X_{n-1} \subseteq p^{\downarrow}$     :                    %(Unfold)
+			$( \vec{X} \| \vec{Y} )_{n,k}$ := $( \vec{X}, L \| \varepsilon )_{n+1,n+1}$
+	   $\vec{Y}=\varepsilon$ And $X_{n-1} \not \subseteq p^{\downarrow}$    :                     %(Candidate)
+			choose $Z\in L^{\downarrow}$ st  $X_{n-1} \not \subseteq Z$ And  $p^\downarrow \subseteq Z$;
+			$( \vec{X} \| \vec{Y} )_{n,k}$ := $( \vec{X} \| Z )_{n,n-1}$
+	   $\vec{Y} \neq \varepsilon$ And $b^\downarrow(X_{k-1}) \not \subseteq Y_k$ :                        %(Decide)
+			choose $Z \in L^\downarrow$ st $X_{k-1} \not \subseteq Z$ And $b_r^{\downarrow}(Y_k) \subseteq Z$;
+			$(\vec{X} \| \vec{Y} )_{n,k}$ := $(\vec{X} \| Z , \vec{Y} )_{n,k-1}$
+	   $\vec{Y} \neq \varepsilon$ And $b^\downarrow(X_{k-1}) \subseteq Y_k$ :                        %(Conflict)
+			choose $Z \in L^\downarrow$ st $Z \subseteq Y_k$ And $(b^\downarrow \cup \bot^\downarrow)(X_{k-1} \cap Z) \subseteq Z$;
+			$(\vec{X} \| \vec{Y} )_{n,k}$ := $(\vec{X} \cap_k Z \| \mathsf{tail}(\vec{Y}) )_{n,k+1}$
+  endcase
+<TERMINATION>
+	if $\exists j\in [0,n-2]\,.\, X_{j+1} \subseteq X_j$ then return true		 % $\vec{X}$ conclusive
+	if $\bot^\downarrow \not \subseteq Y_1$ then return false							% $\vec{Y}$ conclusive
+\end{codeNT}
+	\end{center}
+	\caption{{\APDR} algorithm checking $\lfp (b^\downarrow \cup \bot^\downarrow) \subseteq p^\downarrow$.}
+	\label{fig:app:APDRonDownset}
+\end{figure}
+
+\begin{figure}[t]
+	\centering
+	\underline{{\APDR'} $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$}
+	\begin{center}
+		\small
+		\begin{codeNT}
+<INITIALISATION>
+  $( \vec{X} \| \vec{Y} )_{n,k}$ := $(\emptyset,\top^\downarrow\|\varepsilon)_{2,2}$
+<ITERATION>
+  case $( \vec{X} \| \vec{Y} )_{n,k}$ of							% $\vec{X}$ has the form $\emptyset,x_1^\downarrow,\dots,x_{n-1}^\downarrow$
+	   $\vec{Y}=\varepsilon$ And $x_{n-1} \leq p$     :                    %(Unfold)
+			$( \vec{X} \| \vec{Y} )_{n,k}$ := $( \vec{X}, \top^\downarrow \| \varepsilon )_{n+1,n+1}$
+	   $\vec{Y}=\varepsilon$ And $x_{n-1} \not \leq p$    :                     %(Candidate)
+			choose $Z\in L^{\downarrow}$ st  $x_{n-1} \not \in Z$ And  $p\in Z$;
+			$( \vec{X} \| \vec{Y} )_{n,k}$ := $( \vec{X} \| Z )_{n,n-1}$
+	   $\vec{Y} \neq \varepsilon$ And $b^\downarrow(x^\downarrow_{k-1}) \not \subseteq Y_k$ :                        %(Decide)
+			choose $Z \in L^\downarrow$ st $x_{k-1} \not \in Z$ And $b_r^{\downarrow}(Y_k) \subseteq Z$;
+			$(\vec{X} \| \vec{Y} )_{n,k}$ := $(\vec{X} \| Z , \vec{Y} )_{n,k-1}$
+	   $\vec{Y} \neq \varepsilon$ And $b^\downarrow(x^\downarrow_{k-1}) \subseteq Y_k$ :                        %(Conflict)
+			choose $z \in L$ st $z \in Y_k$ And $(b^\downarrow \cup \bot^\downarrow)(x^\downarrow_{k-1} \cap z^\downarrow) \subseteq z^\downarrow$;
+			$(\vec{X} \| \vec{Y} )_{n,k}$ := $(\vec{X} \cap_k z^\downarrow \| \mathsf{tail}(\vec{Y}) )_{n,k+1}$
+  endcase
+<TERMINATION>
+	if $\exists j\in [0,n-2]\,.\, x^\downarrow_{j+1} \subseteq x^\downarrow_j$ then return true		 % $\vec{X}$ conclusive
+	if $Y_1=\emptyset$ then return false							% $\vec{Y}$ conclusive
+\end{codeNT}
+	\end{center}
+	\caption{{\APDR} algorithm checking $\lfp (b^\downarrow \cup \bot^\downarrow) \subseteq p^\downarrow$, where we restrict the elements of the positive chain to be principals. Note that: in (Unfold) the condition $x_{n-1} \leq p$ is equivalent to $x^\downarrow_{n-1} \subseteq p^{\downarrow}$; and similarly for their negation in (Candidate), where moreover the condition $x^\downarrow_{n-1} \not \subseteq Z$ is equivalent to $x\not\in Z$; same for (Decide); finally in (Conflict) the condition $z \in L$ is equivalent to $z^\downarrow \in L^\downarrow$ and the condition $z \in Y_k$ is equivalent to $z^\downarrow \subseteq Y_k$.}
+	\label{fig:app:APDRonDownset2}
+\end{figure}
+
+\begin{proof}[Proof of Theorem~\ref{th:pdr:ADPDR}]
+	The algorithm {\ADPDR} differs from {\APDR} instanced with $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ for two main reasons: first we restrict the elements of the positive chain to be principals, second we optimize the initial state of the algorithm.
+
+	To prove that the properties of {\APDR} can be extended to {\ADPDR}, we first show the instance of {\APDR} on $(\bot^\downarrow, b^\downarrow,b_r^{\downarrow}, p^{\downarrow})$ for the lower set domain $(L^\downarrow,\subseteq)$ in Figure~\ref{fig:app:APDRonDownset}. Clearly, as instance of {\APDR}, this algorithm inherits all its properties about soundness, progression and negative termination.
+	Note that, in (Candidate), the condition $p^\downarrow \subseteq Z$ is equivalent to $p\in Z$, because $Z\in L^\downarrow$.
+	Moreover, we note that the negative termination condition $\bot^\downarrow \not \subseteq Y_1$ amounts to $Y_1 = \emptyset$.
+
+	To restrict the elements of the positive chain to be principals we add the condition $\exists z \in L.~Z=z^\downarrow$ in rule (Conflict), which is thus modified as follows w.r.t. Figure~\ref{fig:app:APDRonDownset}:
+	\begin{minipage}{\linewidth}
+		% FA: this should not be across pages
+		\begin{codeNT}
+$\vec{Y} \neq \varepsilon$ And $b^\downarrow(x^\downarrow_{k-1}) \subseteq Y_k$ :                        %(Conflict)
+	choose $Z \in L^\downarrow$ st $Z \subseteq Y_k$ And $(b^\downarrow \cup \bot^\downarrow)(X_{k-1} \cap Z) \subseteq Z$
+										 And $\exists z\in L. Z=z^\downarrow$;
+	$(\vec{X} \| \vec{Y} )_{n,k}$ := $(\vec{X} \cap_k Z \| \mathsf{tail}(\vec{Y}) )_{n,k+1}$
+\end{codeNT}
+	\end{minipage}
+
+	Let us call {\APDR'} such algorithm. All the executions of {\APDR'} are also possible in {\APDR}, thus all the invariants of {\APDR} (Proposition~\ref{prop:pdr:invariants-valid}) holds for {\APDR'}.
+	The invariants suffice to prove Theorem~\ref{th:pdr:soundness}, Proposition~\ref{prop:pdr:progres} and Theorem~\ref{th:pdr:negativetermination}.
+
+	The elements of the positive chain are introduced by (Unfold) and modified by (Conflict). By choosing $Z=z^\downarrow$ in (Conflict) it follows that all the elements of the positive chain are also principals, with the only exception of $X_0=\emptyset$. Indeed, every new element of the positive chain has that form (in (Unfold) we take $\top_{L^\downarrow}=\top^\downarrow$) and the meet of two principals $x_j^\downarrow$ and $z^\downarrow$ in (Conflict) is itself the principal $(x_j\land z)^\downarrow$ generated by the meet of $x_j$ and $z$.
+
+	Regarding the canonical choices of Proposition~\ref{prop:pdr:CanonicalChoice},
+	\begin{enumerate}
+		\item in (Candidate) $Z=p^\downarrow$;
+		\item in (Decide) $Z= b_r^\downarrow(Y_k)$;
+		\item in (Conflict) $Z = Y_k$;
+		\item in (Conflict) $Z = (b^\downarrow \cup \bot^\downarrow)(X_{k-1})$.
+	\end{enumerate}
+	\noindent
+	we have that choice 3 is not necessarily possible, because we cannot assume that $Y_k=y_k^\downarrow$ for some $y_k\in L$, but 1, 2 and 4 remain valid choices: in fact,
+	1 and 2 deal with the negative sequence for which we have no restriction; for 4, if $X_{k-1} = x_{k-1}^\downarrow$ for some $x_{k-1}\in L$, then
+	\[
+	Z=(b^\downarrow \cup \bot^\downarrow)(X_{k-1}) =(b^\downarrow \cup \bot^\downarrow)(x_{k-1}^\downarrow) =b^\downarrow(x_{k-1}^\downarrow) \cup \bot^\downarrow \stackrel{\eqref{eq:pdr:EMlaw}}{=}b(x_{k-1})^\downarrow \cup \bot^\downarrow =b(x_{k-1})^\downarrow
+	\]
+	is still a principal.
+	Since choices 1, 2 and 4 guarantees the existence of a simple heuristic (i.e., the initial one) we also have that Corollary~\ref{cor:pdr:negativetermiantion} about negative termination is valid for {\APDR'}.
+
+	We now take advantage of the shape of the positive chain to present the code of {\APDR'} as reported in Figure~\ref{fig:app:APDRonDownset2}: we exploit the fact that $\vec{X}=\emptyset, x_1^\downarrow,\dots,x_{n-1}^\downarrow$ to make some simple code transformations described in the caption. Now we note that $b^\downarrow(x^\downarrow_{k-1})=b(x_{k-1})^\downarrow$, so that the conditions $b^\downarrow(x^\downarrow_{k-1}) \not \subseteq Y_k$ in (Decide) and $b^\downarrow(x^\downarrow_{k-1}) \subseteq Y_k$ in (Conflict) are equivalent to $b(x_{k-1})\not \in Y_k$ and to $b(x_{k-1}) \in Y_k$, respectively.
+	Moreover,
+	\begin{gather*}
+		(b^\downarrow \cup \bot^\downarrow)(x^\downarrow_{k-1} \cap z^\downarrow) = (b^\downarrow \cup \bot^\downarrow)((x_{k-1} \land z)^\downarrow) = (b \lor \bot)(x_{k-1} \land z)^\downarrow \\
+		= (b (x_{k-1} \land z)\lor \bot)^\downarrow = b (x_{k-1} \land z)^\downarrow
+	\end{gather*}
+	so that $(b^\downarrow \cup \bot^\downarrow)(x^\downarrow_{k-1} \cap z^\downarrow) \subseteq z^\downarrow$ is equivalent to  $b (x_{k-1} \land z)^\downarrow\subseteq z^\downarrow$ and therefore also to $b(x_{k-1} \land z) \leq z$.
+
+	Then, the only difference between {\APDR'} and {\ADPDR} is the initialization condition:  {\ADPDR} starts from the state reached after the following three steps of  {\APDR'}:
+	\[
+	(\emptyset,\top^\downarrow\|\varepsilon)_{2,2}
+	\tr{\mathit{Ca}} (\emptyset,\top^\downarrow\|p^\downarrow)_{2,1}
+	\tr{\mathit{Co}} (\emptyset,\bot^\downarrow\|\varepsilon)_{2,2}
+	\tr{U} (\emptyset,\bot^\downarrow,\top^\downarrow\|\varepsilon)_{3,3}\textrm{.}
+	\]
+
+	Since these steps apply the canonical choices for (Candidate) and (Conflict), we conclude that {\ADPDR} is sound and enjoys progression and negative termination.
+\end{proof}
+
+\subsection{Proofs of Section~\ref{sec:pdr:LTPDRvsADPDR}: {\ADPDR} simulates LT-PDR}
+
+\begin{figure}[t]
+	\centering
+	\underline{LT-PDR $(b,p)$}
+	\begin{codeNT}
+<INITIALISATION>
+  $( \vec{x} \| \vec{c} )_{n,k}$ := $(\bot,b(\bot)\|\varepsilon)_{2,2}$
+<ITERATION>
+  case $( \vec{x} \| \vec{c} )_{n,k}$ of
+	   $\vec{c}=\varepsilon$ And $x_{n-1} \leq p$     :                    %(Unfold)
+			$( \vec{x} \| \vec{c} )_{n,k}$ := $( \vec{x}, \top \| \varepsilon )_{n+1,n+1}$
+	   $\vec{c}=\varepsilon$ And $x_{n-1} \not \leq p$    :                     %(Candidate)
+			choose $z\in L$ st  $z \leq x_{n-1}$ And  $z \not\leq p$;
+			$( \vec{x} \| \vec{c} )_{n,k}$ := $( \vec{x} \| z )_{n,n-1}$
+	   $\vec{c} \neq \varepsilon$ And $c_k \leq b(x_{k-1})$ :                        %(Decide)
+			choose $z \in L$ st $z \leq x_{k-1}$ And $c_k \leq b(z)$;
+			$(\vec{x} \| \vec{c} )_{n,k}$ := $(\vec{x} \| z , \vec{c} )_{n,k-1}$
+	   $\vec{c} \neq \varepsilon$ And $c_k \not \leq b(x_{k-1})$ :                        %(Conflict)
+			choose $z \in L$ st $c_k \not \leq z$ And $b(x_{k-1} \land z) \leq z$;
+			$(\vec{x} \| \vec{c} )_{n,k}$ := $(\vec{x} \land_k z \| \mathsf{tail}(\vec{c}) )_{n,k+1}$
+  endcase
+<TERMINATION>
+	if $\exists j\in [0,n-2]\,.\, x_{j+1} \leq x_j$ then return true 		% $\vec{x}$ is conclusive
+	if $k = 1$ then return false							% $\vec{c}$ is conclusive
+\end{codeNT}
+	\caption{LT-PDR algorithm checking $\lfp b \leq p$, adapted from \cite{KUKSH22}.}
+	\label{fig:app:LTPDR2}
+\end{figure}
+
+\begin{proof}[Proof of Theorem~\ref{th:pdr:LT-PDR-instance-ADPDR}]
+	For the scope of this proof, we call $\states = \{( \vec{x} \| \vec{Y} )_{n,k} \}$ the set of states of {\ADPDR}, and $\states' = \{ (\vec{x}'\| \vec{c}' )_{n',k'} \}$ that of LT-PDR, where we use non-primed variables for the former and primed for the latter.
+	The function $\mathcal{R} \colon \states' \rightarrow \states$ is defined for all states $s' = ( \vec{x}' \| \vec{c}' )_{n',k'} \in \states'$, as
+	\[
+	\mathcal{R}\left( ( \vec{x}' \| \vec{c}' )_{n',k'} \right) = ( \vec{x} \| \vec{Y})_{n' + 1,k' + 1} \in \states
+	\]
+	where
+	\[
+	n = n' + 1, \qquad k = k' + 1, \qquad \vec{x} = \emptyset, \vec{x}' \qquad \text{ and } \qquad \vec{Y} = \negation{\vec{c'}}\text{.}
+	\]
+	We prove that $\mathcal{R}$  is a simulation \cite{Milner89}, that is for all $s',t' \in \states'$, if $s' \rightarrow t'$ then $\mathcal{R}(s') \rightarrow \mathcal{R}(t')$. The pseudo-code of LT-PDR is reported in Figure~\ref{fig:app:LTPDR2}.
+
+	First, we remark that, for any $z, x \in L$, $x \not\in \lnot (\{ z \}^{\uparrow})$ if and only if $z \leq x$. Moreover, note that indices $\vec{x}'$ in $s'$ and $\vec{x}$ in $\mathcal{R}(s')$ are off-setted by one: $x_j = x'_{j-1}$. However, as $n = n' + 1$ we have, for instance, $x_{n-1} = x'_{n'-1}$ (and analogously for $k'$).
+
+	Consider now a state $s' = ( \vec{x}' \| \vec{c}' )_{n',k'} \in \states'$ and $\mathcal{R}(s') = ( \vec{x} \| \vec{Y} )_{n,k} \in \states$. Suppose that LT-PDR can perform a transition from $s'$. This must be determined by one of the four rules of LT-PDR, possibly performing some choice of $z \in L$. We show that {\ADPDR} is able to simulate this transition, using the same rule and performing a corresponding choice. We do so by cases on the rule used by LT-PDR.
+
+	\begin{itemize}
+		\item If LT-PDR applies rule (Unfold), we have $\vec{c}' = \varepsilon$ and $x'_{n'-1} \leq p$ so that
+		      \[
+		      s'=( \vec{x}' \| \varepsilon )_{n',n'} \tr{U} ( \vec{x}',\top \| \varepsilon)_{n'+1,n'+1}=t' \text{.}
+		      \]
+		      Then, for $( \vec{x} \| \vec{Y} )_{n,k} = \mathcal{R}(s') = ( \emptyset,\vec{x}' \| \varepsilon )_{n'+1,n'+1}$ it holds $\vec{Y} = \varepsilon$ and $x_{n-1} = x'_{n'-1} \leq p$, so {\ADPDR} can apply (Unfold) too and
+		      \[
+		      \mathcal{R}(s')=( \emptyset,\vec{x}' \| \varepsilon )_{n'+1,n'+1} \tr{U} ( \emptyset,\vec{x}',\top \| \varepsilon)_{n'+2,n'+2}=\mathcal{R}(t') \text{.}
+		      \]
+
+		\item If LT-PDR applies rule (Candidate), we have $\vec{c}' = \varepsilon$ and $x'_{n'-1} \not \leq p$, so that $z\in L$ is chosen such that $z\leq x'_{n'-1}$ and $z\not\leq p$ to derive
+		      \[
+		      s'=( \vec{x}' \| \varepsilon )_{n',n'} \tr{\mathit{Ca}}_z ( \vec{x}' \| z)_{n',n'-1}=t'\text{.}
+		      \]
+		      Then, for $( \vec{x} \| \vec{Y} )_{n,k} = \mathcal{R}(s') = ( \emptyset,\vec{x}' \| \varepsilon )_{n'+1,n'+1}$ it holds $\vec{Y} = \varepsilon$ and $x_{n-1}=x'_{n'-1} \not \leq p$, so that {\ADPDR} can apply (Candidate) too. Moreover we can choose $Z \eqdef \lnot (\{ z \}^{\uparrow})$, because $z \leq x'_{n'-1}$ implies $x_{n-1}=x'_{n'-1} \not \in Z$, and $z \not \leq p$ implies $p \in Z$. By doing so we derive
+		      \[
+		      \mathcal{R}(s')=( \emptyset,\vec{x}' \| \varepsilon )_{n'+1,n'+1} \tr{\mathit{Ca}}_z ( \emptyset,\vec{x}' \| Z)_{n'+1,n'}=\mathcal{R}(t') \text{.}
+		      \]
+
+		\item If LT-PDR applies rule (Decide), we have $\vec{c}'\neq \varepsilon$ and $c'_{k'} \leq b(x'_{k'-1})$,  so that $z\in L$ is chosen such that $z \leq x'_{k'-1}$ and $c'_{k'} \leq b(z)$ to derive
+		      \[
+		      s'=( \vec{x}' \| \vec{c}' )_{n',k'} \tr{D}_z ( \vec{x}' \| z,\vec{c}')_{n',k'-1}=t'\text{.}
+		      \]
+		      Then, for $( \vec{x} \| \vec{Y} )_{n,k} = \mathcal{R}(s') = ( \emptyset,\vec{x}' \| \negation{c'} )_{n'+1,k'+1}$ it holds $\negation{c'} \neq \varepsilon$ and $b(x_{k-1})=b(x'_{k'-1})\not\in \negation{c'}_k=\lnot (\{ c'_{k-1} \}^{\uparrow})$, because the latter is implied by $c'_{k'} \leq b(x'_{k'-1})$. Thus {\ADPDR} can apply (Decide) too. Moreover we can choose $Z \eqdef \lnot (\{ z \}^{\uparrow})$. In fact $z \leq x'_{k'-1}$ implies $x_{k-1}=x'_{n'-1} \not \in \lnot (\{ z \}^{\uparrow})=Z$. Moreover $b^{\downarrow}_r(Y_{k}) \subseteq Z$ if and only if $x \not \in Z$ implies $b(x) \not \in Y_{k}$. Because $Z = \lnot (\{ z \}^{\uparrow})$ and $\negation{c'}_{k} = \lnot (\{ c'_{k'} \}^{\uparrow})$, this implication is equivalent to requiring that $z \leq x$ implies $c'_{k'} \leq b(x)$, which is true as $c'_{k'} \leq b(z)$ and $b$ is monotone. With this choice of $Z$ we derive
+		      \[
+		      \mathcal{R}(s')=( \emptyset,\vec{x}' \| \vec{Y} )_{n'+1,k'+1} \tr{D}_Z ( \emptyset,\vec{x}' \| Z,\vec{Y})_{n'+1,k'}=\mathcal{R}(t')\text{.}
+		      \]
+
+		\item If LT-PDR applies rule (Conflict), we have $\vec{c}'\neq \varepsilon$ and $c'_{k'} \not\leq b(x'_{k'-1})$,  so that $z\in L$ is chosen such that $c'_{k'} \not \leq z$ and $b(x'_{k'-1}\land z)\leq z$ to derive
+		      \[
+		      s'=( \vec{x}' \| \vec{c}' )_{n',k'} \tr{\mathit{Co}}_z ( \vec{x}'\land_{k'} z \| \mathsf{tail}(\vec{c}'))_{n',k'+1}=t'\text{.}
+		      \]
+		      Then, for $( \vec{x} \| \vec{Y} )_{n,k} = \mathcal{R}(s') = ( \emptyset,\vec{x}' \| \negation{c'} )_{n'+1,k'+1}$ it holds $\negation{c'} \neq \varepsilon$ and $b(x_{k-1})=b(x'_{k'-1})\in Y_k=\lnot (\{ c'_{k-1} \}^{\uparrow})$, because the latter is implied by $c'_{k'} \not\leq b(x'_{k'-1})$. Thus {\ADPDR} can apply (Conflict) too. Moreover we can choose the same $z$ as LT-PDR. In fact $c'_{k'} \not \leq z$ implies $z \in \lnot (\{ c'_{k'} \}^{\uparrow})=\lnot (\{ c'_{k-1} \}^{\uparrow})=\negation{c'}_{k}$, and $b(x_{k-1} \land z)=b(x'_{k'-1}\land z) \leq z$ is also an hypothesis in LT-PDR. With this choice of $z$ we derive
+		      \[
+		      \mathcal{R}(s')=( \emptyset,\vec{x}' \| \vec{Y} )_{n'+1,k'+1} \tr{\mathit{Co}}_z ( \emptyset,\vec{x}' \land_{k} z\| \mathsf{tail}(\vec{Y}))_{n'+1,k'+2}=\mathcal{R}(t')\text{.}
+		      \]
+	\end{itemize}
+	This concludes the proof that $\mathcal{R}$ is a simulation. However, to complete the proof that {\ADPDR} simulates LT-PDR, we have to take care of initial and final states.
+
+	We observe that the initial states $s'_0 = (\bot,b(\bot)\|\varepsilon)_{2,2} \in \states'$ of LT-PDR and $s_0 = (\emptyset,\bot,\top\|\varepsilon)_{3,3} \in \states$ of {\ADPDR} are not related: $\mathcal{R}(s'_0) \neq s_0$. To solve this issue, first observe that if $b(\bot) \not \leq p$, both algorithms return false in a few steps. If instead $b(\bot) \leq p$, {\ADPDR} can reach the state $\mathcal{R}(s'_0)$ from $s_0$ in just two steps:
+	\[
+	s_0 = (\emptyset,\bot,\top\|\varepsilon)_{3,3}
+	\tr{\mathit{Ca}} ( \emptyset, \bot, \top \| p^{\downarrow} )_{3,2}
+	\tr{\mathit{Co}}_{ b(\bot) } ( \emptyset, \bot, b(\bot) \| \varepsilon )_{3,3} = \mathcal{R}(s'_0)
+	\]
+
+	Lastly, we discuss the termination conditions of the two algorithms.
+
+	When LT-PDR terminates from a state $s'$ returning true, $s'$ satisfies $x'_{j+1} \leq x'_j$ for some $j$, so also {\ADPDR} terminates from $\mathcal{R}(s')$ returning true.
+
+	Instead, when LT-PDR terminates from $s'$ returning false, the condition $k' = 1$ does not imply that {\ADPDR} terminates from $s = \mathcal{R}(s')$. However, the latter algorithm can always apply (Decide) from $s$: as proved in \cite{KUKSH22}, the termination condition $k' = 1$ of LT-PDR implies $c'_1 \leq b(\bot)$, which in turn means $b(x_1) = b(x'_0) = b(\bot) \not \in Y_2 = \lnot (\{ c'_1 \}^{\uparrow})$. Moreover, we can choose $Z \eqdef \emptyset$: for all $x \in L$ we have $c'_1 \leq b(\bot) \leq b(x)$, so $b(x) \not \in Y_2$. After this step, we get that $Y_1 = \emptyset$, so {\ADPDR} returns false, too.
+\end{proof}
