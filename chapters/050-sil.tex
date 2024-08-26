@@ -204,8 +204,8 @@ Rule \silrule{empty} is used to drop paths backward, just like IL can drop them 
 Rule \silrule{unroll} allows to unroll a loop once. Subsequent applications of this rule allow to simulate (backward) a finite number of iterations, and then rule \silrule{iter0} can be used to ignore the remaining ones. This is on par with IL ability to unroll a loop a finite number of times to find some post, for which analogous rules are valid~\cite{OHearn20,MOH21}.
 Rule \silrule{disj} allows to split the analysis and join the results, just like HL and IL. However, while a corresponding rule \hlrule{conj} which perform intersection is sound for HL, it is unsound for both IL and SIL. We discuss this point further in Section~\ref{sec:sil:extremal-conditions}.
 
-All four these additional rules are sound:
-\begin{prop}[Soundness of additional SIL rules]\label{prop:sil:sil-additional-soundness}
+All four these additional rules are sound (it can be proved by induction):
+\begin{prop}\label{prop:sil:sil-additional-soundness}
 	The additional SIL rules at the bottom of Figure~\ref{fig:sil:sil-rules} are sound, that is, triples provable in SIL extended with those rules are valid.
 \end{prop}
 
@@ -317,7 +317,7 @@ The next bijection establishes the connection between (NC) and (HL): a necessary
 \begin{prop}[Bijection between NC and HL]\label{prop:sil:fw-inclusion-negation-bw}
 	For any  $\regr\in \Reg$ and $P, Q \subseteq \Sigma$:
 	\[
-	\fwsem{\regr} P \subseteq Q \Leftrightarrow \bwsem{\regr} (\lnot Q) \subseteq \lnot P \text{.}
+	\fwsem{\regr} P \subseteq Q \iff \bwsem{\regr} (\lnot Q) \subseteq \lnot P \text{.}
 	\]
 \end{prop}
 
@@ -345,10 +345,9 @@ These two definition are dual when we reverse the execution direction: if we con
 
 \begin{lemma}\label{lmm:sil:CC-1-monotone}
 	For any regular command $\regr \in \Reg$ and sets of states $P, Q \subseteq \Sigma$ it holds:
-	\begin{enumerate}
-		\item\label{lmm:sil:CC-1-monotone:1} $\bwsem{\regr} \fwsem{\regr} P \supseteq P \setminus D_{\regr}$;
-		\item\label{lmm:sil:CC-1-monotone:2} $\fwsem{\regr} \bwsem{\regr} Q \supseteq Q \setminus U_{\regr}$.
-	\end{enumerate}
+	\[
+	\bwsem{\regr} \fwsem{\regr} P \supseteq P \setminus D_{\regr} \qquad\qquad \fwsem{\regr} \bwsem{\regr} Q \supseteq Q \setminus U_{\regr} \text{.}
+	\]
 \end{lemma}
 
 This lemma highlights the asymmetry between over and under-approximation: the composition of a function with its inverse is increasing (but for non-terminating states).
@@ -362,8 +361,8 @@ In general, HL and SIL are different, but they coincide whenever the program $\r
 \begin{prop}\label{prop:sil:sil-hl-deterministic-terminating}
 	For any $\regr\in \Reg$ and $P, Q \subseteq \Sigma$:
 	\begin{itemize}
-		\item if $\regr$ is deterministic, $\bwsem{\regr} Q \supseteq P \Rightarrow \fwsem{\regr} P \subseteq Q$
-		\item if $\regr$ is terminating, $\fwsem{\regr} P \subseteq Q \Rightarrow \bwsem{\regr} Q \supseteq P$
+		\item if $\regr$ is deterministic, $\bwsem{\regr} Q \supseteq P \implies \fwsem{\regr} P \subseteq Q$
+		\item if $\regr$ is terminating, $\fwsem{\regr} P \subseteq Q \implies \bwsem{\regr} Q \supseteq P$
 	\end{itemize}
 \end{prop}
 
@@ -651,7 +650,7 @@ In the third group, we instantiated the SIL rules from Figure~\ref{fig:sil:sil-r
 			\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
 				                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
 				                                             \emptyset                         & otherwise
-			                                             \end{cases*}  \\
+			                                             \end{cases*}    \\
 			\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}(l)\right\rbrace \\
 			\edenot{\code{free(x)}} (s, h)      & \eqdef
 			\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                       \\
@@ -930,7 +929,7 @@ The proof relies on an algorithmic rewriting of the postcondition that makes con
 \end{lemma}
 
 Using this, we compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regr} \asldenot{q}$ and prove the triple $\siltriple{t}{\regr}{q}$. Then, using the oracle and \silrule{cons}, the theorem follows for any $p$ that implies $t$.
-Notably, this theorem shows that the weakest (possible) precondition $\bwsem{\regr} \asldenot{q}$ of loop-free programs is always expressible as an assertion $t \in \Asl$, namely $\asldenot{t} = \bwsem{\regr} \asldenot{q}$, and that it can be computed algorithmically. This is result is far from trivial, as it depends on the expressiveness of the assertion language: for instance, if we add negation, the same result does not hold anymore because, even if more preconditions can be expressed, we can also introduce some new posts for which the precondition is not in the assertion language.
+Notably, this theorem shows that the weakest (possible) precondition $\bwsem{\regr} \asldenot{q}$ of loop-free programs is always expressible as an assertion $t \in \Asl$, namely $\asldenot{t} = \bwsem{\regr} \asldenot{q}$, and that it can be computed algorithmically. This result is far from trivial, as it depends on the expressiveness of the assertion language: for instance, if we add negation, the same result does not hold anymore because, even if more preconditions can be expressed, we also introduce some new posts for which the precondition is not in the assertion language.
 
 To extend the result to loops, we can focus on single states. Note that the following result does not need the oracle: it is always possible to craft a $p$ whose proof only needs decidable implications.
 
@@ -953,7 +952,7 @@ The function analyses are parallelized and a strategy similar to the iteration r
 Moreover, we have a proof-of-concept implementation of Separation SIL in OCaml. The prototype is open source and available on GitHub.\footnote{\url{https://github.com/Alex23087/Failure-SSIL-Analyser}} While the prototype is not meant to scale up to real programs, it can derive all the examples in this section and helped us gain confidence in the correctness of our results. The code exploits a routine that follows closely the relative completeness Theorem~\ref{th:sil:separation-sil-sequential-complete} by implementing Lemma~\ref{lmm:sil:separation-assertion-rewrite}.
 For this implementation, we thank the students of the Laboratory for Innovative Software 2024 course: Yuri Andriaccio, Samuele Bonini, Andrea Castagna, Marco Antonio Corallo, Andrea Simone Costa, Fabio Federico, Elvis Rossi, Alessandro Scala, Matteo Simone.
 
-\section{Conclusions}
+\section{Summary}
 In this chapter, we considered known program logics for over and under-approximation and tried to formalize the relations among them in order to asses their respective strengths and weaknesses. This led to the introduction of the novel proof system for Lisbon triples, that we dubbed Sufficient Incorrectness Logic, and to compare the four logics along several dimensions.
 We also instantiated the new SIL proof system to handle pointers and memory allocation. The resulting Separation SIL is able to identify the causes of memory errors. We presented a first, simpler version of Separation SIL for which we provide a prototype implementation. We also showed how to manage explicit errors via ok/er flags, and how to modify the logic to become complete.
 Comparing the logics, we recovered some known results as well as finding new connections and highlighting insights that shed a little more light on the asymmetries between over/under-approximation an forward/backward analysis. The shortest summary of our findings is that there is no silver bullet: each logic has its own strengths and use cases.

@@ -573,7 +573,7 @@ The example of integers has the nice property of not having boundaries, but this
 	By mean of Theorem~\ref{th:uai:non-empt-res-finite-global}, no under-approximation abstract domain is non-emptying for all multiplications whenever one of these points is representable.
 \end{example}
 
-\section{Conclusions}
+\section{Summary}
 In this chapter, we pointed out some asymmetries between over and under-approximation in Abstract Interpretation, and why those are an obstacle to the design of abstract domains for program analysis via Under-approximation Galois connections. The key observation is that the duality between under and over-approximation is broken by the fact that in program analysis over and under-approximations have to be applied to the same transfer functions. The handling of divergence in the abstract domain poses another critical issue.
 
 Building on those ideas, we proposed the novel definition of \emph{non-emptying function} and studied how it plays a crucial role in proving the non-existence of general, useful under-approximation based abstract domains. Indeed, our results prove that an analysis based on such domains will very often answer $\bot$ (representing either absence of information or divergence) for programs that require repeated applications of non-emptying functions. This is a big limitation since recovery from $\bot$ in an under-approximation is not as easy as recovering from $\top$ in an over-approximation: we can say that it is quite impossible.

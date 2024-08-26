@@ -446,32 +446,24 @@ The following lemma is used in the subsequent proof.
 	\proofcase{\lclrule{seq}}
 	For (1) $P \le \bwsem{\regr_1} R \le \bwsem{\regr_1} (\bwsem{\regr_2} Q) = \bwsem{\regr_1; \regr_2} Q$, where the inequalities follow from inductive hypotheses and monotonicity of $\bwsem{\regr_1}$.
 
-	\noindent For (3), we recall that $\bwsem{\regr_1; \regr_2}^{A} \le \bwsem{\regr_1}^{A} \bwsem{\regr_2}^{A}$.
+	\noindent For (3),
 	\begin{align*}
-		\alpha(P) & \le \alpha(\bwsem{\regr_1; \regr_2} Q)                & [\text{(1) and monotonicity of }\alpha] \\
-		          & \le \bwsem{\regr_1; \regr_2}^{A} \alpha(Q)            & [\text{soundness of }\bwsem{\regr}^{A}] \\
-		          & \le \bwsem{\regr_1}^{A} \bwsem{\regr_2}^{A} \alpha(Q) & [\text{recalled above}]                 \\
-		          & = \denot{\regr_1}^{A} \alpha(R)                       & [\text{inductive hp}]                   \\
-		          & = \alpha(P)                                           & [\text{inductive hp}]
+		\alpha(P) & \le \alpha(\bwsem{\regr_1; \regr_2} Q)                                & [\text{(1) and monotonicity of }\alpha] \\
+		          & \le \bwsem{\regr_1; \regr_2}^{\sharp}_{A} \alpha(Q)                   & [\text{soundness of }\bwsem{\regr}^{A}] \\
+		          & = \bwsem{\regr_1}^{\sharp}_{A} \bwsem{\regr_2}^{\sharp}_{A} \alpha(Q) & [\text{definition}]                     \\
+		          & = \denot{\regr_1}^{\sharp}_{A} \alpha(R)                              & [\text{inductive hp}]                   \\
+		          & = \alpha(P)                                                           & [\text{inductive hp}]
 	\end{align*}
-	So all the lines are equal, in particular $\bwsem{\regr_1; \regr_2}^{A} \alpha(Q) = \alpha(P)$.
+	So all the lines are equal, in particular $\bwsem{\regr_1; \regr_2}^{\sharp}_{A} \alpha(Q) = \alpha(P)$.
 
 	\proofcase{\lclrule{join}}
 	For (1), by inductive hypotheses, $P_1 \le \denot{\regr_1} Q$ and $P_2 \le \denot{\regr_2} Q$. Hence, $P_1 \lor P_2 \le \denot{\regr_1} Q \lor \denot{\regr_2} Q = \denot{\regr_1 \oplus \regr_2} Q$.
 
-	\noindent For (3), we observe that
+	\noindent For (3), recalling that by inductive hypotheses $\alpha(P_1) = \bwsem{\regr_1}^{\sharp}_{A} \alpha(Q)$ and $\alpha(P_2) = \bwsem{\regr_2}^{\sharp}_{A} \alpha(Q)$, we get
 	\begin{align*}
-		\bwsem{\regr_1 \oplus \regr_2}^{A} \alpha(Q) & = \alpha \bwsem{\regr_1 \oplus \regr_2} \gamma \alpha(Q)                               \\
-		                                             & = \alpha (\bwsem{\regr_1} \gamma \alpha(Q) \lor \bwsem{\regr_2} \gamma \alpha(Q))      \\
-		                                             & = \alpha \bwsem{\regr_1} \gamma \alpha(Q) \lor \alpha \bwsem{\regr_2} \gamma \alpha(Q) \\
-		                                             & = \bwsem{\regr_1}^{A}\alpha(Q) \lor \bwsem{\regr_2}^{A} \alpha(Q)
-	\end{align*}
-	where we used additivity of $\alpha$.
-	Recalling that, by inductive hypotheses, $\alpha(P_1) = \bwsem{\regr_1}^{A} \alpha(Q)$ and $\alpha(P_2) = \bwsem{\regr_2}^{A} \alpha(Q)$, we get
-	\begin{align*}
-		\alpha(P_1 \lor P_2) & = \alpha(P_1) \lor \alpha(P_2)                                     & [\alpha\text{ is additive}]   \\
-		                     & = \denot{\regr_1}^{A} \alpha(Q) \lor \denot{\regr_2}^{A} \alpha(Q) & [\text{inductive hypotheses}] \\
-		                     & = (\denot{\regr_1 \oplus \regr_2}^{A}) \alpha(Q)                   & [\text{observation above}]
+		\alpha(P_1 \lor P_2) & = \alpha(P_1) \lor \alpha(P_2)                                                       & [\alpha\text{ is additive}]   \\
+		                     & = \denot{\regr_1}^{\sharp}_{A} \alpha(Q) \lor \denot{\regr_2}^{\sharp}_{A} \alpha(Q) & [\text{inductive hypotheses}] \\
+		                     & = \denot{\regr_1 \oplus \regr_2}^{\sharp}_{A} \alpha(Q)                              & [\text{definition}]
 	\end{align*}
 
 	\proofcase{\clclrule{rec}}
@@ -583,6 +575,34 @@ The following lemma is used in the subsequent proof.
 	\label{fig:app:clcl-derivation}
 \end{sidewaysfigure}
 
-\begin{proof}[Proof of Proposition~\ref{prop:lcla:clcl-sound-refinement}]
-	\todo[inline]{Write the proof or decide I don't care}
+\begin{proof}[Proof sketch of Proposition~\ref{prop:lcla:clcl-sound-refinement}]
+	As an example, we sketch the proof for \clclrule{refine\mbox{-}ext}; other rules are analogous. First, analogously to the proof of Theorem~\ref{th:lcla:clcl-sound-int}, we prove by induction extensional soundness of CLCL, that is the same as Theorem~\ref{th:lcla:clcl-sound-int} but replacing point (3) with $\alpha(P) = \bwsem{\regr}^{A} \alpha(Q)$. Then, we extend the inductive proof with a new case for \clclrule{refine\mbox{-}ext}. Analogously to Theorem~\ref{th:lcla:clcl-sound-int}, we only have to prove points (1) and (3) because together they imply point (2).
+	We report here only two sample cases.
+
+	\proofcase{\clclrule{seq}}
+	(1) is the same as Theorem~\ref{th:lcla:clcl-sound-int}.
+
+	\noindent For (3), we recall that $\bwsem{\regr_1; \regr_2}^{A} \le \bwsem{\regr_1}^{A} \bwsem{\regr_2}^{A}$.
+	\begin{align*}
+		\alpha(P) & \le \alpha(\bwsem{\regr_1; \regr_2} Q)                & [\text{(1) and monotonicity of }\alpha] \\
+		          & \le \bwsem{\regr_1; \regr_2}^{A} \alpha(Q)            & [\text{soundness of }\bwsem{\regr}^{A}] \\
+		          & \le \bwsem{\regr_1}^{A} \bwsem{\regr_2}^{A} \alpha(Q) & [\text{recalled above}]                 \\
+		          & = \denot{\regr_1}^{A} \alpha(R)                       & [\text{inductive hp}]                   \\
+		          & = \alpha(P)                                           & [\text{inductive hp}]
+	\end{align*}
+	So all the lines are equal, in particular $\bwsem{\regr_1; \regr_2}^{A} \alpha(Q) = \alpha(P)$.
+
+	\proofcase{\clclrule{refine\mbox{-}ext}}
+	(1) follows from soundness of $\clcltriple{A'}{P}{\regr}{Q}$.
+
+	\noindent For (3),
+	\begin{align*}
+		\alpha(P) & \le \alpha(\bwsem{\regr} Q)                                             & [\text{(1) and monotonicity of }\alpha]  \\
+		          & \le \bwsem{\regr}^{A} \alpha(Q)                                         & [\text{soundness of } \bwsem{\regr}^{A}] \\
+		          & = \alpha \bwsem{\regr} \gamma \alpha(Q)                                 & [\text{definition}]                      \\
+		          & = \alpha \gamma' \alpha' \bwsem{\regr} \gamma' \alpha' \gamma \alpha(Q) & [\text{Lemma~\ref{lmm:app:lemma-AA'}}]   \\
+		          & = \alpha \gamma' \bwsem{\regr}^{A'} \alpha' A(Q)                        & [\text{definition}]                      \\
+		          & = \alpha(P)                                                             & [\text{hypothesis of the rule}]
+	\end{align*}
+	Hence all the lines are equal; in particular $\bwsem{r}^{A} \alpha(Q) = \alpha(P)$.
 \end{proof}
