@@ -826,7 +826,7 @@ push_back(v) {
 
 In the example, we use as error postcondition $x \dealloc \andsep \true$. It is necessary to include $(\andsep\ \true)$ because, in final reachable states, $x$ is not the only variable allocated (there are also $v$ and $y$), so the final heap should talk about them as well. Adding $(\andsep\ \true)$ is a convenient way to focus only on the part of the heap that describes the error, that is $x \dealloc$, and just leave everything else unspecified.
 
-For the same program, in~\cite{RBDDOV20} the authors prove the ISL triple $\iltriple{v \mapsto z \andsep z \mapsto -}{\mathsf{rclient}}{v \mapsto y \andsep y \mapsto - \andsep x \dealloc}$. This proves the existence of a faulty execution, but tells nothing about which input states actually lead to the error. On the other hand, the Separation SIL triple has a more succinct post capturing the error and exposes faulty initial states.
+For the same program, the authors of~\cite{RBDDOV20} prove the ISL triple $\iltriple{v \mapsto z \andsep z \mapsto -}{\mathsf{rclient}}{v \mapsto y \andsep y \mapsto - \andsep x \dealloc}$. This proves the existence of a faulty execution, but tells nothing about which input states actually lead to the error. On the other hand, the Separation SIL triple has a more succinct post capturing the error and exposes faulty initial states.
 
 Lastly, we remark that, while in \cite[Figure~6]{ZDS23} outcome-based separation logic proves essentially the same triple, the deduction process is quite different from SIL.
 OL reasoning is forward oriented, as witnessed by the implication that concludes the proof and by the triple for the $\code{skip}$ branch, whereas Separation SIL proof system naturally guides the backward inference.
@@ -918,7 +918,7 @@ The modified proof system is sound for this different semantics. Moreover, we ca
 	Suppose to have an oracle to prove implications between formulae in $\Asl$. Let $\regr \in \Regh$ be a regular command without $\kstar$ and $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. Then the triple $\siltriple{p}{\regr}{q}$ is provable.
 \end{theorem}
 
-The proof relies on an algorithmic rewriting of the postcondition that makes constraints on a single memory location explicit. This is given by the following lemma, whose proof is constructive (see the proof in Appendix~\ref{ch:app:sil}):
+The proof relies on an algorithmic rewriting of the postcondition that makes constraints on a single memory location explicit. This is given by the following lemma:
 
 \begin{lemma}\label{lmm:sil:separation-assertion-rewrite}
 	Let $q \in \Asl$ be a formula without $\exists$, and let $x'$ be a fresh variable. Then,
@@ -927,6 +927,27 @@ The proof relies on an algorithmic rewriting of the postcondition that makes con
 		\item there exists a $\bar{q}$ such that $q \land (x \dealloc \andsep \true) \equiv x \dealloc \andsep \bar{q}$
 	\end{enumerate}
 \end{lemma}
+\begin{proof}[Proof sketch]
+	$\bar{q}$ is computed inductively on the structure of $q$ as shown in the following table (the last two columns are for points (1) and (2) of the statement, respectively):
+
+	\begin{center}
+		\begin{tabular}{r|c@{\qquad\quad}c@{\qquad\quad}}
+			$q$               & $\bar{q}$ (pt. 1)                                                      & $\bar{q}$ (pt. 2)  \\
+			\hline
+			$z \mapsto z'$    & $z' = x' \land z = x \land \emp$                                       & $\false$           \\
+			$z \dealloc{}$    & $\false$                                                               & $z = x \land \emp$ \\
+			$\false$          & \multicolumn{2}{c}{$\false$}                                                                \\
+			$\true$           & \multicolumn{2}{c}{$\true$}                                                                 \\
+			$q_1 \land q_2$   & \multicolumn{2}{c}{$\bar{q}_1 \land \bar{q}_2$}                                             \\
+			$q_1 \lor q_2$    & \multicolumn{2}{c}{$\bar{q}_1 \lor \bar{q}_2$}                                              \\
+			$a_1 \asymp a_2$  & \multicolumn{2}{c}{$a_1 \asymp a_2$}                                                        \\
+			$\emp$            & \multicolumn{2}{c}{$\false$}                                                                \\
+			$q_1 \andsep q_2$ & \multicolumn{2}{c}{$\bar{q}_1 \andsep q_2 \lor q_1 \andsep \bar{q}_2$}
+		\end{tabular}
+	\end{center}
+
+	The proof that these formulae satisfy the desired equalities are in Appendix~\ref{ch:app:sil}.
+\end{proof}
 
 Using this, we compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regr} \asldenot{q}$ and prove the triple $\siltriple{t}{\regr}{q}$. Then, using the oracle and \silrule{cons}, the theorem follows for any $p$ that implies $t$.
 Notably, this theorem shows that the weakest (possible) precondition $\bwsem{\regr} \asldenot{q}$ of loop-free programs is always expressible as an assertion $t \in \Asl$, namely $\asldenot{t} = \bwsem{\regr} \asldenot{q}$, and that it can be computed algorithmically. This result is far from trivial, as it depends on the expressiveness of the assertion language: for instance, if we add negation, the same result does not hold anymore because, even if more preconditions can be expressed, we also introduce some new posts for which the precondition is not in the assertion language.

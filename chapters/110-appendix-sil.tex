@@ -382,48 +382,48 @@ Some of the following equivalences are standard, but we collect them all here fo
 	The proof is by induction on the structure of $q$.
 
 	\proofcase{$q = \false$}
-	Take $p = \false$.
+	Take $\bar{q} = \false$.
 
 	\proofcase{$q = \true$}
-	Take $p = \true$.
+	Take $\bar{q} = \true$.
 
 	\proofcase{$q = q_1 \land q_2$}
-	We consider point (1) first. By inductive hypothesis, there exists $p_1$ and $p_2$ such that
+	We consider point (1) first. By inductive hypothesis, there exists $\bar{q}_1$ and $\bar{q}_2$ such that
 	\begin{align*}
-		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_1 \\
-		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_2
+		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep \bar{q}_1 \\
+		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep \bar{q}_2
 	\end{align*}
 	so that
 	\begin{align*}
 		q \land (x \mapsto x' \andsep \true) & \equiv q_1 \land q_2 \land (x \mapsto x' \andsep \true)                                    \\
 		                                     & \equiv q_1 \land (x \mapsto x' \andsep \true) \land q_2 \land (x \mapsto x' \andsep \true) \\
-		                                     & \equiv (x \mapsto x' \andsep p_1) \land (x \mapsto x' \andsep p_2)                         \\
-		                                     & \equiv x \mapsto x' \andsep (p_1 \land p_2)
+		                                     & \equiv (x \mapsto x' \andsep \bar{q}_1) \land (x \mapsto x' \andsep \bar{q}_2)             \\
+		                                     & \equiv x \mapsto x' \andsep (\bar{q}_1 \land \bar{q}_2)
 	\end{align*}
 	where we used Lemma~\ref{lmm:app:asl-equivalences}.7 for the last equivalence.
 	The case for point (2) is analogous using Lemma~\ref{lmm:app:asl-equivalences}.8 instead.
 
 	\proofcase{$q = q_1 \lor q_2$}
-	We consider point (1) first. By inductive hypothesis, there exists $p_1$ and $p_2$ such that
+	We consider point (1) first. By inductive hypothesis, there exists $\bar{q}_1$ and $\bar{q}_2$ such that
 	\begin{align*}
-		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_1 \\
-		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_2
+		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep \bar{q}_1 \\
+		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep \bar{q}_2
 	\end{align*}
 	so that
 	\begin{align*}
 		q \land (x \mapsto x' \andsep \true) & \equiv (q_1 \lor q_2) \land (x \mapsto x' \andsep \true)                                      \\
 		                                     & \equiv (q_1 \land (x \mapsto x' \andsep \true)) \lor (q_2 \land (x \mapsto x' \andsep \true)) \\
-		                                     & \equiv (x \mapsto x' \andsep p_1) \lor (x \mapsto x' \andsep p_2)                             \\
-		                                     & \equiv x \mapsto x' \andsep (p_1 \lor p_2)
+		                                     & \equiv (x \mapsto x' \andsep \bar{q}_1) \lor (x \mapsto x' \andsep \bar{q}_2)                 \\
+		                                     & \equiv x \mapsto x' \andsep (\bar{q}_1 \lor \bar{q}_2)
 	\end{align*}
 	where we used Lemma~\ref{lmm:app:asl-equivalences}.1 for the second equivalence and Lemma~\ref{lmm:app:asl-equivalences}.2 for the last one.
 	The case for point (2) is analogous.
 
 	\proofcase{$q = a_1 \asymp a_2$}
-	Both points follow from Lemma~\ref{lmm:app:asl-equivalences}.6 by taking $p_1 = \true$ and $p_2 = x \mapsto x'$ (resp. $p_2 = x \dealloc$).
+	If we take $\bar{q} = a_1 \asymp a_2$, both points follow from Lemma~\ref{lmm:app:asl-equivalences}.6 by taking $p_1 = \true$ and $p_2 = x \mapsto x'$ (resp. $p_2 = x \dealloc$).
 
 	\proofcase{$q = \emp$}
-	Both formulae $\emp \land (x \mapsto x' \andsep \true)$ and $\emp \land (x \dealloc \andsep \true)$ are not satisfiable. Therefore we get the thesis with $p = \false$.
+	Both formulae $\emp \land (x \mapsto x' \andsep \true)$ and $\emp \land (x \dealloc \andsep \true)$ are not satisfiable. Therefore we get the thesis with $\bar{q} = \false$.
 
 	\proofcase{$q = z \mapsto z'$}
 	For point (1):
@@ -435,10 +435,10 @@ Some of the following equivalences are standard, but we collect them all here fo
 		 & =\asldenot{z' = x' \land z = x \land x \mapsto x'}
 	\end{align*}
 
-	For point (2), we observe that $z \mapsto z' \land (x \dealloc \andsep \true)$ is not satisfiable, so we get the thesis with $p = \false$.
+	For point (2), we observe that $z \mapsto z' \land (x \dealloc \andsep \true)$ is not satisfiable, so we get the thesis with $\bar{q} = \false$.
 
 	\proofcase{$q = z \dealloc$}
-	For point (1), we observe that $z \dealloc{} \land (x \mapsto x' \andsep \true)$ is not satisfiable, so we get the thesis with $p = \false$.
+	For point (1), we observe that $z \dealloc{} \land (x \mapsto x' \andsep \true)$ is not satisfiable, so we get the thesis with $\bar{q} = \false$.
 
 	For point (2):
 	\begin{align*}
@@ -450,14 +450,14 @@ Some of the following equivalences are standard, but we collect them all here fo
 	\end{align*}
 
 	\proofcase{$q = q_1 \andsep q_2$}
-	We consider point (1) first. By inductive hypothesis, there exists $p_1$ and $p_2$ such that
+	We consider point (1) first. By inductive hypothesis, there exists $\bar{q}_1$ and $\bar{q}_2$ such that
 	\begin{align*}
-		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_1 \\
-		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep p_2
+		q_1 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep \bar{q}_1 \\
+		q_2 \land (x \mapsto x' \andsep \true) & \equiv x \mapsto x' \andsep \bar{q}_2
 	\end{align*}
-	Take $p = p_1 \andsep q_2 \lor q_1 \andsep p_2$. We have
+	Take $\bar{q} = \bar{q}_1 \andsep q_2 \lor q_1 \andsep \bar{q}_2$. We have
 	\begin{align*}
-		\asldenot{x \mapsto x' \andsep p} = \asldenot{x \mapsto x' \andsep p_1 \andsep q_2} \cup \asldenot{x \mapsto x' \andsep q_1 \andsep p_2}
+		\asldenot{x \mapsto x' \andsep p} = \asldenot{x \mapsto x' \andsep \bar{q}1 \andsep q_2} \cup \asldenot{x \mapsto x' \andsep q_1 \andsep \bar{q}_2}
 	\end{align*}
 	Now consider
 	\begin{align*}
@@ -466,19 +466,19 @@ Some of the following equivalences are standard, but we collect them all here fo
 		 & =\lbrace (s, h) \svert (s, h) \in \asldenot{x \mapsto x' \andsep \true}, h = h_1 \bullet h_2, (s, h_1) \in \asldenot{q_1}, (s, h_2) \in \asldenot{q_2} \rbrace \\
 		 & =\lbrace (s, h) \svert h(s(x)) = s(x'), h = h_1 \bullet h_2, (s, h_1) \in \asldenot{q_1}, (s, h_2) \in \asldenot{q_2} \rbrace
 	\end{align*}
-	For every state $(s, h)$ in this set, either $s(x) \in \dom(h_1)$ or $s(x) \in \dom(h_2)$: it can't be in neither because $h(s(x)) = s(x')$. Consider the former case: then $(s, h_1) \in \asldenot{x \mapsto x' \andsep \true}$, so that $(s, h_1) \in \asldenot{q_1 \land (x \mapsto x' \andsep \true)} = \asldenot{x \mapsto x' \andsep p_1}$, so that $(s, h_1 \bullet h_2) \in \asldenot{x \mapsto x' \andsep p_1 \andsep q_2}$. Analogously, in the latter case $(s, h_1 \bullet h_2) \in \asldenot{x \mapsto x' \andsep q_1 \andsep p_2}$.
-	Therefore, $\asldenot{q \land (x \mapsto x' \andsep \true)} \subseteq \asldenot{x \mapsto x' \andsep p}$.
+	For every state $(s, h)$ in this set, either $s(x) \in \dom(h_1)$ or $s(x) \in \dom(h_2)$: it can't be in neither because $h(s(x)) = s(x')$. Consider the former case: then $(s, h_1) \in \asldenot{x \mapsto x' \andsep \true}$, so that $(s, h_1) \in \asldenot{q_1 \land (x \mapsto x' \andsep \true)} = \asldenot{x \mapsto x' \andsep \bar{q}_1}$, so that $(s, h_1 \bullet h_2) \in \asldenot{x \mapsto x' \andsep \bar{q}_1 \andsep q_2}$. Analogously, in the latter case $(s, h_1 \bullet h_2) \in \asldenot{x \mapsto x' \andsep q_1 \andsep \bar{q}_2}$.
+	Therefore, $\asldenot{q \land (x \mapsto x' \andsep \true)} \subseteq \asldenot{x \mapsto x' \andsep \bar{q}}$.
 
 	For the other inclusion, consider
 	\begin{align*}
-		 & \asldenot{x \mapsto x' \andsep p_1 \andsep q_2}                                                                                                  \\
-		 & = \lbrace (s, h) \svert h = h_1 \bullet h_2, (s, h_1) \in \asldenot{x \mapsto x' \andsep p_1}, (s, h_2) \in \asldenot{q_2} \rbrace               \\
+		 & \asldenot{x \mapsto x' \andsep \bar{q}_1 \andsep q_2}                                                                                            \\
+		 & = \lbrace (s, h) \svert h = h_1 \bullet h_2, (s, h_1) \in \asldenot{x \mapsto x' \andsep \bar{q}_1}, (s, h_2) \in \asldenot{q_2} \rbrace         \\
 		 & = \lbrace (s, h) \svert h = h_1 \bullet h_2, (s, h_1) \in \asldenot{q_1 \land (x \mapsto x' \andsep \true)}, (s, h_2) \in \asldenot{q_2} \rbrace \\
 		 & = \lbrace (s, h) \svert h = h_1 \bullet h_2, h_1(s(x)) = s(x'), (s, h_1) \in \asldenot{q_1}, (s, h_2) \in \asldenot{q_2} \rbrace                 \\
 		 & \subseteq \lbrace (s, h) \svert h = h_1 \bullet h_2, h(s(x)) = s(x'), (s, h_1) \in \asldenot{q_1}, (s, h_2) \in \asldenot{q_2} \rbrace           \\
 		 & = \asldenot{q \land (x \mapsto x' \andsep \true)}
 	\end{align*}
-	and analogously for $\asldenot{x \mapsto x' \andsep q_1 \andsep p_2} \subseteq \asldenot{q \land (x \mapsto x' \andsep \true)}$.
+	and analogously for $\asldenot{x \mapsto x' \andsep q_1 \andsep \bar{q}_2} \subseteq \asldenot{q \land (x \mapsto x' \andsep \true)}$.
 
 	The case for point (2) is analogous.
 \end{proof}
