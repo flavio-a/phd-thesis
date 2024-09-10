@@ -87,8 +87,11 @@
 \input{chapters/090-conclusions}
 
 %\bibliography{bibfile}
-\printbibliography
-\addcontentsline{toc}{chapter}{Bibliography}
+{
+	\emergencystretch=1em
+	\printbibliography
+	\addcontentsline{toc}{chapter}{Bibliography}
+}
 
 %\begin{acks}
 %	This work is supported by the \grantsponsor{1}{Italian Ministero dell'Università e della Ricerca}{https://prin.mur.gov.it/} under Grant No. \grantnum{1}{P2022HXNSC}, PRIN 2022 PNRR -- \emph{Resource Awareness in Programming: Algebra, Rewriting, and Analysis}.

@@ -49,7 +49,7 @@ Lastly, from Knaster-Tarski follows the following two (co)induction proof princi
 \end{equation}
 
 \section{Propositional logic}
-When talking about propositional logical formulas, we group variables $x_1$, $x_2$, $\dots$, $x_n$ in a vector denoted $\xbar$. Moreover, we often omit the variables a formula depends on. For instance, if the formula $F(\xbar)$ depends on variables $\xbar$, we shall write just $F$. We use the special shorthand $F'$ to denote $F[\xbar/\xbar']$, where we primed all variables appearing in $F$.
+When talking about propositional logical formulas, we group variables $x_1$, $x_2$, $\dots$, $x_n$ in a vector denoted $\xbar$. Moreover, we often omit the variables a formula depends on. For instance, if the formula $F(\xbar)$ depends on variables $\xbar$, we shall write just $F$. We use the special shorthand $F'$ to denote $F[\xbar'/\xbar]$, where we primed all variables appearing in $F$.
 An assignment $s$ of all variables $\xbar$ appearing in a formula $F(\xbar)$ either satisfies it, written $s \vDash F$, or falsifies it, written $s \nvDash F$. Given an assignment $s$ for variables $\xbar$, we shall write $s'$ for the corresponding assignment on primed variables $\xbar'$, that is the value of variable $x'$ in $s'$ is the same as $x$ in $s$. Moreover, we use the comma to ``merge" assignments when they refer to disjoint sets of variables: for instance, given the two assignments $s$ and $t$, we write $s, t'$ for the assignment that uses $s$ for $\xbar$ and $t'$ for $\xbar'$ (we assume the set of primed variables $\xbar'$ to be disjoint from the original set $\xbar$).
 A \emph{literal} is either a variable or its negation. A \emph{clause} $c$ is a disjunction of literals. Any assignment $s$ of variables $\xbar$ has a corresponding clause that is satisfied exactly by that assignment of the same variables, and we overload the symbol $s$ to denote both. A \emph{subclause} $d \subseteq c$ is a clause whose literals are a subset of literals of $c$. A formula $F$ in conjunctive normal form (CNF) is a conjunction of clauses, and we write $\clause(F)$ to denote the set of clauses that appear in $F$.
 
@@ -175,7 +175,7 @@ When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:h
 \end{theorem}
 
 Lastly, we remark that HL is tightly connected to Dijkstra's weakest liberal precondition~\cite{Dijkstra75}. Given a program $\regr$ and a predicate $Q$ on final states, the weakest liberal precondition $\wlp[\regr](Q)$ is a predicate on initial states such that a state $\sigma$ satisfies $\wlp[\regr](Q)$ if and only if the execution of $\regr$ starting from $\sigma$ either doesn't terminate or terminates in a state satisfying $Q$. This definition is reminiscent of the validity condition for HL triples, but the ``if and only if'' requirement makes it stronger: $\wlp[\regr](Q)$ is the \emph{weakest} precondition such that $\vDash \hltriple{\wlp[\regr](Q)}{\regr}{Q}$. In other words, $\vDash \hltriple{P}{\regr}{Q}$ if and only if $P \implies \wlp[\regr](Q)$.
-While Dijkstra's work focused on giving an inductive definition for $\wlp$, we focus on it as a sort of inverse of $\fwsem{\cdot}$.\footnote{More precisely, $\wlp$ and $\fwsem{\cdot}$ are adjoint functions, see Section~\ref{sec:sil:extremal-conditions}.} As discussed above, we also consider $\wlp{\regr}(Q)$ to be a set of states instead of a formula.
+While Dijkstra's work focused on giving an inductive definition for $\wlp$, we focus on it as a sort of inverse of $\fwsem{\cdot}$.\footnote{More precisely, $\wlp$ and $\fwsem{\cdot}$ are adjoint functions, see Section~\ref{sec:sil:extremal-conditions}.} As discussed above, we also consider $\wlp[\regr](Q)$ to be a set of states instead of a formula.
 
 \section{Incorrectness Logic}\label{sec:bg:il}
 
@@ -226,7 +226,7 @@ which can be compactly rewritten as the under-approximation condition
 \]
 This property ensures that any error in $Q$ reported by the analysis is in fact a true error of the program, reachable in some concrete execution.
 
-We consider the proof system for IL in Figure~\ref{fig:bg:il}, adapting the one in~\cite{MOH21} and inspired by previous work on reverse Hoare logic~\cite{VK11}, simplified to not separate correct and erroneous termination states.
+We consider the proof system for IL in Figure~\ref{fig:bg:il}, adapting the one in~\cite{MOH21} and inspired by previous work on reverse Hoare logic~\cite{VK11}, simplified to not separate correct and erroneous termination states (see also Remark~\ref{rem:bg:ok-er-flags} below).
 Rule \ilrule{cons} looks similar, but uses reversed implication: in IL we can grow the precondition ($P' \subseteq P$) and shrink the post ($Q \subseteq Q'$), while in HL we do the opposite (cf. \hlrule{cons} in Figure~\ref{fig:bg:hl}). This fits the under/over-approximation duality: if we know $Q'$ is an under-approximation of the result, also $Q \subseteq Q'$ is such, and dually in HL.
 Another important difference is in rule \ilrule{iter} for Kleene iteration. HL rule \hlrule{iter} is based on loop invariants, but while these are sound in under-approximation, they are not complete because they don't account for invariants that are reached after a number of iterations~\cite[§4]{OHearn20}.
 
@@ -253,14 +253,14 @@ if (even(x) && odd(y)) {
 	where we assume that $Q_{42} \eqdef (z = 42)$ denotes the set of erroneous states, i.e., the incorrectness specification.
 	The valid HL triple $\hltriple{ \text{odd}(y) }{\regr}{Q_{42}}$ identifies input states that will surely end up in an  error state, while the triple $\hltriple{ \lnot Q_{42} \land \lnot \text{odd}(y)}{\regr}{\lnot Q_{42}}$ characterize input states that will not produce any error.
 
-	On the other hand, the valid IL triple $\iltriple{z = 11}{\regr}{Q_{42} \land \text{odd}(y) \land \text{even}(x) }$ expresses the fact that error states in $Q_{42}$ are reachable by safe initial state. Similarly, also the IL triple $\iltriple{\true}{\regr}{\lnot Q_{42} \land \lnot (\text{even}(x) \land \text{odd}(y)) }$ is valid since the postcondition $\lnot Q_{42}$ can be reached only when the path conditions to reach the assignment are not satisfied.
+	On the other hand, the valid IL triple $\iltriple{z = 11}{\regr}{Q_{42} \land \text{odd}(y) \land \text{even}(x) }$ expresses the fact that error states in $Q_{42}$ are reachable by safe initial state. Similarly, also the IL triple $\iltriple{\true}{\regr}{\lnot Q_{42} \land \lnot (\text{odd}(y) \land \text{even}(x)) }$ is valid since the postcondition $\lnot Q_{42}$ can be reached only when the path conditions to reach the assignment are not satisfied.
 \end{example}
 
 \begin{remark}[ok/er flags]\label{rem:bg:ok-er-flags}
 	One distinguishing feature of proof systems for incorrectness (e.g.,~\cite{OHearn20,RBDDOV20,RBDO22,RVBO23}) is to tag postconditions, but not preconditions, with either the flag $\oktext{ok}$ or $\ertext{er}$ to separate successful computations from those leading to errors.
 	An immediate consequence is that the number of proof rules is increased by the necessity to deal with such tags and that the definition of the semantics becomes longer and more complex.
-	Striving for simplicity, in this thesis we mostly follow the alternative from~\cite{BGGR23}, where the whole concrete domain is extended with such flags, e.g., we use $C = \pow(\{\oktext{ok},\ertext{er}\}\times \Sigma)$ instead of $\pow(\Sigma)$, and it is also tacitly assumed that error states are preserved by all transfer functions, i.e., that $\fwsem{\regr} (\ertext{er:\sigma}) = \ertext{er:\sigma}$, for any $\regr\in\Reg$ and $\sigma\in\Sigma$.
-	This way, we accommodate for both pre and post that are tagged, but the treatment of tags is transparent to the rules of the logic. Therefore, in this extended setting, when we write $P$ and $Q$ we leave implicit that they may contain both kinds of tagged states. The distinction between successful and erroneous outputs will be explicitated in the analysis presented in Section~\ref{sec:sil:separation-sil-error}.
+	Striving for simplicity, in this thesis we mostly follow the alternative from~\cite{BGGR23}, where the whole concrete domain is extended with such flags, e.g., we use $C = \pow(\{\oktext{ok},\ertext{er}\}\times \Sigma)$ instead of $\pow(\Sigma)$, and we assume that error states are preserved by all transfer functions, i.e., that $\fwsem{\regr} (\ertext{er:\sigma}) = \ertext{er:\sigma}$, for any $\regr\in\Reg$ and $\sigma\in\Sigma$.
+	This way, we tag both pre and post, but the treatment of tags is transparent to the rules of the logic. Therefore, in this extended setting, when we write $P$ and $Q$ we leave implicit that they may contain both kinds of tagged states. The distinction between successful and erroneous outputs will be explicitated in the analysis presented in Section~\ref{sec:sil:separation-sil-error}.
 \end{remark}
 
 \section{Necessary Conditions}\label{sec:bg:nc}
@@ -286,10 +286,8 @@ Note that we consider infinite traces as good traces. We do this by analogy with
 	Consider a variation of the program in Example~\ref{ex:bg:il-hl-comparison} that introduces nondeterminism:
 	\begin{minted}{C}
 x := nondet();
-if (x is even) {
-    if (y is odd) {
-        z := 42;
-    }
+if (even(x) && odd(y)) {
+    z := 42;
 }
 // assert(z != 42)
 	\end{minted}
@@ -321,11 +319,12 @@ Formally, SL is a triple-based program logic analogous to HL, which uses as asse
 \begin{align*}
 	p, q ::= & \; \true \mid p \land q \mid \lnot p \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid \code{a} \mapsto \code{a} \mid x \dealloc
 \end{align*}
-The first construct describe standard first-order logic. The last three describes heap: $\emp$ is satisfied only by the empty heap, $\code{a}_1 \mapsto \code{a}_2$ is satisfied by heaps with a single location, corresponding to the evaluation of $\code{a}_1$ and containing the value $\code{a}_2$, and $\andsep$ is the separating conjunction described above.
-\todo{What do I want to do say about SL?}
+The first construct describe standard first-order logic. The last three describes heap: $\emp$ is satisfied only by the empty heap, $\code{a}_1 \mapsto \code{a}_2$ is satisfied by heaps with a single location, corresponding to the evaluation of $\code{a}_1$ and containing the value $\code{a}_2$, and $\andsep$ is the separating conjunction described above.\todo{Add formal description of SIL model? But then it's repeated again on the Separation SIL section.}
+
+In the thesis, we will use (an extension of) Separation Logic as the assertion language for Separation SIL (Section~\ref{sec:sil:separation-sil}).
 
 \section{Kleene algebras}\label{sec:bg:algebra}
-In this Section, we present Kleene algebras as an algebraic formulation that is able to describe programs.
+Kleene algebras are an algebraic formulation that is able to describe programs.
 
 \begin{definition}[Idempotent semiring]\label{def:bg:i-semiring}
 	An idempotent semiring is an algebraic structure $(A, +, \cdot, 0, 1)$ satisfying
@@ -348,7 +347,7 @@ To get a Kleene algebra, we need to add the Kleene star operator to model iterat
 		 & b + a \cdot c \le c \implies a^\kstar \cdot b \le c &  & b + c \cdot a \le c \implies b \cdot a^\kstar \le c & (\textit{Star induction})
 	\end{align*}
 \end{definition}
-\textit{(Star unfold)} axioms describes that $\kstar$ behaves as nondeterministic iteration, given it satisfies the same recursive equation. \textit{(Star induction)} axioms are the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the `increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $c$ and the inductive step $a \cdot b$ are below (ie. satisfy) the inductive thesis $b$ (since we prove their lub, that is their sum, is below $b$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
+\textit{(Star unfold)} axioms describes that $\kstar$ behaves as nondeterministic iteration, given it satisfies the same recursive equation. \textit{(Star induction)} axioms are the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the `increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $b$ and the inductive step $a \cdot c$ are below (ie. satisfy) the inductive thesis $c$ (since we prove their lub, that is their sum, is below $c$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
 
 Kleene algebras are a versatile formalism that has been applied as is. However, the main algebraic structure we consider is that of Kleene algebra with tests (KAT for short), since this addition allows to encode programs \cite{Kozen97}.
 \begin{definition}[Test]

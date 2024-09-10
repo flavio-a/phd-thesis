@@ -140,8 +140,8 @@ We point out that, by injectivity of $\gamma$, this also means $\alpha \gamma' \
 	Hence all the lines are equal; in particular $\denot{r}^{A} \alpha(P) = \alpha(Q)$.
 \end{proof}
 
-\begin{proof}[Proof of Proposition~\ref{th:lcla:refine-derived-sound}, extensional soundness of derived refinement rules]
-	We show that the hypotheses of both rules implies those of \lclrule{refine\mbox{-}ext}. This means than whenever we can apply the former we could also apply the latter, so that Theorem~\ref{th:lcla:soundness-rule-refine} ensures extensional soundness.
+\begin{proof}[Proof of Proposition~\ref{th:lcla:refine-derived-sound}, extensional soundness of other refinement rules]
+	We prove that the hypotheses of both rules implies those of \lclrule{refine\mbox{-}ext}. This means than whenever we can apply the former we could also apply the latter, so that Theorem~\ref{th:lcla:soundness-rule-refine} ensures extensional soundness.
 
 	The first two hypotheses $\lcl{A'}{P}{\regr}{Q}$ and $A' \preceq A$ are shared among all three rules, so we only have to show $\alpha \gamma' \denot{\regr}^{A'} \alpha' A(P) = \alpha(Q)$. We recall that, by extensional soundness, $\lcl{A'}{P}{\regr}{Q}$ implies (1) $Q \le \denot{\regr} P$ and (3) $\denot{\regr}^{A'} \alpha'(P) = \alpha'(Q)$.
 
@@ -459,7 +459,7 @@ The following lemma is used in the subsequent proof.
 	\proofcase{\lclrule{join}}
 	For (1), by inductive hypotheses, $P_1 \le \denot{\regr_1} Q$ and $P_2 \le \denot{\regr_2} Q$. Hence, $P_1 \lor P_2 \le \denot{\regr_1} Q \lor \denot{\regr_2} Q = \denot{\regr_1 \oplus \regr_2} Q$.
 
-	\noindent For (3), recalling that by inductive hypotheses $\alpha(P_1) = \bwsem{\regr_1}^{\sharp}_{A} \alpha(Q)$ and $\alpha(P_2) = \bwsem{\regr_2}^{\sharp}_{A} \alpha(Q)$, we get
+	\noindent For (3), recalling that $\alpha(P_1) = \bwsem{\regr_1}^{\sharp}_{A} \alpha(Q)$ and $\alpha(P_2) = \bwsem{\regr_2}^{\sharp}_{A} \alpha(Q)$ by inductive hypotheses, we get
 	\begin{align*}
 		\alpha(P_1 \lor P_2) & = \alpha(P_1) \lor \alpha(P_2)                                                       & [\alpha\text{ is additive}]   \\
 		                     & = \denot{\regr_1}^{\sharp}_{A} \alpha(Q) \lor \denot{\regr_2}^{\sharp}_{A} \alpha(Q) & [\text{inductive hypotheses}] \\

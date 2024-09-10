@@ -6,15 +6,25 @@ Static program analyses are techniques used to infer properties of programs dire
 For all these years, the main focus of static analysis was to prove \emph{correctness} property of software such as, for instance, the absence of bugs or a security requirement. To this end, static analyses compute \emph{over-approximations}, ie. supersets of all possible behaviours, of the semantics of programs: the absence of unwanted behaviour in the over-approximation guarantees the correctness of the program. However, over-approximation cannot be used to disprove correctness, eg. by exposing real bugs, since any alert raised by the analyser may be caused by the over-approximation rather than by the program: it can be a so called false alarm.
 
 Hoare logic~\cite{Hoare69} is perhaps the first example of formal static analysis, and indeed is an over-approximation one, that correctly fits its goal of proving the absence of errors. Maybe early works like this and influential opinions such as Dijkstra's renown quote ``\textit{Program testing can be used to show the presence of bugs, but never to show their absence!}" \cite{EWD249} directed the focus towards over-approximation.
-However, from the point of view of a software developer, false alarms are undesirable because they undermine the credibility and usefulness of the analysis.
-Following this observation, O'Hearn recently argued for the relevance of formal methods for bug catching, and more in general for disproving correctness -- in other words, proving \emph{incorrectness}. With this in mind, he proposed Incorrectness Logic~\cite{OHearn20}, a dual version of Hoare logic thought from the ground up for scalable bug-finding.
-Incorrectness Logic computes an \emph{under-approximation} of the semantics, ie. a subset of all possible behaviours of a program. Dually to over-approximation, under-approximation can then expose defects in the code, but it is unable to show their absence.
-Given the recent introduction of this new idea, we believe the field has many interesting topics yet to study.
+However, from the point of view of a software developer, false alarms are undesirable because they undermine the credibility and usefulness of the analysis. Therefore, in practice static analysis technique are deployed to \emph{find true bugs} rather than proving their absence~\cite{BKY05}.
+This idea gained mainstream interest with O'Hearn's introduction of Incorrectness Logic~\cite{OHearn20}. In his paper, he argues for the relevance of formal methods for bug catching, and more in general for disproving correctness -- in other words, proving \emph{incorrectness}. He proposes Incorrectness Logic, a dual version of Hoare logic thought from the ground up for scalable bug-finding, which serves as the theoretical basis for Pulse, a tool in production at Meta which catches thousands of bugs on programs with millions of lines of code~\cite{DFLO19}.
+Incorrectness Logic computes an \emph{under-approximation}, ie. a subset of all possible behaviours of a program. Dually to over-approximation, under-approximation can then expose defects in the code, but it is unable to show their absence.
+Given the recent interest in this idea, we believe the field has many interesting topics yet to study.
 
+\paragraph*{The problem.}
+Most past works focused on over-approximation to prove correctness. Some recent works focus on under-approximation to prove incorrectness. We believe an interesting avenue lies in the possibility of combining the two paradigms to improve both.
+The fundamental insight is that even partial information about correctness can help the search for an incorrectness proof and vice versa. This means that a technique employing both at the same time can, in principle, be substantially more effective than a disjoint application of the two for deciding correctness and incorrectness of a program, and possibly even improving on just one for a single task (eg. being more effective at proving correctness than a tool based solely on over-approximation).
+However, designing an effective cooperation of over and under-approximation techniques is not a trivial task. It requires an instantiation for the over and under-approximation analysis, and insightful understanding of both to identify the kind of information that can be taken from one to help the other.
+
+\paragraph*{Contributions.}
 \fromhere
-Roadmap: paragraph "the problem", with over + under motivation and stuff. Paragraph contribution: list what are the contributions, chapter by chapter.
+Explain the roadmap of the thesis: first, understand the relationships between over and under-approximation better (why can't we do uai? Dualities in over/under and forward/backward); then extend previous works combining them (LCLA, PDR).
 
-When these two paradigms are taken separately, it is possible to either prove or disprove correctness. However, their combination proved to be very effective. The insight is that even partial information about correctness can help the search for an incorrectness proof and vice versa. The goal of the proposed research is then to study the effect of this interaction, especially with respect to abstract interpretation-based techniques.
-Abstract interpretation \cite{CC77,RY20} is a general framework based on constructive approximations to define, compare and combine sound static analysis. Given its flexibility, it has been applied to many fields of computer science, such as program transformation, semantics and security \cite{CC14}. Because of this, we believe it can turn out as an effective tool also in this new setting of combining over- and under-approximations, which hasn't been fully explored yet.
-
-This proposal is organized as follows. Chapter~\ref{ch:background} lays the background needed to understand subsequent chapters. Chapter~\ref{ch:sota} examines other works that combines over- and under-approximations: they are useful to draw a comparison with our initial results and take inspiration for future enhancements.
+The goal of the thesis is to study the effect of this interaction. To achieve this, we first consider over and under-approximation separately to understand how they can effectively communicate: we do so by drawing analogies and differences between the two. Then, we consider some known approaches that combine over and under-approximation and try to extend them using the insight we gained from the previous study.
+After giving some background (to be used as a reference) in Chapter~\ref{ch:background}, we examine other works that combines over and under-approximations in Chapter~\ref{ch:sota} to get a baseline for our work. We then organize our work as follows:
+\begin{itemize}
+	\item Chapter~\ref{ch:uai}
+	\item Chapter~\ref{ch:sil}
+	\item Chapter~\ref{ch:lcla}
+	\item Chapter~\ref{ch:pdr}
+\end{itemize}
