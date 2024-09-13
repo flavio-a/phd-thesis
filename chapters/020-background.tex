@@ -319,7 +319,7 @@ Formally, SL is a triple-based program logic analogous to HL, which uses as asse
 \begin{align*}
 	p, q ::= & \; \true \mid p \land q \mid \lnot p \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid \code{a} \mapsto \code{a} \mid x \dealloc
 \end{align*}
-The first construct describe standard first-order logic. The last three describes heap: $\emp$ is satisfied only by the empty heap, $\code{a}_1 \mapsto \code{a}_2$ is satisfied by heaps with a single location, corresponding to the evaluation of $\code{a}_1$ and containing the value $\code{a}_2$, and $\andsep$ is the separating conjunction described above.\todo{Add formal description of SIL model? But then it's repeated again on the Separation SIL section.}
+The first construct describe standard first-order logic. The last three describes heap: $\emp$ is satisfied only by the empty heap, $\code{a}_1 \mapsto \code{a}_2$ is satisfied by heaps with a single location, corresponding to the evaluation of $\code{a}_1$ and containing the value $\code{a}_2$, and $\andsep$ is the separating conjunction described above.\todo{Add formal description of SL model? But then it's repeated again on the Separation SIL section.}
 
 In the thesis, we will use (an extension of) Separation Logic as the assertion language for Separation SIL (Section~\ref{sec:sil:separation-sil}).
 

@@ -1,7 +1,6 @@
 % !TEX root = ../phd-thesis.tex
 
 \chapter{Introduction}\label{ch:intro}
-\todo{Expand motivations}
 Static program analyses are techniques used to infer properties of programs directly from their source code, without executing them. They have been studied and successfully applied for over 50 years to produce effective methods and tools to support the development of correct software.
 For all these years, the main focus of static analysis was to prove \emph{correctness} property of software such as, for instance, the absence of bugs or a security requirement. To this end, static analyses compute \emph{over-approximations}, ie. supersets of all possible behaviours, of the semantics of programs: the absence of unwanted behaviour in the over-approximation guarantees the correctness of the program. However, over-approximation cannot be used to disprove correctness, eg. by exposing real bugs, since any alert raised by the analyser may be caused by the over-approximation rather than by the program: it can be a so called false alarm.
 
@@ -17,14 +16,16 @@ The fundamental insight is that even partial information about correctness can h
 However, designing an effective cooperation of over and under-approximation techniques is not a trivial task. It requires an instantiation for the over and under-approximation analysis, and insightful understanding of both to identify the kind of information that can be taken from one to help the other.
 
 \paragraph*{Contributions.}
-\fromhere
-Explain the roadmap of the thesis: first, understand the relationships between over and under-approximation better (why can't we do uai? Dualities in over/under and forward/backward); then extend previous works combining them (LCLA, PDR).
+The goal of the thesis is to study the effect of this interaction. To this end, we first consider over and under-approximation separately to understand how they can effectively communicate: we do so by drawing analogies and differences between the two. Then, we consider some known approaches that combine over and under-approximation and try to extend them using the insight we gained from the previous study.
 
-The goal of the thesis is to study the effect of this interaction. To achieve this, we first consider over and under-approximation separately to understand how they can effectively communicate: we do so by drawing analogies and differences between the two. Then, we consider some known approaches that combine over and under-approximation and try to extend them using the insight we gained from the previous study.
-After giving some background (to be used as a reference) in Chapter~\ref{ch:background}, we examine other works that combines over and under-approximations in Chapter~\ref{ch:sota} to get a baseline for our work. We then organize our work as follows:
-\begin{itemize}
-	\item Chapter~\ref{ch:uai}
-	\item Chapter~\ref{ch:sil}
-	\item Chapter~\ref{ch:lcla}
-	\item Chapter~\ref{ch:pdr}
-\end{itemize}
+After giving some background (to be used as a reference) in Chapter~\ref{ch:background}, we examine other works that combines over and under-approximations in Chapter~\ref{ch:sota} to get a baseline.
+
+Chapter~\ref{ch:uai} consider the possibility of using Abstract Interpretation for under\hyp{}approximation. While in principle this should be an easy task thanks to duality, it turns out the apparent symmetry between over and under-approximation in not so sharp. Thus, defining an effective under-approximation abstract domain is a challenging task. In this chapter we explore intuitive and technical reasons for this, pointing out non-trivial asymmetries between over and under-approximation.
+
+Since it is hard to use Abstract Interpretation for under\hyp{}approximation, in Chapter~\ref{ch:sil} we study logical frameworks instead, such as Incorrectness Logic. Particularly, we follow duality considerations along two main axes --direction of the approximation and of the computation-- to draw connections between known program logics. Moreover, this leads use to define the new Sufficient Incorrectness Logic, a backward under-approximation logic tailored to backward analysis, and study its properties and its extension to handle pointers and dynamic memory allocation.
+
+After identifying the formalisms we want to use for under-approximation, in Chapter~\ref{ch:lcla} we extend $\LCLA$~\cite{BGGR23}, a technique that combines the under-approximating Incorrectness Logic and over-approximating Abstract Interpretation to ensure that the analysis, if it finishes, can decide both correctness and incorrectness of a program. Particularly, we extend it in different ways to relax the hypothesis of the original formulation. First, we allow the use of different abstract domains for different parts of the program, which let the logic prove all the properties that are true of the semantics of the program (irrespective of its syntax). Second, we propose a framework to apply it even when there is no best abstraction in the abstract domain (a feature that some practical domains lack). Third, we combine it with Sufficient Incorrectness Logic to obtain an $\LCLA$ that is suitable for backward analysis.
+
+Chapter~\ref{ch:pdr} discuss a new PDR-like algorithm~\cite{Bradley11}, which combines an over\hyp{}approximation of the initial Kleene chain with an under-approximation of a set of possible counterexamples to the safety of the chain. The novelty of our algorithm lies in the thorough use of adjoints, both in the forward/backward duality that in the form of abstraction/concretization functions. Our approach yields a framework to understand and compare heuristics. Moreover, we propose and extension which relaxes some of the hypothesis, and we compare our algorithm with other tools.
+
+We draw conclusions in Chapter~\ref{ch:conclusions}. Not all proofs and technical details are included in the main text for presentation purposes: we omit those whose details are tedious and not enlightening. However, all these proofs are included in full details in Appendices~\ref{ch:app:bg-sota}--\ref{ch:app:pdr}.
