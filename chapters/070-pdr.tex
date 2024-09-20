@@ -1,9 +1,11 @@
 % !TEX root = ../phd-thesis.tex
 
 \chapter{AdjointPDR}\label{ch:pdr}
-In this chapter\todo{a bit more connections to other stuff (in the conclusions as well)} we study a new PDR-like algorithm (see Section~\ref{sec:sota:pdr}). Differently than previous approaches, our main tool are \emph{adjunctions}, which we use extensively in our development. We propose a first algorithm, \APDR{}, which exploits an adjoint $g$ to the function $f$ (which roughly identify the backward semantics of $f$) to quicken the counterexample search. This first algorithm allows us to devise a theory of heuristics to better understand and compare them.
+In this chapter we study a new PDR-like algorithm (see Section~\ref{sec:sota:pdr}).
+The novelty with respect to this kind of algorithms is our extensive use of \emph{adjunctions}. We propose a first algorithm, \APDR{}, which exploits an adjoint $g$ to the function $f$ (which roughly identify the backward semantics of $f$) to quicken the counterexample search. This first algorithm allows us to devise a theory of heuristics to better understand and compare them.
 However, to apply \APDR{} the right adjoint $g$ to the forward semantics $f$ must exist, and this is not always the case. To get rid of this constraint, we propose \ADPDR{}, a variation of \APDR{} which lift the problem to lower sets, where it is always possible to define this adjoint.
 Lastly, we propose yet another variation of the algorithm, \APDRAI{}, which can instantiate both \APDR{} and \ADPDR{}. We implemented this latter algorithm, and compared it against other PDR-like algorithms and state-of-the-art tools with encouraging results.
+In their generic variants, both over and under-approximation are just elements of the lattice. In the specific instance for probabilistic systems, the ingenuity of our new heuristics is precisely to always computes under-approximations that can be efficiently represented.
 
 The content of this chapter is based on~\cite{KABBGH23}.
 

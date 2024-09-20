@@ -315,11 +315,28 @@ where \code{x}, \code{y} and \code{z} are pointers. The HL triple $\hltriple{\tr
 To address this problem, SL introduces the separating conjunction $\andsep$ (read "and separately"). To understand how it works, consider the simple formula $x \mapsto 1 \andsep y \mapsto 2$. A heap satisfies this formula if it can be split in two disjoin sub-heaps such that one satisfies $x \mapsto 1$ and the other $y \mapsto 2$. Therefore, this implicitly means that $x$ and $y$ can't be aliased: if they were, the unique memory location couldn't be put at the same time in both disjoint sub-heaps for the two assertions. Intuitively, whenever there is a separating conjunction, every heap location is "owned" by exactly one of the two subformulae involved.
 Note that SL does not always prevent aliasing: it is always possible to write $x \mapsto 1 \andsep x = y$. The key difference is that here the aliasing is \emph{explicit} in the formula instead of being implicit in the model.
 
-Formally, SL is a triple-based program logic analogous to HL, which uses as assertion language not first-order logic or sets of states but rather formulae built with the following grammar
+Formally, SL is a triple-based program logic analogous to HL, which uses as assertion language not first-order logic or sets of states but rather formulae built from the following grammar
 \begin{align*}
-	p, q ::= & \; \true \mid p \land q \mid \lnot p \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid \code{a} \mapsto \code{a} \mid x \dealloc
+	p, q ::= & \; \true \mid p \land q \mid \lnot p \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid p \andsep q
 \end{align*}
-The first construct describe standard first-order logic. The last three describes heap: $\emp$ is satisfied only by the empty heap, $\code{a}_1 \mapsto \code{a}_2$ is satisfied by heaps with a single location, corresponding to the evaluation of $\code{a}_1$ and containing the value $\code{a}_2$, and $\andsep$ is the separating conjunction described above.\todo{Add formal description of SL model? But then it's repeated again on the Separation SIL section.}
+The first five constructs describe standard first-order logic. The last three describes heaps, and are called spatial constructs: $\emp$ is satisfied only by the empty heap, $x \mapsto \code{a}$ is satisfied by heaps with a single location, corresponding to the location $x$ and containing the value $\code{a}$, and $\andsep$ is the separating conjunction described above.
+
+\begin{figure}[t]
+	%	\centering
+	\begin{align*}
+		 & \asldenot{a_1 \asymp a_2} \eqdef \{ (s, h) \svert \edenot{a_1} s \asymp \edenot{a_2} s \}                                          &  & \asldenot{\true} \eqdef \Sigma                             \\
+		 & \asldenot{\exists x. p} \eqdef \{ (s, h) \svert \exists v \in \Val \sdot (s[x \mapsto v], h) \in \asldenot{p} \}                   &  & \asldenot{p \land q} \eqdef \asldenot{p} \cap \asldenot{q} \\
+		 & \asldenot{x \mapsto a} \eqdef \{ (s, [s(x) \mapsto \edenot{a} s]) \}                                                               &  & \asldenot{\lnot p} \eqdef \Sigma \setminus \asldenot{p}    \\
+		 & \asldenot{p \andsep q} \eqdef \{ (s, h_p \bullet h_q) \svert (s, h_p) \in \asldenot{p}, (s,h_q) \in \asldenot{q}, h_p \perp h_q \} &  & \asldenot{\emp} \eqdef \{ (s, []) \}
+	\end{align*}
+	\caption{Semantics of the assertion language.}
+	\label{fig:bg:sl-model-assertion}
+\end{figure}
+
+To be more formal, consider a set of locations $\Loc$, stores as total functions $s : \Var \rightarrow \setZ \uplus \Loc$, heaps as partial functions $h : \Loc \rightharpoonup \setZ \uplus \Loc$, and states as pairs $(s, h) \in \Sigma$ of a heap and a store.
+We use $s[x \mapsto v]$ for function update, $[]$ for the empty heap and $[l \mapsto v]$ for the heap defined only on $l$ and associating value $v$ to it. When two heaps are \emph{disjoint}, ie. $\dom(h_1) \cap \dom(h_2) = \emptyset$, we define the $\bullet$ operation as the merge of the two: $h_1 \bullet h_2$ coincides with $h_1$ on $\dom(h_1)$, with $h_2$ on $\dom(h_2)$ and it is undefined everywhere else.
+We define inductively the set of states that satisfy a Separation Logic assertion in Figure~\ref{fig:bg:sl-model-assertion}. The semantics of the first five constructs is standard for first-order logic. The semantics of spatial constructs is more interesting.
+$\emp$ is satisfied only by states whose heap is empty. More importantly, $x \mapsto a$ is satisfied only by states whose heap has a single location defined: this is fundamental when we consider the separating conjunction. $p \andsep q$ is satisfied by a state whose heap can be split in two \emph{disjoint} heaps $h_1$, $h_2$ such that one satisfied $p$ and the other $q$. This means that each location defined in the heap $h_1 \bullet h_2$ of the whole state must be in exactly one of $h_1$ or $h_2$: if it is in $h_1$ (resp. $h_2$) then that location is ``owned'' by $p$ (resp. $q$). Particularly, this means that $p$ and $q$ must specify only the heap locations they want to take ownership of, therefore the definition of $x \mapsto a$.
 
 In the thesis, we will use (an extension of) Separation Logic as the assertion language for Separation SIL (Section~\ref{sec:sil:separation-sil}).
 
