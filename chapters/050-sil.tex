@@ -59,7 +59,8 @@ To see why, assume $Q$ describes good final states. Then, $\bwsem{\regr} Q$ defi
 Note that this is not a new understanding of NC (it was already hinted in the work that introduced them, and an analogous characterization appeared in~\cite[§6.3]{ZK22} in terms of weakest precondition), but the explicit use of the backward semantics in our contest enables a more streamlined comparison with other logics in Section~\ref{sec:sil:comparison}.
 
 We organize the validity conditions of HL, IL and NC in the taxonomy in Figure~\ref{fig:sil:taxonomy}. We classify logics depending on (1) whether the condition is expressed in terms of forward or backward semantics and (2) whether it is an over or an under-approximation.
-This naturally sparks the question on what does the backward under-approximation condition mean and whether a logic for it has been developed.
+Note that ours is not the first such schematization: others proposed similar taxonomies considering possibly more and different axes. For instance, \cite{Cousot24} uses abstract interpretation techniques to obtain many program logics from the composition of a set of small abstractions, \cite{ZK22} compare logics using predicate transformers, \cite{VK23} brings this latter approach further by considering all combinations of forward/backward, non/liberal and over/under-approximation together with a TopKAT formulation.
+However, our simpler schema clearly points us in the direction of the backward under-approximation condition: we therefore ask ourselves the meaning of such a condition and whether a logic for it has been developed.
 
 \paragraph{Backward under-approximation and Lisbon Triples}
 At POPL'19 in Lisbon, D. Dreyer and R. Jung suggested that P. O'Hearn should look at bug-finding in terms of a logic for proving the presence of faults (as reported in~\cite{OHearn20,ZDS23}).
