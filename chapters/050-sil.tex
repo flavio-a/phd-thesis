@@ -542,81 +542,87 @@ Given a formula $p \in \Asl$, we call $\fv(p) \subseteq \Var$ the set of its fre
 \begin{figure}[t]
 	\centering
 	\begin{framed}
-		\hspace*{-0.6em}
-		\(
-		\begin{array}{cc}
-			\infer[\silrule{skip}]
-			{\siltriple{\emp}{\code{skip}}{\emp}}
-			{}
-			\;                           &
-			\infer[\silrule{assign}]
-			{\siltriple{q[a / x]}{\code{x := a}}{q}}
-			{}
-			\\[7.5pt]
-			\infer[\silrule{assume}]
-			{\siltriple{q \land b}{\code{b?}}{q}}
-			{}
-			\;                           &
-			\infer[\silrule{alloc}]
-			{\siltriple{\emp}{\code{x := alloc()}}{x \mapsto v}}
-			{}
-			\\[7.5pt]
-			\infer[\silrule{free}]
-			{\siltriple{x \mapsto -}{\code{free(x)}}{x \dealloc}}
-			{}
-			\;                           &
-			\infer[\silrule{load}]
-			{\siltriple{y \mapsto a \andsep q[a / x]}{\code{x := [y]}}{y \mapsto a \andsep q}}
-			{x \notin \fv(a)}
-			\\[7.5pt]
-			\infer[\silrule{store}]
-			{\siltriple{x \mapsto -}{\code{[x] := y}}{x \mapsto y}}
-			{}
-			\\[7.5pt]
-			\hline\hline                 &                                                               \\[-2pt]
-			\infer[\silrule{exists}]
-			{\siltriple{\exists x. p}{\regr}{\exists x. q}}
-			{\siltriple{p}{\regr}{q}     & x \notin \fv(\regr)}
-			\;                           &
-			\infer[\silrule{frame}]
-			{\siltriple{p \andsep t}{\regr}{q \andsep t}}
-			{\siltriple{p}{\regr}{q}     & \fv(t) \cap \modified(\regr) = \emptyset}
-			\\[7.5pt]
-			\hline\hline                 &                                                               \\[-2pt]
-			\infer[\silrule{cons}]
-			{\siltriple{p}{\regr}{q}}
-			{p \Rightarrow p'            & \siltriple{p'}{\regr}{q'}                 & q' \Rightarrow q}
-			\;                           &
-			\infer[\silrule{seq}]
-			{\siltriple{p}{\regr_1; \regr_2}{q}}
-			{\siltriple{p}{\regr_1}{t}   & \siltriple{t}{\regr_2}{q}}
-			\\[7.5pt]
-			\infer[\silrule{choice}]
-			{\siltriple{p_1 \lor p_2}{\regr_1 \regplus \regr_2}{q}}
-			{\siltriple{p_1}{\regr_1}{q} & \siltriple{p_2}{\regr_2}{q}}
-			\;                           &
-			\infer[\silrule{iter}]
-			{\siltriple{\exists n. q(n)}{\regr^\kstar}{q(0)}}
-			{\forall n \ge 0 \;\; \siltriple{q(n+1)}{\regr}{q(n)}}
-			\\[7.5pt]
-			%\hline\hline & \\[-2pt]
-			\infer[\silrule{empty}]
-			{\siltriple{\false}{\regr}{q}}
-			{}
-			\;                           &
-			\infer[\silrule{disj}]
-			{\siltriple{p_1 \lor p_2}{\regr}{q_1 \lor q_2}}
-			{\siltriple{p_1}{\regr}{q_1} & \siltriple{p_2}{\regr}{q_2}}
-			\\[7.5pt]
-			\infer[\silrule{iter0}]
-			{\siltriple{q}{\regr^{\kstar}}{q}}
-			{}
-			\;                           &
-			\infer[\silrule{unroll}]
-			{\siltriple{p}{\regr^{\kstar}}{q}}
-			{\siltriple{p}{\regr^{\kstar}; \regr}{q}}
-		\end{array}
-		\)
+		\resizebox{\textwidth}{!}{
+			\hspace*{-0.6em}
+			\(
+			\begin{array}{cc}
+				\infer[\silrule{skip}]
+				{\siltriple{\emp}{\code{skip}}{\emp}}
+				{}
+				\;                           &
+				\infer[\silrule{assign}]
+				{\siltriple{q[a / x]}{\code{x := a}}{q}}
+				{}
+				\\[7.5pt]
+				\infer[\silrule{alloc1}]
+				{\siltriple{\emp}{\code{x := alloc()}}{x \mapsto v}}
+				{}
+				\;                           &
+				\infer[\silrule{assume}]
+				{\siltriple{\emp \land b}{\code{b?}}{\emp}}
+				{}
+				\\[7.5pt]
+				\infer[\silrule{alloc2}]
+				{\siltriple{\beta \dealloc}{\code{x := alloc()}}{x = \beta \land x \mapsto v}}
+				{}
+				\;                           &
+				\infer[\silrule{free}]
+				{\siltriple{x \mapsto -}{\code{free(x)}}{x \dealloc}}
+				{}
+				\\[7.5pt]
+				\infer[\silrule{load}]
+				{\siltriple{y \mapsto a \andsep q[a / x]}{\code{x := [y]}}{y \mapsto a \andsep q}}
+				{x \notin \fv(a)}
+				\;                           &
+				\infer[\silrule{store}]
+				{\siltriple{x \mapsto -}{\code{[x] := y}}{x \mapsto y}}
+				{}
+				\\[7.5pt]
+				\hline\hline                 &                                                               \\[-2pt]
+				\infer[\silrule{frame}]
+				{\siltriple{p \andsep t}{\regr}{q \andsep t}}
+				{\siltriple{p}{\regr}{q}     & \fv(t) \cap \modified(\regr) = \emptyset}
+				\;                           &
+				\infer[\silrule{exists}]
+				{\siltriple{\exists x. p}{\regr}{\exists x. q}}
+				{\siltriple{p}{\regr}{q}     & x \notin \fv(\regr)}
+				\\[7.5pt]
+				\hline\hline                 &                                                               \\[-2pt]
+				\infer[\silrule{cons}]
+				{\siltriple{p}{\regr}{q}}
+				{p \Rightarrow p'            & \siltriple{p'}{\regr}{q'}                 & q' \Rightarrow q}
+				\;                           &
+				\infer[\silrule{seq}]
+				{\siltriple{p}{\regr_1; \regr_2}{q}}
+				{\siltriple{p}{\regr_1}{t}   & \siltriple{t}{\regr_2}{q}}
+				\\[7.5pt]
+				\infer[\silrule{choice}]
+				{\siltriple{p_1 \lor p_2}{\regr_1 \regplus \regr_2}{q}}
+				{\siltriple{p_1}{\regr_1}{q} & \siltriple{p_2}{\regr_2}{q}}
+				\;                           &
+				\infer[\silrule{iter}]
+				{\siltriple{\exists n. q(n)}{\regr^\kstar}{q(0)}}
+				{\forall n \ge 0 \;\; \siltriple{q(n+1)}{\regr}{q(n)}}
+				\\[7.5pt]
+				%\hline\hline & \\[-2pt]
+				\infer[\silrule{empty}]
+				{\siltriple{\false}{\regr}{q}}
+				{}
+				\;                           &
+				\infer[\silrule{disj}]
+				{\siltriple{p_1 \lor p_2}{\regr}{q_1 \lor q_2}}
+				{\siltriple{p_1}{\regr}{q_1} & \siltriple{p_2}{\regr}{q_2}}
+				\\[7.5pt]
+				\infer[\silrule{iter0}]
+				{\siltriple{q}{\regr^{\kstar}}{q}}
+				{}
+				\;                           &
+				\infer[\silrule{unroll}]
+				{\siltriple{p}{\regr^{\kstar}}{q}}
+				{\siltriple{p}{\regr^{\kstar}; \regr}{q}}
+			\end{array}
+			\)
+		}
 	\end{framed}
 	\caption{Proof rules for Separation SIL. The first group replaces SIL rule \silrule{atom}, the second includes rules peculiar of SL, the third includes rule from SIL.}
 	\label{fig:sil:separation-sil}
@@ -626,6 +632,7 @@ We present the rules of Separation SIL in Figure~\ref{fig:sil:separation-sil}. $
 For the sake of presentation, we present rules without explicit error management (see Remark~\ref{rem:bg:ok-er-flags}). However, the extension is straightforward: in Section~\ref{sec:sil:separation-sil-error} we present the error rule for store and its use in Example~\ref{ex:sil:separation-sil-derivation-error}, as well as discussing the formal changes to the semantics model.
 
 We split the rules in three groups. The first group gives the rules for atomic commands $\regc \in \Cmdh$, i.e., all instances of the SIL rule \silrule{atom}. The second one includes rules borrowed from SL, the third one from SIL.
+Differently than SIL, the post of Separation SIL rules for atomic commands is not a generic assertion $q$. We formulate rules this way inspired by the ``local axiom'' style of separation logics, but we will show in Section~\ref{sec:sil:separation-sil-inference} how it is always possible to algorithmically rewrite any assertion $q$ to apply these rules, thus allowing for (automated) backward reasoning in Separation SIL.
 
 Rule \silrule{skip} is straightforward: whatever is true before and after the \code{skip} can be added with \silrule{frame}.
 Rule \silrule{assign} is Hoare's backward assignment rule~\cite{Hoare69}. Floyd's forward axiom~\cite{Floyd67} is also valid for SIL (see Section~\ref{sec:sil:rules-comparison}), but we opt for Hoare's rule because it fits better with the backward analysis of SIL.
@@ -639,76 +646,6 @@ All these rules are local: thanks to \silrule{frame}, they can specify only pre 
 Rule \silrule{exists} allows to ``hide" local variables.
 Rule \silrule{frame} is typical of separation logics~\cite{Reynolds02,RBDDOV20}: it allows to add a frame around a derivation through the separating conjunction $\andsep$, plugging the proof for a small portion of a program inside a larger heap.
 In the third group, we instantiated the SIL rules from Figure~\ref{fig:sil:sil-rules} for logical formulae, by replacing set theoretical symbols (such as $\subseteq$ and $\emptyset$) with the corresponding logical symbols (such as $\Rightarrow$ and $\false$, respectively). The only notable difference is in rule \silrule{iter}, where Separation SIL uses a predicate $q(n)$ parametrized by the natural number $n \in \mathbb{N}$ and the precondition $\exists n. q(n)$ in the conclusion of the rule. This is a logical replacement for the infinite union used in SIL rule.
-
-\subsection{Soundness}
-
-\begin{figure}[t]
-	\begin{subfigure}[t]{\linewidth}
-		\centering
-		\begin{align*}
-			\edenot{\code{skip}} (s, h)         & \eqdef \{ (s, h) \}                                                                                    \\
-			\edenot{\code{x := a}} (s, h)       & \eqdef \left\lbrace (s[x \mapsto \edenot{\code{a}} s], h) \right\rbrace                                \\
-			\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
-				                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
-				                                             \emptyset                         & otherwise
-			                                             \end{cases*}    \\
-			\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}(l)\right\rbrace \\
-			\edenot{\code{free(x)}} (s, h)      & \eqdef
-			\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                       \\
-			\edenot{\code{x := [y]}} (s, h)     & \eqdef
-			\left\lbrace (s[x \mapsto h(s(y))], h) \right\rbrace\quad \text{if}~h(s(y)) \in \Val                                                         \\
-			\edenot{\code{[x] := y}} (s, h)     & \eqdef
-			\left\lbrace (s, h[s(x) \mapsto s(y)]) \right\rbrace \quad \text{if}~h(s(x)) \in \Val
-		\end{align*}
-		\caption{Semantics of heap atomic commands, where $\mathit{avail}(l) \eqdef (l \notin \dom(h) \lor h(l) = \delta)$ and we assume that $\edenot{\regc} (s, h)\eqdef \left\lbrace \errstate \right\rbrace$ unless differently stated.}
-		\label{fig:sil:ssil-model-commands}
-	\end{subfigure}
-	\begin{subfigure}[t]{\linewidth}
-		\vspace*{1ex}
-		\centering
-		\begin{align*}
-			 & \asldenot{a_1 \asymp a_2} \eqdef \{ (s, h) \svert \edenot{a_1} s \asymp \edenot{a_2} s \}                                          &  & \asldenot{\false} \eqdef \emptyset                         \\
-			 & \asldenot{\exists x. p} \eqdef \{ (s, h) \svert \exists v \in \Val \sdot (s[x \mapsto v], h) \in \asldenot{p} \}                   &  & \asldenot{\true} \eqdef \Sigma                             \\
-			 & \asldenot{x \dealloc} \eqdef \{ (s, [s(x) \mapsto \delta]) \}                                                                      &  & \asldenot{p \lor q} \eqdef \asldenot{p} \cup \asldenot{q}  \\
-			 & \asldenot{x \mapsto a} \eqdef \{ (s, [s(x) \mapsto \edenot{a} s]) \}                                                               &  & \asldenot{p \land q} \eqdef \asldenot{p} \cap \asldenot{q} \\
-			 & \asldenot{p \andsep q} \eqdef \{ (s, h_p \bullet h_q) \svert (s, h_p) \in \asldenot{p}, (s,h_q) \in \asldenot{q}, h_p \perp h_q \} &  & \asldenot{\emp} \eqdef \{ (s, []) \}
-		\end{align*}
-		\caption{Semantics of the assertion language, similar to Figure~\ref{fig:bg:sl-model-assertion}.}
-		\label{fig:sil:ssil-model-assertions}
-	\end{subfigure}
-	\caption{Ingredients to prove soundness of Separation SIL.}
-\end{figure}
-
-To prove soundness of Separation SIL, we give a semantic model for heap regular commands.
-Fixed a finite set $\Var$ of variables and an infinite set $\Loc$ of memory locations, we define the set of values as $\Val \eqdef \setZ \uplus \Loc$ ($\uplus$ is disjoint union).
-Stores $s \in \Stores$ are (total) functions $s: \Var \rightarrow \Val$; heaps $h \in \Heaps$ are partial functions $h: \Loc \rightharpoonup \Val \uplus \{ \delta \}$. If $h(l) = v \in \Val$, location $l$ is allocated and holds value $v$, if $l \notin \dom(h)$ then it is not allocated. The special value $\delta$ describes a deallocated memory location: if $h(l) = \delta$, that location was previously allocated and then deallocated.
-As notation, we use $s[x \mapsto v]$ for function update, $[]$ for the empty heap and $[l \mapsto v]$ for the heap defined only on $l$ and associating value $v$ to it.
-We say two heaps are disjoint, written $h_1 \perp h_2$, when $\dom(h_1) \cap \dom(h_2) = \emptyset$, and in that case we define the $\bullet$ operation as the merge of the two: $h_1 \bullet h_2$ coincides with $h_1$ on $\dom(h_1)$, with $h_2$ on $\dom(h_2)$ and it is undefined everywhere else.
-
-Let $\Sigma = \Stores \times \Heaps$, and $\Sigma_e = \Sigma \uplus \{ \errstate \}$: states $\sigma \in \Sigma_e$ are either a pair store/heap or the error state \errstate{}.
-The denotational semantics of atomic commands $\edenot{\cdot}: \Cmdh \rightarrow \wp(\Sigma_e) \rightarrow \wp(\Sigma_e)$ is in Figure~\ref{fig:sil:ssil-model-commands}. To simplify the presentation, we define it as $\edenot{\cdot}: \Cmdh \rightarrow \Sigma \rightarrow \wp(\Sigma_e)$, we let $\edenot{\regc} \errstate = \{ \errstate \}$, and we lift it to set of states by union.
-Please note that evaluation of arithmetic $\code{a}$ and Boolean expressions $\code{b}$ only depends on the store since they cannot dereference variables.
-We define the forward collecting semantics of heap commands $\fwsem{\cdot}: \Regh \rightarrow \wp(\Sigma_e) \rightarrow \wp(\Sigma_e)$ just as in Figure~\ref{fig:bg:regcom-sem} using the different semantics of atomic commands for $\regc \in \Cmdh$.
-
-The semantics $\asldenot{\cdot}$ of a formula $p \in \Asl$ is a set of states in $\Sigma$, and is defined in Figure~\ref{fig:sil:ssil-model-assertions}.
-
-We say a Separation SIL triple $\siltriple{p}{\regr}{q}$ is valid if $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. To prove soundness of Separation SIL, we rely on a stronger lemma, whose proof is by induction on the derivation tree. Then, by taking $t = \emp$ and using $p \andsep \emp \equiv p$, we get the soundness of the proof system.
-
-\begin{lemma}\label{lmm:sil:separation-sil-stronger-sound}
-	Let $p, q, t \in \Asl$ and $\regr \in \Regh$. If $\vdash \siltriple{p}{\regr}{q}$ and $\fv(t) \cap \modified(\regr) = \emptyset$,
-	\[
-	\bwsem{\regr} \asldenot{q \andsep t} \supseteq \asldenot{p \andsep t}
-	\]
-\end{lemma}
-
-\begin{corollary}[Separation SIL is sound]\label{th:sil:separation-sil-sound}
-	Any provable Separation SIL triple is valid:
-	\[
-	\vdash \siltriple{p}{\regr}{q} \implies \vDash \siltriple{p}{\regr}{q}
-	\]
-\end{corollary}
-
-\subsection{Example of Separation SIL derivation}
 
 We show in the next example how Separation SIL proof system can infer preconditions ensuring that a provided error can happen.
 
@@ -757,8 +694,7 @@ push_back(v) {
 			%\vspace{1em}
 			\begin{math}
 				\begin{aligned}
-					 & \silexact{p: v \mapsto z \andsep z \mapsto - \andsep \true}                                                              \\[-0.5em]
-					 & \qquad\equiv                                                                                                             \\[-0.5em]
+					 & \textcolor{gray}{\silexact{p: v \mapsto z \andsep z \mapsto - \andsep \true}}                                            \\
 					 & \silexact{ v \mapsto z \andsep (z = z \lor z \dealloc) \andsep z \mapsto - \andsep \true }                               \\
 					 & \quad x := [v]                                                                                                           \\
 					 & \textcolor{gray}{\silexact{ \underline{v \mapsto z \andsep (x = z \lor x \dealloc)} \andsep z \mapsto - \andsep \true }} \\
@@ -832,6 +768,110 @@ For the same program, the authors of~\cite{RBDDOV20} prove the ISL triple $\iltr
 Lastly, we remark that, while in \cite[Figure~6]{ZDS23} outcome-based separation logic proves essentially the same triple, the deduction process is quite different from SIL.
 OL reasoning is forward oriented, as witnessed by the implication that concludes the proof and by the triple for the $\code{skip}$ branch, whereas Separation SIL proof system naturally guides the backward inference.
 
+\subsection{Soundness}
+To prove soundness of Separation SIL, we give a semantic model for heap regular commands.
+Fixed a finite set $\Var$ of variables and an infinite set $\Loc$ of memory locations, we define the set of values as $\Val \eqdef \setZ \uplus \Loc$ ($\uplus$ is disjoint union).
+Stores $s \in \Stores$ are (total) functions $s: \Var \rightarrow \Val$; heaps $h \in \Heaps$ are partial functions $h: \Loc \rightharpoonup \Val \uplus \{ \delta \}$. If $h(l) = v \in \Val$, location $l$ is allocated and holds value $v$, if $l \notin \dom(h)$ then it is not allocated. The special value $\delta$ describes a deallocated memory location: if $h(l) = \delta$, that location was previously allocated and then deallocated.
+As notation, we use $s[x \mapsto v]$ for function update, $[]$ for the empty heap and $[l \mapsto v]$ for the heap defined only on $l$ and associating value $v$ to it.
+We say two heaps are disjoint, written $h_1 \perp h_2$, when $\dom(h_1) \cap \dom(h_2) = \emptyset$, and in that case we define the $\bullet$ operation as the merge of the two: $h_1 \bullet h_2$ coincides with $h_1$ on $\dom(h_1)$, with $h_2$ on $\dom(h_2)$ and it is undefined everywhere else.
+
+\begin{figure}[t]
+	\centering
+	\begin{align*}
+		\edenot{\code{skip}} (s, h)         & \eqdef \{ (s, h) \}                                                                                      \\
+		\edenot{\code{x := a}} (s, h)       & \eqdef \left\lbrace (s[x \mapsto \edenot{\code{a}} s], h) \right\rbrace                                  \\
+		\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
+			                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
+			                                             \emptyset                         & otherwise
+		                                             \end{cases*}      \\
+		\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}_h(l)\right\rbrace \\
+		\edenot{\code{free(x)}} (s, h)      & \eqdef
+		\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                         \\
+		\edenot{\code{x := [y]}} (s, h)     & \eqdef
+		\left\lbrace (s[x \mapsto h(s(y))], h) \right\rbrace\quad \text{if}~h(s(y)) \in \Val                                                           \\
+		\edenot{\code{[x] := y}} (s, h)     & \eqdef
+		\left\lbrace (s, h[s(x) \mapsto s(y)]) \right\rbrace \quad \text{if}~h(s(x)) \in \Val
+	\end{align*}
+	\caption{Semantics of heap atomic commands, where $\mathit{avail}_h(l) \eqdef (l \notin \dom(h) \lor h(l) = \delta)$ and we assume that $\edenot{\regc} (s, h)\eqdef \left\lbrace \errstate \right\rbrace$ unless differently stated.}
+	\label{fig:sil:ssil-model-commands}
+\end{figure}
+
+Let $\Sigma = \Stores \times \Heaps$, and $\Sigma_e = \Sigma \uplus \{ \errstate \}$: states $\sigma \in \Sigma_e$ are either a pair store/heap or the error state \errstate{}.
+The denotational semantics of atomic commands $\edenot{\cdot}: \Cmdh \rightarrow \wp(\Sigma_e) \rightarrow \wp(\Sigma_e)$ is in Figure~\ref{fig:sil:ssil-model-commands}. To simplify the presentation, we define it as $\edenot{\cdot}: \Cmdh \rightarrow \Sigma \rightarrow \wp(\Sigma_e)$, we let $\edenot{\regc} \errstate = \{ \errstate \}$, and we lift it to set of states by union.
+Please note that evaluation of arithmetic $\code{a}$ and Boolean expressions $\code{b}$ only depends on the store since they cannot dereference variables.
+We define the forward collecting semantics of heap commands $\fwsem{\cdot}: \Regh \rightarrow \wp(\Sigma_e) \rightarrow \wp(\Sigma_e)$ just as in Figure~\ref{fig:bg:regcom-sem} using the different semantics of atomic commands for $\regc \in \Cmdh$.
+
+\begin{figure}[t]
+	\vspace*{1ex}
+	\centering
+	\begin{align*}
+		 & \asldenot{a_1 \asymp a_2} \eqdef \{ (s, h) \svert \edenot{a_1} s \asymp \edenot{a_2} s \}                                          &  & \asldenot{\false} \eqdef \emptyset                         \\
+		 & \asldenot{\exists x. p} \eqdef \{ (s, h) \svert \exists v \in \Val \sdot (s[x \mapsto v], h) \in \asldenot{p} \}                   &  & \asldenot{\true} \eqdef \Sigma                             \\
+		 & \asldenot{x \dealloc} \eqdef \{ (s, [s(x) \mapsto \delta]) \}                                                                      &  & \asldenot{p \lor q} \eqdef \asldenot{p} \cup \asldenot{q}  \\
+		 & \asldenot{x \mapsto a} \eqdef \{ (s, [s(x) \mapsto \edenot{a} s]) \}                                                               &  & \asldenot{p \land q} \eqdef \asldenot{p} \cap \asldenot{q} \\
+		 & \asldenot{p \andsep q} \eqdef \{ (s, h_p \bullet h_q) \svert (s, h_p) \in \asldenot{p}, (s,h_q) \in \asldenot{q}, h_p \perp h_q \} &  & \asldenot{\emp} \eqdef \{ (s, []) \}
+	\end{align*}
+	\caption{Semantics of the assertion language, similar to Figure~\ref{fig:bg:sl-model-assertion}.}
+	\label{fig:sil:ssil-model-assertions}
+\end{figure}
+
+The semantics $\asldenot{\cdot}$ of a formula $p \in \Asl$ is a set of states in $\Sigma$, and is defined in Figure~\ref{fig:sil:ssil-model-assertions}.
+
+We say a Separation SIL triple $\siltriple{p}{\regr}{q}$ is valid if $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. To prove soundness of Separation SIL, we rely on a stronger lemma, whose proof is by induction on the derivation tree. Then, by taking $t = \emp$ and using $p \andsep \emp \equiv p$, we get the soundness of the proof system.
+
+\begin{lemma}\label{lmm:sil:separation-sil-stronger-sound}
+	Let $p, q, t \in \Asl$ and $\regr \in \Regh$. If $\vdash \siltriple{p}{\regr}{q}$ and $\fv(t) \cap \modified(\regr) = \emptyset$,
+	\[
+	\bwsem{\regr} \asldenot{q \andsep t} \supseteq \asldenot{p \andsep t}
+	\]
+\end{lemma}
+
+\begin{corollary}[Separation SIL is sound]\label{th:sil:separation-sil-sound}
+	Any provable Separation SIL triple is valid:
+	\[
+	\vdash \siltriple{p}{\regr}{q} \implies \vDash \siltriple{p}{\regr}{q}
+	\]
+\end{corollary}
+
+\subsection{Automating Separation SIL}\label{sec:sil:separation-sil-inference}
+The main issue with automation of Separation SIL is the need to reconcile a generic assertion with the post of axioms for heap-manipulating atomic commands. To do so, we need two observations.
+
+First, for heap-manipulating atomic commands, all the reachable states share the (de)allocation of a given variable. Consider for instance \code{free(x)}: every state reachable by executing it (i.e., any state in $\edenot{\code{free(x)}}(\Sigma_e)$) is either $\errstate$ (which doesn't satisfy any assertion) or a $(s, h)$ such that $h(s(x)) = \delta$. This means $(s, h)$ satisfies $(x \dealloc{} \andsep \true)$. Therefore, $(s, h)$ satisfies a $q$ if and only if it satisfies $q \land (x \dealloc{} \andsep \true)$.
+This means that, whenever the postcondition for \code{free(x)} is $q$, we can strengthen it via \silrule{cons} to $q \land (x \dealloc{} \andsep \true)$ without losing any reachable state and thus any initial state leading to $q$. Analogous arguments show that similar equivalences hold for all the other atomic commands. This reasoning is also formalized in the proof of completeness of Separation SIL described in Section~\ref{sec:sil:separation-sil-complete}.
+
+Second, when the postcondition gets strengthened this way, we rewrite it in the shape $\exists \vec{x}. q \andsep t$, where the axiom can be applied to $q$ and then extended to the whole formula using \silrule{frame} and \silrule{exists}. The first step is to lift existential quantifiers to the top level of the assertion (possibly by renaming bound variables). Then, we use the following rewriting:
+
+\begin{lemma}\label{lmm:sil:separation-assertion-rewrite}
+	Let $q \in \Asl$ be a formula without $\exists$, and let $x'$ be a fresh variable. Then,
+	\begin{enumerate}
+		\item there exists a $\bar{q}$ such that $q \land (x \mapsto x' \andsep \true) \equiv x \mapsto x' \andsep \bar{q}$
+		\item there exists a $\bar{q}$ such that $q \land (x \dealloc \andsep \true) \equiv x \dealloc \andsep \bar{q}$
+	\end{enumerate}
+\end{lemma}
+\begin{proof}[Proof sketch]
+	$\bar{q}$ is computed inductively on the structure of $q$ as shown in the following table (the last two columns are for points (1) and (2) of the statement, respectively):
+
+	\begin{center}
+		\begin{tabular}{r|c@{\qquad\quad}c@{\qquad\quad}}
+			\multicolumn{1}{c|}{$q$} & $\bar{q}$ \quad ($x \mapsto x'$)                                       & $\bar{q}$ \quad ($x \dealloc$) \\
+			\hline
+			$z \mapsto z'$           & $z' = x' \land z = x \land \emp$                                       & $\false$                       \\
+			$z \dealloc{}$           & $\false$                                                               & $z = x \land \emp$             \\
+			$q_1 \andsep q_2$        & \multicolumn{2}{c}{$\bar{q}_1 \andsep q_2 \lor q_1 \andsep \bar{q}_2$}                                  \\
+			$\emp$                   & \multicolumn{2}{c}{$\false$}                                                                            \\
+			$q_1 \land q_2$          & \multicolumn{2}{c}{$\bar{q}_1 \land \bar{q}_2$}                                                         \\
+			$q_1 \lor q_2$           & \multicolumn{2}{c}{$\bar{q}_1 \lor \bar{q}_2$}                                                          \\
+			$\false$                 & \multicolumn{2}{c}{$\false$}                                                                            \\
+			$\true$                  & \multicolumn{2}{c}{$\true$}                                                                             \\
+			$a_1 \asymp a_2$         & \multicolumn{2}{c}{$a_1 \asymp a_2$}
+		\end{tabular}
+	\end{center}
+
+	The proof that these formulae satisfy the desired equalities are in Appendix~\ref{ch:app:sil}.
+\end{proof}
+
+In Example~\ref{ex:separation-sil-derivation} this algorithm finds precisely the disjunction $x = y \lor x \dealloc$ in the post of \code{free(y)}.
+
 \subsection{Exit conditions in Separation SIL}\label{sec:sil:separation-sil-error}
 We now briefly show how to adapt Separation SIL to handle different exit conditions. For this example, following~\cite{OHearn20}, we will consider \oktext{ok} and \ertext{er}, denoting correct and erroneous termination respectively. As discussed in Remark~\ref{rem:bg:ok-er-flags}, this correspond to use $\{ \oktext{ok}, \ertext{er} \} \times \Sigma$ as set of states instead of $\Sigma_e$. The denotational semantics of regular commands then acts as described for normal states (returning the error version of the current correct state instead of the generic $\errstate$) and as the identity on error states.
 
@@ -899,68 +939,34 @@ The modified proof system is sound with respect to the modified semantics:
 	We highlight the use of rule \silrule{store\mbox{-}er} to infer the precondition $\oktext{ok: x \dealloc \andsep \true}$ from the error postcondition $\ertext{er: \true}$ and \silrule{assume} to conjoin the boolean conditions in the preconditions of the guards. Moreover, the backward substitution of $\code{len} := \code{len} + 1$ performed by \silrule{assign} naturally propagates backward the constraint $\code{len} > 8$ to the value preceding the assignment, obtaining $\code{len} + 1 > 8$. This way, in the precondition of the whole command we explicitly find the constraints $\code{len} \ge \code{cap} \land \code{len} > 7$ on the initial values of \code{len} and \code{cap} that lead to the error.
 \end{example}
 
-\subsection{Relative completeness of Separation SIL}
-The proof system in Figure~\ref{fig:sil:separation-sil} is complete for all atomic commands but \code{alloc}, because it misses the ability to refer the specific memory location that gets allocated.
-The naive solution to add $x = \alpha$ in the post of \silrule{alloc} would make the frame rule unsound: it would allow to prove, for instance, the invalid triple
+\subsection{Relative completeness of Separation SIL}\label{sec:sil:separation-sil-complete}
+The proof system in Section~\ref{sec:sil:sepsil-proof-system} is complete for all atomic commands except \code{alloc} because \silrule{alloc1} misses the ability to refer to the specific memory location that was allocated.
+The naive solution to add a constraint $x = \beta$ in the post of \silrule{alloc1} makes the frame rule unsound: it would allow to prove, for instance, the invalid triple
 \[
 \siltriple{\emp \andsep \alpha \mapsto -}{\code{x := alloc()}}{(x \mapsto - \land x = \alpha) \andsep \alpha \mapsto -} \text{.}
 \]
-Just like ISL needs the deallocated assertion in the post~\cite[\S 3]{RBDDOV20}, Separation SIL needs a ``will be allocated'' assertion in the pre. To this end, we use the $\dealloc$ assertion, and change the semantic model to only allocate a memory location that is explicitly $\delta$. We formalize this by letting $\mathit{avail}(l) \eqdef h(l) = \delta$ in Figure~\ref{fig:sil:ssil-model-commands} and replacing the axiom \silrule{alloc} with
-
-\[
-\infer[\silrule{alloc}]
-{\siltriple{\beta \dealloc{}}{\code{x := alloc()}}{x = \beta \land x \mapsto v}}
-{}
-\]
-
-The modified proof system is sound for this different semantics. Moreover, we can prove relative completeness~\cite[\S 4.3]{AO19} for loop-free programs:
+To recover the frame rule, just like ISL needs the deallocated assertion in the post~\cite[\S 3]{RBDDOV20}, Separation SIL needs a ``will be allocated'' assertion in the pre. To this end, we use the $\dealloc$ assertion, and change the semantic model to only allocate a memory location that is explicitly $\delta$. We formalize this by letting $\mathit{avail}_h(l) \eqdef (h(l) = \delta)$ in Figure~\ref{fig:sil:ssil-model-commands} and removing rule \silrule{alloc1}: the only valid rule for allocation in this semantics is \silrule{alloc2}. Moreover, we can prove relative completeness~\cite[\S 4.3]{AO19} for loop-free programs:
 
 \begin{theorem}[Relative completeness for loop-free programs]\label{th:sil:separation-sil-sequential-complete}
 	Suppose to have an oracle to prove implications between formulae in $\Asl$. Let $\regr \in \Regh$ be a regular command without $\kstar$ and $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. Then the triple $\siltriple{p}{\regr}{q}$ is provable.
 \end{theorem}
 
-The proof relies on an algorithmic rewriting of the postcondition that makes constraints on a single memory location explicit. This is given by the following lemma:
+The proof follows very closely the process described in Section~\ref{sec:sil:separation-sil-inference} to automate Separation SIL backward inference, and in fact it was the inspiration for it. The proof uses this process to compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regr} \asldenot{q}$ and prove the triple $\siltriple{t}{\regr}{q}$. Then, using the oracle and \silrule{cons}, the theorem follows for any $p$ that implies $t$.
+Notably, this theorem shows that the weakest (possible) precondition $\bwsem{\regr}\asldenot{q}$ of loop-free programs is always expressible as an assertion $t \in \Asl$, namely $\asldenot{t} = \bwsem{\regr} \asldenot{q}$.
+This result is far from trivial, as it depends on the expressiveness of the assertion language: for instance, if we add negation to the assertion language, the same result does not hold anymore because it introduces some new posts for which the precondition is not in the assertion language.
 
-\begin{lemma}\label{lmm:sil:separation-assertion-rewrite}
-	Let $q \in \Asl$ be a formula without $\exists$, and let $x'$ be a fresh variable. Then,
-	\begin{enumerate}
-		\item there exists a $\bar{q}$ such that $q \land (x \mapsto x' \andsep \true) \equiv x \mapsto x' \andsep \bar{q}$
-		\item there exists a $\bar{q}$ such that $q \land (x \dealloc \andsep \true) \equiv x \dealloc \andsep \bar{q}$
-	\end{enumerate}
-\end{lemma}
-\begin{proof}[Proof sketch]
-	$\bar{q}$ is computed inductively on the structure of $q$ as shown in the following table (the last two columns are for points (1) and (2) of the statement, respectively):
-
-	\begin{center}
-		\begin{tabular}{r|c@{\qquad\quad}c@{\qquad\quad}}
-			$q$               & $\bar{q}$ (pt. 1)                                                      & $\bar{q}$ (pt. 2)  \\
-			\hline
-			$z \mapsto z'$    & $z' = x' \land z = x \land \emp$                                       & $\false$           \\
-			$z \dealloc{}$    & $\false$                                                               & $z = x \land \emp$ \\
-			$\false$          & \multicolumn{2}{c}{$\false$}                                                                \\
-			$\true$           & \multicolumn{2}{c}{$\true$}                                                                 \\
-			$q_1 \land q_2$   & \multicolumn{2}{c}{$\bar{q}_1 \land \bar{q}_2$}                                             \\
-			$q_1 \lor q_2$    & \multicolumn{2}{c}{$\bar{q}_1 \lor \bar{q}_2$}                                              \\
-			$a_1 \asymp a_2$  & \multicolumn{2}{c}{$a_1 \asymp a_2$}                                                        \\
-			$\emp$            & \multicolumn{2}{c}{$\false$}                                                                \\
-			$q_1 \andsep q_2$ & \multicolumn{2}{c}{$\bar{q}_1 \andsep q_2 \lor q_1 \andsep \bar{q}_2$}
-		\end{tabular}
-	\end{center}
-
-	The proof that these formulae satisfy the desired equalities are in Appendix~\ref{ch:app:sil}.
-\end{proof}
-
-Using this, we compute an assertion $t$ whose semantics is precisely the weakest possible pre $\bwsem{\regr} \asldenot{q}$ and prove the triple $\siltriple{t}{\regr}{q}$. Then, using the oracle and \silrule{cons}, the theorem follows for any $p$ that implies $t$.
-Notably, this theorem shows that the weakest (possible) precondition $\bwsem{\regr} \asldenot{q}$ of loop-free programs is always expressible as an assertion $t \in \Asl$, namely $\asldenot{t} = \bwsem{\regr} \asldenot{q}$, and that it can be computed algorithmically. This result is far from trivial, as it depends on the expressiveness of the assertion language: for instance, if we add negation, the same result does not hold anymore because, even if more preconditions can be expressed, we also introduce some new posts for which the precondition is not in the assertion language.
-
-To extend the result to loops, we can focus on single states. Note that the following result does not need the oracle: it is always possible to craft a $p$ whose proof only needs decidable implications.
+We have several ways to extend the result to loops. Standard techniques include assuming expressivity of the assertion language~\cite{Cook78} (i.e., assuming the existence of formulae describing weakest preconditions), or extending the assertion language with a least fixed-point operator~\cite{BG87}--both solutions work for Separation SIL.
+Another option is to focus on single states. Note that, differently than other techniques, the following result does not need the oracle: it is always possible to craft a $p$ whose proof only needs decidable implications.
 
 \begin{theorem}[State-wise completeness]\label{th:sil:separation-sil-complete-single-state}
 	Given a heap program $\regr\in \Regh$ and two states $\sigma$, $\sigma'$ such that $\sigma \in \bwsem{\regr} \sigma'$, for every assertion $q$ such that $\sigma' \in \asldenot{q}$ there exists an assertion $p$ such that $\sigma \in \asldenot{p}$ and $\siltriple{p}{\regr}{q}$ is provable in Separation SIL.
 \end{theorem}
 
 \subsection{Implementations}
-The ideas that lead to SIL represent \emph{a posteriori} formalization and theoretical justification of the parallel, modular, and compositional static analysis implemented in industrial grade static analyzers for security developed and used at Meta, such as Zoncolan~\cite{DFLO19}, Mariana Trench~\cite{MarianaTrench}, and Pysa~\cite{Pysa}.
+To gain confidence in the mechanizability of our results, we developed a proof-of-concept implementation of Separation SIL in OCaml. The prototype is open source and available on GitHub.\footnote{\url{https://github.com/Alex23087/Failure-SSIL-Analyser}} While it is not meant to scale up to real programs, it can derive all the examples in this section and validates our intuition on the automated backward inference of Section~\ref{sec:sil:separation-sil-inference}. The code exploits a routine that follows closely the process described in that section, which is analogous to the proof of relative completeness (Theorem~\ref{th:sil:separation-sil-sequential-complete}).
+For this implementation, we thank the students of the Laboratory for Innovative Software 2024 course: Yuri Andriaccio, Samuele Bonini, Andrea Castagna, Marco Antonio Corallo, Andrea Simone Costa, Fabio Federico, Elvis Rossi, Alessandro Scala, Matteo Simone.
+
+Moreover, the ideas that lead to SIL represent \emph{a posteriori} formalization and theoretical justification of the parallel, modular, and compositional static analysis implemented in industrial grade static analyzers for security developed and used at Meta, such as Zoncolan~\cite{DFLO19}, Mariana Trench~\cite{MarianaTrench}, and Pysa~\cite{Pysa}.
 Those tools automatically find more than $50$\% of the security bugs in the Meta family of apps and many SEVs ("severe bugs" in the Meta jargon)~\cite[Figure~5]{DFLO19}.
 
 In order to scale up to hundreds of millions of lines of code, static analyses need to be parallelizable and henceforth modular and compositional. Modularity implies that the analysis can infer \emph{meaningful} information without full knowledge of the global program. Compositionality means that the~\emph{results} of analyzing modules are good enough that one does not lose information in using the inferred triple instead of inlining the code.
@@ -970,9 +976,6 @@ In particular, the analysis infers sufficient incorrectness preconditions (modul
 When the propagation of the inferred sufficient precondition reaches an attacker\hyp{}controlled input, the analysers check if that input is included in the propagated error condition.
 If it is the case, then it emits an error.
 The function analyses are parallelized and a strategy similar to the iteration rule of Figure~\ref{fig:sil:sil-rules} is used to compute the fixpoint in presence of mutually recursive functions.
-
-Moreover, we have a proof-of-concept implementation of Separation SIL in OCaml. The prototype is open source and available on GitHub.\footnote{\url{https://github.com/Alex23087/Failure-SSIL-Analyser}} While the prototype is not meant to scale up to real programs, it can derive all the examples in this section and helped us gain confidence in the correctness of our results. The code exploits a routine that follows closely the relative completeness Theorem~\ref{th:sil:separation-sil-sequential-complete} by implementing Lemma~\ref{lmm:sil:separation-assertion-rewrite}.
-For this implementation, we thank the students of the Laboratory for Innovative Software 2024 course: Yuri Andriaccio, Samuele Bonini, Andrea Castagna, Marco Antonio Corallo, Andrea Simone Costa, Fabio Federico, Elvis Rossi, Alessandro Scala, Matteo Simone.
 
 \section{Summary}
 In this chapter, we considered known program logics for over and under-approximation and tried to formalize the relations among them in order to asses their respective strengths and weaknesses. This led to the introduction of the novel proof system for Lisbon triples, that we dubbed Sufficient Incorrectness Logic, and to compare the four logics along several dimensions.

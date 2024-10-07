@@ -263,7 +263,7 @@ The next technical proposition states some semantic properties of the assertion 
 	Moreover, $(s', h_p) \in \asldenot{q}$ by Proposition~\ref{prop:app:sl-sat}.2.
 	Hence, $(s', h_p \bullet h_t) = (s', h) \in \asldenot{q \andsep t}$.
 
-	\proofcase{\silrule{alloc}}
+	\proofcase{\silrule{alloc1}}
 	Take $(s, h) \in \asldenot{\emp \andsep t} = \asldenot{t}$. Take a location $l \notin \dom(h)$, and let $s' = s[x \mapsto l]$, $h' = h[l \mapsto s(v)]$, so that $(s', h') \in \fwsem{\code{x := alloc()}} (s, h)$.
 	We can split $h' = [l \mapsto s(v)] \bullet h$ because $l \notin \dom(h)$. Since $\fv(t) \cap \modified(\regr) = \emptyset$, $x \notin \fv(t)$. Thus, by Proposition~\ref{prop:app:sl-sat}.1, $(s', h) \in \asldenot{t}$.
 	Moreover, $(s', [l \mapsto s(v)]) = (s', [s'(x) \mapsto s'(v)])$, which satisfies $(s', [s'(x) \mapsto s'(v)]) \in \asldenot{x \mapsto v}$.
