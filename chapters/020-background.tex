@@ -35,11 +35,14 @@ The above chain is also called the \emph{initial chain} of $f$. If instead of $C
 
 If we assume $f$ is additive, then for any point $x \in C$ we have $(f \lor x)^n = \bigvee_{j < n} f^j(x)$. By Kleene, this means $\lfp(f \lor x) = \bigvee_{n \ge 0} f^n(x)$. Dually, if $f$ is co-additive, $\gfp(f \land x) = \bigwedge_{n \ge 0} f^n(x)$.
 
-Suppose $f \dashv g$. Then, by Knaster-Tarski,
+Given $f : S \rightarrow T$ and $g : T \rightarrow S$, we say $f$ and $g$ are adjoints, notation $f \dashv g$, if
+\[
+\forall s \in S, t \in T.\quad f(s) \le_T t \iff s \le_S g(t)
+\]
+If $f \dashv g$, then by Knaster-Tarski
 \begin{equation}
 	\lfp(f \lor x) \le y \iff x \le \gfp(g \land y) \label{eq:bg:adjoint-fixpoint} \text{.}
 \end{equation}
-
 Lastly, from Knaster-Tarski follows the following two (co)induction proof principles:
 \begin{equation}
 	\infer{\lfp(f) \le p}{\exists x . f(x) \le x \le p}
@@ -431,13 +434,9 @@ The HL proof system embedded in KATs is shown in Figure~\ref{fig:bg:hl-kat}. It 
 \subsection{Abstract domains}
 Abstract interpretation \cite{CC77,CC79} is a general framework to define static analyses sound by construction, with the main idea of approximating the program semantics on some abstract domain $A$ instead of working on the concrete domain $C$. The main tool used to study abstract interpretation are Galois connections.
 \begin{definition}[Galois connection]
-	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define a Galois connection when
-	\[
-	\forall c \in C, a \in A.\quad \alpha(c) \le_A a \iff c \le_C \gamma(a)
-	\]
-	that we write $\gc{C}{\alpha}{\gamma}{A}$.
+	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define a Galois connection when $\alpha \dashv \gamma$. As notation, we write $\gc{C}{\alpha}{\gamma}{A}$.
 \end{definition}
-We call $C$ and $A$ the concrete and the abstract domain respectively, $\alpha$ the abstraction function and $\gamma$ the concretization function. $\alpha$ and $\gamma$ are also called adjoints.
+We call $C$ and $A$ the concrete and the abstract domain respectively, $\alpha$ the abstraction function and $\gamma$ the concretization function.
 We recall some properties of Galois connections:
 \begin{prop}
 	Let $\gc{C}{\alpha}{\gamma}{A}$ be a Galois connection. Then

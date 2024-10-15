@@ -783,7 +783,7 @@ We say two heaps are disjoint, written $h_1 \perp h_2$, when $\dom(h_1) \cap \do
 		\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
 			                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
 			                                             \emptyset                         & otherwise
-		                                             \end{cases*}      \\
+		                                             \end{cases*}    \\
 		\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}_h(l)\right\rbrace \\
 		\edenot{\code{free(x)}} (s, h)      & \eqdef
 		\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                         \\
@@ -964,7 +964,7 @@ Another option is to focus on single states. Note that, differently than other t
 
 \subsection{Implementations}
 To gain confidence in the mechanizability of our results, we developed a proof-of-concept implementation of Separation SIL in OCaml. The prototype is open source and available on GitHub.\footnote{\url{https://github.com/Alex23087/Failure-SSIL-Analyser}} While it is not meant to scale up to real programs, it can derive all the examples in this section and validates our intuition on the automated backward inference of Section~\ref{sec:sil:separation-sil-inference}. The code exploits a routine that follows closely the process described in that section, which is analogous to the proof of relative completeness (Theorem~\ref{th:sil:separation-sil-sequential-complete}).
-For this implementation, we thank the students of the Laboratory for Innovative Software 2024 course: Yuri Andriaccio, Samuele Bonini, Andrea Castagna, Marco Antonio Corallo, Andrea Simone Costa, Fabio Federico, Elvis Rossi, Alessandro Scala, Matteo Simone.
+For this implementation, we thank the students and teachers of the Laboratory for Innovative Software 2024 course, Yuri Andriaccio, Samuele Bonini, Andrea Castagna, Marco Antonio Corallo, Andrea Simone Costa, Fabio Federico, Elvis Rossi, Alessandro Scala, Matteo Simone, Chiara Bodei and Gian-Luigi Ferrari.
 
 Moreover, the ideas that lead to SIL represent \emph{a posteriori} formalization and theoretical justification of the parallel, modular, and compositional static analysis implemented in industrial grade static analyzers for security developed and used at Meta, such as Zoncolan~\cite{DFLO19}, Mariana Trench~\cite{MarianaTrench}, and Pysa~\cite{Pysa}.
 Those tools automatically find more than $50$\% of the security bugs in the Meta family of apps and many SEVs ("severe bugs" in the Meta jargon)~\cite[Figure~5]{DFLO19}.
