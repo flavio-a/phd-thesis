@@ -2,17 +2,17 @@
 
 \chapter{Background}\label{ch:background}
 
-In this chapter, we lay the background for the thesis. We fix the notation and recall known notions on different aspects of theoretical computer science.
+In this chapter, we lay the background for the thesis. We fix the notation and briefly recall the main concepts of well known theories for program analysis as the basis of our research.
 
 \section{Order structures}\label{sec:bg:posets}
-We write $\pow(S)$ for the powerset of $S$ and $\id_S: S \rightarrow S$ for the identity function on a set $S$. We omit subscripts when obvious from the context. If $f : S \rightarrow T$ is a function, we overload the symbol $f$ to denote also its lifting $f: \pow(S) \rightarrow \pow(T)$ defined as $f(X) = \{ f(x) \svert x \in X \}$ for any $X \subseteq S$.
+Given a set $S$, we write $\pow(S)$ for the powerset of $S$ and $\id_S: S \rightarrow S$ for the identity function on $S$. We omit subscripts when obvious from the context. If $f : S \rightarrow T$ is a function, we overload the symbol $f$ to denote also its lifting $f: \pow(S) \rightarrow \pow(T)$ defined as $f(X) = \{ f(x) \svert x \in X \}$ for any $X \subseteq S$.
 Given two functions $f: S \rightarrow T$ and $g: T \rightarrow V$ we denote their composition as $g \circ f$ or simply $gf$.
 For a function $f : S \rightarrow S$, we denote $f^n: S \rightarrow S$ the composition of $f$ with itself $n$ times, i.e., $f^{0} = \id_S$ and $f^{n+1} = f \circ f^{n}$.
 
-In order structures (such as posets and lattices) with carrier set $C$, we denote the ordering with $\le_C$, least upper bounds (lubs) with $\vee_C$, greatest lower bounds (glbs) with $\wedge_C$, least element with $\bot_C$ and greatest element with $\top_C$. For all these, we omit the subscript when clear from the context.
+In ordered structures (such as posets and lattices) with carrier set $C$, we denote the order relation by $\le_C$, least upper bounds (lubs) by $\vee_C$, greatest lower bounds (glbs) by $\wedge_C$, least element by $\bot_C$ and greatest element by $\top_C$.
 We recall that any powerset is a complete lattice with ordering given by inclusion. In this case, we use standard symbols $\subseteq$, $\cup$, etc.
-If $C$ is a poset, we denote by $C^{\op}$ the poset with the same carrier set but reverse ordering: $a \le_{C^{\op}} b$ if and only if $b \le_C a$.
-Given a poset $T$ and two functions $f, g: S \rightarrow T$, the notation $f \le g$ means that, for all $s \in S$, $f(s) \le_T g(s)$.
+If $C$ is a poset, we denote by $C^{\op}$ the poset with the same carrier set but reverse order: $a \le_{C^{\op}} b$ if and only if $b \le_C a$.
+We lift poset operators and relations to functions pointwise: given a poset $T$ and two functions $f, g: S \rightarrow T$, the notation $f \le g$ means that, for all $s \in S$, $f(s) \le_T g(s)$. Analogously, $f \land g$ denotes the function $(f \land g)(s) = f(s) \land g(s)$ for all $s \in S$. When we use this notation, given an element $t \in T$ we sometimes overload notation and use $t$ also to denote the constant function $t: S \rightarrow T$ such that $t(s) = t$ for all $s$. For instance, using this notation we have that, given a function $f : S \rightarrow T$ and an element $x \in T$, when we write $(f \lor x)$ we mean the function $(f \lor x)(s) = f(s) \lor x$.
 A function $f$ between complete lattices is additive (resp. co-additive) whenever it preserves arbitrary lubs (resp. glbs).
 Given a function $f : C \rightarrow C$ on a poset $C$, we call a point $x \in C$ a fixed point (or fixpoint) if $f(x) = x$, and write both $\lfp(f)$ and $\mu(f)$ to denote its least fixpoint, if it exists. We recall two standard results guaranteeing the existence of (least) fixpoints (see, e.g., \cite{DP02}):
 \begin{theorem}[Knaster-Tarski]\label{th:bg:knaster-tarski}
@@ -35,7 +35,7 @@ The above chain is also called the \emph{initial chain} of $f$. If instead of $C
 
 If we assume $f$ is additive, then for any point $x \in C$ we have $(f \lor x)^n = \bigvee_{j < n} f^j(x)$. By Kleene, this means $\lfp(f \lor x) = \bigvee_{n \ge 0} f^n(x)$. Dually, if $f$ is co-additive, $\gfp(f \land x) = \bigwedge_{n \ge 0} f^n(x)$.
 
-Given $f : S \rightarrow T$ and $g : T \rightarrow S$, we say $f$ and $g$ are adjoints, notation $f \dashv g$, if
+Given $f : S \rightarrow T$ and $g : T \rightarrow S$, we say $f$ and $g$ are \emph{adjoints}, notation $f \dashv g$, if
 \[
 \forall s \in S, t \in T.\quad f(s) \le_T t \iff s \le_S g(t)
 \]
@@ -52,23 +52,22 @@ Lastly, from Knaster-Tarski follows the following two (co)induction proof princi
 \end{equation}
 
 \section{Propositional logic}
-When talking about propositional logical formulas, we group variables $x_1$, $x_2$, $\dots$, $x_n$ in a vector denoted $\xbar$. Moreover, we often omit the variables a formula depends on. For instance, if the formula $F(\xbar)$ depends on variables $\xbar$, we shall write just $F$. We use the special shorthand $F'$ to denote $F[\xbar'/\xbar]$, where we primed all variables appearing in $F$.
+When talking about propositional logical formulas, we group variables $x_1$, $x_2$, $\dots$, $x_n$ in a vector denoted by $\xbar$. Moreover, we often omit the variables a formula depends on. For instance, if the formula $F(\xbar)$ depends on variables $\xbar$, we shall write just $F$. We use the special shorthand $F'$ to denote $F[\xbar'/\xbar]$, where we primed all variables appearing in $F$.
 An assignment $s$ of all variables $\xbar$ appearing in a formula $F(\xbar)$ either satisfies it, written $s \vDash F$, or falsifies it, written $s \nvDash F$. Given an assignment $s$ for variables $\xbar$, we shall write $s'$ for the corresponding assignment on primed variables $\xbar'$, that is the value of variable $x'$ in $s'$ is the same as $x$ in $s$. Moreover, we use the comma to ``merge" assignments when they refer to disjoint sets of variables: for instance, given the two assignments $s$ and $t$, we write $s, t'$ for the assignment that uses $s$ for $\xbar$ and $t'$ for $\xbar'$ (we assume the set of primed variables $\xbar'$ to be disjoint from the original set $\xbar$).
 A \emph{literal} is either a variable or its negation. A \emph{clause} $c$ is a disjunction of literals. Any assignment $s$ of variables $\xbar$ has a corresponding clause that is satisfied exactly by that assignment of the same variables, and we overload the symbol $s$ to denote both. A \emph{subclause} $d \subseteq c$ is a clause whose literals are a subset of literals of $c$. A formula $F$ in conjunctive normal form (CNF) is a conjunction of clauses, and we write $\clause(F)$ to denote the set of clauses that appear in $F$.
 
 \section{Regular commands}\label{sec:bg:regcomm}
-A common setting to study static analysis is a simple while-language, which contains basic constructs needed to write imperative programs \cite{Winskel93}. However, we consider a different system that is able to encode the standard while-language, namely we focus on regular commands (as done in many recent works~\cite{OHearn20,BGGR21,MOH21,RBDDOV20,ZDS23}):
-%Following \cite{BGGR21} (see also \cite{ohearn20}) we consider a  language of \emph{regular commands}:
+It is common to study static analysis by considering a simple while-language, which contains basic constructs needed to write imperative programs \cite{Winskel93}. However, following e.g.~\cite{OHearn20,BGGR21,MOH21,RBDDOV20,ZDS23}, we consider a different system that is able to encode the standard while-language. Namely, we focus on regular commands:
 \begin{align}
 	\Reg\ni \regr ::= \; \expe\mid \regr;\regr\mid \regr \regplus \regr \mid \regr^\kstar \label{eq:bg:regr-def}
 \end{align}
-Regular commands can be instantiated differently by changing the set $\Exp$ of basic transfer expressions $\expe$. These determines the kind of basic operations allowed in the language. For instance, when $\Exp$ contains deterministic assignments and boolean guards it can encode a standard while-language (discussed below). Another example is Kleene algebras with tests~\cite{Kozen97} (see Section~\ref{sec:bg:algebra}).
+Regular commands can be instantiated differently by changing the set $\Exp$ of atomic commands $\expe$. These determines the kind of basic operations allowed in the language. For instance, when $\Exp$ contains deterministic assignments and Boolean guards, it can encode a standard while-language (see~\eqref{eq:bg:while-language}). Another example is Kleene algebras with tests~\cite{Kozen97} (see Section~\ref{sec:bg:algebra}).
 
-The command $\regr; \regr$ represent the usual sequential composition. $\regr \regplus \regr$ is nondeterministic choice. The Kleene star $\regr^\kstar$ denote a nondeterministic iteration, where $\regr$ can be executed any number of time (possibly 0) before exiting. It can be thought as the solution of the recursive equation $\regr^\kstar \equiv \code{skip} \regplus (\regr; \regr^{\kstar})$.
-We write $\regr^n$ to denote sequential composition of $\regr$ with itself $n$ times, analogously to how we use $f^n$ for function composition.
+The command $\regr; \regr$ represent the usual sequential composition. The command $\regr \regplus \regr$ is nondeterministic choice. The Kleene star $\regr^\kstar$ denotes a nondeterministic iteration, where $\regr$ can be executed any number of times (possibly 0) before exiting. It can be thought of as the solution to the recursive equation $\regr^\kstar \equiv \code{skip} \regplus (\regr; \regr^{\kstar})$.
+We write $\regr^n$ to denote sequential composition of $\regr$ with itself $n$ times, analogously to the notation $f^n$ for function repetition.
 
-For the generic semantics of regular commands, we assume a concrete set of values $C$ that is a complete join-semilattice. We also assume the semantics $\edenot{\cdot} : \Exp \rightarrow C \rightarrow C$ to be given -- in general, it depends on the instantiation.
-The semantics of regular commands $\fwsem{\cdot} : \Reg \rightarrow C \rightarrow C$ is defined inductively in Figure~\ref{fig:bg:regcom-sem}. Intuitively, this defines the collecting semantics of a program: if $C$ is the powerset of the set of states, $\fwsem{\regr} c$ is the set of output states reachable from the set of input states $c$.
+The semantics of regular commands is defined over a concrete set of values $C$ that forms a complete join-semilattice. We also assume the semantics function for atomic commands $\edenot{\cdot} : \Exp \rightarrow C \rightarrow C$ to be given.
+The semantics function $\fwsem{\cdot} : \Reg \rightarrow C \rightarrow C$ is defined inductively in Figure~\ref{fig:bg:regcom-sem}. Intuitively, this defines the collecting semantics of a program: if $C$ is the powerset of the set of states, $\fwsem{\regr} c$ is the set of output states reachable from the set of input states $c$.
 \begin{figure}[t]
 	\begin{align*}
 		\fwsem{\expe}                      & \eqdef \edenot{\expe} c                       \\
@@ -80,19 +79,25 @@ The semantics of regular commands $\fwsem{\cdot} : \Reg \rightarrow C \rightarro
 	\label{fig:bg:regcom-sem}
 \end{figure}
 
-To recover the standard while-language, using standard definitions for arithmetic and boolean expressions $\code{a} \in \AExp$ and $\code{b} \in \BExp$, we let
+To recover the standard while-language, we first consider standard integer arithmetic expressions $\code{a} \in \AExp$ and Boolean expressions $\code{b} \in \BExp$:
 \begin{align*}
-	\Exp \ni \expe ::= \; \code{skip} \mid \code{b?} \mid \code{x := a}
+	\AExp \ni \code{a} ::= \; n \mid x \mid \code{a} \diamond \code{a} \qquad
+	\BExp \ni \code{b} ::= \; \false \mid \lnot \code{b} \mid \code{b} \land \code{b} \mid \code{a} \asymp \code{a}
 \end{align*}
-The command \code{skip} does nothing. \code{x := a} is a standard deterministic assignment. \code{b?} is an ``assume" statement: it filters out inputs that falsify \code{b}.
+where $n \in \setZ$ is a natural number, $x$ is a (integer) variable, $\diamond \in \{ +, -, \cdot, \dots \}$ encodes standard arithmetic operations, and $\asymp \in \{ =, \neq, \le, <, \dots \}$ standard comparison operators.
+We then let
+\begin{align}
+	\Exp \ni \expe ::= \; \code{skip} \mid \code{b?} \mid \code{x := a} \label{eq:bg:expe}
+\end{align}
+The command \code{skip} does nothing. The command \code{x := a} is a standard deterministic assignment. The command \code{b?} is an ``assume" statement: it filters out inputs that falsify \code{b}.
 With this set of expressions, regular commands are very similar to Dijkstra's guarded commands~\cite{Dijkstra75}.
 We can define \code{if} and \code{while} statements as syntactic sugar:
-\begin{align*}
-	\code{if (b) then } \code{c}_1 \code{ else } \code{c}_2 & \ \eqdef\  (\code{b?; c}_1) \regplus ((\lnot \code{b})\code{?; c}_2) \\
-	\code{while (b) do c}                                   & \ \eqdef\  (\code{b?; c})^\kstar; (\lnot \code{b})\code{?}
-\end{align*}
+\begin{align}\begin{split}\label{eq:bg:while-language}
+		\code{if (b) then } \code{c}_1 \code{ else } \code{c}_2 & \ \eqdef\  (\code{b?; c}_1) \regplus ((\lnot \code{b})\code{?; c}_2) \\
+		\code{while (b) do c}                                   & \ \eqdef\  (\code{b?; c})^\kstar; (\lnot \code{b})\code{?}
+	\end{split}\end{align}
 
-For the semantics of these basic expressions, we consider a finite set of variables $\Var$, then the set of stores $\Sigma \eqdef \Var \rightarrow \setZ$ that are (total) functions $\sigma$ from $\Var$ to integers. The complete lattice $C$ is defined as $\pow(\Sigma)$ with the usual order structure given by set inclusion. Given a store $\sigma \in \Sigma$, $\sigma[ x \mapsto v ]$ denotes function update as usual for $x \in \Var$ and $v \in \setZ$. We consider standard, inductively defined semantics $\edenot{\cdot}$ for arithmetic and boolean expressions $\code{a} \in \text{AExp}$ and $\code{b} \in \text{BExp}$. The semantics of expressions $\expe \in \Exp$ is then defined as
+For the semantics of basic expressions in \eqref{eq:bg:expe}, we consider a finite set of variables $\Var$, then the set of stores $\Sigma \eqdef \Var \rightarrow \setZ$ that are (total) functions $\sigma$ from $\Var$ to integers. The complete lattice $C$ is defined as $\pow(\Sigma)$ with the usual order structure given by set inclusion. Given a store $\sigma \in \Sigma$, $\sigma[ x \mapsto v ]$ denotes function update as usual for $x \in \Var$ and $v \in \setZ$. We consider standard, inductively defined semantics $\edenot{\cdot} : \AExp \rightarrow \Sigma \rightarrow \setZ$ for arithmetic expressions and $\edenot{\cdot} : \BExp \rightarrow \Sigma \rightarrow \{ \code{tt}, \code{ff} \}$ for Boolean expressions. The semantics of atomic commands $\expe \in \Exp$ is then defined as
 \begin{align*}
 	\edenot{\code{skip}} S   & \eqdef S                                                                                         \\
 	\edenot{\code{x := a}} S & \eqdef \left\lbrace \sigma[x \mapsto \edenot{\code{a}} \sigma] \svert \sigma \in S \right\rbrace \\
@@ -103,22 +108,20 @@ This defines the collecting denotational semantics of programs. In fact, it is e
 	If $\edenot{\cdot}$ is monotone (resp. additive), then the semantics $\fwsem{\cdot}$ defined as in Figure~\ref{fig:bg:regcom-sem} is monotone (resp. additive) as well.
 \end{prop}
 
-As notation, we will write $\fwsem{\regr}\sigma$ instead of $\fwsem{\regr}\{\sigma\}$.
+As notational shorthand, we shall write $\fwsem{\regr}\sigma$ instead of $\fwsem{\regr}\{\sigma\}$.
 
 \section{Hoare logic}\label{sec:bg:hl}
-Hoare logic (HL for short) \cite{Hoare69} is a triple-based logic that proves properties about programs. Given two assertions $P$, $Q$ and a regular command $\regr$,\footnote{The original formulation uses the while-language. However, since regular commands are the primary syntax used in this thesis, we focus on them instead.} the HL triple
+Hoare logic (HL for short) \cite{Hoare69} is a triple-based logic to prove correctness properties about programs. Given two assertions $P$, $Q$ and a regular command $\regr$,\footnote{The original formulation uses the while-language. However, since regular commands are the primary syntax used in this thesis, we focus on them instead.} the HL triple
 \[
 \hltriple{P}{\regr}{Q}
 \]
 means that, whenever the execution of $\regr$ begins in a state $\sigma$ satisfying $P$ and it ends in a state $\sigma'$, then $\sigma'$ satisfies $Q$.
-When $Q$ is a correctness specification, any HL triple $\hltriple{P}{\regr}{Q}$ provides a \emph{sufficient} condition $P$ for the so called partial correctness of the program $\regr$.
+When $Q$ is a correctness specification, any HL triple $\hltriple{P}{\regr}{Q}$ provides a \emph{sufficient} condition $P$ for the so called \emph{partial correctness} of the program $\regr$.
 Formally, given the semantics $\fwsem{\cdot}$ of regular commands and abusing notation by writing $P$ instead of the set of states satisfying that formula, the validity of an HL triple is given by over-approximation property of postconditions
 \[
 \fwsem{\regr} P \subseteq Q \tag{HL}\label{eq:bg:hl-validity}.
 \]
-
-\noindent
-An HL triple $\hltriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \hltriple{P}{\regr}{Q}$, if the condition \eqref{eq:bg:hl-validity} holds.
+A HL triple $\hltriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \hltriple{P}{\regr}{Q}$, if condition \eqref{eq:bg:hl-validity} holds.
 
 \begin{figure}[t]
 	\centering
@@ -152,32 +155,32 @@ An HL triple $\hltriple{P}{\regr}{Q}$ is \emph{valid}, written $\vDash \hltriple
 \end{figure}
 
 In its original formulation, HL was proposed for a deterministic while-language and assuming $P$ and $Q$ were first-order logic formulae.
-Subsequent work generalized it to many other settings, such as nondeterminism~\cite{Apt84} and regular commands~\cite{MOH21}, resulting in the rules in Figure~\ref{fig:bg:hl}.
-That is a minimal set of correct rules for HL, but we remark that there are many other valid rules other than those in the figure. We also point out that rule \hlrule{iter} is based on \emph{invariants}, properties whose validity is preserved by the loop body. From this, if an invariant is true at the beginning, it is true also after any number of iterations. Invariants are a simple, yet sound and complete proof technique for loop over-approximation.
+Subsequent work generalized it to many other settings, such as nondeterminism~\cite{Apt84} and regular commands~\cite{MOH21}.
+For the latter, the rules in Figure~\ref{fig:bg:hl} define a minimal set of sound rules for HL, but we remark that there are many other valid rules other than those in the figure. We also point out that rule \hlrule{iter} is based on \emph{invariants}, i.e., properties whose validity is preserved by the loop body. From this, if an invariant is true at the beginning, it is true also after any number of iterations. Invariants are a simple, yet sound and complete proof technique for loop over-approximation.
 We use the standard notation $\vdash \hltriple{P}{\regr}{Q}$ to express that a triple is \emph{provable} in the HL proof system.
 
 \begin{theorem}[HL is sound~\cite{HL74}]
 	All provable triples in HL are valid:
 	\[
-	\vdash \hltriple{P}{\regr}{Q} \implies \vDash \hltriple{P}{\regr}{Q}
+	\vdash \hltriple{P}{\regr}{Q} \implies \vDash \hltriple{P}{\regr}{Q} \text{.}
 	\]
 \end{theorem}
 
-The reverse implication is called \emph{completeness} of the logic,\footnote{For the sake of readability, we must warn the reader that this thesis deals with three different notions of completeness. (Logical) completeness, used here, refers to the ability of a proof system to derive all valid triples. Global and local completeness are instead properties of abstract interpretation, that will be defined later. We will make sure to disambiguate the term whenever it is not clear from the context.} and in general it does not hold for HL because program analysis is undecidable. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}.
+The reverse implication is called \emph{completeness} of the logic,\footnote{For the sake of readability, we must warn the reader that this thesis deals with three different notions of completeness. (Logical) completeness, used here, refers to the ability of a proof system to derive all valid triples. Global and local completeness are instead properties of abstract interpretation, that will be defined later. We will make sure to disambiguate the term whenever it is not clear from the context.} and in general it does not hold for HL because program analysis is undecidable. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}. Moreover, the undecidability of implications in first-order logic makes completeness an undecidable problem even when we were able to express all the needed properties.
 Cook~\cite{Cook78} overcame these limitations for the first time by adding an oracle to decide implications and requiring that all strongest post (including loop-invariants) are expressible in the assertion language, proving the first completeness result for HL.\footnote{This was later called completeness \emph{in the sense of Cook}~\cite[§2.8]{Apt81}.}
-Another approach (see, e.g., \cite{CCLB12,OHearn20,Zilberstein24}) is to assume $P$ and $Q$ to be \emph{set} of states instead of formulae in some assertion language. This allows us to dodge at once both the issue of expressibility of the assertion language (since we can write any subset) and of decidability of the implication (since it reduces to subset inclusion). This latter approach is sometimes called "semantics assertions", as opposed to the "syntactic assertions" approach of using formulae in some language.
-In this thesis, we will consider semantics assertions where $P$ and $Q$ are sets of states, with the only exception of Separation SIL (Section~\ref{sec:sil:separation-sil}). Therefore, we will write $\sigma \in P$ to mean that state $\sigma$ satisfies the assertion $P$, and use standard set-theoretic symbols such as $\subseteq$ and $\cup$ instead of the logical $\implies$ and $\lor$.
+Another approach (see, e.g., \cite{CCLB12,OHearn20,Zilberstein24}) is to assume $P$ and $Q$ to be \emph{set} of states instead of formulae in some assertion language. This allows us to dodge at once both the issue of expressibility of the assertion language (since we can account for any subset of states) and of decidability of the implication (since it reduces to subset inclusion). This latter approach is sometimes called "semantics assertions", as opposed to the "syntactic assertions" approach of using formulae in some language.
+In this thesis, we will consider semantics assertions where $P$ and $Q$ are sets of states, with the only exception of Separation SIL (Section~\ref{sec:sil:separation-sil}). Therefore, we write $\sigma \in P$ to mean that state $\sigma$ satisfies the assertion $P$, and use standard set-theoretic symbols such as $\subseteq$ and $\cup$ instead of the logical $\implies$ and $\lor$ to remark the distinction.
 
-When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:hl} is complete:
+When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:hl} is complete.
 
 \begin{theorem}[HL is complete~\cite{MOH21}]
 	All valid triples in HL are provable:
 	\[
-	\vDash \hltriple{P}{\regr}{Q} \implies \vdash \hltriple{P}{\regr}{Q}
+	\vDash \hltriple{P}{\regr}{Q} \implies \vdash \hltriple{P}{\regr}{Q} \text{.}
 	\]
 \end{theorem}
 
-Lastly, we remark that HL is tightly connected to Dijkstra's weakest liberal precondition~\cite{Dijkstra75}. Given a program $\regr$ and a predicate $Q$ on final states, the weakest liberal precondition $\wlp[\regr](Q)$ is a predicate on initial states such that a state $\sigma$ satisfies $\wlp[\regr](Q)$ if and only if the execution of $\regr$ starting from $\sigma$ either doesn't terminate or terminates in a state satisfying $Q$. This definition is reminiscent of the validity condition for HL triples, but the ``if and only if'' requirement makes it stronger: $\wlp[\regr](Q)$ is the \emph{weakest} precondition such that $\vDash \hltriple{\wlp[\regr](Q)}{\regr}{Q}$. In other words, $\vDash \hltriple{P}{\regr}{Q}$ if and only if $P \implies \wlp[\regr](Q)$.
+Lastly, we remark that HL is tightly connected to Dijkstra's weakest liberal precondition~\cite{Dijkstra75}. Given a program $\regr$ and a predicate $Q$ on final states, the weakest liberal precondition $\wlp[\regr](Q)$ is a predicate on initial states such that a state $\sigma$ satisfies $\wlp[\regr](Q)$ if and only if the execution of $\regr$ starting from $\sigma$ either does not terminate or terminates in a state satisfying $Q$. This definition is reminiscent of the validity condition for HL triples, but the ``if and only if'' requirement makes it stronger: $\wlp[\regr](Q)$ is the \emph{weakest} precondition such that $\vDash \hltriple{\wlp[\regr](Q)}{\regr}{Q}$. In other words, $\vDash \hltriple{P}{\regr}{Q}$ if and only if $P \implies \wlp[\regr](Q)$.
 While Dijkstra's work focused on giving an inductive definition for $\wlp$, we focus on it as a sort of inverse of $\fwsem{\cdot}$.\footnote{More precisely, $\wlp$ and $\fwsem{\cdot}$ are adjoint functions, see Section~\ref{sec:sil:extremal-conditions}.} As discussed above, we also consider $\wlp[\regr](Q)$ to be a set of states instead of a formula.
 
 \section{Incorrectness Logic}\label{sec:bg:il}
@@ -219,26 +222,27 @@ Incorrectness Logic (IL)~\cite{OHearn20} was introduced as a formalism for under
 \iltriple{P}{\regr}{Q}
 \]
 means that all the states in $Q$ are reachable from states in $P$. Therefore, any error state in $Q$ is a true error of the program and the analysis can report it safely to developers.
-Formally, validity of an IL triple is given by the following formula
+Formally, the validity of an IL triple is given by the following formula
 \[
-\forall \sigma' \in Q \sdot \exists \sigma \in P \sdot \sigma' \in \fwsem{\regr} \sigma \tag{IL$_{\text{FOL}}$}\label{eq:bg:il-fol}
+\forall \sigma' \in Q \sdot \exists \sigma \in P \sdot \sigma' \in \fwsem{\regr} \sigma \text{,} \tag{IL$_{\text{FOL}}$}\label{eq:bg:il-fol}
 \]
 which can be compactly rewritten as the under-approximation condition
 \[
-\fwsem{\regr} P \supseteq Q \tag{IL}\label{eq:bg:il-validity}
+\fwsem{\regr} P \supseteq Q \text{.} \tag{IL} \label{eq:bg:il-validity}
 \]
 This property ensures that any error in $Q$ reported by the analysis is in fact a true error of the program, reachable in some concrete execution.
 
-We consider the proof system for IL in Figure~\ref{fig:bg:il}, adapting the one in~\cite{MOH21} and inspired by previous work on reverse Hoare logic~\cite{VK11}, simplified to not separate correct and erroneous termination states (see also Remark~\ref{rem:bg:ok-er-flags} below).
-Rule \ilrule{cons} looks similar, but uses reversed implication: in IL we can grow the precondition ($P' \subseteq P$) and shrink the post ($Q \subseteq Q'$), while in HL we do the opposite (cf. \hlrule{cons} in Figure~\ref{fig:bg:hl}). This fits the under/over-approximation duality: if we know $Q'$ is an under-approximation of the result, also $Q \subseteq Q'$ is such, and dually in HL.
-Another important difference is in rule \ilrule{iter} for Kleene iteration. HL rule \hlrule{iter} is based on loop invariants, but while these are sound in under-approximation, they are not complete because they don't account for invariants that are reached after a number of iterations~\cite[§4]{OHearn20}.
+The validity condition of IL was first proposed in~\cite{VK11}. There, the authors considered the same condition to specify correctness of randomized programs, and defined the ``reverse Hoare logic'' proof system to prove it. The novelty of~\cite{OHearn20} is to distinguish correct and erroneous termination and, most importantly, to focus on finding true bugs rather than proving correctness.
+We consider the proof system for IL in Figure~\ref{fig:bg:il}, adapting the one in~\cite{MOH21}, simplified to not separate correct and erroneous termination states (see also Remark~\ref{rem:bg:ok-er-flags}).
+Rule \ilrule{cons} looks similar, but uses reversed implication: in IL we can expand the precondition ($P' \subseteq P$) and shrink the post ($Q \subseteq Q'$), while in HL we do the opposite (cf. \hlrule{cons} in Figure~\ref{fig:bg:hl}). This fits the under/over-approximation duality: if we know $Q'$ is an under-approximation of the result, also $Q \subseteq Q'$ is such, and dually in HL.
+Another important difference is in rule \ilrule{iter} for Kleene iteration. HL rule \hlrule{iter} is based on loop invariants, which are sound but not complete for under-approximation~\cite[§4]{OHearn20}. Intuitively, under-approximate invariants cannot account for states that are reached after one or more loop iterations.
 
-Just like HL, this set of rule is sound and complete for IL:
+The proof system in Figure~\ref{fig:bg:il} is sound and complete for IL.
 
 \begin{theorem}[IL is sound and complete~\cite{OHearn20}]
 	An IL triple is provable if and only if it is valid:
 	\[
-	\vdash\iltriple{P}{\regr}{Q} \iff \vDash\iltriple{P}{\regr}{Q}
+	\vdash\iltriple{P}{\regr}{Q} \iff \vDash\iltriple{P}{\regr}{Q} \text{.}
 	\]
 \end{theorem}
 
@@ -254,24 +258,24 @@ if (even(x) && odd(y)) {
 // assert(z != 42)
 	\end{minted}
 	where we assume that $Q_{42} \eqdef (z = 42)$ denotes the set of erroneous states, i.e., the incorrectness specification.
-	The valid HL triple $\hltriple{ \text{odd}(y) }{\regr}{Q_{42}}$ identifies input states that will surely end up in an  error state, while the triple $\hltriple{ \lnot Q_{42} \land \lnot \text{odd}(y)}{\regr}{\lnot Q_{42}}$ characterize input states that will not produce any error.
+	The valid HL triple $\hltriple{ \text{odd}(y) }{\regr}{Q_{42}}$ identifies input states that will certainly end up in an  error state, while the triple $\hltriple{ \lnot Q_{42} \land \lnot \text{odd}(y)}{\regr}{\lnot Q_{42}}$ characterize input states that will not produce any error.
 
 	On the other hand, the valid IL triple $\iltriple{z = 11}{\regr}{Q_{42} \land \text{odd}(y) \land \text{even}(x) }$ expresses the fact that error states in $Q_{42}$ are reachable by safe initial state. Similarly, also the IL triple $\iltriple{\true}{\regr}{\lnot Q_{42} \land \lnot (\text{odd}(y) \land \text{even}(x)) }$ is valid since the postcondition $\lnot Q_{42}$ can be reached only when the path conditions to reach the assignment are not satisfied.
 \end{example}
 
 \begin{remark}[ok/er flags]\label{rem:bg:ok-er-flags}
 	One distinguishing feature of proof systems for incorrectness (e.g.,~\cite{OHearn20,RBDDOV20,RBDO22,RVBO23}) is to tag postconditions, but not preconditions, with either the flag $\oktext{ok}$ or $\ertext{er}$ to separate successful computations from those leading to errors.
-	An immediate consequence is that the number of proof rules is increased by the necessity to deal with such tags and that the definition of the semantics becomes longer and more complex.
-	Striving for simplicity, in this thesis we mostly follow the alternative from~\cite{BGGR23}, where the whole concrete domain is extended with such flags, e.g., we use $C = \pow(\{\oktext{ok},\ertext{er}\}\times \Sigma)$ instead of $\pow(\Sigma)$, and we assume that error states are preserved by all transfer functions, i.e., that $\fwsem{\regr} (\ertext{er:\sigma}) = \ertext{er:\sigma}$, for any $\regr\in\Reg$ and $\sigma\in\Sigma$.
+	An immediate consequence is that the number of proof rules is increased by the necessity to deal with such tags and that the definitions of both the semantics and the proof system become longer and more complex.
+	Striving for simplicity, in this thesis we mostly follow the alternative from~\cite{BGGR23}, where the whole concrete domain is extended with such flags, e.g., we use $C = \pow(\{\oktext{ok},\ertext{er}\}\times \Sigma)$ instead of $\pow(\Sigma)$, and we assume that error states are preserved by all commands, i.e., that $\fwsem{\regr} (\ertext{er:\sigma}) = \ertext{er:\sigma}$, for any $\regr\in\Reg$ and $\sigma\in\Sigma$.
 	This way, we tag both pre and post, but the treatment of tags is transparent to the rules of the logic. Therefore, in this extended setting, when we write $P$ and $Q$ we leave implicit that they may contain both kinds of tagged states. The distinction between successful and erroneous outputs will be explicitated in the analysis presented in Section~\ref{sec:sil:separation-sil-error}.
 \end{remark}
 
 \section{Necessary Conditions}\label{sec:bg:nc}
 The notion of Necessary Conditions (NC) was introduced in \cite{CCL11,CCFL13} for contract inference.
-The goal was to relax the burden on programmers: while sufficient conditions require the caller of a function to supply parameters that will never cause an error, NC only prevents the invocation of the function with arguments that will inevitably cause an error.
+The goal was to relax the burden on programmers when presenting function summaries: while sufficient conditions require the caller of a function to supply parameters that will never cause an error, NC only prevents the invocation of the function with arguments that will inevitably cause an error.
 Intuitively, given a correctness specification $Q$, the NC triple
 \[
-\nctriple{P}{\regr}{Q}
+\nctriple{P}{\regr}{Q} \tag{NC}
 \]
 means that any state $\sigma$ that admits at least one non-erroneous execution of the program $\regr$ is in $P$.
 %Recently, the same concept has been applied to the context of security \cite{DBLP:journals/pacmpl/MackayEND22}.
@@ -286,15 +290,7 @@ In other words, a necessary precondition \emph{rules out no good run}: when it i
 Note that we consider infinite traces as good traces. We do this by analogy with sufficient preconditions, where bad traces are only those which end in a bad state.
 
 \begin{example}\label{ex:nc-running}
-	Consider a variation of the program in Example~\ref{ex:bg:il-hl-comparison} that introduces nondeterminism:
-	\begin{minted}{C}
-x := nondet();
-if (even(x) && odd(y)) {
-    z := 42;
-}
-// assert(z != 42)
-	\end{minted}
-	%	We call this program $\mathsf{r42nd}$.
+	Consider again the program $\regr{}42$ from Example~\ref{ex:bg:il-hl-comparison}.
 	As in the previous example, error states are those satisfying $(z = 42)$. Therefore, we consider the \emph{correctness} specification $(z \neq 42)$. Then
 	\begin{center}
 		\begin{tabular}{c|ccc}
@@ -314,13 +310,13 @@ Consider for instance the simple program
 \[
 \regr \eqdef \code{*x := 1; *y := 2; *z := 3}
 \]
-where \code{x}, \code{y} and \code{z} are pointers. The HL triple $\hltriple{\true}{\regr}{x \mapsto 1 \land y \mapsto 2 \land z \mapsto 3}$ is not valid because the pointer may be aliased at the entry point of the program. To avoid aliasing, the precondition should explicitly state that the addresses are different adding $x \neq y \land x \neq z \land y \neq z$, which becomes unfeasible as the program grows. This aliasing problem makes also hard to reuse specifications, since variables modified internally by some function calls may be implicitly exposed to the outside through aliasing.
-To address this problem, SL introduces the separating conjunction $\andsep$ (read "and separately"). To understand how it works, consider the simple formula $x \mapsto 1 \andsep y \mapsto 2$. A heap satisfies this formula if it can be split in two disjoin sub-heaps such that one satisfies $x \mapsto 1$ and the other $y \mapsto 2$. Therefore, this implicitly means that $x$ and $y$ can't be aliased: if they were, the unique memory location couldn't be put at the same time in both disjoint sub-heaps for the two assertions. Intuitively, whenever there is a separating conjunction, every heap location is "owned" by exactly one of the two subformulae involved.
-Note that SL does not always prevent aliasing: it is always possible to write $x \mapsto 1 \andsep x = y$. The key difference is that here the aliasing is \emph{explicit} in the formula instead of being implicit in the model.
+where \code{x}, \code{y} and \code{z} are pointers. The HL triple $\hltriple{\true}{\regr}{x \mapsto 1 \land y \mapsto 2 \land z \mapsto 3}$ is not valid because some pointers may be aliased at the entry point of the program. To avoid aliasing, the precondition should explicitly state that all the addresses are pairwise different, adding the condition $x \neq y \land x \neq z \land y \neq z$, which becomes unfeasible as the number of addresses grows. This aliasing problem makes also hard to reuse specifications, since variables modified internally by some function calls may be implicitly exposed to the outside through aliasing.
+To address this problem, SL introduces the separating conjunction $\andsep$ (read "and separately"). To understand how it works, consider the simple formula $x \mapsto 1 \andsep y \mapsto 2$. A heap satisfies this formula if it can be split in two disjoint sub-heaps such that one satisfies $x \mapsto 1$ and the other $y \mapsto 2$. Therefore, this implicitly means that $x$ and $y$ cannot be aliased: if they were, the unique memory location could not be at the same time in both disjoint sub-heaps for the two assertions. Intuitively, whenever there is a separating conjunction, every heap location is ``owned" by exactly one of the two subformulae involved.
+Note that SL does not prevent aliasing: it is always possible to write $x \mapsto 1 \andsep x = y$. The key difference is that here the aliasing is \emph{explicit} in the formula instead of being implicit in the model.
 
-Formally, SL is a triple-based program logic analogous to HL, which uses as assertion language not first-order logic or sets of states but rather formulae built from the following grammar
+Formally, SL is a triple-based program logic analogous to HL, which uses as assertion language formulae built from the following grammar:
 \begin{align*}
-	p, q ::= & \; \true \mid p \land q \mid \lnot p \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid p \andsep q
+	p, q ::= & \; \true \mid p \land q \mid \lnot p \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid p \andsep q \text{.}
 \end{align*}
 The first five constructs describe standard first-order logic. The last three describes heaps, and are called spatial constructs: $\emp$ is satisfied only by the empty heap, $x \mapsto \code{a}$ is satisfied by heaps with a single location, corresponding to the location $x$ and containing the value $\code{a}$, and $\andsep$ is the separating conjunction described above.
 
@@ -339,12 +335,12 @@ The first five constructs describe standard first-order logic. The last three de
 To be more formal, consider a set of locations $\Loc$, stores as total functions $s : \Var \rightarrow \setZ \uplus \Loc$, heaps as partial functions $h : \Loc \rightharpoonup \setZ \uplus \Loc$, and states as pairs $(s, h) \in \Sigma$ of a heap and a store.
 We use $s[x \mapsto v]$ for function update, $[]$ for the empty heap and $[l \mapsto v]$ for the heap defined only on $l$ and associating value $v$ to it. When two heaps are \emph{disjoint}, ie. $\dom(h_1) \cap \dom(h_2) = \emptyset$, we define the $\bullet$ operation as the merge of the two: $h_1 \bullet h_2$ coincides with $h_1$ on $\dom(h_1)$, with $h_2$ on $\dom(h_2)$ and it is undefined everywhere else.
 We define inductively the set of states that satisfy a Separation Logic assertion in Figure~\ref{fig:bg:sl-model-assertion}. The semantics of the first five constructs is standard for first-order logic. The semantics of spatial constructs is more interesting.
-$\emp$ is satisfied only by states whose heap is empty. More importantly, $x \mapsto a$ is satisfied only by states whose heap has a single location defined: this is fundamental when we consider the separating conjunction. $p \andsep q$ is satisfied by a state whose heap can be split in two \emph{disjoint} heaps $h_1$, $h_2$ such that one satisfied $p$ and the other $q$. This means that each location defined in the heap $h_1 \bullet h_2$ of the whole state must be in exactly one of $h_1$ or $h_2$: if it is in $h_1$ (resp. $h_2$) then that location is ``owned'' by $p$ (resp. $q$). Particularly, this means that $p$ and $q$ must specify only the heap locations they want to take ownership of, therefore the definition of $x \mapsto a$.
+The formula $\emp$ is satisfied only by states whose heap is empty. More importantly, $x \mapsto a$ is satisfied only by states whose heap has a single location defined: this is crucial when considering the separating conjunction operator. The formula $p \andsep q$ is satisfied by a state whose heap can be split in two \emph{disjoint} heaps $h_1$, $h_2$ such that one satisfied $p$ and the other $q$. This means that each location defined in the heap $h_1 \bullet h_2$ of the whole state must be in exactly one of $h_1$ or $h_2$: if it is in $h_1$ (resp. $h_2$) then that location is ``owned'' by $p$ (resp. $q$). Particularly, this means that $p$ and $q$ must specify only the heap locations they want to take ownership of.
 
 In the thesis, we will use (an extension of) Separation Logic as the assertion language for Separation SIL (Section~\ref{sec:sil:separation-sil}).
 
 \section{Kleene algebras}\label{sec:bg:algebra}
-Kleene algebras are an algebraic formulation that is able to describe programs.
+Kleene algebras are an algebraic formulation that can describe programs~\cite{Kozen97,Harel79}.
 
 \begin{definition}[Idempotent semiring]\label{def:bg:i-semiring}
 	An idempotent semiring is an algebraic structure $(A, +, \cdot, 0, 1)$ satisfying
@@ -355,25 +351,25 @@ Kleene algebras are an algebraic formulation that is able to describe programs.
 		\item $0$ is an annihilator for sum, that is $a \cdot 0 = 0 \cdot a = 0$
 	\end{itemize}
 \end{definition}
-Intuitively, elements of the idempotent semiring are programs, and the operations are way to compose them: $+$ is nondeterministic choice ($\regplus$ in the syntax of regular commands), $\cdot$ is sequential composition ($;$), $1$ is a no-op (\code{skip}) and $0$ is divergence (the test $\false ?$).
+Intuitively, elements of the idempotent semiring are programs, and the operations define possible ways to compose them: sum $+$ is nondeterministic choice ($\regplus$ in the syntax of regular commands), product $\cdot$ is sequential composition ($;$), the multiplicative unit $1$ is a no-op (\code{skip}) and the additive unit $0$ is divergence (the test $\false ?$).
 
 In any idempotent semiring we define the natural partial order $a \le b$ iff $a + b = b$. With this definition, $+$ defines the lub of two elements: $a \lor b = a + b$. Moreover, sum and product are monotone in both arguments, and $0$ is the bottom element.
 
-To get a Kleene algebra, we need to add the Kleene star operator to model iteration:
+To get a Kleene algebra, we add the Kleene star operator to model iteration~\cite{Kozen94}:
 \begin{definition}[Kleene algebra]\label{def:bg:kleene-algebra}
-	A Kleene algebra is an idempotent semiring with an additional operator $\kstar$ satisfying the following axiom:
+	A Kleene algebra is an idempotent semiring with an additional operator $\kstar$ satisfying the following axioms:
 	\begin{align*}
 		 & 1 + a \cdot a^\kstar = a^\kstar                     &  & 1 + a^\kstar \cdot a = a^\kstar                     & (\textit{Star unfold})    \\
 		 & b + a \cdot c \le c \implies a^\kstar \cdot b \le c &  & b + c \cdot a \le c \implies b \cdot a^\kstar \le c & (\textit{Star induction})
 	\end{align*}
 \end{definition}
-\textit{(Star unfold)} axioms describes that $\kstar$ behaves as nondeterministic iteration, given it satisfies the same recursive equation. \textit{(Star induction)} axioms are the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the `increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $b$ and the inductive step $a \cdot c$ are below (ie. satisfy) the inductive thesis $c$ (since we prove their lub, that is their sum, is below $c$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
+\textit{(Star unfold)} axioms describe that $\kstar$ behaves as nondeterministic iteration, given it satisfies the same recursive equation. \textit{(Star induction)} axioms define the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the ``increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $b$ and the inductive step $a \cdot c$ are below (ie. satisfy) the inductive thesis $c$ (since we prove their lub, that is their sum, is below $c$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
 
-Kleene algebras are a versatile formalism that has been applied as is. However, the main algebraic structure we consider is that of Kleene algebra with tests (KAT for short), since this addition allows to encode programs \cite{Kozen97}.
+Kleene algebras are a versatile formalism that has been applied as is. However, the main algebraic structure we consider is Kleene algebra with tests (KAT for short), since this addition allows to encode programs~\cite{Kozen97}.
 \begin{definition}[Test]
 	A test $p$ in an idempotent semiring is an element with a complement $\lnot p$ satisfying $p + \lnot p = 1$ and $p \cdot \lnot p = \lnot p \cdot p = 0$. We denote by $\test(A)$ the set of tests of an idempotent semiring $A$.
 \end{definition}
-With this definition, $(\test(A), +, \cdot, \lnot, 0, 1)$ is a boolean algebra contained within $A$. This means that $+$ represent logical disjunction, $\cdot$ conjunction, $0$ false and $1$ true.
+With this definition, $(\test(A), +, \cdot, \lnot, 0, 1)$ is a Boolean algebra contained within $A$. This means that sum $+$ represent logical disjunction, product $\cdot$ is conjunction, $0$ is false and $1$ is true.
 
 An interesting example of KAT are so-called ``relational KAT".
 \begin{example}[Relational KAT]
@@ -383,9 +379,9 @@ An interesting example of KAT are so-called ``relational KAT".
 	\]
 	$0$ is the empty relation, $1$ is the identity relation, $\kstar$ is reflexive and transitive closure. A test in this KAT is a subset of $1$, that is for any subset $P \subseteq C$ we have the test $\{ (x, x) \svert x \in P \}$. Intuitively, this test represent the property $P$. Nonetheless, when interpreted as an element of the KAT (ie. a command) it behaves as an ``assume($P$)'' statement, or $P ?$, which ``filters" states satisfying $P$ and diverges on all other.
 \end{example}
-If $C$ is the set of program states, the corresponding relational KAT can encode programs just like regular commands. Basic expressions are elements of (a subset of) $\pow(C \times C)$. Encoding of imperative constructs such as \code{if} and \code{while} are just as for regular commands.
+If $C$ is the set of program states, the corresponding relational KAT can encode programs just like regular commands. Basic expressions are elements of (a subset of) $\pow(C \times C)$. Encoding of imperative constructs such as \code{if} and \code{while} is done as for regular commands.
 
-Since we can describe programs in KATs, it is natural to ask ourselves whether we can talk about program properties, too. It turns out this is the case, as we can formulate HL in a KAT \cite{Kozen00}. Given that we are able to encode program properties (as tests) and programs (as general elements of the algebra), the remaining question is how do we encode the validity of an HL triple. In relational KATs, where we can talk about strongest postcondition, $\spost(a, p) \le q$ is equivalent to the equation $p \cdot a \cdot (\lnot q) = 0$. Intuitively, this says that if we start from $p$, apply $a$ and test for the negation of $q$, we don't get anything, meeting the intuition that $\spost(a, p)$ is contained in $q$. A provably equivalent (in any KAT) formulation is the equation $p \cdot a = p \cdot a \cdot q$, that intuitively means that testing for $q$ after applying $a$ on $p$ is redundant. Given the equivalence in relational KATs, it seems reasonable to take this equation as validity for an HL triple in general KATs.
+Since we can describe programs in KATs, it is natural to ask ourselves whether we can talk about program properties, too. It turns out this is the case, as we can formulate HL in a KAT \cite{Kozen00}. Given that we are able to encode program properties (as tests) and programs (as general elements of the algebra), the remaining question is how do we encode the validity of an HL triple. In relational KATs, where we can talk about strongest postcondition, $\spost(a, p) \le q$ is equivalent to the equation $p \cdot a \cdot (\lnot q) = 0$. Intuitively, this says that if we start from $p$, apply $a$ and test for the negation of $q$, we do not get any result, meeting the intuition that $\spost(a, p)$ is contained in $q$. A provably equivalent (in any KAT) formulation is the equation $p \cdot a = p \cdot a \cdot q$, that intuitively means that testing for $q$ after applying $a$ on $p$ is redundant. Given the equivalence in relational KATs, it seems reasonable to take this equation as validity for an HL triple in general KATs.
 
 \begin{figure}[t]
 	\centering
@@ -428,11 +424,11 @@ Since we can describe programs in KATs, it is natural to ask ourselves whether w
 	\caption{KAT encoding of Hoare logic}\label{fig:bg:hl-kat}
 	%	\vspace{-4ex}
 \end{figure}
-The HL proof system embedded in KATs is shown in Figure~\ref{fig:bg:hl-kat}. It handles triples of shape $\hltriple{p}{a}{q}$, with $p, q \in \test(A)$ and $a \in A$. It is very similar to Figure~\ref{fig:bg:hl} thanks to regular commands and KATs being syntactically very close. The first two rules are subsumed by \hlrule{atom}, but we prefer to show them explicitly since $0$ and $1$ are part of the syntax of KATs. Rule \hlrule{atom} is analogous to the homonymous HL rule. It requires explicitly to check the validity condition since there is no equivalent of the semantics in a KAT. All the remaining rules are the same as HL, just using the syntax of KAT instead of regular commands.
+The HL proof system embedded in KATs is shown in Figure~\ref{fig:bg:hl-kat}. It handles triples of shape $\hltriple{p}{a}{q}$, with $p, q \in \test(A)$ and $a \in A$. It is very similar to Figure~\ref{fig:bg:hl} thanks to regular commands and KATs being syntactically very close. The first two rules are subsumed by \hlrule{atom}, but we prefer to show them explicitly since $0$ and $1$ are part of the syntax of KATs. Rule \hlrule{atom} is analogous to the homonym HL rule. It requires explicitly to check the validity condition since there is no equivalent of the semantics in a KAT. All the remaining rules are the same as HL, just using the syntax of KAT instead of regular commands one.
 
 \section{Abstract interpretation}\label{sec:bg:absint}
 \subsection{Abstract domains}
-Abstract interpretation \cite{CC77,CC79} is a general framework to define static analyses sound by construction, with the main idea of approximating the program semantics on some abstract domain $A$ instead of working on the concrete domain $C$. The main tool used to study abstract interpretation are Galois connections.
+Abstract interpretation \cite{CC77,CC79} is a general framework to define static analyses sound by construction, with the main idea of approximating the program semantics on some abstract domain $A$ instead of working on the concrete domain $C$. The main tool used to study abstract interpretation are Galois connections.\footnote{Galois connections is the name usually given to adjoints in the context of abstract interpretation. We stick to this name when talking about abstract interpretation, and resort to the name adjoint in other contexts.}
 \begin{definition}[Galois connection]
 	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define a Galois connection when $\alpha \dashv \gamma$. As notation, we write $\gc{C}{\alpha}{\gamma}{A}$.
 \end{definition}
@@ -457,15 +453,14 @@ To give an intuition of the role of Galois connections in program analysis, we p
 	A = \Int = \{ [n, m] \svert n \in \setZ \cup \{ -\infty \}, m \in \setZ \cup \{ +\infty \}, n \le m \} \cup \{ [+\infty, -\infty] \}
 	\]
 	This defines the well known abstract domain of intervals \cite{CC77}.
-	$\alpha$ is the function that abstracts a set $S$ of possible values of \code{i} to the best (ie. most precise) abstract property:
+	The map $\alpha$ is the function that abstracts a set $S$ of possible values of \code{i} to the best abstract property, ie. the smallest (most precise) interval that comprises all possible values of \code{i}:
 	\begin{align*}
 		\alpha(S) & = [\min(S); \max(S)]
 	\end{align*}
 	with the usual conventions for $\min$ and $\max$ of empty/unbound set.
-	%	with the convention that $\min(\emptyset) = +\infty$, $\min(\emptyset) = -\infty$, the minimum of a lower-unbound set is $-\infty$ and the maximum of an upper-unbound set is $+\infty$.
 	Since no smaller interval can describe the set $S$, and this is a superset of $S$, $\alpha(S)$ is exactly the best abstraction of $S$.
 
-	The concretization $\gamma$ is the function that does the inverse operation: given an interval $[n, m]$, thought as formal writing or machine representation, gives back its ``meaning", that is the largest subset of $\setZ$ that matches that property:
+	The concretization map $\gamma$ is the function that does the inverse operation: given an interval $[n, m]$, thought as formal writing or machine representation, gives back its ``meaning", that is the largest subset of $\setZ$ that matches that property:
 	\[
 	\gamma([n, m]) = \{ x \in \setZ \svert n \le x \le m \}
 	\]
@@ -491,8 +486,8 @@ To give an intuition of the role of Galois connections in program analysis, we p
 	%	\end{align*}
 \end{example}
 
-We overload the symbol $A$ to denote also the function $\gamma \alpha: C \rightarrow C$: this is always an upper closure operator, that is a monotone, increasing (i.e. $c \le A(c)$ for all $c$) and idempotent function. In the following, we use closure operators as much as possible to simplify the notation. Particularly, they are useful to denote domain refinements, as exemplified in the next paragraph.
-Note that they are still very expressive for a Galois insertion (where $\gamma$ is injective): for instance $A(c) = A(c')$ if and only if $\alpha(c) = \alpha(c')$. Nonetheless, the use of closure operators is only a matter of notation and it is always possible to rewrite them using the adjoints, as the two formulation are equivalent \cite{CC79}.
+We overload the symbol $A$ to denote also the function $\gamma \alpha: C \rightarrow C$: this is always an \emph{upper closure operator}, that is a monotone, increasing (i.e. $c \le A(c)$ for all $c$) and idempotent function. In the following, we use closure operators as much as possible to simplify the notation. Particularly, they are useful to denote domain refinements, as exemplified in the next paragraph.
+We remark that upper closure operators are as expressive as Galois insertions, as the two formulation are equivalent~\cite{CC79}. Particularly, since $\gamma$ is injective, $A(c) = A(c')$ if and only if $\alpha(c) = \alpha(c')$. Therefore, the use of closure operators is only a matter of notation and it is always possible to rewrite them using abstraction and concretization functions.
 
 The image of an upper closure operator is a Moore family, that is a subset of $C$ containing the top element $\top_C$ and that is closed under meet. Given a subset $S \subseteq C$, we define its Moore-closure (or meet-closure) as
 \[
@@ -514,7 +509,7 @@ A particular kind of domain refinements are pointed refinement~\cite{BGGR22}. Th
 	A_z = \Moore(\gamma(A) \cup z)
 	\]
 \end{definition}
-We remark that, for any $z$, $A_z \preceq A$ and, in particular, the two are related by
+We remark that, for any $z$, $A_z \preceq A$ and, in particular, the two closures are related by
 \[
 A_z(c) = \begin{cases*}
 	A(c) \wedge z & if $c \le z$ \\
@@ -523,7 +518,7 @@ A_z(c) = \begin{cases*}
 \]
 
 \subsection{Abstracting functions}
-Since the main object of our study are program semantics, viz. functions, it is important to have the notion of abstraction of a function.
+The goal of abstract interpretation is to approximate the computation of functions.
 \begin{definition}\label{def:bg:sound-abstraction}
 	Given a monotone function $f : C \rightarrow C$ and an abstract domain $A_{\alpha, \gamma} \in \Abs(C)$, a function $f^{\sharp} : A \rightarrow A$ is a \emph{sound approximation} (or abstraction) of $f$ if
 	\[
@@ -552,13 +547,13 @@ This issue is well known in abstract interpretation, and for this reason the def
 	\alpha f = f^{\sharp} \alpha
 	\]
 \end{definition}
-Intuitively, completeness means that the abstract function $f^{\sharp}$ is as precise as possible in the given abstract domain $A$, and in program analysis this allows to have greater confidence in the alarms raised. It turns out that there exists a complete abstraction of $f$ if and only the bca $f^{A}$ is complete, and if this happens we say that $A$ is complete for $f$ and write $\complete{A}{}{f}$. Moreover, since $A$ is complete for $f$ if and only if $\alpha f = f^{A} \alpha = \alpha f \gamma \alpha$, and since $\gamma$ is injective (we always assume a Galois insertion), this is true if and only if $\gamma \alpha f = \gamma \alpha f \gamma \alpha$. Recalling that $A = \gamma \alpha$ we define the completeness property $\complete{A}{}{f}$ by the equation
-\[
-\complete{A}{}{f} \iff A f = A f A .
-\]
+Intuitively, completeness means that the abstract function $f^{\sharp}$ is as precise as possible in the given abstract domain $A$. In program analysis this allows to have greater confidence in the alarms raised because false alarms are only due to the imprecision of the abstraction and not of the computation. It turns out that there exists a complete abstraction of $f$ if and only the bca $f^{A}$ is complete, and if this happens we say that $A$ is complete for $f$ and write $\complete{A}{}{f}$. Moreover, since $A$ is complete for $f$ if and only if $\alpha f = f^{A} \alpha = \alpha f \gamma \alpha$, and since $\gamma$ is injective (we always assume a Galois insertion), this is true if and only if $\gamma \alpha f = \gamma \alpha f \gamma \alpha$. Recalling that $A = \gamma \alpha$ we define the completeness property $\complete{A}{}{f}$ by the equation
+\begin{equation}
+	\complete{A}{}{f} \iff A f = A f A \text{.} \label{eq:bg:global-completeness}
+\end{equation}
 
 \subsection{Abstract semantics of regular commands}
-Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. While any command $\regr$ has a bca $\denot{\regr}^{A}$, in general an analyser doesn't know it. Instead, it works inductively on the syntax of $\regr$ to define a sound abstraction of the concrete semantics $\denot{\regr}$. This (compositional) abstract semantics is given in Figure~\ref{fig:bg:regcom-abs-sem}, and defines the \emph{abstract interpreter} $\denot{\cdot}^{\sharp}_{A} : \Reg \rightarrow A \rightarrow A$.
+Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. While any command $\regr$ has a bca $\denot{\regr}^{A}$, in general an abstract analyser does not know how to compute it. Instead, analysers work inductively on the syntax of $\regr$ to compute a sound abstraction of the concrete semantics $\denot{\regr}$. This (compositional) abstract semantics is given in Figure~\ref{fig:bg:regcom-abs-sem}, and defines the \emph{abstract interpreter} $\denot{\cdot}^{\sharp}_{A} : \Reg \rightarrow A \rightarrow A$.
 \begin{figure}[t]
 	\begin{align*}
 		\denot{\expe}^{\sharp}_{A} a                    & \eqdef \denot{\expe}^{A} a = \alpha \edenot{\expe} \gamma (a)               \\
@@ -569,7 +564,7 @@ Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. Whil
 	\caption{Abstract semantics of regular commands.}
 	\label{fig:bg:regcom-abs-sem}
 \end{figure}
-This formulation tells a constructive way to compute an abstract semantics of any regular command $\regr$ provided that the analyser knows the bca of all expression $\expe \in \Exp$ (or at least those appearing in $\regr$). This condition could be further relaxed replacing $\denot{\expe}^{A}$ with any sound abstraction $\denot{\expe}^{\sharp}$ of $\denot{\expe}$, but for the sake of simplicity we assume the analyser is able to compute all bcas of basic expressions. All other rules are completely analogous to those of the concrete semantics but for the use of the abstract interpreter of syntactic components instead of the concrete semantics.
+This formulation tells a constructive way to compute an abstract semantics of any regular command $\regr$ provided that the analyser knows the bca of all atomic commands $\expe \in \Exp$ (or at least those appearing in $\regr$). This condition could be further relaxed replacing $\denot{\expe}^{A}$ with any sound abstraction $\denot{\expe}^{\sharp}$ of $\denot{\expe}$, but for the sake of simplicity we assume the analyser is able to compute all bcas of basic commands. All other rules are completely analogous to those of the concrete semantics but for the use of the abstract interpreter of syntactic components instead of the concrete semantics.
 A straightforward proof by structural induction shows that this semantics is monotone and sound:
 \begin{prop}\label{prop:bg:regcom-abs-sem-sound}
 	The abstract interpreter of Figure~\ref{fig:bg:regcom-abs-sem} is monotone and sound w.r.t. the concrete semantics of Figure~\ref{fig:bg:regcom-sem}; namely for all $\regr \in \Reg$
@@ -577,11 +572,11 @@ A straightforward proof by structural induction shows that this semantics is mon
 	\alpha \denot{\regr} \le \denot{\regr}^{\sharp}_A \alpha
 	\]
 \end{prop}
-Even though the abstract interpreter is sound, in general $\denot{\regr}^{\sharp}_{A} \neq \denot{\regr}^{A}$, that is the compositional abstraction is less precise than the bca. This is a well-known issue in abstract interpretation, and its main cause is sequential composition. In fact, while in the concrete $\denot{\regr_1; \regr_2} = \denot{\regr_2} \denot{\regr_1}$, in the abstract
+Even though the abstract interpreter is sound, in general $\denot{\regr}^{\sharp}_{A} \neq \denot{\regr}^{A}$, that is the compositional abstraction is less precise than the bca. This is a well-known issue in abstract interpretation, and its main cause is sequential composition. In fact, while in the concrete domain $\denot{\regr_1; \regr_2} = \denot{\regr_2} \denot{\regr_1}$, in the abstract domain
 \[
-\denot{\regr_1; \regr_2}^{A} = \alpha \denot{\regr_2} \denot{\regr_1} \gamma \le \alpha \denot{\regr_2} \gamma \alpha \denot{\regr_1} \gamma = \denot{\regr_2}^{A} \denot{\regr_1}^{A}
+\denot{\regr_1; \regr_2}^{A} = \alpha \denot{\regr_2} \denot{\regr_1} \gamma \le \alpha \denot{\regr_2} \gamma \alpha \denot{\regr_1} \gamma = \denot{\regr_2}^{A} \denot{\regr_1}^{A} \text{.}
 \]
-that is caused by the fact the abstract interpreter operates on abstract properties only (hence the need for the abstraction between $\regr_1$ and $\regr_2$).
+This is caused by the fact the abstract interpreter operates on abstract properties only (hence the need for the abstraction between $\regr_1$ and $\regr_2$).
 
 \subsection{Under-approximation abstract domains}
 The definition of Galois connection is not symmetric, in the sense that it puts $\gamma$ above and $\alpha$ below. This favours over-approximation. A way to see this is the fact that $A$ is an \emph{upper} closure operator, that is $c \le_C A(c)$. For this reason, to talk about under-approximation domains, we consider ``reversed" Galois connections:
@@ -591,7 +586,7 @@ The definition of Galois connection is not symmetric, in the sense that it puts 
 	\forall c \in C, a \in A.\quad a \le_A \alpha(c) \iff \gamma(a) \le_C c
 	\]
 \end{definition}
-It is important to remark that an under-approximation Galois connection is not a really new notion. In fact, it is just a standard Galois connection between the opposite posets $C^{\op}$ and $A^{\op}$. Alternatively, it is a Galois connection between $A$ and $C$ in the reversed order: for this reason, we denote it with $\ugc{A}{\gamma}{\alpha}{C}$, where we write $A$ on the left and $C$ on the right. The first point of view allows us to reuse all the machinery for Galois connection, just dualizing results: $A = \gamma \alpha : C \rightarrow C$ is a \emph{lower} closure operator (that is monotone, idempotent and reductive, ie. $A(c) \le_C c$), $\alpha$ is co-additive and $\gamma$ is additive, the image of $A$ is a dual Moore family (that is a family of sets containing $\bot_C$ and closed under join).
+It is important to remark that an under-approximation Galois connection is just a standard Galois connection between the opposite posets $C^{\op}$ and $A^{\op}$. Alternatively, it can be seen as a Galois connection between $A$ and $C$ in the reversed order: for this reason, we denote it with $\ugc{A}{\gamma}{\alpha}{C}$, where we write $A$ on the left and $C$ on the right. The first point of view allows us to reuse all the machinery for Galois connection, just dualizing results: $A = \gamma \alpha : C \rightarrow C$ is a \emph{lower} closure operator (that is monotone, idempotent and reductive, ie. $A(c) \le_C c$), $\alpha$ is co-additive and $\gamma$ is additive, the image of $A$ is a dual Moore family (that is a family of sets containing $\bot_C$ and closed under join).
 Again, we only consider under-approximation Galois insertions (UGI), that are Galois connections in which $\alpha \gamma = \id_A$. We write $A_{\alpha, \gamma} \in \Abs^{\op}(C)$ to say that $A$ is an under-approximation abstract domain on $C$ with adjoints $\alpha$ and $\gamma$, possibly omitting these if superfluous.
 
 As an example of under-approximation abstract domain, we propose the following variation of intervals:
@@ -601,9 +596,9 @@ As an example of under-approximation abstract domain, we propose the following v
 	\Int_0 = \{ I \in \Int \svert 0 \in I \} \cup \{ \bot \}
 	\]
 	where we used $\bot$ to represent the empty interval $[+\infty, -\infty]$.
-	$\gamma$ is the identity since we want an (under-approximation) Galois insertion, and $\alpha(S)$ is the greatest interval fully contained in $S$ that includes $0$. Formally,
+	The map $\gamma$ is the identity since we want an (under-approximation) Galois insertion, and $\alpha(S)$ is the greatest interval fully contained in $S$ that includes $0$. Formally,
 	\begin{align*}
 		\alpha(S) = \bigcup \{ I \in \Int_0 \svert I \subseteq S \}
 	\end{align*}
-	The result is in $\Int_0$: if it isn't empty, it does indeed contain $0$, since is the union of intervals in $\Int_0$ that contains $0$ themselves. Moreover it is an interval because union of overlapping intervals is an interval too, and all those intervals intersect at $0$.
+	The result of $\alpha$ is always in $\Int_0$. If there is no interval containing $0$ and contained in $S$, $\alpha(S)$ is $\bot$. On the contrary, if there is any such interval, than $\alpha(S)$ does contain $0$, since is the union of intervals in $\Int_0$ that contains $0$ themselves. Moreover, it is an interval because union of overlapping intervals is an interval, too.
 \end{example}
