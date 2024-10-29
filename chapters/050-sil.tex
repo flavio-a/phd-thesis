@@ -1,6 +1,6 @@
 % !TEX root = ../phd-thesis.tex
 
-\chapter{A comparison of program logics}\label{ch:sil}
+\chapter{Sufficient incorrectness logic}\label{ch:sil}
 In this chapter, we consider triple-based program logics used for both over and under-approximation. We focus on three known examples, namely Hoare Logic (HL), Incorrectness Logic (IL) and Necessary Conditions (NC). We characterize their validity conditions in term of over or under-approximation of forward and backward semantics. First, this allows us to identify the absence of one combination, and thus to define a new program logic, called Sufficient Incorrectness Logic (SIL), for it. Second, this guides a thorough comparison of the four validity conditions, highlighting analogies and differences between over and under-approximation approaches which will prove useful in choosing what over and under-approximation approach to use in the next chapters.
 
 The content of this chapter is based on~\cite{ABGL24}.
@@ -763,10 +763,10 @@ push_back(v) {
 
 In the example, we use as error postcondition $x \dealloc \andsep \true$. It is necessary to include $(\andsep\ \true)$ because, in final reachable states, $x$ is not the only variable allocated (there are also $v$ and $y$), so the final heap should talk about them as well. Adding $(\andsep\ \true)$ is a convenient way to focus only on the part of the heap that describes the error, that is $x \dealloc$, and just leave everything else unspecified.
 
-For the same program, the authors of~\cite{RBDDOV20} prove the ISL triple $\iltriple{v \mapsto z \andsep z \mapsto -}{\mathsf{rclient}}{v \mapsto y \andsep y \mapsto - \andsep x \dealloc}$. This proves the existence of a faulty execution, but tells nothing about which input states actually lead to the error. On the other hand, the Separation SIL triple has a more succinct post capturing the error and exposes faulty initial states.
-
-Lastly, we remark that, while in \cite[Figure~6]{ZDS23} outcome-based separation logic proves essentially the same triple, the deduction process is quite different from SIL.
-OL reasoning is forward oriented, as witnessed by the implication that concludes the proof and by the triple for the $\code{skip}$ branch, whereas Separation SIL proof system naturally guides the backward inference.
+%For the same program, the authors of~\cite{RBDDOV20} prove the ISL triple $\iltriple{v \mapsto z \andsep z \mapsto -}{\mathsf{rclient}}{v \mapsto y \andsep y \mapsto - \andsep x \dealloc}$. This proves the existence of a faulty execution, but tells nothing about which input states actually lead to the error. On the other hand, the Separation SIL triple has a more succinct post capturing the error and exposes faulty initial states.
+%
+%Lastly, we remark that, while in \cite[Figure~6]{ZDS23} outcome-based separation logic proves essentially the same triple, the deduction process is quite different from SIL.
+%OL reasoning is forward oriented, as witnessed by the implication that concludes the proof and by the triple for the $\code{skip}$ branch, whereas Separation SIL proof system naturally guides the backward inference.
 
 \subsection{Soundness}
 To prove soundness of Separation SIL, we give a semantic model for heap regular commands.
@@ -783,7 +783,7 @@ We say two heaps are disjoint, written $h_1 \perp h_2$, when $\dom(h_1) \cap \do
 		\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
 			                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
 			                                             \emptyset                         & otherwise
-		                                             \end{cases*}    \\
+		                                             \end{cases*}      \\
 		\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}_h(l)\right\rbrace \\
 		\edenot{\code{free(x)}} (s, h)      & \eqdef
 		\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                         \\
@@ -976,6 +976,50 @@ In particular, the analysis infers sufficient incorrectness preconditions (modul
 When the propagation of the inferred sufficient precondition reaches an attacker\hyp{}controlled input, the analysers check if that input is included in the propagated error condition.
 If it is the case, then it emits an error.
 The function analyses are parallelized and a strategy similar to the iteration rule of Figure~\ref{fig:sil:sil-rules} is used to compute the fixpoint in presence of mutually recursive functions.
+
+\subsection{Comparisons}\label{sec:sil:separation-sil-comparisons}
+There are other logics that address memory errors with an ``incorrectness'' perspective. Here we compare Separation SIL to ISL and Outcome Separation Logic (OSL)~\cite{ZSS24}.
+
+The key difference between Separation SIL and ISL is the same between IL and SIL: ISL is more effective for forward analysis and ensures reachability of all final states; Separation SIL is thought for backward analysis and guarantees that all initial states can reach a final state. For instance, the ISL triple in~\cite{RBDDOV20} for the Example~\ref{ex:separation-sil-derivation} is $\iltriple{v \mapsto z \andsep z \mapsto -}{\mathsf{rclient}}{v \mapsto y \andsep y \mapsto - \andsep x \dealloc}$, which proves that those faulty states are reachable, but tells nothing about which input states actually lead to them. On the other hand, the Separation SIL triple has a more succinct post capturing the error and exposes faulty initial states, but cannot describe which errors are reachable.
+
+The comparison with OSL is more convoluted.
+If we consider the separation instance of OL, \cite[Figure~6]{ZDS23} proves essentially the same triple as Example~\ref{ex:separation-sil-derivation} but the deduction process is quite different. OL reasoning is forward oriented, as witnessed by the implication that concludes the proof and by the triple for the $\code{skip}$ branch, whereas Separation SIL rules naturally guides the backward inference.
+OSL is more closely related to Separation SIL because it takes pointer programs at its core. For OSL, the authors propose an abduction-based algorithm that produces similar results to Separation SIL. However, the two algorithms differ in their details and work in different settings.
+To tackle the issue of \emph{non-locality} of allocation, \cite[\S 2.2]{ZSS24} prescribe that an OSL triple should be valid for \emph{every} possible allocation semantics. This prevents triples from talking too precisely about the result of an allocation, and is available even when the execution model doesn't include nondeterminism. Thus, OSL frame rule works across different execution models, e.g., for probabilistic programs.
+On the contrary, Separation SIL model is tailored to nondeterminism and can't be used for other execution models. However, this allows Separation SIL to be more precise about nondeterminism: differently than OSL, Separation SIL is complete and its triples can talk about a \emph{specific} allocation semantics. Thus Separation SIL can prove some special kinds of triples that are not valid in OSL model.
+
+\begin{example}\label{ex:sil:separation-sil-osl}
+	\begin{figure}[t]
+		{
+			\footnotesize
+			\begin{align*}
+				 & \textcolor{gray}{\text{// attacker setup}}                                                                                                                                  %\\
+				 &                                                              & \silexact{ \true }                                                                                           \\
+				 & x := \text{alloc}();                                                                                                                                                        %\\
+				 &                                                              & \silexact{ x \mapsto - }                                                                                     \\
+				 & \text{free}(x);                                                                                                                                                             %\\
+				 &                                                              & \silexact{ (x \dealloc) \lor (x \mapsto secret \andsep \true) }                                              \\
+				 & \textcolor{gray}{\text{// user code reading the secret}}                                                                                                                    \\
+				 & y := \text{alloc}();                                                                                                                                                        %\\
+				 &                                                              & \silexact{ (y \mapsto - \andsep x = y) \lor (x \mapsto secret \andsep y \mapsto - \andsep \true) }           \\
+				 & [y] := \code{secret};                                                                                                                                                       %\\
+				 &                                                              & \silexact{ (x \mapsto secret \andsep x = y) \lor (x \mapsto secret \andsep y \mapsto secret \andsep \true) } \\
+				 & \textcolor{gray}{\text{// attacker code leaking the secret}}                                                                                                                \\
+				 & \code{leak} := [x]                                                                                                                                                          %\\
+				 &                                                              & \silexact{ leak = secret \andsep x \mapsto - }                                                               \\
+				 &
+				 &                                                              & \silexact{ leak = secret }                                                                                   \\
+			\end{align*}
+		}
+		\caption{Sketch of the derivation for Example~\ref{ex:sil:separation-sil-osl}. Postconditions to each statement are written on the right of the statement itself.}
+		\label{fig:sil:separation-sil-security}
+	\end{figure}
+
+	C standard allocator reuses previously freed locations, and this can cause security leaks.
+	Consider the code in Fig.~\ref{fig:sil:separation-sil-security}: an attacker sets up a memory address by allocating and then freeing it, so that the next user allocation gets exactly that location $\ell$. The user then stores a secret in $\ell$, that the attacker can read. Separation SIL witnesses the error: in the post of \code{y := alloc()} it can be seen that the leaky behaviour is caused by $(x = y)$. In contrast, OSL cannot witness this error: since it occurs only for a specific allocation semantics this triple is not valid.
+\end{example}
+
+This simple example shows that, for some kind of errors, a more specific semantics is needed, thus the usefulness of different techniques for both more general and more specific settings.
 
 \section{Summary}
 In this chapter, we considered known program logics for over and under-approximation and tried to formalize the relations among them in order to asses their respective strengths and weaknesses. This led to the introduction of the novel proof system for Lisbon triples, that we dubbed Sufficient Incorrectness Logic, and to compare the four logics along several dimensions.
