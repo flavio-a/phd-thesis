@@ -11,17 +11,17 @@ For a function $f : S \rightarrow S$, we denote $f^n: S \rightarrow S$ the compo
 
 In ordered structures (such as posets and lattices) with carrier set $C$, we denote the order relation by $\le_C$, least upper bounds (lubs) by $\vee_C$, greatest lower bounds (glbs) by $\wedge_C$, least element by $\bot_C$ and greatest element by $\top_C$.
 We recall that any powerset is a complete lattice with ordering given by inclusion. In this case, we use standard symbols $\subseteq$, $\cup$, etc.
-If $C$ is a poset, we denote by $C^{\op}$ the poset with the same carrier set but reverse order: $a \le_{C^{\op}} b$ if and only if $b \le_C a$.
-We lift poset operators and relations to functions pointwise: given a poset $T$ and two functions $f, g: S \rightarrow T$, the notation $f \le g$ means that, for all $s \in S$, $f(s) \le_T g(s)$. Analogously, $f \land g$ denotes the function $(f \land g)(s) = f(s) \land g(s)$ for all $s \in S$. When we use this notation, given an element $t \in T$ we sometimes overload notation and use $t$ also to denote the constant function $t: S \rightarrow T$ such that $t(s) = t$ for all $s$. For instance, using this notation we have that, given a function $f : S \rightarrow T$ and an element $x \in T$, when we write $(f \lor x)$ we mean the function $(f \lor x)(s) = f(s) \lor x$.
-A function $f$ between complete lattices is additive (resp. co-additive) whenever it preserves arbitrary lubs (resp. glbs).
+If $C$ is a poset, we denote by $C^{\op}$ the opposite (also called dual) poset with the same carrier set but reverse order: $a \le_{C^{\op}} b$ if and only if $b \le_C a$.
+We lift poset operators and relations to functions pointwise: given a poset $T$ and two functions $f, g: S \rightarrow T$, the notation $f \le g$ means that, for all $s \in S$, $f(s) \le_T g(s)$. Analogously, $f \land g$ denotes the function $(f \land g)(s) = f(s) \land g(s)$ for all $s \in S$.
+A function $f$ between complete lattices is additive (resp. co-additive) whenever it preserves lubs (resp. glbs) of any set of elements (including the empty set).
 Given a function $f : C \rightarrow C$ on a poset $C$, we call a point $x \in C$ a fixed point (or fixpoint) if $f(x) = x$, and write both $\lfp(f)$ and $\mu(f)$ to denote its least fixpoint, if it exists. We recall two standard results guaranteeing the existence of (least) fixpoints (see, e.g., \cite{DP02}):
-\begin{theorem}[Knaster-Tarski]\label{th:bg:knaster-tarski}
+\begin{theorem}[Tarski]\label{th:bg:knaster-tarski}
 	Let $L$ be a complete lattice and let $f: L \rightarrow L$ be a monotone function. Then the set of fixed points of $f$ is a complete lattice.
 \end{theorem}
 \begin{corollary}
 	Since a complete lattice cannot be empty, $\lfp(f)$ exists.
 \end{corollary}
-\begin{theorem}[Kleene]\label{th:bg:kleene}
+\begin{theorem}[Tarski-Scott]\label{th:bg:kleene}
 	Let $C$ be a complete partial order and $f : C \rightarrow C$ a Scott-continuous function. Then $\lfp(f)$ is the least upper bound of the chain
 	\[
 	\bot \le f(\bot) \le f^2(\bot) \le f^3(\bot) \le \dots
@@ -33,7 +33,8 @@ The above chain is also called the \emph{initial chain} of $f$. If instead of $C
 \dots \le f^3(\top) \le f^2(\top) \le f(\top) \le \top  \text{.}
 \]
 
-If we assume $f$ is additive, then for any point $x \in C$ we have $(f \lor x)^n = \bigvee_{j < n} f^j(x)$. By Kleene, this means $\lfp(f \lor x) = \bigvee_{n \ge 0} f^n(x)$. Dually, if $f$ is co-additive, $\gfp(f \land x) = \bigwedge_{n \ge 0} f^n(x)$.
+Let us introduce the following notation. Given an element $x \in C$, we sometimes overload the symbol $x$ also to denote the constant function $x: C \rightarrow C$, ie. $x(y) = x$ for all $y \in C$. For instance, using this notation, given a function $f : C \rightarrow C$ and an element $x \in C$, we write $(f \lor x)$ to denote the function $(f \lor x)(y) = f(y) \lor x$.
+If we assume $f$ is additive, then for any point $x \in C$ we have $(f \lor x)^n(\bot) = \bigvee_{j < n} f^j(x)$: it can be proved by induction on $n$ recalling that, since $f$ is additive, it preserves the lub of the empty set, that is $\bot$. By Tarski-Scott, this means $\lfp(f \lor x) = \bigvee_{n \ge 0} f^n(x)$. Dually, if $f$ is co-additive, $\gfp(f \land x) = \bigwedge_{n \ge 0} f^n(x)$.
 
 Given $f : S \rightarrow T$ and $g : T \rightarrow S$, we say $f$ and $g$ are \emph{adjoints}, notation $f \dashv g$, if
 \[
@@ -63,10 +64,10 @@ It is common to study static analysis by considering a simple while-language, wh
 \end{align}
 Regular commands can be instantiated differently by changing the set $\Exp$ of atomic commands $\expe$. These determines the kind of basic operations allowed in the language. For instance, when $\Exp$ contains deterministic assignments and Boolean guards, it can encode a standard while-language (see~\eqref{eq:bg:while-language}). Another example is Kleene algebras with tests~\cite{Kozen97} (see Section~\ref{sec:bg:algebra}).
 
-The command $\regr; \regr$ represent the usual sequential composition. The command $\regr \regplus \regr$ is nondeterministic choice. The Kleene star $\regr^\kstar$ denotes a nondeterministic iteration, where $\regr$ can be executed any number of times (possibly 0) before exiting. It can be thought of as the solution to the recursive equation $\regr^\kstar \equiv \code{skip} \regplus (\regr; \regr^{\kstar})$.
+The command $\regr; \regr$ represent the usual sequential composition. The command $\regr \regplus \regr$ is nondeterministic choice. The Kleene star $\regr^\kstar$ denotes a nondeterministic iteration where $\regr$ can be executed any number of times (possibly 0) before exiting. It can be thought of as the least solution to the recursive equation $\regr^\kstar \equiv \code{skip} \regplus (\regr; \regr^{\kstar})$.\footnote{Note that, by Tarski-Scott, $\fwsem{\regr^\kstar} \eqdef \bigvee_{n \ge 0} \fwsem{\regr}^n = \lfp(\lambda f. \id \lor f \circ \fwsem{\regr})$, the least solution of this equation.}
 We write $\regr^n$ to denote sequential composition of $\regr$ with itself $n$ times, analogously to the notation $f^n$ for function repetition.
 
-The semantics of regular commands is defined over a concrete set of values $C$ that forms a complete join-semilattice. We also assume the semantics function for atomic commands $\edenot{\cdot} : \Exp \rightarrow C \rightarrow C$ to be given.
+The semantics of regular commands is defined over a concrete set of values $C$ that forms a complete lattice. We also assume the semantics function for atomic commands $\edenot{\cdot} : \Exp \rightarrow C \rightarrow C$ to be given.
 The semantics function $\fwsem{\cdot} : \Reg \rightarrow C \rightarrow C$ is defined inductively in Figure~\ref{fig:bg:regcom-sem}. Intuitively, this defines the collecting semantics of a program: if $C$ is the powerset of the set of states, $\fwsem{\regr} c$ is the set of output states reachable from the set of input states $c$.
 \begin{figure}[t]
 	\begin{align*}
@@ -97,13 +98,13 @@ We can define \code{if} and \code{while} statements as syntactic sugar:
 		\code{while (b) do c}                                   & \ \eqdef\  (\code{b?; c})^\kstar; (\lnot \code{b})\code{?}
 	\end{split}\end{align}
 
-For the semantics of basic expressions in \eqref{eq:bg:expe}, we consider a finite set of variables $\Var$, then the set of stores $\Sigma \eqdef \Var \rightarrow \setZ$ that are (total) functions $\sigma$ from $\Var$ to integers. The complete lattice $C$ is defined as $\pow(\Sigma)$ with the usual order structure given by set inclusion. Given a store $\sigma \in \Sigma$, $\sigma[ x \mapsto v ]$ denotes function update as usual for $x \in \Var$ and $v \in \setZ$. We consider standard, inductively defined semantics $\edenot{\cdot} : \AExp \rightarrow \Sigma \rightarrow \setZ$ for arithmetic expressions and $\edenot{\cdot} : \BExp \rightarrow \Sigma \rightarrow \{ \code{tt}, \code{ff} \}$ for Boolean expressions. The semantics of atomic commands $\expe \in \Exp$ is then defined as
+For the semantics of basic expressions in \eqref{eq:bg:expe}, we consider a finite set of variables $\Var$, then the set of stores $\Sigma \eqdef \Var \rightarrow \setZ$ that are (total) functions $\sigma$ from $\Var$ to integers. The complete lattice $C$ is defined as $\pow(\Sigma)$ with the usual order structure given by set inclusion. Given a store $\sigma \in \Sigma$, $\sigma[ x \mapsto v ]$ denotes function update as usual for $x \in \Var$ and $v \in \setZ$. We consider standard, inductively defined semantics $\edenot{\cdot} : \AExp \rightarrow \Sigma \rightarrow \setZ$ for arithmetic expressions and $\edenot{\cdot} : \BExp \rightarrow \Sigma \rightarrow \{ \code{tt}, \code{ff} \}$ for Boolean expressions. The semantics $\edenot{\cdot} : \Exp \rightarrow \pow(\Sigma) \rightarrow \pow(\Sigma)$ for atomic commands $\expe \in \Exp$ is then defined as
 \begin{align*}
 	\edenot{\code{skip}} S   & \eqdef S                                                                                         \\
 	\edenot{\code{x := a}} S & \eqdef \left\lbrace \sigma[x \mapsto \edenot{\code{a}} \sigma] \svert \sigma \in S \right\rbrace \\
 	\edenot{\code{b?}} S     & \eqdef \left\lbrace \sigma \in S \svert \edenot{\code{b}} \sigma = \code{tt} \right\rbrace
 \end{align*}
-This defines the collecting denotational semantics of programs. In fact, it is easy to check that the semantics of $\code{if}$ and $\code{while}$ is the standard one for while-language. We also remark that this semantics $\edenot{\cdot}$ is both monotone and additive, and these properties are lifted to the semantics of regular commands $\fwsem{\cdot}$:
+This defines the collecting denotational semantics $\fwsem{\cdot} : \Reg \rightarrow \pow(\Sigma) \rightarrow \pow(\Sigma)$ of programs. In fact, it is easy to check that the semantics of $\code{if}$ and $\code{while}$ is the standard one for while-language. We also remark that this semantics $\edenot{\cdot}$ is additive and therefore monotone, and these properties are lifted to the semantics of regular commands $\fwsem{\cdot}$:
 \begin{prop}\label{prop:bg:fwsem-monotone}
 	If $\edenot{\cdot}$ is monotone (resp. additive), then the semantics $\fwsem{\cdot}$ defined as in Figure~\ref{fig:bg:regcom-sem} is monotone (resp. additive) as well.
 \end{prop}
@@ -166,7 +167,7 @@ We use the standard notation $\vdash \hltriple{P}{\regr}{Q}$ to express that a t
 	\]
 \end{theorem}
 
-The reverse implication is called \emph{completeness} of the logic,\footnote{For the sake of readability, we must warn the reader that this thesis deals with three different notions of completeness. (Logical) completeness, used here, refers to the ability of a proof system to derive all valid triples. Global and local completeness are instead properties of abstract interpretation, that will be defined later. We will make sure to disambiguate the term whenever it is not clear from the context.} and in general it does not hold for HL because program analysis is undecidable. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}. Moreover, the undecidability of implications in first-order logic makes completeness an undecidable problem even when we were able to express all the needed properties.
+The reverse implication is called \emph{completeness} of the logic,\footnote{For the sake of readability, we must warn the reader that this thesis deals with three different notions of completeness. (Logical) completeness, used here, refers to the ability of a proof system to derive all valid triples. Global and local completeness are instead properties of abstract interpretation, that will be defined later. We will make sure to disambiguate the term whenever it is not clear from the context.} and it may not hold for HL depending on the set of assertions used. Particularly, when we use first-order logic formulae as assertions, HL is not complete because first-order logic is not able to represent all the properties needed to prove completeness, notably loop invariants~\cite[§2.7]{Apt81}. Moreover, the undecidability of implications in first-order logic makes completeness an undecidable problem even when we are able to express all the needed properties.
 Cook~\cite{Cook78} overcame these limitations for the first time by adding an oracle to decide implications and requiring that all strongest post (including loop-invariants) are expressible in the assertion language, proving the first completeness result for HL.\footnote{This was later called completeness \emph{in the sense of Cook}~\cite[§2.8]{Apt81}.}
 Another approach (see, e.g., \cite{CCLB12,OHearn20,Zilberstein24}) is to assume $P$ and $Q$ to be \emph{set} of states instead of formulae in some assertion language. This allows us to dodge at once both the issue of expressibility of the assertion language (since we can account for any subset of states) and of decidability of the implication (since it reduces to subset inclusion). This latter approach is sometimes called "semantics assertions", as opposed to the "syntactic assertions" approach of using formulae in some language.
 In this thesis, we will consider semantics assertions where $P$ and $Q$ are sets of states, with the only exception of Separation SIL (Section~\ref{sec:sil:separation-sil}). Therefore, we write $\sigma \in P$ to mean that state $\sigma$ satisfies the assertion $P$, and use standard set-theoretic symbols such as $\subseteq$ and $\cup$ instead of the logical $\implies$ and $\lor$ to remark the distinction.
@@ -230,7 +231,7 @@ which can be compactly rewritten as the under-approximation condition
 \[
 \fwsem{\regr} P \supseteq Q \text{.} \tag{IL} \label{eq:bg:il-validity}
 \]
-This property ensures that any error in $Q$ reported by the analysis is in fact a true error of the program, reachable in some concrete execution.
+This property ensures that any error in $Q$ reported by the analysis is in fact a true error of the program, reachable in some concrete execution. Note that a consequence of this ``concrete reachability'' means that nontermination is never a bug, since no concrete execution can show nontermination.
 
 The validity condition of IL was first proposed in~\cite{VK11}. There, the authors considered the same condition to specify correctness of randomized programs, and defined the ``reverse Hoare logic'' proof system to prove it. The novelty of~\cite{OHearn20} is to distinguish correct and erroneous termination and, most importantly, to focus on finding true bugs rather than proving correctness.
 We consider the proof system for IL in Figure~\ref{fig:bg:il}, adapting the one in~\cite{MOH21}, simplified to not separate correct and erroneous termination states (see also Remark~\ref{rem:bg:ok-er-flags}).
@@ -257,16 +258,16 @@ if (even(x) && odd(y)) {
 }
 // assert(z != 42)
 	\end{minted}
-	where we assume that $Q_{42} \eqdef (z = 42)$ denotes the set of erroneous states, i.e., the incorrectness specification.
-	The valid HL triple $\hltriple{ \text{odd}(y) }{\regr}{Q_{42}}$ identifies input states that will certainly end up in an  error state, while the triple $\hltriple{ \lnot Q_{42} \land \lnot \text{odd}(y)}{\regr}{\lnot Q_{42}}$ characterize input states that will not produce any error.
+	where we assume that $Q_{42} \eqdef (z = 42)$ denotes the set of erroneous states, ie. the incorrectness specification.
+	The valid HL triple $\hltriple{ \text{odd}(y) }{\regr{}42}{Q_{42}}$ identifies input states that will certainly end up in error states, while the triple $\hltriple{ \lnot Q_{42} \land \lnot \text{odd}(y)}{\regr{}42}{\lnot Q_{42}}$ characterize input states that will not produce any error.
 
-	On the other hand, the valid IL triple $\iltriple{z = 11}{\regr}{Q_{42} \land \text{odd}(y) \land \text{even}(x) }$ expresses the fact that error states in $Q_{42}$ are reachable by safe initial state. Similarly, also the IL triple $\iltriple{\true}{\regr}{\lnot Q_{42} \land \lnot (\text{odd}(y) \land \text{even}(x)) }$ is valid since the postcondition $\lnot Q_{42}$ can be reached only when the path conditions to reach the assignment are not satisfied.
+	On the other hand, the valid IL triple $\iltriple{z = 11}{\regr{}42}{Q_{42} \land \text{odd}(y) \land \text{even}(x) }$ expresses the fact that error states in $Q_{42}$ are reachable by safe initial state. Similarly, also the IL triple $\iltriple{\true}{\regr{}42}{\lnot Q_{42} \land \lnot (\text{odd}(y) \land \text{even}(x)) }$ is valid since the postcondition $\lnot Q_{42}$ can be reached only when the path conditions to reach the assignment are not satisfied.
 \end{example}
 
 \begin{remark}[ok/er flags]\label{rem:bg:ok-er-flags}
 	One distinguishing feature of proof systems for incorrectness (e.g.,~\cite{OHearn20,RBDDOV20,RBDO22,RVBO23}) is to tag postconditions, but not preconditions, with either the flag $\oktext{ok}$ or $\ertext{er}$ to separate successful computations from those leading to errors.
 	An immediate consequence is that the number of proof rules is increased by the necessity to deal with such tags and that the definitions of both the semantics and the proof system become longer and more complex.
-	Striving for simplicity, in this thesis we mostly follow the alternative from~\cite{BGGR23}, where the whole concrete domain is extended with such flags, e.g., we use $C = \pow(\{\oktext{ok},\ertext{er}\}\times \Sigma)$ instead of $\pow(\Sigma)$, and we assume that error states are preserved by all commands, i.e., that $\fwsem{\regr} (\ertext{er:\sigma}) = \ertext{er:\sigma}$, for any $\regr\in\Reg$ and $\sigma\in\Sigma$.
+	Striving for simplicity, in this thesis we mostly follow the alternative from~\cite{BGGR23}, where the whole concrete domain is extended with such flags, e.g., we use $C = \pow(\{\oktext{ok},\ertext{er}\}\times \Sigma)$ instead of $\pow(\Sigma)$, and we assume that error states are preserved by all commands, ie. that $\fwsem{\regr} (\ertext{er:\sigma}) = \ertext{er:\sigma}$, for any $\regr\in\Reg$ and $\sigma\in\Sigma$.
 	This way, we tag both pre and post, but the treatment of tags is transparent to the rules of the logic. Therefore, in this extended setting, when we write $P$ and $Q$ we leave implicit that they may contain both kinds of tagged states. The distinction between successful and erroneous outputs will be explicitated in the analysis presented in Section~\ref{sec:sil:separation-sil-error}.
 \end{remark}
 
@@ -351,7 +352,7 @@ Kleene algebras are an algebraic formulation that can describe programs~\cite{Ko
 		\item $0$ is an annihilator for sum, that is $a \cdot 0 = 0 \cdot a = 0$
 	\end{itemize}
 \end{definition}
-Intuitively, elements of the idempotent semiring are programs, and the operations define possible ways to compose them: sum $+$ is nondeterministic choice ($\regplus$ in the syntax of regular commands), product $\cdot$ is sequential composition ($;$), the multiplicative unit $1$ is a no-op (\code{skip}) and the additive unit $0$ is divergence (the test $\false ?$).
+Intuitively, elements of the idempotent semiring are programs, and the operations define possible ways to compose them: sum $+$ is nondeterministic choice ($\regplus$ in the syntax of regular commands), product $\cdot$ is sequential composition ($;$), the multiplicative unit $1$ is a no-op (\code{skip}) and the additive unit $0$ is divergence (the test $\false ?$, which is equivalent to the regular command $\code{while (\true) do skip} = (\true \code{?; skip})^\kstar; \false \code{?}$).
 
 In any idempotent semiring we define the natural partial order $a \le b$ iff $a + b = b$. With this definition, $+$ defines the lub of two elements: $a \lor b = a + b$. Moreover, sum and product are monotone in both arguments, and $0$ is the bottom element.
 
@@ -364,10 +365,11 @@ To get a Kleene algebra, we add the Kleene star operator to model iteration~\cit
 	\end{align*}
 \end{definition}
 \textit{(Star unfold)} axioms describe that $\kstar$ behaves as nondeterministic iteration, given it satisfies the same recursive equation. \textit{(Star induction)} axioms define the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the ``increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $b$ and the inductive step $a \cdot c$ are below (ie. satisfy) the inductive thesis $c$ (since we prove their lub, that is their sum, is below $c$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
+$\kstar$ can also be seen as a least fixpoint. \textit{(Star unfold)} axioms state it behaves as a fixpoint of the interesting operations, while \textit{(Star induction)} require it to be minimal.
 
 Kleene algebras are a versatile formalism that has been applied as is. However, the main algebraic structure we consider is Kleene algebra with tests (KAT for short), since this addition allows to encode programs~\cite{Kozen97}.
 \begin{definition}[Test]
-	A test $p$ in an idempotent semiring is an element with a complement $\lnot p$ satisfying $p + \lnot p = 1$ and $p \cdot \lnot p = \lnot p \cdot p = 0$. We denote by $\test(A)$ the set of tests of an idempotent semiring $A$.
+	A test $p$ in an idempotent semiring is an element with a unique complement $\lnot p$ satisfying $p + \lnot p = 1$ and $p \cdot \lnot p = \lnot p \cdot p = 0$. We denote by $\test(A)$ the set of tests of an idempotent semiring $A$.
 \end{definition}
 With this definition, $(\test(A), +, \cdot, \lnot, 0, 1)$ is a Boolean algebra contained within $A$. This means that sum $+$ represent logical disjunction, product $\cdot$ is conjunction, $0$ is false and $1$ is true.
 
@@ -381,7 +383,7 @@ An interesting example of KAT are so-called ``relational KAT".
 \end{example}
 If $C$ is the set of program states, the corresponding relational KAT can encode programs just like regular commands. Basic expressions are elements of (a subset of) $\pow(C \times C)$. Encoding of imperative constructs such as \code{if} and \code{while} is done as for regular commands.
 
-Since we can describe programs in KATs, it is natural to ask ourselves whether we can talk about program properties, too. It turns out this is the case, as we can formulate HL in a KAT \cite{Kozen00}. Given that we are able to encode program properties (as tests) and programs (as general elements of the algebra), the remaining question is how do we encode the validity of an HL triple. In relational KATs, where we can talk about strongest postcondition, $\spost(a, p) \le q$ is equivalent to the equation $p \cdot a \cdot (\lnot q) = 0$. Intuitively, this says that if we start from $p$, apply $a$ and test for the negation of $q$, we do not get any result, meeting the intuition that $\spost(a, p)$ is contained in $q$. A provably equivalent (in any KAT) formulation is the equation $p \cdot a = p \cdot a \cdot q$, that intuitively means that testing for $q$ after applying $a$ on $p$ is redundant. Given the equivalence in relational KATs, it seems reasonable to take this equation as validity for an HL triple in general KATs.
+Since programs can be encoded in KATs (possibly with the addition of extra structure to manage program features such as, for instance, exceptions or dynamic memory management), it is natural to ask ourselves whether we can talk about program properties, too. It turns out this is the case, as we can formulate HL in a KAT \cite{Kozen00}. Given that we are able to encode program properties (as tests) and programs (as general elements of the algebra), the remaining question is how do we encode the validity of an HL triple. In relational KATs, where we can talk about strongest postcondition, $\spost(a, p) \le q$ is equivalent to the equation $p \cdot a \cdot (\lnot q) = 0$. Intuitively, this says that if we start from $p$, apply $a$ and test for the negation of $q$, we do not get any result, meeting the intuition that $\spost(a, p)$ is contained in $q$. A provably equivalent (in any KAT) formulation is the equation $p \cdot a = p \cdot a \cdot q$, that intuitively means that testing for $q$ after applying $a$ on $p$ is redundant. Given the equivalence in relational KATs, it seems reasonable to take this equation as validity for an HL triple in general KATs.
 
 \begin{figure}[t]
 	\centering
@@ -433,7 +435,7 @@ Abstract interpretation \cite{CC77,CC79} is a general framework to define static
 	Given two posets $C$ and $A$, a pair of monotone functions $\alpha : C \rightarrow A$ and $\gamma : A \rightarrow C$ define a Galois connection when $\alpha \dashv \gamma$. As notation, we write $\gc{C}{\alpha}{\gamma}{A}$.
 \end{definition}
 We call $C$ and $A$ the concrete and the abstract domain respectively, $\alpha$ the abstraction function and $\gamma$ the concretization function.
-We recall some properties of Galois connections:
+We recall some properties of Galois connections, where a function is (co-)additive when it preserves lubs (resp. glbs) of arbitrary subsets, including the empty set:
 \begin{prop}
 	Let $\gc{C}{\alpha}{\gamma}{A}$ be a Galois connection. Then
 	\begin{enumerate}
@@ -486,7 +488,7 @@ To give an intuition of the role of Galois connections in program analysis, we p
 	%	\end{align*}
 \end{example}
 
-We overload the symbol $A$ to denote also the function $\gamma \alpha: C \rightarrow C$: this is always an \emph{upper closure operator}, that is a monotone, increasing (i.e. $c \le A(c)$ for all $c$) and idempotent function. In the following, we use closure operators as much as possible to simplify the notation. Particularly, they are useful to denote domain refinements, as exemplified in the next paragraph.
+We overload the symbol $A$ to denote also the function $\gamma \alpha: C \rightarrow C$: this is always an \emph{upper closure operator}, that is a monotone, increasing (ie. $c \le A(c)$ for all $c$) and idempotent function. In the following, we use closure operators as much as possible to simplify the notation. Particularly, they are useful to denote domain refinements, as exemplified in the next paragraph.
 We remark that upper closure operators are as expressive as Galois insertions, as the two formulation are equivalent~\cite{CC79}. Particularly, since $\gamma$ is injective, $A(c) = A(c')$ if and only if $\alpha(c) = \alpha(c')$. Therefore, the use of closure operators is only a matter of notation and it is always possible to rewrite them using abstraction and concretization functions.
 
 The image of an upper closure operator is a Moore family, that is a subset of $C$ containing the top element $\top_C$ and that is closed under meet. Given a subset $S \subseteq C$, we define its Moore-closure (or meet-closure) as
@@ -553,7 +555,7 @@ Intuitively, completeness means that the abstract function $f^{\sharp}$ is as pr
 \end{equation}
 
 \subsection{Abstract semantics of regular commands}
-Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. While any command $\regr$ has a bca $\denot{\regr}^{A}$, in general an abstract analyser does not know how to compute it. Instead, analysers work inductively on the syntax of $\regr$ to compute a sound abstraction of the concrete semantics $\denot{\regr}$. This (compositional) abstract semantics is given in Figure~\ref{fig:bg:regcom-abs-sem}, and defines the \emph{abstract interpreter} $\denot{\cdot}^{\sharp}_{A} : \Reg \rightarrow A \rightarrow A$.
+Consider again regular commands introduced in Section~\ref{sec:bg:regcomm}. While any command $\regr$ has a bca $\denot{\regr}^{A}$, in general an abstract analyser does not know how to compute it. Instead, structural analysers work inductively on the syntax of $\regr$ to compute a sound abstraction of the concrete semantics $\denot{\regr}$. This abstract semantics is given in Figure~\ref{fig:bg:regcom-abs-sem}, and defines the \emph{abstract interpreter} $\denot{\cdot}^{\sharp}_{A} : \Reg \rightarrow A \rightarrow A$.
 \begin{figure}[t]
 	\begin{align*}
 		\denot{\expe}^{\sharp}_{A} a                    & \eqdef \denot{\expe}^{A} a = \alpha \edenot{\expe} \gamma (a)               \\
@@ -586,7 +588,7 @@ The definition of Galois connection is not symmetric, in the sense that it puts 
 	\forall c \in C, a \in A.\quad a \le_A \alpha(c) \iff \gamma(a) \le_C c
 	\]
 \end{definition}
-It is important to remark that an under-approximation Galois connection is just a standard Galois connection between the opposite posets $C^{\op}$ and $A^{\op}$. Alternatively, it can be seen as a Galois connection between $A$ and $C$ in the reversed order: for this reason, we denote it with $\ugc{A}{\gamma}{\alpha}{C}$, where we write $A$ on the left and $C$ on the right. The first point of view allows us to reuse all the machinery for Galois connection, just dualizing results: $A = \gamma \alpha : C \rightarrow C$ is a \emph{lower} closure operator (that is monotone, idempotent and reductive, ie. $A(c) \le_C c$), $\alpha$ is co-additive and $\gamma$ is additive, the image of $A$ is a dual Moore family (that is a family of sets containing $\bot_C$ and closed under join).
+It is important to remark that an under-approximation Galois connection is just a standard Galois connection between the opposite (also called dual) posets $C^{\op}$ and $A^{\op}$. Alternatively, it can be seen as a Galois connection between $A$ and $C$ in the reversed order: for this reason, we denote it with $\ugc{A}{\gamma}{\alpha}{C}$, where we write $A$ on the left and $C$ on the right. The first point of view allows us to reuse all the machinery for Galois connection, just dualizing results: $A = \gamma \alpha : C \rightarrow C$ is a \emph{lower} closure operator (that is monotone, idempotent and reductive, ie. $A(c) \le_C c$), $\alpha$ is co-additive and $\gamma$ is additive, the image of $A$ is a dual Moore family (that is a family of sets containing $\bot_C$ and closed under join).
 Again, we only consider under-approximation Galois insertions (UGI), that are Galois connections in which $\alpha \gamma = \id_A$. We write $A_{\alpha, \gamma} \in \Abs^{\op}(C)$ to say that $A$ is an under-approximation abstract domain on $C$ with adjoints $\alpha$ and $\gamma$, possibly omitting these if superfluous.
 
 As an example of under-approximation abstract domain, we propose the following variation of intervals:
