@@ -365,7 +365,7 @@ To get a Kleene algebra, we add the Kleene star operator to model iteration~\cit
 	\end{align*}
 \end{definition}
 \textit{(Star unfold)} axioms describe that $\kstar$ behaves as nondeterministic iteration, given it satisfies the same recursive equation. \textit{(Star induction)} axioms define the induction principle for Kleene star. Consider $b$ as the base case, $a$ as the ``increment" operation, $c$ as the inductive thesis and $a \cdot c$ as the inductive step (since it is the ``increment" applied to the inductive hypothesis). The axiom says that if we prove that both the base case $b$ and the inductive step $a \cdot c$ are below (ie. satisfy) the inductive thesis $c$ (since we prove their lub, that is their sum, is below $c$), we proved it for any number of iterations of the increment $a$ starting from the base case $b$.
-$\kstar$ can also be seen as a least fixpoint. \textit{(Star unfold)} axioms state it behaves as a fixpoint of the interesting operations, while \textit{(Star induction)} require it to be minimal.
+$\kstar$ can also be seen as a least fixpoint. \textit{(Star unfold)} axioms state it behaves as the expected fixpoint, while \textit{(Star induction)} require it to be minimal.
 
 Kleene algebras are a versatile formalism that has been applied as is. However, the main algebraic structure we consider is Kleene algebra with tests (KAT for short), since this addition allows to encode programs~\cite{Kozen97}.
 \begin{definition}[Test]
