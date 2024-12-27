@@ -48,7 +48,7 @@ As an example, consider the (over-approximation) interval domain, where, e.g., t
 However, we argue that complement domains are not useful for incorrectness analysis: in the above complement domain of intervals, initializations such as \code{i := 0} or \code{i := 1000} are abstracted to the interval $[-\infty,\infty]$, which is the best abstraction of any finite set but loses any information about the initial value of \code{i}. We give more details on complement domains in Example~\ref{ex:uai:complement-domain}.
 
 Another important asymmetry we point out is the handling of divergence.
-In both over and under-approximation, divergence is represented by the bottom element $\bot$ of the abstract domain. However, $\bot$ as an under-approximation also represents the absence of information; dually, in over-approximation this is described by $\top$. This is a problem since many concrete functions are strict, that is, when applied to a non-terminating expression, they also fail to terminate (they return $\bot$ if one argument is $\bot$), and, to be a correct under-approximation, also the corresponding abstract function needs to be strict:
+While it is not the only solution, it is common to represent divergence with the bottom element $\bot$ of the abstract domain. When doing so, this is case in both over and under-approximation. However, $\bot$ as an under-approximation also represents the absence of information; dually, in over-approximation this is described by $\top$. This is a problem since many concrete functions are strict, that is, when applied to a non-terminating expression, they also fail to terminate (they return $\bot$ if one argument is $\bot$), and, to be a correct under-approximation, also the corresponding abstract function needs to be strict:
 \[
 f^{\flat}(\bot) = f^{\flat}(\alpha(\emptyset)) \preceq \alpha(f(\emptyset)) = \alpha(\emptyset) = \bot
 \]
@@ -110,7 +110,7 @@ Our results for finite domains are summarized in Table~\ref{fig:uai:tab-summary-
 We revisit some known over-approximation analyses and techniques, showing how specific characteristics of under-approximation makes this a challenging task.
 
 \subsection*{Complement domain}
-The first attempt, already briefly discussed in the introduction, is the use of the complement of an over-approximation abstract domain. This is an application of the order theoretic duality, but it turns out the resulting domains are not useful for analysis.
+The first attempt, already briefly discussed in the introduction, is the use of the complement of an over-approximation abstract domain. This is an application of the order theoretic duality, but it turns out the resulting domains are not often useful for analysis. For instance, for domains already closed under complementation (eg. the Sign domain) this construction yields the same domain. However, this is not the case in general.
 
 \begin{example}[Complement domain]\label{ex:uai:complement-domain}
 	Whenever the concrete domain is a powerset $\pow(C)$, we can exploit the complement $\lnot : \pow(C) \rightarrow \pow(C)$ to define a UGC from any given GC by taking complements of the concretization. Formally, given a GC $\gc{\pow(C)}{\alpha}{\gamma}{A}$, then $\ugc{\pow(C)}{\alpha \circ \lnot}{\lnot \circ \gamma}{A^{\op}}$ is a UGC (this stems from $\lnot : \pow(C) \rightarrow \pow(C)^{\op}$ being an isomorphism of posets).
@@ -156,7 +156,7 @@ An important property of Abstract Interpretation analysis is compositionality. H
 \end{example}
 
 \subsection*{Closure under union}
-Lastly, we consider non-relational analyses. Intuitively, a non-relational analysis cannot capture relationships between different variables. However, under-approximation cannot forget information along a path, including relations between variables. This means that non-relational domains cannot be used for under-approximation.
+Lastly, we consider non-relational analyses. Intuitively, a non-relational analysis cannot capture relationships between different variables. However, under-approximation cannot forget information along a path, including precise relations between variables. This means that non-relational domains cannot be used for under-approximation.
 % Note that the complement of a non-relational abstract domain, constructed as in Example~\ref{ex:uai:complement-domain}, is relational.
 
 \begin{example}[Non-relational domain]
@@ -189,7 +189,7 @@ A central concept in our development is the following definition of \emph{non-em
 	Let $\ugc{C}{\alpha}{\gamma}{A}$ be a UGC, $f : C \rightarrow C$ a monotone function and $f^{A} = \alpha \circ f \circ \gamma$ its bca.
 	We say that $f$ is \emph{non-emptying} (in $A$) if, for any concrete value $c$, $\alpha(c) \neq \bot$ and $\alpha(f(c)) \neq \bot$ imply $f^{A}(\alpha(c)) \neq \bot$.
 \end{definition}
-The idea behind this definition is that if the analysis starts from something meaningful ($\alpha(c) \neq \bot$) and it can find something significant ($\alpha(f(c)) \neq \bot$) then it will find at least one of the possible results ($f^{A}(\alpha(c)) \neq \bot$), thus not degrading the result of the analysis to $\bot$ and avoiding the issues discussed above. Intuitively, we want basic transfer functions to be non-emptying so that their analysis doesn't return $\bot$. The following toy example illustrates the meaning of the definition.
+The idea behind this definition is that if the analysis starts from something meaningful ($\alpha(c) \neq \bot$) and it can find something significant ($\alpha(f(c)) \neq \bot$) then it will find at least one of the possible results ($f^{A}(\alpha(c)) \neq \bot$), thus not degrading the result of the analysis to $\bot$ and avoiding the issues discussed above. Intuitively, we want basic transfer functions to be non-emptying so that their analysis doesn't return $\bot$. Note that this idea is tailored to forward analysis \todo{Say forward analysis at the beginning}. The following toy example illustrates the meaning of the definition.
 \begin{example}\label{ex:uai:non-ne-impair-analysis}
 	Consider the simple imperative fragment
 	\[
@@ -212,7 +212,7 @@ In the following, we present the basic technical tools we use to prove our theor
 Particularly, we start from a representable element (which is assumed to exist by hypothesis), then use Lemma~\ref{lmm:uai:f-non-repr-pair} to build other representable elements, up until the size of the abstract domain blows up. To get this, we exploit an exponential increase in the size of $A$ caused by ``closure under union'', that is the fact that if two concrete elements are representable in the abstract domain, their union is representable as well.
 
 \begin{definition}\label{def:uai:repr-with-set}
-	Let $S \subseteq C$ be a subset of $C$, and $\ugi{\pow(C)}{\alpha}{A}$ is an a UGI. We say that $d \in C$ is \emph{representable with $S$} if $S \cup \{ d \}$ is representable in $A$. We call $R_A(S)$ the set of elements of $C$ representable with $S$, i.e.
+	Let $S \subseteq C$ be a subset of $C$, and $\ugi{\pow(C)}{\alpha}{A}$ is an a UGI. We say that $d \in C$ is \emph{representable with $S$} if $S \cup \{ d \}$ is representable in $A$, ie. $\alpha(S \cup \{ d \}) = S \cup \{ d \}$. We call $R_A(S)$ the set of elements of $C$ representable with $S$, i.e.
 	\[
 	R_A(S) = \{ d \in C \svert \alpha(\{ d \} \cup S) = \{ d \} \cup S \}
 	\]
@@ -265,7 +265,7 @@ The meaning of this proposition for program analysis is the fact that a domain s
 Note that the only hypothesis on the abstract domain is related to its size, by Assumption~\ref{assump:uai:size-A-infinite-integers}. This would include all classical numerical domains such as intervals, octagons or congruences~\cite{Granger91}. Of course, these are over-approximation domains, so this result does not apply to them, but it shows that our hypotheses are very general and would include many known abstract domains.
 
 \subsection{Finite integer domain}\label{sec:uai:integers-finite}
-An analogous result can be obtained for a finite integer domain $\pow([-N, N])$, where $N$ is some big integer. This concrete domain models machine integers, that are constrained within an interval, so we assume that operations are performed in machine arithmetic, that is wrapping around in case of overflows. This is modelled working modulo $2N + 1$, the length of the interval, and taking the unique representative of each congruence class in the interval $[-N, N]$ of interest. It is worth noting that we take an interval that is symmetric around $0$ to simplify notation, but there is no conceptual difference in using an asymmetric one instead.
+An analogous result can be obtained for a finite integer domain $\pow([-N, N])$, where $N$ is some large integer. This concrete domain models machine integers, that are constrained within an interval, so we assume that operations are performed in machine arithmetic, that is wrapping around in case of overflows. This is modelled working modulo $2N + 1$, the length of the interval, and taking the unique representative of each congruence class in the interval $[-N, N]$ of interest. It is worth noting that we take an interval that is symmetric around $0$ to simplify notation, but there is no conceptual difference in using an asymmetric one instead (eg. $[-N -1; N]$ to be closed under two's complement).
 \begin{assump}\label{assump:uai:size-A-finite-integers}
 	We assume that an abstract domain $A$, to be feasible for the concrete domain $\pow([-N, N])$, must have a cardinality that is polynomial in $N$.
 \end{assump}
@@ -384,7 +384,7 @@ The proof of this theorem starts from the infinite set $P_F(c_0)$ and, using the
 	The proof of the latter relies on multiple functions to apply Lemma~\ref{lmm:uai:f-non-repr-pair}, but it always uses the same pair $\{ \bar{n}, n_0 \}$: at every step, it finds a function that maps $\bar{n}$ to the representable element found at the previous step.
 \end{remark}
 
-Similarly to Theorem~\ref{th:uai:non-empt-res-local}, this result can be used to prove the impossibility of building an abstract domain for floating-point numbers.
+Similarly to Theorem~\ref{th:uai:non-empt-res-local}, this result can be used to prove the impossibility of building an under-approximation abstract domain for floating-point numbers.
 \begin{example}\label{ex:uai:fp-numbers-global}
 	Take $C = \mathcal{F} \setminus \{ 0 \}$ the set of non-zero floating-point numbers with $t$ bits significands and arbitrary precision exponents, and $F = \{ \lambda x . x \odot z \svert z \in \mathcal{F} \setminus \{ 0 \} \}$.
 	As observed in Example~\ref{ex:uai:fp-numbers-local} this family is highly surjective.
@@ -433,7 +433,6 @@ Notably, the above proof is constructive. We present an example of such domain c
 		                 & = \alpha(\{ -1, 0 \}) = \{ 0 \}         & [\text{def. of } f \text{ and } \alpha]
 	\end{align*}
 	The check for $g$ is analogous.
-	\qed
 \end{example}
 Even though this proposition defines an under-approximation abstract domain, it should not be interpreted as a positive result since the resulting domain is almost a power set and hence too large to be feasible in practice. Instead, the proposition should be regarded as a way to show that one of the hypotheses required in the previous theorems is tight and cannot be weakened. Particularly, since these kinds of results require high surjectivity, they are ill-suited when the focus is on a single function.
 
@@ -474,7 +473,7 @@ This definition is exactly dual to that of preimages and can be used to formulat
 \begin{prop}\label{prop:uai:existence-finite-forward}
 	Let $F$ be a family of total functions (ie. if $S \neq \emptyset$ then $f(S) \neq \emptyset$) from $\pow(C)$ in itself, and assume there is a non-empty set $S_0 \subseteq C$ such that $I_F(S_0)$ is finite. Then there exists a finite abstract domain $A_F$ such that all functions $f \in F$ are non-emptying in $A_F$.
 \end{prop}
-Even though Proposition~\ref{prop:uai:existence-finite-forward} introduces the technical hypothesis that all $f \in F$ are total, this condition is not very restrictive in practice, because our results are applicable when $F$ is a family of basic transfer functions, that seldom introduce divergence: in programming languages, non-termination is often due to control-flow constructs and not to single assignments or guards.
+Even though Proposition~\ref{prop:uai:existence-finite-forward} introduces the technical hypothesis that all $f \in F$ are total, we don't believe this condition to be very restrictive in practice. Our results are applicable when $F$ is a family of basic transfer functions; in programming languages, non-termination is often due to control-flow constructs, while assignments and guards are usually total.
 As an immediate application of the proposition that exploits images instead of pre-images, we consider lists again, and rule out another natural function family.
 \begin{example}\label{ex:uai:construction-ne-domain-forward}
 	Fix again $C = \Gamma^{*}$, and consider all functions of the form $\dropp_n : \Gamma^* \rightarrow \Gamma^*$ that, taken a list, drop its first $n$ elements and return the resulting list. If the input list is shorter than $n$, the output of $\dropp_n$ is the empty list $\epsilon$.
@@ -494,7 +493,7 @@ As an immediate application of the proposition that exploits images instead of p
 	It can be easily checked that all functions $\dropp_n$ are non-emptying in $A_F$.
 \end{example}
 
-These last two propositions consider opposite situations in which it is possible to define an under-approximation domain: the former requires to be able to go backward using $F$ in infinitely many ways, while the latter to go forward. This often is not the case in the presence of ``boundaries'' in the concrete domain, which are points with respect to which functions tend to walk either up or away: for instance, $\epsilon$ is such a point with finite strings because $\concat$ functions go away from it while $\dropp$ functions move towards it.
+These last two propositions consider opposite situations in which it is possible to define an under-approximation domain: the former requires to be able to go backward using $F$ in infinitely many ways, while the latter to go forward. This often is not the case in the presence of ``boundaries'' in the concrete domain, which are points with respect to which functions tend to walk either up or away. For instance, $\epsilon$ is such a point with finite lists because $\concat$ functions go away from it while $\dropp$ functions move towards it.
 Another example of such a boundary is $0$ in the domain of integers $\setZ$ for multiplications and (rounded) divisions: the former increase absolute value, moving away from $0$ (even though $0$ itself is never a preimage), while the latter decrease it.
 Also considering a function family made of both kinds of functions does not work: a slight adaptation of the constructions for the two propositions above shows that, if $F$ can be partitioned into two subfamilies, each satisfying the hypothesis of one of the two propositions, then there exists an under-approximation abstract domain. An example of this is in the set of finite lists, taking as $F$ both $\concat$ and $\dropp$ functions. The construction then yields exactly $A_F = \{ \emptyset, \{ \epsilon \} \}$, for which all these functions are non-emptying, as shown in Examples~\ref{ex:uai:construction-ne-domain-backward} and \ref{ex:uai:construction-ne-domain-forward}.
 In light of these observations, to apply the definition of non-emptying function in an effective way for proving the non existence of abstract domains, for all possible boundaries there is the need for a function that can both enter and exit it. This happens for integers since there is no boundary, but does not for finite lists, with $\{ \epsilon \}$ being often either a sink or a source for many functions on lists.
@@ -504,7 +503,7 @@ The discussion of Section~\ref{sec:uai:infinite} requires $C$ to be infinite. Wh
 However, we believe that the two Theorems~\ref{th:uai:non-empt-res-local} and \ref{th:uai:non-empt-res-global} cannot be straightforwardly adapted to the finite setting.
 
 %For both these results, the proof of non existence of the abstract domain was carried out by showing the existence of infinitely many representable elements (defining an infinite sequence in the local result Theorem~\ref{th:uai:non-empt-res-local}, extracting a fraction of the infinite $P_F(c_0)$ in the global Theorem~\ref{th:uai:non-empt-res-global}), against Lemma~\ref{lmm:uai:R-S-bound-integer-inf}. For a finite $C$, if $N = \abs{C}$, one possibility would be to resort to Lemma~\ref{lmm:uai:R-S-bound-integer-fin} to show that $\abs{R} = O(\log(N))$ and get the contradiction by proving the existence of $\omega(\log(N))$ representable elements. Unfortunately, the same and similar constructions do not yield the desired bound: when $C$ is infinite we exploited the fact that finite combinations of finite numbers are also finite, while for finite $C$ we should require that arbitrary combinations of logarithmic factors are $O(N)$, which is not the case.
-For both results, the proof showed the existence of infinitely many representable elements, contradicting Lemma~\ref{lmm:uai:R-S-bound-integer-inf}. For a finite $C$, if $N = \abs{C}$, one possibility would be to resort to Lemma~\ref{lmm:uai:R-S-bound-integer-fin} to show that $\abs{R} = O(\log(N))$ and get the contradiction by proving the existence of $\omega(\log(N))$ representable elements. Unfortunately, similar constructions do not yield the desired bound: when $C$ is infinite we exploited the fact that finite combinations of finite numbers are also finite, while for finite $C$ we should require that arbitrary combinations of logarithmic factors are $O(N)$, which is not true.
+For both results, the proof showed the existence of infinitely many representable elements, contradicting Lemma~\ref{lmm:uai:R-S-bound-integer-inf}. For a finite $C$, if $N = \abs{C}$, one possibility would be to resort to Lemma~\ref{lmm:uai:R-S-bound-integer-fin} to show that $\abs{R} = O(\log(N))$ and get the contradiction by proving the existence of $\omega(\log(N))$ representable elements (we recall that $f(n) = \omega(g(n))$ if and only if $\lim_{n \rightarrow +\infty} \left( {f(n)} / {g(n)} \right) = +\infty$, which intuitively means that $f$ asymptotically dominates $g$). Unfortunately, similar constructions do not yield the desired bound: when $C$ is infinite we exploited the fact that finite combinations of finite numbers are also finite, while for finite $C$ we should require that arbitrary combinations of logarithmic factors are $O(N)$, which is not true.
 
 The definition of highly surjective family itself is not easy to translate. The construction of Proposition~\ref{prop:uai:existence-base} on a finite $C$ yields an abstract domain with the needed features already when $\abs{P_F(c)} = O(\log(N))$. However, to carry out proofs along the lines of Theorems~\ref{th:uai:non-empt-res-local} and~\ref{th:uai:non-empt-res-global} we would need stronger hypothesis than just $\abs{P_F(c)} = \omega(\log(N))$, possibly up to $\abs{P_F(c)} = \Theta(N)$.
 
@@ -533,9 +532,9 @@ We also assume to have an abstract domain $A_N$ for each concrete domain $\pow(C
 
 A straightforward corollary is that, whenever we can verify the hypotheses for all values in $C$, there is no under-approximation domain with a representable element. This is for instance the case for integers and sums, so we recover Proposition~\ref{prop:uai:ne-sum-nonexsistence-fin}:
 \begin{example}
-	Let $C = [-N, N]$ and
+	Let $C_N = [-N, N]$ and
 	\[
-	F = \{ \lambda x. x + n (\text{modulo } 2N+1) \svert n \in [-N, N] \} .
+	F_N = \{ \lambda x. x + n (\text{modulo } 2N+1) \svert n \in [-N, N] \} .
 	\]
 
 	Fixed any $n_0 \in [-N, N]$, it is easy to check that $P_F(n_0) = [-N, N]$ and $k_1(N) = k_2(N) = 1$. The condition
@@ -546,7 +545,7 @@ A straightforward corollary is that, whenever we can verify the hypotheses for a
 	\[
 	2N + 1 = \omega(\log(N))
 	\]
-	that is true. Hence there is no under-approximation abstract domain with at least one integer $n_0$ representable.
+	that is true. Hence there is no under-approximation abstract domain for integers with at least one integer $n_0$ representable and that makes all sums non-emptying.
 \end{example}
 The example of integers has the nice property of not having boundaries, but this is seldom the case. For instance, consider floating point numbers: they overflow and underflow to special values, hence they do have boundaries. Nevertheless, if we pick a suitable initial element $c_0$ we can still apply the theorem above.
 
