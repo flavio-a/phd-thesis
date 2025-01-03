@@ -19,7 +19,7 @@ The content of this chapter is based on~\cite{ABGL24}.
 	\label{fig:sil:taxonomy}
 \end{figure}
 
-As discussed in Sections~\ref{sec:bg:hl} and \ref{sec:bg:il}, the validity conditions of HL and IL are defined as over and under-approximation of the forward semantics $\fwsem{\cdot}$. However, other program logics cannot be naturally described in terms of $\fwsem{\cdot}$. To this end, we consider a backward semantics $\bwsem{\cdot}$ defined as the converse relation of the forward semantics,\footnote{Formally, if we consider a relation $\mathcal{R}$ between states defined as $\sigma \mathcal{R} \sigma'$ iff $\sigma' \in \fwsem{\regr} \sigma$, the backward semantics $\bwsem{\regr}$ defines the converse relation $\mathcal{R}^{-1}$} that is
+As discussed in Sections~\ref{sec:bg:hl} and \ref{sec:bg:il}, the validity conditions of HL and IL are defined as over and under-approximation of the forward semantics $\fwsem{\cdot}$. However, other program logics cannot be naturally described in terms of $\fwsem{\cdot}$. To this end, we consider a backward semantics $\bwsem{\cdot}$ defined as the converse relation of the forward semantics,\footnote{Formally, if we consider a relation $\mathcal{R}_{\regr}$ between states defined as $(\sigma, \sigma') \in \mathcal{R}_{\regr}$ iff $\sigma' \in \fwsem{\regr} \sigma$, the backward semantics $\bwsem{\regr}$ defines the converse relation $\mathcal{R}_{\regr}^{-1}$ .} that is
 
 \begin{equation}
 	\bwsem{\regr} \sigma' \eqdef \{ \sigma \mid \sigma' \in \fwsem{\regr} \sigma \} \label{eq:sil:bwsem-definition}
@@ -34,6 +34,7 @@ As discussed in Sections~\ref{sec:bg:hl} and \ref{sec:bg:il}, the validity condi
 \noindent and we additively lift this definition to set of states by union.
 Intuitively, the forward semantics $\fwsem{\regr} P$ denotes the set of all possible output states of $\regr$ when execution starts from a state in $P$ (and $\regr$ terminates).
 Instead, the backward semantics $\bwsem{\regr} Q$ denotes the set of all input states that can lead to a state in $Q$.
+We remark that this backward semantics $\bwsem{\cdot}$ is not Dijkstra $\wlp[\cdot]$. Instead, it correspond to Hoare's weakest possible precondition \cite{Hoare78}. Particularly, this means that $\fwsem{\regr}$ and $\bwsem{\regr}$ are not adjoints in the sense that $Q \subseteq \fwsem{\regr} P$ if and only if $\bwsem{\regr} Q \subseteq P$. For instance, it's easy to build a counterexample using unreachable states (see Lemma~\ref{lmm:sil:CC-1-monotone}). However, we will show an adjunctive relation between the two in Proposition~\ref{prop:sil:fw-inclusion-negation-bw}.
 
 The backward semantics can also be characterized compositionally, similarly to the forward one:
 
@@ -199,7 +200,7 @@ The SIL proof system is both correct and complete. Correctness can be proved by 
 \end{theorem}
 
 \subsection{Additional rules for program analysis}\label{sec:sil:sil-rules-additional}
-The topmost set of five rules in Figure~\ref{fig:sil:sil-rules} is deliberately minimal: if we remove any rule it is no longer complete. However, there are other valid rules, not derivable from those five, that can be useful in practice. Some of them are at the bottom of Figure~\ref{fig:sil:sil-rules}.
+The topmost set of five rules in Figure~\ref{fig:sil:sil-rules} is deliberately minimal: if we remove any rule it is no longer complete. However, there are other valid rules that can be useful in practice, and not all of them can be directly derived from the core rules. Some of them are at the bottom of Figure~\ref{fig:sil:sil-rules}. Note that, even if the rules themselves are not derivable (for instance the \silrule{empty} rule), by completeness of the core rules they don't allow to prove any additional triple.
 
 Rule \silrule{empty} is used to drop paths backward, just like IL can drop them forward (an analogous axiom $\iltriple{P}{\regr}{\emptyset}$ is valid for IL). Particularly, this allows to ignore one of the branches of \silrule{choice}, or to stop the backward iteration of \silrule{iter} without covering all the iterations. An example of such an application is the derived rule \silrule{iter0}, which corresponds to not entering the iteration at all. It can be derived from rules \silrule{iter} and \silrule{empty} by taking $Q_0 = Q$ and $Q_n = \emptyset$ for $n \ge 1$. It subsumes HL's rule \hlrule{iter}, which is based on loop invariants: those are a correct but not complete reasoning tool for under\hyp{}approximation~\cite{OHearn20}.
 Rule \silrule{unroll} allows to unroll a loop once. Subsequent applications of this rule allow to simulate (backward) a finite number of iterations, and then rule \silrule{iter0} can be used to ignore the remaining ones. This is on par with IL ability to unroll a loop a finite number of times to find some post, for which analogous rules are valid~\cite{OHearn20,MOH21}.
@@ -321,6 +322,8 @@ The next bijection establishes the connection between (NC) and (HL): a necessary
 	\fwsem{\regr} P \subseteq Q \iff \bwsem{\regr} (\lnot Q) \subseteq \lnot P \text{.}
 	\]
 \end{prop}
+
+Particularly, this establishes an adjunction between $\fwsem{\regr}$ and $\lnot \circ \bwsem{\regr} \circ \lnot$.
 
 \subsubsection{SIL and IL}
 Proposition~\ref{prop:sil:fw-inclusion-negation-bw} highlights an isomorphism between (HL) and (NC). By duality, this naturally sparks the question whether a similar connections between (IL) and (SIL) exists. The next example shows this is not the case.
@@ -510,9 +513,9 @@ We denote by $\Regh$ the set of heap regular commands obtained by plugging the f
 \end{align*}
 where we assume that \code{x} and \code{y} are syntactically distinct variables.
 The command \code{x := alloc()} allocates a new memory location containing a nondeterministic value, \code{free(x)} deallocates memory, and \code{[$\cdot$]} dereferences a variable.
-The syntax only allows to allocate, free and dereference single variables. To use a value from the heap in an arithmetic $\code{a} \in \AExp$ or Boolean expressions $\code{b} \in \BExp$, it must be loaded in a variable beforehand.
+The syntax only allows to allocate, free and dereference single variables. To use a value from the heap in an arithmetic $\code{a} \in \AExp$ or Boolean expressions $\code{b} \in \BExp$, it must be assigned to a variable beforehand.
 
-Given a heap command $\regr \in \Regh$, we let $\fv(\regr) \subseteq \Var$ be the set of (free) variables of $\regr$ and $\modified(\regr) \subseteq \Var$ be the set of variables modified by $\regr$. The definition of the former is standard, while the latter is defined inductively in Figure~\ref{fig:sil:regh-mod-def}. Note that \code{free(x)} and \code{[x] := y} do not modify \code{x}: they only modify the value \emph{pointed by} \code{x}, not the actual value of \code{x} (the memory address itself).
+Given a heap command $\regr \in \Regh$, we let $\fv(\regr) \subseteq \Var$ be the set of (free) variables of $\regr$ and $\modified(\regr) \subseteq \Var$ be the set of variables modified by $\regr$ (the latter is a syntactic approximation of the variable possibly modified by the program). The definition of the former is standard, while the latter is defined inductively in Figure~\ref{fig:sil:regh-mod-def}. Note that \code{free(x)} and \code{[x] := y} do not modify \code{x}: they only modify the value \emph{pointed by} \code{x}, not the actual value of \code{x} (the memory address itself).
 
 \begin{figure}[t]
 	\begin{align*}
@@ -531,7 +534,7 @@ Our assertion language is derived from SL (see Section~\ref{sec:bg:sl}) and ISL~
 \begin{align*}
 	\Asl \ni p, q ::= & \; \false \mid \true \mid p \land q \mid p \lor q \mid \exists x . p \mid \code{a} \asymp \code{a} \mid \emp \mid x \mapsto \code{a} \mid x \dealloc \mid p \andsep q
 \end{align*}
-where $\asymp \in \{ =, \neq, \le, <, \dots \}$ replaces standard comparison operators, $x \in \Var$ is a generic variable and $\code{a} \in \AExp$ is an arithmetic expression. The first six constructs describe a fragment of first-order logic, called coherent logic~\cite{BC05}, which is also the one used in bi-abduction~\cite{CDOY09}. The last four describe heaps.
+where $\asymp \in \{ =, \neq, \le, <, \dots \}$ replaces standard comparison operators, $x \in \Var$ is a generic variable (both program and auxiliary logical variables) and $\code{a} \in \AExp$ is an arithmetic expression. The first six constructs describe a fragment of first-order logic, called coherent logic~\cite{BC05}, which is also the one used in bi-abduction~\cite{CDOY09}. The last four describe heaps.
 $\emp$ denotes an empty heap, $x \mapsto a$ represents an heap with a single memory cell pointed by $x$ and whose content is $a$, $x \dealloc$ describes that $x$ points to a previously deallocated memory cell (it was first introduced in \cite{RBDDOV20}).
 The separating conjunction $p \andsep q$ is a key feature of Separation Logics and describes an heap which can be divided in two disjoint sub-heaps, one satisfying $p$ and the other $q$.
 We let $x \mapsto - \eqdef \exists v. x \mapsto v$ describe that $x$ is allocated without tracking its exact value.
@@ -637,7 +640,7 @@ Differently than SIL, the post of Separation SIL rules for atomic commands is no
 Rule \silrule{skip} is straightforward: whatever is true before and after the \code{skip} can be added with \silrule{frame}.
 Rule \silrule{assign} is Hoare's backward assignment rule~\cite{Hoare69}. Floyd's forward axiom~\cite{Floyd67} is also valid for SIL (see Section~\ref{sec:sil:rules-comparison}), but we opt for Hoare's rule because it fits better with the backward analysis of SIL.
 Rule \silrule{assume} conjoins the assertion \code{b} to the postcondition: only states satisfying the Boolean guard can reach the post.
-Rule \silrule{alloc} allocates a new memory location for $x$. The premise is empty: if the previous content of $x$ is needed, $x = z$ can be introduced in the premise with \silrule{cons}.
+Rules \silrule{alloc1} and \silrule{alloc2} allocate a new memory location for $x$: in the former the location is new, in the latter it reuses the previously deallocated location $\beta$. In both variants, if the previous value of $x$ is needed, $x = z$ can be introduced in the premise with \silrule{cons}. Note that, in theory, this doubles the size of the formulae when allocation appears in the program because each allocation could be analysed with both rules. However, in practice, we propose an algorithm that exploits \silrule{alloc2} only, thus avoiding this issue (see Sections~\ref{sec:sil:separation-sil-inference}and \ref{sec:sil:separation-sil-complete}).
 Rule \silrule{free} requires $x$ to be allocated before freeing it.
 Rule \silrule{load} is similar to \silrule{assign}, with the addition of the (disjoint) $y \mapsto a$ to make sure that $y$ is allocated.
 Rule \silrule{store} requires that $x$ is allocated, and updates the value it points to.
@@ -783,7 +786,7 @@ We say two heaps are disjoint, written $h_1 \perp h_2$, when $\dom(h_1) \cap \do
 		\edenot{\code{b?}} (s, h)           & \eqdef \begin{cases*}
 			                                             \left\lbrace (s, h) \right\rbrace & if $\edenot{\code{b}} s = \code{tt}$ \\
 			                                             \emptyset                         & otherwise
-		                                             \end{cases*}      \\
+		                                             \end{cases*}    \\
 		\edenot{\code{x := alloc()}} (s, h) & \eqdef \left\lbrace (s[x \mapsto l], h[l \mapsto v]) \svert v \in \Val, \mathit{avail}_h(l)\right\rbrace \\
 		\edenot{\code{free(x)}} (s, h)      & \eqdef
 		\left\lbrace (s, h[s(x) \mapsto \delta]) \right\rbrace\quad \text{if}~h(s(x)) \in \Val                                                         \\
@@ -885,6 +888,17 @@ Moreover, the proof system is augmented with a rule for error propagation, that 
 \[
 \infer[\silrule{er\mbox{-}id}]{\siltriple{\ertext{er: q}}{\regr}{\ertext{er: q}}}{}
 \]
+Note that this rule is enough to short-circuit sequence and iterations in case an error happens. For instance, for sequence, you can prove $\siltriple{\oktext{ok: p}}{\regr_1}{\ertext{er:q}}$ and then use \silrule{seq} together with the triple $\siltriple{\ertext{er: q}}{\regr_2}{\ertext{er: q}}$ proved via \silrule{er\mbox{-}id}. Similarly for iteration, you can apply rule \silrule{unroll} and use the same derivation for sequence. However, note that this is not useful during a backward analysis: if the postcondition of an iteration is an \erflag{} state, either you skip the loop entirely with \silrule{er\mbox{-}id}, or you try to find an \okflag{} precondition leading to the error. A derivation such as
+\[
+\infer[\silrule{unroll}]{\siltriple{\oktext{ok: p}}{\regr^{\kstar}}{\ertext{er: q}}}{
+	\infer[\silrule{seq}]{\siltriple{\oktext{ok: p}}{\regr^{\kstar}; \regr}{\ertext{er: q}}}{
+		\infer[]{\siltriple{\oktext{ok: p}}{\regr^{\kstar}}{\ertext{er: q}}}{\vdots}
+		&
+		\infer[\silrule{er\mbox{-}id}]{\siltriple{\ertext{er: q}}{\regr}{\ertext{er: q}}}{}
+	}
+}
+\]
+is useless. Similarly, it's useless to apply rule \silrule{iter} with $q(1) = q(0) = \ertext{er: q}$; instead, lower indexes in $q(n)$ by 1 (and drop $q(0)$).
 
 The modified proof system is sound with respect to the modified semantics:
 \begin{theorem}\label{th:sil:ssil-errors-sound}
@@ -945,7 +959,8 @@ The naive solution to add a constraint $x = \beta$ in the post of \silrule{alloc
 \[
 \siltriple{\emp \andsep \alpha \mapsto -}{\code{x := alloc()}}{(x \mapsto - \land x = \alpha) \andsep \alpha \mapsto -} \text{.}
 \]
-To recover the frame rule, just like ISL needs the deallocated assertion in the post~\cite[\S 3]{RBDDOV20}, Separation SIL needs a ``will be allocated'' assertion in the pre. To this end, we use the $\dealloc$ assertion, and change the semantic model to only allocate a memory location that is explicitly $\delta$. We formalize this by letting $\mathit{avail}_h(l) \eqdef (h(l) = \delta)$ in Figure~\ref{fig:sil:ssil-model-commands} and removing rule \silrule{alloc1}: the only valid rule for allocation in this semantics is \silrule{alloc2}. Moreover, we can prove relative completeness~\cite[\S 4.3]{AO19} for loop-free programs:
+To recover the frame rule, just like ISL needs the deallocated assertion in the post~\cite[\S 3]{RBDDOV20}, Separation SIL needs a ``will be allocated'' assertion in the pre. To this end, we use the $\dealloc$ assertion, and change the semantic model to only allocate a memory location that is explicitly $\delta$. Intuitively, this means specifying the resources that will be needed by the program execution: in particular, it lists in the pre the memory locations that will be allocated during program execution. Note that memory locations that will be allocated can be specified as logical variables, so they don't constrain the actual memory layout, but only the amount of locations needed.
+We formalize this by letting $\mathit{avail}_h(l) \eqdef (h(l) = \delta)$ in Figure~\ref{fig:sil:ssil-model-commands} and removing rule \silrule{alloc1}: the only valid rule for allocation in this semantics is \silrule{alloc2}. Moreover, we can prove relative completeness~\cite[\S 4.3]{AO19} for loop-free programs:
 
 \begin{theorem}[Relative completeness for loop-free programs]\label{th:sil:separation-sil-sequential-complete}
 	Suppose to have an oracle to prove implications between formulae in $\Asl$. Let $\regr \in \Regh$ be a regular command without $\kstar$ and $p, q \in \Asl$ such that $\bwsem{\regr} \asldenot{q} \supseteq \asldenot{p}$. Then the triple $\siltriple{p}{\regr}{q}$ is provable.
@@ -963,7 +978,7 @@ Another option is to focus on single states. Note that, differently than other t
 \end{theorem}
 
 \subsection{Implementations}
-To gain confidence in the mechanizability of our results, we developed a proof-of-concept implementation of Separation SIL in OCaml. The prototype is open source and available on GitHub.\footnote{\url{https://github.com/Alex23087/Failure-SSIL-Analyser}} While it is not meant to scale up to real programs, it can derive all the examples in this section and validates our intuition on the automated backward inference of Section~\ref{sec:sil:separation-sil-inference}. The code exploits a routine that follows closely the process described in that section, which is analogous to the proof of relative completeness (Theorem~\ref{th:sil:separation-sil-sequential-complete}).
+To gain confidence in the mechanizability of our results, we developed a proof-of-concept implementation of Separation SIL in OCaml. The prototype is open source and available on GitHub.\footnote{\url{https://github.com/Alex23087/Failure-SSIL-Analyser}} While it is not meant to scale up to real programs, it can derive all the examples in this section and validates our intuition on the automated backward inference of Section~\ref{sec:sil:separation-sil-inference}. The code exploits a routine that follows closely the process described in that section, which is analogous to the proof of relative completeness (Theorem~\ref{th:sil:separation-sil-sequential-complete}). The core algorithms are implemented in $\sim$400 locs; another big chunk of the code is the simplification of logical formulae, whose complexity is not tied to Separation SIL algorithm.
 For this implementation, we thank the students and teachers of the Laboratory for Innovative Software 2024 course, Yuri Andriaccio, Samuele Bonini, Andrea Castagna, Marco Antonio Corallo, Andrea Simone Costa, Fabio Federico, Elvis Rossi, Alessandro Scala, Matteo Simone, Chiara Bodei and Gian-Luigi Ferrari.
 
 Moreover, the ideas that lead to SIL represent \emph{a posteriori} formalization and theoretical justification of the parallel, modular, and compositional static analysis implemented in industrial grade static analyzers for security developed and used at Meta, such as Zoncolan~\cite{DFLO19}, Mariana Trench~\cite{MarianaTrench}, and Pysa~\cite{Pysa}.

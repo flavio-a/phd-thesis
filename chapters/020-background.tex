@@ -182,7 +182,7 @@ When $P$ and $Q$ are sets of states, the HL proof system in Figure~\ref{fig:bg:h
 \end{theorem}
 
 Lastly, we remark that HL is tightly connected to Dijkstra's weakest liberal precondition~\cite{Dijkstra75}. Given a program $\regr$ and a predicate $Q$ on final states, the weakest liberal precondition $\wlp[\regr](Q)$ is a predicate on initial states such that a state $\sigma$ satisfies $\wlp[\regr](Q)$ if and only if the execution of $\regr$ starting from $\sigma$ either does not terminate or terminates in a state satisfying $Q$. This definition is reminiscent of the validity condition for HL triples, but the ``if and only if'' requirement makes it stronger: $\wlp[\regr](Q)$ is the \emph{weakest} precondition such that $\vDash \hltriple{\wlp[\regr](Q)}{\regr}{Q}$. In other words, $\vDash \hltriple{P}{\regr}{Q}$ if and only if $P \implies \wlp[\regr](Q)$.
-While Dijkstra's work focused on giving an inductive definition for $\wlp$, we focus on it as a sort of inverse of $\fwsem{\cdot}$.\footnote{More precisely, $\wlp$ and $\fwsem{\cdot}$ are adjoint functions, see Section~\ref{sec:sil:extremal-conditions}.} As discussed above, we also consider $\wlp[\regr](Q)$ to be a set of states instead of a formula.
+While Dijkstra's work focused on giving an inductive definition for $\wlp$, we focus on it as a sort of inverse of $\fwsem{\cdot}$.\footnote{More precisely, $\wlp[\regr]$ and $\fwsem{\regr}$ are adjoint functions for every $\regr$, see Section~\ref{sec:sil:extremal-conditions}.} As discussed above, we also consider $\wlp[\regr](Q)$ to be a set of states instead of a formula.
 
 \section{Incorrectness Logic}\label{sec:bg:il}
 
