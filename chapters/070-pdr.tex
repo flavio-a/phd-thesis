@@ -16,9 +16,9 @@ Category theory has recognized adjunctions $f \dashv g$ as fundamental concepts 
 	\item (Abstraction-Concretization Adjoint) $C$ denotes a concrete semantic domain, while $A$ is an abstract one, akin to abstract interpretation. An adjoint allows us to translate a fixed-point problem from $C$ to $A$.
 \end{itemize}
 
-The problem we address is the standard lattice-theoretical formulation of safety problems, namely whether the least fixed point of a continuous map $b$ over a complete lattice $L$ is below a given element $p \in L$: $\mu b\leq_{?} p$.
+The problem we address is the standard lattice-theoretical formulation of safety problems, namely whether the least fixed point of a continuous map $b$ over a complete lattice $(L, \le, \bot, \top, \lor, \land)$ is below a given element $p \in L$: $\lfp (b) \leq_{?} p$.
 
-The first algorithm we present, \APDR{}, assumes the existence of an element $i \in L$ and two adjoints $f \dashv g \colon L \to L$, representing respectively initial states, forward semantics and backward semantics such that $b(x) = f(x) \lor i$ for all $x \in L$.
+The first algorithm we present, \APDR{}, assumes the existence of an element $i \in L$ and two adjoints $f \dashv g \colon L \to L$, representing intuitively initial states $i$, forward semantics $f$ and backward semantics $g$. In such cases, we assume $b(x) = f(x) \lor i$ for all $x \in L$.
 
 \[
 \xymatrix{
@@ -26,16 +26,16 @@ L \ar@/_1.5ex/[r]_-{g}^-\bot &L\ar@/_1.5ex/[l]_-{f}
 }
 \]
 
-Under this assumption, Knaster-Tarski Theorem~\ref{th:bg:knaster-tarski} yields the equivalences:
+Under this assumption, Tarski Theorem~\ref{th:bg:knaster-tarski} yields the well-known equivalences:
 \[
-\mu b\le p
+\lfp (b)\le p
 \quad \Leftrightarrow\quad
-\mu (f\lor i)\le p
+\lfp (f\lor i)\le p
 \quad \Leftrightarrow\quad
-i \le \nu (g \land p),
+i \le \gfp (g \land p),
 \]
 
-where $\mu (f\lor i)$  and $\nu (g \land p)$ are, by Kleene Theorem~\ref{th:bg:kleene}, the limits of the \emph{initial} and \emph{final} chains illustrated below.
+where $\lfp (f\lor i)$  and $\gfp (g \land p)$ are, by Tarski-Scott Theorem~\ref{th:bg:kleene}, the limits of the \emph{initial} and \emph{final} chains illustrated below.
 \[
 \bot \le i \le f(i)\lor i \le  \cdots
 \qquad\qquad\qquad
@@ -44,9 +44,9 @@ where $\mu (f\lor i)$  and $\nu (g \land p)$ are, by Kleene Theorem~\ref{th:bg:k
 
 The distinguishing feature of \APDR{} is to take as a negative sequence (that is a sequential construction of potential counterexamples) an over-approximation of the final chain. This crucially differs from the negative sequence of other PDR-like algorithm, which is an under-approximation of the computed positive chain.
 
-\APDR{} is sound (Theorem~\ref{th:pdr:soundness}) and does not loop (Proposition~\ref{prop:pdr:progres}), but since the problem $\mu b \le_? p$ is not always decidable, we cannot prove termination. Nevertheless, \APDR{} allows for a formal theory of heuristics that are essential when instantiating the algorithm to concrete problems. The theory prescribes the choices to obtain the boundary executions, using initial and final chains (Proposition~\ref{prop:pdr:negativesequencefinalchain}); it thus identifies a class of heuristics guaranteeing termination when answers are negative (Theorem~\ref{th:pdr:negativetermination}).
+\APDR{} is sound (Theorem~\ref{th:pdr:soundness}) and does not loop (Proposition~\ref{prop:pdr:progres}), but since the problem $\lfp (b) \le_? p$ is not always decidable, we cannot prove termination. Nevertheless, \APDR{} allows for a formal theory of heuristics that are essential when instantiating the algorithm to concrete problems. The theory prescribes the choices to obtain the boundary executions, using initial and final chains (Proposition~\ref{prop:pdr:negativesequencefinalchain}); it thus identifies a class of heuristics guaranteeing termination when answers are negative (Theorem~\ref{th:pdr:negativetermination}).
 
-In general, \APDR{}'s assumption of a forward-backward adjoint $f \dashv g$ does not hold, especially in probabilistic settings. Our second algorithm \ADPDR{} circumvents this problem by extending the lattice for the negative sequence, from $L$ to the lattice $L^{\downarrow}$ of \emph{lower sets} in $L$. Specifically, by using the second form of adjoints, namely an abstraction-concretization pair, the problem $\mu b \le_{?} p$ in $L$ can be translated to an equivalent problem on $b^{\downarrow}$ in $L^\downarrow$, for which an adjoint $b^\downarrow \dashv b^\downarrow_r$ always exists.
+In general, \APDR{}'s assumption of a forward-backward adjoint $f \dashv g$ does not hold, especially in probabilistic settings. Our second algorithm \ADPDR{} circumvents this problem by extending the lattice for the negative sequence, from $L$ to the lattice $L^{\downarrow}$ of \emph{lower sets} in $L$. Specifically, by using the second form of adjoints, namely an abstraction-concretization pair, the problem $\lfp (b) \le_{?} p$ in $L$ can be translated to an equivalent problem on $b^{\downarrow}$ in $L^\downarrow$, for which an adjoint $b^\downarrow \dashv b^\downarrow_r$ always exists.
 \[
 \xymatrix{
 L \lloop{b} \ar@/_1.5ex/[r]_-{(-)^\downarrow}^-\bot
@@ -478,7 +478,7 @@ This is formally shown in Propositions~\ref{prop:pdr:heuristic-initial-chain} an
 \end{prop}
 
 \subsection{Negative Termination}\label{sec:pdr:termination}
-When the lattice $L$ is not finite, {\APDR} may not return a result, since checking $\lfp(f \lor i) \le p$ is not always decidable. In this section, we show that the use of certain heuristics can guarantee termination whenever $\lfp(f \lor i) \not\le p$.
+When the lattice $L$ is not finite, {\APDR} may not terminate, since checking $\lfp(f \lor i) \le p$ is not always decidable. In this section, we show that the use of certain heuristics can guarantee termination whenever $\lfp(f \lor i) \not\le p$.
 The key insight is the following: if $\lfp (f \lor i) \not \le p$ then by~\eqref{th:bg:kleene}, there should exist some $\tilde{n} \in \setN$ such that $(f \lor i)^{\tilde{n}} (\bot) \not \le p$. By \eqref{eq:pdr:positiveinitialfinal}, the rule (Unfold) can be applied only when $(f \lor i)^{n-1} (\bot) \le x_{n-1} \le p$. Since (Unfold) increases $n$ and $n$ is never decreased by other rules, then (Unfold) can be applied at most $\tilde{n}$ times. Therefore, we can guarantee termination whenever the number of steps between two (Unfold) is finite.
 
 The first observation for termination is the following lemma. It states that an element $z$ cannot be added twice to negative sequence until $n$ is increased, i.e., until (Unfold) is applied.
@@ -728,7 +728,7 @@ Thus, to solve this problem, one should compute the supremum over infinitely man
 \subsection{Applying {\ADPDR} to the max reachability problem}
 The max-reachability problem, namely checking for a MDP $(A, S, s_\iota, \delta)$ whether the probability of reaching some bad states $\beta\subseteq P$ is less than a threshold $\lambda \in [0, 1]$, enjoys a convenient lattice-theoretical formulation~\cite{BK08}.
 
-Consider the lattice $([0, 1]^S,\leq)$ of all functions $d\colon S\to [0,1]$, often called frames or fuzzy predicates, ordered pointwise. The max reachability problem is equivalent to check that $\mu b \leq p$ for $p\in[0,1]^S$ and $b \colon [0, 1]^S \to [0, 1]^S$, defined for all $d\in [0, 1]^S $ and $s\in S$, as
+Consider the lattice $([0, 1]^S,\leq)$ of all functions $d\colon S\to [0,1]$, often called frames or fuzzy predicates, ordered pointwise. The max reachability problem is equivalent to check that $\lfp (b) \leq p$ for $p\in[0,1]^S$ and $b \colon [0, 1]^S \to [0, 1]^S$, defined for all $d\in [0, 1]^S $ and $s\in S$, as
 \begin{displaymath}
 	p(s) \eqdef \begin{cases}
 		\lambda & \text{ if } s=s_\iota,       \\
@@ -763,7 +763,7 @@ Intuitively, such choices are smart refinements of those in \eqref{eq:pdr:simple
 
 \begin{corollary}\label{cor:pdr:ADPDRtermination}
 	Let $h$ be a legit heuristic defined for (Candidate) and (Decide) as in \eqref{eq:pdr:secondterminatingheuristics}.
-	If $\mu b \not \leq p$, then \emph{\ADPDR}$_h$ terminates.
+	If $\lfp (b) \not \leq p$, then \emph{\ADPDR}$_h$ terminates.
 \end{corollary}
 
 \begin{example}\label{ex:pdr:shortheuristicforDecide}
@@ -960,7 +960,7 @@ where $(L, \le_L)$ and $(C, \le_C)$ are complete lattices, $b\colon L \to L$ is 
 	\item \emph{forward completeness}: $\overline{b}\gamma = \gamma b$.
 \end{enumerate}
 
-In this setting the problem $\mu b \le p$ in $L$ has an equivalent formulation in  $C$:
+In this setting the problem $\lfp (b) \le p$ in $L$ has an equivalent formulation in  $C$:
 \begin{prop}\label{prop:pdr:alp_gamma}
 	Consider the framework \eqref{eq:pdr:a-l} and let $p \in L$.
 	Then $\lfp(b) \le p$ is equivalent to $\lfp(\overline{b} \lor \gamma \bot) \le \gamma p$.
@@ -996,7 +996,7 @@ The reader may have recognised some similarities with the proof of Proposition~\
 	\end{enumerate}
 \end{example}
 
-The algorithm \APDRAI checking $\mu b \le p$ in $L$ is illustrated in Figure~\ref{fig:pdr:adjai}. It is an adaptation of {\APDR} algorithm checking $\lfp(\overline{b} \lor \gamma \bot) \le \gamma p$ in $C$ (that, by Proposition~\ref{prop:pdr:alp_gamma}, is equivalent to $\lfp(b) \le p$) that takes positive sequences in $L$.
+The algorithm \APDRAI checking $\lfp (b) \le p$ in $L$ is illustrated in Figure~\ref{fig:pdr:adjai}. It is an adaptation of {\APDR} algorithm checking $\lfp(\overline{b} \lor \gamma \bot) \le \gamma p$ in $C$ (that, by Proposition~\ref{prop:pdr:alp_gamma}, is equivalent to $\lfp(b) \le p$) that takes positive sequences in $L$.
 
 More precisely, \APDRAI manipulates pairs $(\vec{x} \| \vec{y})_{n, k}$ of sequences $\vec{x}$ in $L$ and $\vec{y}$ in $C$ while \APDR manipulates pairs of sequences in $C$. The pairs in {\APDRAI} satisfy invariants \eqref{eq:pdr:x0bot}, \eqref{eq:pdr:invi}, \eqref{eq:pdr:positivechain} and (PN'): $\forall j \in [k, n - 1] \text{, } \gamma x_j \not\le y_j$. Observe that $(\bot,\gamma \vec{x}) \eqdef (\bot,\gamma x_0, \dots , \gamma x_{n-1})$ forms a positive chain (Definition~\ref{def:pdr:posi_seq}) and $\vec{y}$ forms a negative sequence (Definition~\ref{def:pdr:neg_seq}) for $\lfp(\overline{b} \lor \gamma \bot) \le \gamma p$ in $C$.
 The algorithm returns true if $\vec{x}$ is conclusive (i.e., $\exists j\in [0,n-2]\,.\, x_{j+1} \le x_j$) which implies $(\bot, \gamma \vec{x})$ is also conclusive. It returns false if $y_0$ is defined, or equivalently, if $\vec{y}$ in the pair $(\bot, \gamma \vec{x} \| \vec{y})$ is conclusive. This equivalence is deduced from \eqref{eq:pdr:x0bot} and $\gamma x_0 \not \le y_0$ by (PN').
@@ -1030,7 +1030,7 @@ The above discussion immediately yields the soundness of \APDRAI. One can also p
   if $\exists j\in [0,n-2]\,.\, x_{j+1} \le x_j$ then return true		 % $\vec{x}$ conclusive
   if $y_0$ is defined then return false	  	% $\vec{y}$ conclusive
 \end{codeNT}
-	\caption{{\APDRAI} algorithm checking $\mu b \le p$.}\label{fig:pdr:adjai}
+	\caption{{\APDRAI} algorithm checking $\lfp (b) \le p$.}\label{fig:pdr:adjai}
 \end{figure}
 
 We conclude this section by illustrating how the algorithm \APDRAI{} generalises both \APDR{} and \ADPDR{}.

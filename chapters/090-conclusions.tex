@@ -26,4 +26,6 @@ In our opinion, the ability of $\LCLA$ and CLCL to prove both correctness and in
 
 Cousot's calculational design of program logics~\cite{Cousot24} opens the way to the possibility of comparing and combining over and under-approximation approaches from the abstract interpretation perspective. The most appealing aspect of this approach is the ability to automatically derive the combination, just like Cousot derives proof systems from a given composition of abstraction.
 
+Another aspects highlighted by Cousot's calculational design is that negation of HL (in a different flavour than the isomorphisms in Proposition~\ref{prop:sil:fw-inclusion-negation-bw}) correspond to testing. It is interesting to study the meaning of the negation of NC, IL and SIL, too.
+
 PDR presents an interesting framework which combines a forward search of a safe invariant with a backward search of a counterexample. We are considering other instantiations of this general idea, for instance via abstract interpretation for the over-approximation and abstract interpretation repair as the under. Specifically for program analysis, we are also considering a similar approach using HL for the forward over-approximation and SIL for the backward search for counterexamples, tailoring the algorithm to the stepwise program execution similarly to IC3 software model checking~\cite{LNNK20}.
